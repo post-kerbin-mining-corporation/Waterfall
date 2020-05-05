@@ -8,6 +8,9 @@ using System.IO;
 
 namespace Waterfall
 {
+  /// <summary>
+  /// Class for loading and retrieving shaders
+  /// </summary>
   public static class ShaderLoader
   {
     /// <summary>
@@ -16,11 +19,13 @@ namespace Waterfall
     private static readonly Dictionary<String, Shader> ShaderDictionary = new Dictionary<String, Shader>();
 
     /// <summary>
-    /// Requests a Shader
+    /// Requests a shader by name
     /// </summary>
+    /// <param name="shaderName"></param>
+    /// <returns></returns>
     public static Shader GetShader(String shaderName)
     {
-      Utils.Log("[ShaderLoader]: GetShader " + shaderName);
+      Utils.Log("[ShaderLoader]: Getting shader " + shaderName);
       return ShaderDictionary.ContainsKey(shaderName) ? ShaderDictionary[shaderName] : null;
     }
 
@@ -49,7 +54,6 @@ namespace Waterfall
       {
         pathSpec = "*-macos.waterfall"; 
       }
-
    
       String[] bundlePaths = Directory.GetFiles(path, pathSpec);
 
@@ -59,25 +63,22 @@ namespace Waterfall
       }
     }
     /// <summary>
-    /// Manually load Shader Asset bundles.
+    /// Manually load Shader Asset bundles by path
     /// </summary>
     public static void LoadAssetBundleAtPath(String bundlePath)
     {
 
       Utils.Log($"[ShaderLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
-      // Pick correct bundle for platform
-     
-
       AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
       Shader[] shaders = bundle.LoadAllAssets<Shader>();
 
       foreach (Shader shader in shaders)
       {
-        Utils.Log($"[ShaderLoader]: adding {shader.name}");
+        Utils.Log($"[ShaderLoader]: Adding {shader.name}");
         if (!ShaderDictionary.ContainsKey(shader.name))
           ShaderDictionary.Add(shader.name, shader);
         else
-          Utils.LogWarning($"[ShaderLoader]: A sahader with {shader.name} already exists");
+          Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists");
       }
 
       bundle.Unload(false); // unload the raw asset bundle

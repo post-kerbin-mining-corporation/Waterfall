@@ -9,24 +9,24 @@ using System.IO;
 namespace Waterfall
 {
   /// <summary>
-  /// Class to load and hold the shader data for the mod
+  /// Class to load shaders and config level data for the mod.
   /// </summary>
   [KSPAddon(KSPAddon.Startup.MainMenu, false)]
-  public  class WaterfallLoader: MonoBehaviour
+  public  class WaterfallData: MonoBehaviour
   { 
 
     public bool FirstLoad = true;
-
-    public static WaterfallLoader Instance { get; private set; }
+    public static WaterfallData Instance { get; private set; }
 
     protected void Awake()
     {
       Instance = this;
     }
+
     protected void Start()
     {
-      ShaderLoader.LoadShaders();     
-      
+      ShaderLoader.LoadShaders();
+      WaterfallTemplates.LoadTemplates();
     }
     
   }

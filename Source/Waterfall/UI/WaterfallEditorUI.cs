@@ -277,6 +277,33 @@ namespace Waterfall.UI
         }
       }
       catch (InvalidCastException e) { }
+      try
+      {
+        EffectFloatModifier floatMod = (EffectFloatModifier)fxMod;
+        if (floatMod != null)
+        {
+          editWindows.Add(new UIFloatModifierWindow(floatMod, true));
+        }
+      }
+      catch (InvalidCastException e) { }
+      try
+      {
+        EffectPositionModifier posMod = (EffectPositionModifier)fxMod;
+        if (posMod != null)
+        {
+          editWindows.Add(new UIPositionModifierWindow(posMod, true));
+        }
+      }
+      catch (InvalidCastException e) { }
+      try
+      {
+        EffectRotationModifier rotMod = (EffectRotationModifier)fxMod;
+        if (rotMod != null)
+        {
+          editWindows.Add(new UIRotationModifierWindow(rotMod, true));
+        }
+      }
+      catch (InvalidCastException e) { }
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)

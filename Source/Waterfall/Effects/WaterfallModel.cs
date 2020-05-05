@@ -67,7 +67,6 @@ namespace Waterfall
       modelTransform = inst.GetComponent<Transform>();
       modelTransform.localScale = Vector3.one;
       modelTransform.SetParent(parent, true);
-
       modelTransform.localPosition = modelPositionOffset;
       if (modelRotationOffset == Vector3.zero)
         modelTransform.localRotation = Quaternion.identity;

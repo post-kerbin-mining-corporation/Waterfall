@@ -79,17 +79,25 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Include="EffectControllers\EffectController.cs" />
+    <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectModifier.cs" />
+    <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
+    <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
+    <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
     <Compile Include="Effects\WaterfallEffect.cs" />
     <Compile Include="EffectModifiers\EffectUVScrollModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorModifier.cs" />
-    <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\WaterfallEffectTemplate.cs" />
     <Compile Include="Effects\WaterfallMaterial.cs" />
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\GraphUtils.cs" />
+    <Compile Include="UI\ModifierWindows\UIFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIPositionModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIRotationModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIScaleModifierWindow.cs" />
     <Compile Include="UI\UIAppToolbarWindow.cs" />
     <Compile Include="UI\UIBaseWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIColorModifierWindow.cs" />
@@ -101,7 +109,6 @@
     <Compile Include="UI\UIModelEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
-    <Compile Include="UI\ModifierWindows\UIScaleModifierWindow.cs" />
     <Compile Include="UI\UIUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIUVScrollModifierWindow.cs" />
     <Compile Include="UI\UIWidget.cs" />
@@ -110,6 +117,7 @@
     <Compile Include="WaterfallData.cs" />
     <Compile Include="WaterfallConstants.cs" />
     <Compile Include="WaterfallShaders.cs" />
+    <Compile Include="WaterfallTemplates.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

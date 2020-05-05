@@ -9,6 +9,7 @@ namespace Waterfall
   public static class WaterfallConstants
   {
     public static string ControllerNodeName = "CONTROLLER";
+    public static string TemplateNodeName = "EFFECTTEMPLATE";
     public static string EffectNodeName = "EFFECT";
     public static string ModelNodeName = "MODEL";
     public static string MaterialNodeName = "MATERIAL";
@@ -18,8 +19,11 @@ namespace Waterfall
 
 
     public static string ColorModifierNodeName = "COLORMODIFIER";
-    public static string UVScrollModifierNodeName = "UVSCROLLMODIFIER";
+    public static string FloatModifierNodeName = "FLOATMODIFIER";
+    public static string UVScrollModifierNodeName = "UVOFFSETMODIFIER";
     public static string ScaleModifierNodeName = "SCALEMODIFIER";
+    public static string PositionModifierNodeName = "POSITIONMODIFIER";
+    public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
     public static Dictionary<string, WaterfallMaterialPropertyType> ShaderPropertyMap = new Dictionary<string, WaterfallMaterialPropertyType>
     {

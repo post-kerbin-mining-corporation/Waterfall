@@ -30,12 +30,12 @@ namespace Waterfall.UI
     }
 
 
-    public static Vector3 Vector3InputField(Rect uiRect, Vector3 vec, GUIStyle labelStyle, GUIStyle textAreaStyle)
+    public static Vector3 Vector3InputField(Rect uiRect, Vector3 vec, string[] textFields, GUIStyle labelStyle, GUIStyle textAreaStyle)
     {
 
-      string xText = vec.x.ToString();
-      string yText = vec.y.ToString();
-      string zText = vec.z.ToString();
+      //string xText = vec.x.ToString();
+      //string yText = vec.y.ToString();
+      //string zText = vec.z.ToString();
       
       float width = uiRect.width / 6f;
       GUI.BeginGroup(uiRect);
@@ -49,18 +49,19 @@ namespace Waterfall.UI
       GUI.Label(xRect, "X", labelStyle);
       GUI.Label(yRect, "Y", labelStyle);
       GUI.Label(zRect, "Z", labelStyle);
-      xText = GUI.TextField(xFieldRect, xText, textAreaStyle);
-      yText = GUI.TextField(yFieldRect, yText, textAreaStyle);
-      zText = GUI.TextField(zFieldRect, zText, textAreaStyle);
+
+      textFields[0] = GUI.TextField(xFieldRect, textFields[0], textAreaStyle);
+      textFields[1] = GUI.TextField(yFieldRect, textFields[1], textAreaStyle);
+      textFields[2] = GUI.TextField(zFieldRect, textFields[2], textAreaStyle);
 
       GUI.EndGroup();
-      float parsedX = 0f;
-      float parsedY = 0f;
-      float parsedZ = 0f;
+      float parsedX = vec.x;
+      float parsedY = vec.y;
+      float parsedZ = vec.z;
 
-      float.TryParse(xText, out parsedX);
-      float.TryParse(yText, out parsedY);
-      float.TryParse(zText, out parsedZ);
+      float.TryParse(textFields[0], out parsedX);
+      float.TryParse(textFields[1], out parsedY);
+      float.TryParse(textFields[2], out parsedZ);
 
       return new Vector3(parsedX, parsedY, parsedZ);
     }

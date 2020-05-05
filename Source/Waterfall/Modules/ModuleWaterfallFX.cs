@@ -35,6 +35,7 @@ namespace Waterfall
 
       ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
+      ConfigNode[] templateNodes = node.GetNodes("TEMPLATE");
 
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading controllers on moduleID {0}", moduleID));
       allControllers = new Dictionary<string, WaterfallController>();
@@ -64,7 +65,28 @@ namespace Waterfall
         allFX.Add(new WaterfallEffect(fxDataNode));
       }
 
-      Utils.Log("[ModuleWaterfallFX]: Finished loading");
+      Utils.Log(String.Format("[ModuleWaterfallFX]: Loading templated effects on moduleID {0}", moduleID));
+      foreach (ConfigNode templateNode in templateNodes)
+      {
+        string templateName = "";
+        Vector3 scaleOffset = Vector3.one;
+        Vector3 positionOffset = Vector3.zero;
+        Vector3 rotationOffset = Vector3.zero;
+
+        templateNode.TryGetValue("templateName", ref templateName);
+        templateNode.TryGetValue("scale", ref scaleOffset);
+        templateNode.TryGetValue("rotation", ref rotationOffset);
+        templateNode.TryGetValue("position", ref positionOffset);
+
+        WaterfallEffectTemplate template =  WaterfallTemplates.GetTemplate(templateName);
+        
+        foreach (WaterfallEffect fx in template.allFX)
+        {
+          allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset));
+        }
+        Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template}" );
+      }
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects");
     }
 
     public ConfigNode Export()

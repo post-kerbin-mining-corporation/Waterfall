@@ -16,10 +16,15 @@ namespace Waterfall.UI
     WaterfallEffect fx;
     WaterfallUI parent;
 
+    string[] modelOffsetString;
+    string[] modelRotationString;
+
     public UIEffectWidget(WaterfallUI uiHost, WaterfallEffect effect) : base(uiHost)
     {
       parent = uiHost;
       fx = effect;
+      modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+      modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
 
     }
     /// <summary>
@@ -58,12 +63,12 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
       GUILayout.BeginHorizontal();
       GUILayout.Label("Position Offset");
-      modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelOffset, GUI.skin.label, GUI.skin.textArea);
+      modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Rotation Offset");
-      modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelRotation, GUI.skin.label, GUI.skin.textArea);
+      modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
       
       GUILayout.EndHorizontal();
       

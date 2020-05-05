@@ -14,10 +14,18 @@ namespace Waterfall
     public string name = "";
     public string parentName = "";
 
+
+    public Vector3 PositionOffset { get; set; }
+    public Vector3 RotationOffset { get; set; }
+    public Vector3 ScaleOffset { get; set; }
+
     protected WaterfallModel model;
     protected List<EffectModifier> fxModifiers;
     protected Transform parentTransform;
+    protected Transform effectTransform;
+
     protected ModuleWaterfallFX parentModule;
+    protected ConfigNode savedNode;
 
     public List<EffectModifier> FXModifiers
     {
@@ -30,12 +38,37 @@ namespace Waterfall
       get { return model; }
     }
 
+    public ConfigNode SavedNode
+    {
+      get { return savedNode; }
+    }
+
     public WaterfallEffect()
     {}
 
     public WaterfallEffect(ConfigNode node)
     {
+      PositionOffset = Vector3.zero;
+      RotationOffset = Vector3.zero;
+      ScaleOffset = Vector3.one;
       Load(node);
+    }
+
+    public WaterfallEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
+    {
+      PositionOffset = positionOffset;
+      RotationOffset = rotationOffset;
+      ScaleOffset = scaleOffset;
+
+      Load(node);
+    }
+
+    public WaterfallEffect(WaterfallEffect fx, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
+    {
+      PositionOffset = positionOffset;
+      RotationOffset = rotationOffset;
+      ScaleOffset = scaleOffset;
+      Load(fx.savedNode);
     }
 
     /// <summary>
@@ -44,6 +77,7 @@ namespace Waterfall
     /// <param name="node"></param>
     public void Load(ConfigNode node)
     {
+      savedNode = node;
       node.TryGetValue("name", ref name);
 
       if (!node.TryGetValue("parentName", ref parentName))
@@ -54,12 +88,22 @@ namespace Waterfall
       model = new WaterfallModel(node.GetNode(WaterfallConstants.ModelNodeName));
       fxModifiers = new List<EffectModifier>();
 
-      // Scale types
-      ConfigNode[] scalingNodes = node.GetNodes("SCALEMODIFIER");
-      ConfigNode[] colorNodes = node.GetNodes("COLORMODIFIER");
-      ConfigNode[] uvOffsetNodes = node.GetNodes("UVOFFSETMODIFIER");
+      // types
+      ConfigNode[] positionNodes = node.GetNodes(WaterfallConstants.PositionModifierNodeName);
+      ConfigNode[] rotationNodes = node.GetNodes(WaterfallConstants.RotationModifierNodeName);
+      ConfigNode[] scalingNodes = node.GetNodes(WaterfallConstants.ScaleModifierNodeName);
+      ConfigNode[] colorNodes = node.GetNodes(WaterfallConstants.ColorModifierNodeName);
+      ConfigNode[] uvOffsetNodes = node.GetNodes(WaterfallConstants.UVScrollModifierNodeName);
+      ConfigNode[] floatNodes = node.GetNodes(WaterfallConstants.FloatModifierNodeName);
 
-     
+      foreach (ConfigNode subNode in positionNodes)
+      {
+        fxModifiers.Add(new EffectPositionModifier(subNode));
+      }
+      foreach (ConfigNode subNode in rotationNodes)
+      {
+        fxModifiers.Add(new EffectRotationModifier(subNode));
+      }
       foreach (ConfigNode subNode in scalingNodes)
       {
         fxModifiers.Add(new EffectScaleModifier(subNode));
@@ -71,6 +115,10 @@ namespace Waterfall
       foreach (ConfigNode subNode in uvOffsetNodes)
       {
         fxModifiers.Add(new EffectUVScrollModifier(subNode));
+      }
+      foreach (ConfigNode subNode in floatNodes)
+      {
+        fxModifiers.Add(new EffectFloatModifier(subNode));
       }
     }
 
@@ -95,10 +143,30 @@ namespace Waterfall
       Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} ", name));
       parentModule = host;
       parentTransform = parentModule.part.FindModelTransform(parentName);
-      if (parentTransform == null)
-        Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find parentTransform {0} ", parentName));
 
-      model.Initialize(parentTransform);
+      GameObject effect = new GameObject($"Waterfall_FX_{name}");
+      effectTransform = effect.transform;
+
+      if (parentTransform == null)
+      {
+        Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
+        return;
+      }
+      model.Initialize(effectTransform);
+
+      effectTransform.SetParent(parentTransform, true);
+      effectTransform.localPosition = PositionOffset;
+
+      if (RotationOffset == Vector3.zero)
+        effectTransform.localRotation = Quaternion.identity;
+      else
+        effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
+
+      effectTransform.localScale = new Vector3(effectTransform.localScale.x * ScaleOffset.x, effectTransform.localScale.y * ScaleOffset.y, effectTransform.localScale.z * ScaleOffset.z);
+
+      Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}");
+
+      
 
       for (int i = 0; i < fxModifiers.Count; i++)
       {
