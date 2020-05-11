@@ -186,6 +186,20 @@ namespace Waterfall
         fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
       }
     }
+
+
+    public void RemoveModifier(EffectModifier mod)
+    {
+      fxModifiers.Remove(mod);
+
+    }
+
+    public void AddModifier(EffectModifier mod)
+    {
+      mod.Init(this);
+      fxModifiers.Add(mod);
+
+    }
   }
 
 }

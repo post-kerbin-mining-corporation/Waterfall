@@ -32,9 +32,12 @@ namespace Waterfall
     
     public string texturePath;
     public Vector2 textureScale = Vector2.one;
-    public Vector2 textureOffset = Vector2.one;
+    public Vector2 textureOffset = Vector2.zero;
 
-    public WaterfallMaterialTextureProperty() { }
+    public WaterfallMaterialTextureProperty()
+    {
+      propertyType = WaterfallMaterialPropertyType.Texture;
+    }
     public WaterfallMaterialTextureProperty(ConfigNode node)
     {
       Load(node);
@@ -48,17 +51,15 @@ namespace Waterfall
       node.TryGetValue("textureScale", ref textureScale);
       node.TryGetValue("textureOffset", ref textureOffset);
 
-      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Loading new texture for {0} ", propertyName));
+      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Loading new texture for slot {0} ", propertyName));
     }
     public override void Initialize(Material m)
     {
-      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Setting new texture for {0} ", propertyName));
+      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Setting new texture for slot {0} ", propertyName));
       Texture loadedTexture = GameDatabase.Instance.GetTexture(texturePath, false);
       m.SetTexture(propertyName, loadedTexture);
       m.SetTextureScale(propertyName, textureScale);
       m.SetTextureOffset(propertyName, textureOffset);
-
-      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]:New tx for slot {0} ", m.GetTexture(propertyName)));
     }
 
     public override ConfigNode Save()
@@ -79,7 +80,10 @@ namespace Waterfall
   {
     public float propertyValue;
 
-    public WaterfallMaterialFloatProperty() { }
+    public WaterfallMaterialFloatProperty()
+    {
+      propertyType = WaterfallMaterialPropertyType.Float;
+    }
     public WaterfallMaterialFloatProperty(ConfigNode node)
     {
       Load(node);
@@ -112,7 +116,10 @@ namespace Waterfall
     public Color propertyValue;
 
 
-    public WaterfallMaterialColorProperty() { }
+    public WaterfallMaterialColorProperty()
+    {
+      propertyType = WaterfallMaterialPropertyType.Color;
+    }
     public WaterfallMaterialColorProperty(ConfigNode node)
     {
       Load(node);
@@ -122,6 +129,7 @@ namespace Waterfall
     {
       node.TryGetValue("colorName", ref propertyName);
       node.TryGetValue("colorValue", ref propertyValue);
+      Utils.Log($"[WaterfallMaterialColorProperty]: loaded color {propertyName} with value {propertyValue.ToString()}");
     }
     public override void Initialize(Material m)
     {

@@ -67,31 +67,74 @@ namespace Waterfall.UI
     }
 
 
-    public static Vector2 Vector2InputField(Rect uiRect, Vector2 vec, GUIStyle labelStyle, GUIStyle textAreaStyle)
+    public static Vector2 Vector2InputField(Rect uiRect, Vector2 vec, string[] textFields, GUIStyle labelStyle, GUIStyle textAreaStyle, out bool changed)
     {
-
-      string xText = vec.x.ToString();
-      string yText = vec.y.ToString();
+      changed = false;
       float width = uiRect.width / 4f;
       GUI.BeginGroup(uiRect);
-      Rect xRect = new Rect(0, 0, uiRect.height, width);
-      Rect yRect = new Rect(2 * width, 0, uiRect.height, width);
-      Rect xFieldRect = new Rect(1 * width, 0, uiRect.height, width);
-      Rect yFieldRect = new Rect(3 * width, 0, uiRect.height, width);
+      Rect xRect = new Rect(0, 0, width, uiRect.height);
+      Rect yRect = new Rect(2 * width, 0, width, uiRect.height);
+      Rect xFieldRect = new Rect(width - 5f, 0, width , uiRect.height);
+      Rect yFieldRect = new Rect(3 * width - 5f, 0, width, uiRect.height);
 
       GUI.Label(xRect, "X", labelStyle);
       GUI.Label(yRect, "Y", labelStyle);
-      xText = GUI.TextField(xFieldRect, xText, textAreaStyle);
-      yText = GUI.TextField(yFieldRect, yText, textAreaStyle);
+
+      textFields[0] = GUI.TextField(xFieldRect, textFields[0], textAreaStyle);
+      textFields[1] = GUI.TextField(yFieldRect, textFields[1], textAreaStyle);
 
       GUI.EndGroup();
-      float parsedX = 0f;
-      float parsedY = 0f;
+      float parsedX = vec.x;
+      float parsedY = vec.y;
 
-      float.TryParse(xText, out parsedX);
-      float.TryParse(yText, out parsedY);
+      float.TryParse(textFields[0], out parsedX);
+      float.TryParse(textFields[1], out parsedY);
+      Vector2 newVec = new Vector2(parsedX, parsedY);
+      if (!Vector2.Equals(vec, newVec))
+        changed = true;
+      return newVec ;
+    }
+    public static Color ColorInputField(Rect uiRect, Color vec, string[] textFields, GUIStyle labelStyle, GUIStyle textAreaStyle, out bool changed)
+    {
+      changed = false;
+      float width = uiRect.width / 8f;
+      GUI.BeginGroup(uiRect);
+      Rect rRect = new Rect(0, 0, width, uiRect.height);
+      Rect gRect = new Rect(2 * width, 0, width, uiRect.height);
+      Rect bRect = new Rect(4 * width, 0, width, uiRect.height);
+      Rect aRect = new Rect(6 * width, 0, width, uiRect.height);
+      Rect rFieldRect = new Rect(width - 5f, 0, width, uiRect.height);
+      Rect gFieldRect = new Rect(3 * width-5f, 0, width, uiRect.height);
+      Rect bFieldRect = new Rect(5 * width - 5f, 0, width, uiRect.height);
+      Rect aFieldRect = new Rect(7 * width - 5f, 0, width, uiRect.height);
 
-      return new Vector2(parsedX, parsedY);
+      GUI.Label(rRect, "R", labelStyle);
+      GUI.Label(gRect, "G", labelStyle);
+      GUI.Label(bRect, "B", labelStyle);
+      GUI.Label(aRect, "A", labelStyle);
+
+      textFields[0] = GUI.TextField(rFieldRect, textFields[0], textAreaStyle);
+      textFields[1] = GUI.TextField(gFieldRect, textFields[1], textAreaStyle);
+      textFields[2] = GUI.TextField(bFieldRect, textFields[2], textAreaStyle);
+      textFields[3] = GUI.TextField(aFieldRect, textFields[3], textAreaStyle);
+
+      GUI.EndGroup();
+      float parsedR = vec.r;
+      float parsedG = vec.g;
+      float parsedB = vec.b;
+      float parsedA = vec.a;
+
+      float.TryParse(textFields[0], out parsedR);
+      float.TryParse(textFields[1], out parsedG);
+      float.TryParse(textFields[2], out parsedB);
+      float.TryParse(textFields[3], out parsedA);
+
+      Color newColor = new Color(parsedR, parsedG, parsedB, parsedA);
+      if (!Color.Equals(newColor, vec))
+        changed = true;
+      return newColor;
     }
   }
+
+ 
 }

@@ -16,7 +16,11 @@ namespace Waterfall
     public string textureName;
     Material m;
 
-    public EffectUVScrollModifier() { }
+    public EffectUVScrollModifier()
+    {
+      scrollCurveX = new FloatCurve();
+      scrollCurveY = new FloatCurve();
+    }
     public EffectUVScrollModifier(ConfigNode node) { Load(node); }
 
     public override void Load(ConfigNode node)

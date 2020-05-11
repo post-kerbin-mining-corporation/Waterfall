@@ -7,28 +7,47 @@ namespace Waterfall
 {
 
   /// <summary>
-  /// A generic controller
+  /// A generic effect controller
   /// </summary>
   public class WaterfallController
   {
+    // 
     public string name = "unnamedController";
     protected bool overridden = false;
     protected float overrideValue = 0.0f;
     protected ModuleWaterfallFX parentModule;
+
+    /// <summary>
+    /// Get the value of the controller. 
+    /// </summary>
+    /// <returns></returns>
     public virtual float Get() {
       if (overridden)
         return overrideValue;
       else
         return 0f;
     }
+
+    /// <summary>
+    ///  Initialzies the controller
+    /// </summary>
+    /// <param name="host"></param>
     public virtual void Initialize(ModuleWaterfallFX host) {
       parentModule = host;
     }
 
+    /// <summary>
+    /// Sets whether this controller is overridden, likely controlled by the UI
+    /// </summary>
+    /// <param name="mode"></param>
     public virtual void SetOverride(bool mode)
     {
       overridden = mode;
     }
+    /// <summary>
+    /// Sets the override value, not controlled by the game, likely an editor UI
+    /// </summary>
+    /// <param name="value"></param>
     public virtual void SetOverrideValue(float value)
     {
       overrideValue = value;
@@ -36,7 +55,7 @@ namespace Waterfall
   }
 
   /// <summary>
-  /// A controller that pulls from a throttle number
+  /// A controller that pulls from throttle settings
   /// </summary>
   [System.Serializable]
   public class ThrottleController : WaterfallController
@@ -69,6 +88,7 @@ namespace Waterfall
   public class AtmosphereDensityController : WaterfallController
   {
     public float atmosphereDepth = 1;
+
     public AtmosphereDensityController(ConfigNode node)
     {
       name = "atmosphereDensity";

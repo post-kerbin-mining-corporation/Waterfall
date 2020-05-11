@@ -20,11 +20,15 @@ namespace Waterfall
     public FloatCurve bCurve;
     public FloatCurve aCurve;
 
-
-
     Material m;
 
-    public EffectColorModifier() { }
+    public EffectColorModifier()
+    {
+      rCurve = new FloatCurve();
+      gCurve = new FloatCurve();
+      bCurve = new FloatCurve();
+      aCurve = new FloatCurve();
+    }
     public EffectColorModifier(ConfigNode node) { Load(node); }
 
     public override void Load(ConfigNode node)

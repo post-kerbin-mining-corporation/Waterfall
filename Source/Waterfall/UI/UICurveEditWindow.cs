@@ -35,7 +35,7 @@ namespace Waterfall.UI
     /// </summary>
     protected override void InitUI()
     {
-      windowTitle = "CurveEditor";
+      windowTitle = "Curve Editor";
       base.InitUI();
     }
 

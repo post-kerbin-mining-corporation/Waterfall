@@ -16,7 +16,12 @@ namespace Waterfall
     public FloatCurve zCurve;
 
     Quaternion baseRotation;
-    public EffectRotationModifier() { }
+    public EffectRotationModifier()
+    {
+      xCurve = new FloatCurve();
+      yCurve = new FloatCurve();
+      zCurve = new FloatCurve();
+    }
     public EffectRotationModifier(ConfigNode node) { Load(node); }
 
     public override void Load(ConfigNode node)

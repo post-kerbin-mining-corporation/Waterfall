@@ -29,7 +29,20 @@ namespace Waterfall
     {
       ["_MainColor"] = WaterfallMaterialPropertyType.Color,
       ["_EmissiveColor"] = WaterfallMaterialPropertyType.Color,
-      ["_TintColor"] = WaterfallMaterialPropertyType.Color
+      ["_TintColor"] = WaterfallMaterialPropertyType.Color,
+      ["_StartTint"] = WaterfallMaterialPropertyType.Color,
+      ["_EndTint"] = WaterfallMaterialPropertyType.Color,
+      ["_TintFalloff"] = WaterfallMaterialPropertyType.Float,
+      ["_Falloff"] = WaterfallMaterialPropertyType.Float,
+      ["_Fresnel"] = WaterfallMaterialPropertyType.Float,
+      ["_Noise"] = WaterfallMaterialPropertyType.Float,
+      ["_Brightness"] = WaterfallMaterialPropertyType.Float,
+      ["_SpeedX"] = WaterfallMaterialPropertyType.Float,
+      ["_SpeedY"] = WaterfallMaterialPropertyType.Float,
+      ["_TileX"] = WaterfallMaterialPropertyType.Float,
+      ["_TileY"] = WaterfallMaterialPropertyType.Float,
+      ["_MainTex"] = WaterfallMaterialPropertyType.Texture
+
     };
 
 

@@ -18,7 +18,10 @@ namespace Waterfall
 
     Material m;
 
-    public EffectFloatModifier() { }
+    public EffectFloatModifier()
+    {
+      curve = new FloatCurve();
+    }
     public EffectFloatModifier(ConfigNode node) { Load(node); }
 
     public override void Load(ConfigNode node)

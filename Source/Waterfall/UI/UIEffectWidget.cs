@@ -58,7 +58,7 @@ namespace Waterfall.UI
       }
       if (GUILayout.Button("MATERIAL"))
       {
-        // Opens material edit window
+        parent.OpenMaterialEditWindow(fx.FXModel);
       }
       GUILayout.EndHorizontal();
       GUILayout.BeginHorizontal();
@@ -79,7 +79,7 @@ namespace Waterfall.UI
       GUILayout.FlexibleSpace();
       if (GUILayout.Button("Add New"))
       {
-        // Add new
+        parent.OpenEffectModifierAddWindow(fx);
       }
       modifierListPosition = GUILayout.BeginScrollView(modifierListPosition, GUILayout.MinHeight(150f));
       for (int i=0; i< fx.FXModifiers.Count; i++)
@@ -90,16 +90,14 @@ namespace Waterfall.UI
         if (GUILayout.Button("Edit"))
         {
           parent.OpenModifierEditWindow(fx.FXModifiers[i]);
-          // Open FX Edit window
         }
         if (GUILayout.Button("x"))
         {
-          // Delete
+          parent.OpenEffectModifierDeleteWindow(fx, fx.FXModifiers[i]);
         }
         GUILayout.EndHorizontal();
       }
       GUILayout.EndScrollView();
-      // Put model offset/rotation here
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
       

@@ -26,7 +26,7 @@ namespace Waterfall
     { get { return allFX; } }
 
     /// <summary>
-    /// Load alll CONTROLLERS and EFFECTS
+    /// Load alll CONTROLLERS, TEMPLATES and EFFECTS
     /// </summary>
     /// <param name="node"></param>
     public override void OnLoad(ConfigNode node)
@@ -89,6 +89,10 @@ namespace Waterfall
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects");
     }
 
+    /// <summary>
+    /// Dumps the entire set of EFFECTS to a confignode
+    /// </summary>
+    /// <returns></returns>
     public ConfigNode Export()
     {
       ConfigNode node = new ConfigNode();
@@ -145,6 +149,8 @@ namespace Waterfall
         }
       }
     }
+
+
     public string GetModuleTitle()
     {
       return "";
@@ -156,6 +162,11 @@ namespace Waterfall
       return "";
     }
 
+    /// <summary>
+    /// Gets the value of the requested controller by name
+    /// </summary>
+    /// <param name="controllerName"></param>
+    /// <returns></returns>
     public float GetControllerValue(string controllerName)
     {
       if (allControllers.ContainsKey(controllerName))
@@ -210,6 +221,11 @@ namespace Waterfall
         }
       }
     }
+
+    /// <summary>
+    /// Sets this module as overridden by something: its controllers will be set to override
+    /// </summary>
+    /// <param name="mode"></param>
     public void SetControllerOverride(bool mode)
     {
       foreach (KeyValuePair<string, WaterfallController> kvp in allControllers)
@@ -217,6 +233,11 @@ namespace Waterfall
         allControllers[kvp.Key].SetOverride(mode);
       }
     }
+
+    /// <summary>
+    /// Sets this module's as overridden by something: its controllers will be set to override
+    /// </summary>
+    /// <param name="mode"></param>
     public void SetControllerOverrideValue(string name, float value)
     {
       allControllers[name].SetOverrideValue(value);

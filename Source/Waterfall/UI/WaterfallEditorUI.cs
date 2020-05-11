@@ -22,6 +22,7 @@ namespace Waterfall.UI
 
     #region GUI Widgets
     UICurveEditWindow curveEditWindow;
+    UIModifierPopupWindow modifierPopupWindow;
     #endregion
 
     #region Vessel Data
@@ -67,6 +68,14 @@ namespace Waterfall.UI
       if (curveEditWindow != null)
       {
         curveEditWindow.Draw();
+      }
+      if (materialEditWindow != null)
+      {
+        materialEditWindow.Draw();
+      }
+      if (modifierPopupWindow != null)
+      {
+        modifierPopupWindow.Draw();
       }
     }
 
@@ -201,11 +210,7 @@ namespace Waterfall.UI
       selectedModule = fxMod;
       RefreshEffectList();
     }
-    public void OpenModifierEditWindow()
-    {
-
-    }
-
+   
     public void RefreshEffectList()
     {
       effectUIWidgets.Clear();
@@ -320,6 +325,7 @@ namespace Waterfall.UI
     }
 
     UIModifierWindow currentModWinForCurve;
+    UIMaterialEditWindow materialEditWindow;
     string currentCurveTag;
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
@@ -337,6 +343,41 @@ namespace Waterfall.UI
       }
       return curveEditWindow;
     }
+
+    public UIMaterialEditWindow OpenMaterialEditWindow(WaterfallModel mdl)
+    {
+      
+      if (materialEditWindow != null)
+      {
+        materialEditWindow.ChangeMaterial(mdl);
+      }
+      else
+      {
+        materialEditWindow = new UIMaterialEditWindow(mdl, true);
+      }
+      return materialEditWindow;
+    }
+
+    public void OpenEffectModifierAddWindow(WaterfallEffect fx)
+    {
+      if (modifierPopupWindow == null)
+      {
+        modifierPopupWindow = new UIModifierPopupWindow(true);
+
+      }
+      modifierPopupWindow.SetAddMode(fx);
+    }
+    public void OpenEffectModifierDeleteWindow(WaterfallEffect fx, EffectModifier toDelete)
+    {
+      if (modifierPopupWindow == null)
+      {
+        modifierPopupWindow = new UIModifierPopupWindow(true);
+        
+      }
+      modifierPopupWindow.SetDeleteMode(fx, toDelete);
+    }
+
+
 
     public void UpdateCurve(FloatCurve curve)
     {
