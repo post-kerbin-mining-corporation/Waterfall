@@ -49,8 +49,8 @@ namespace Waterfall
       ConfigNode node = new ConfigNode();
       node.name = WaterfallConstants.ModelNodeName;
       node.AddValue("path", path);
-      node.AddValue("positionOffset", positionOffsetString);
-      node.AddValue("rotationOffset", rotationOffestString);
+      node.AddValue("positionOffset", modelPositionOffset);
+      node.AddValue("rotationOffset", modelRotationOffset);
       foreach (WaterfallMaterial m in materials)
       {
         node.AddNode(m.Save());

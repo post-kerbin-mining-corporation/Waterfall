@@ -41,6 +41,7 @@ namespace Waterfall.UI
       modifier = mod;
       effect = fx;
       windowMode = ModifierPopupMode.Delete;
+      WindowPosition = new Rect(Screen.width / 2-100, Screen.height / 2f-50, 200, 100);
     }
 
     public void SetAddMode(WaterfallEffect fx)
@@ -147,6 +148,7 @@ namespace Waterfall.UI
       if (modifierTypes[modifierFlag] == "Position")
       {
         EffectPositionModifier newMod = new EffectPositionModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
@@ -154,6 +156,7 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Rotation")
       {
         EffectRotationModifier newMod = new EffectRotationModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
@@ -161,6 +164,7 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Scale")
       {
         EffectScaleModifier newMod = new EffectScaleModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
@@ -168,6 +172,7 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "UV Scroll")
       {
         EffectUVScrollModifier newMod = new EffectUVScrollModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
@@ -175,6 +180,7 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Material Color")
       {
         EffectColorModifier newMod = new EffectColorModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
@@ -182,6 +188,7 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Material Float")
       {
         EffectFloatModifier newMod = new EffectFloatModifier();
+        newMod.fxName = newModifierName;
         newMod.transformName = transformName;
         newMod.controllerName = controller;
         return newMod;
