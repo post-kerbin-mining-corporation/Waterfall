@@ -50,23 +50,35 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      baseRotation = xform.localRotation;
+      baseRotation = xforms[0].localRotation;
     }
     protected override void ApplyReplace(float strength)
     {
-      xform.localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      }
     }
     protected override void ApplyAdd(float strength)
     {
-      xform.localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      }
     }
     protected override void ApplySubtract(float strength)
     {
-      xform.localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      }
     }
     protected override void ApplyMultiply(float strength)
     {
-      xform.localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength)));
+      }
     }
     
   }

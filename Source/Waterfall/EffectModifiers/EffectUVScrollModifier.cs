@@ -14,7 +14,7 @@ namespace Waterfall
     public FloatCurve scrollCurveX;
     public FloatCurve scrollCurveY;
     public string textureName;
-    Material m;
+    Material[] m;
 
     public EffectUVScrollModifier()
     {
@@ -49,18 +49,25 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      m = xform.GetComponent<Renderer>().material;
+      m = new Material[xforms.Count];
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        m[i] = xforms[i].GetComponent<Renderer>().material;
+      }
     }
     public override void Apply(float strength)
     {
-      Vector2 original = m.GetTextureOffset(textureName);
-      float x = original.x + scrollCurveX.Evaluate(strength) * Time.deltaTime;
-      if (x >= 1f || x <= -1f)
-        x = 0f;
-      float y = original.y + scrollCurveY.Evaluate(strength) * Time.deltaTime;
-      if (y >= 1f || y <= -1f)
-        y = 0f;
-      m.SetTextureOffset(textureName, new Vector2(x, y));
+      for (int i = 0; i < m.Length; i++)
+      {
+        Vector2 original = m[i].GetTextureOffset(textureName);
+        float x = original.x + scrollCurveX.Evaluate(strength) * Time.deltaTime;
+        if (x >= 1f || x <= -1f)
+          x = 0f;
+        float y = original.y + scrollCurveY.Evaluate(strength) * Time.deltaTime;
+        if (y >= 1f || y <= -1f)
+          y = 0f;
+        m[i].SetTextureOffset(textureName, new Vector2(x, y));
+      }
     }
   }
 

@@ -109,6 +109,7 @@ namespace Waterfall.UI
       {
         savedID = materialID;
         matl = model.materials[savedID];
+        InitializeShaderProperties(model.materials[savedID].materials[0]);
       }
       GUILayout.EndHorizontal();
     }

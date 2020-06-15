@@ -50,23 +50,35 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      basePosition = xform.localPosition;
+      basePosition = xforms[0].localPosition;
     }
     protected override void ApplyReplace(float strength)
     {
-      xform.localPosition = new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localPosition = new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplyAdd(float strength)
     {
-      xform.localPosition = basePosition + new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localPosition = basePosition + new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplySubtract(float strength)
     {
-      xform.localPosition = basePosition - new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localPosition = basePosition - new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplyMultiply(float strength)
     {
-      xform.localPosition = new Vector3(basePosition.x* xCurve.Evaluate(strength), basePosition.y* yCurve.Evaluate(strength), basePosition.z* zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localPosition = new Vector3(basePosition.x * xCurve.Evaluate(strength), basePosition.y * yCurve.Evaluate(strength), basePosition.z * zCurve.Evaluate(strength));
+      }
     }
     
   }

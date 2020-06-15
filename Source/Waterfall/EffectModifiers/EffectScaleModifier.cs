@@ -50,23 +50,35 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      baseScale = xform.localScale;
+      baseScale = xforms[0].localScale;
     }
     protected override void ApplyReplace(float strength)
     {
-      xform.localScale = new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localScale = new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplyAdd(float strength)
     {
-      xform.localScale = baseScale + new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localScale = baseScale + new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplySubtract(float strength)
     {
-      xform.localScale = baseScale - new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localScale = baseScale - new Vector3(xCurve.Evaluate(strength), yCurve.Evaluate(strength), zCurve.Evaluate(strength));
+      }
     }
     protected override void ApplyMultiply(float strength)
     {
-      xform.localScale = new Vector3(baseScale.x* xCurve.Evaluate(strength), baseScale.y* yCurve.Evaluate(strength), baseScale.z* zCurve.Evaluate(strength));
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        xforms[i].localScale = new Vector3(baseScale.x * xCurve.Evaluate(strength), baseScale.y * yCurve.Evaluate(strength), baseScale.z * zCurve.Evaluate(strength));
+      }
     }
     
   }

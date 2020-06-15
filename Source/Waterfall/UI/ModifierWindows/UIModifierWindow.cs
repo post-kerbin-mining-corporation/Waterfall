@@ -44,6 +44,7 @@ namespace Waterfall.UI
           controllerFlag = i;
       }
       combineModes = Enum.GetNames(typeof(EffectModifierMode));
+      combineModeFlag = (int)mod.effectMode;
       modifier = mod;
     }
 
@@ -118,6 +119,7 @@ namespace Waterfall.UI
       GUILayout.BeginHorizontal();
       GUILayout.Label("Combine Mode");
       combineModeFlag = GUILayout.SelectionGrid(combineModeFlag, combineModes, combineModes.Length, GUIResources.GetStyle("radio_text_button"));
+      modifier.effectMode = (EffectModifierMode)combineModeFlag;
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();

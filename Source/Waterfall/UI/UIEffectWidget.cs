@@ -23,8 +23,8 @@ namespace Waterfall.UI
     {
       parent = uiHost;
       fx = effect;
-      modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
-      modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+      modelOffsetString = new string[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
+      modelRotationString = new string[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
 
     }
     /// <summary>
@@ -87,6 +87,9 @@ namespace Waterfall.UI
         GUILayout.BeginHorizontal();
         GUILayout.Label(fx.FXModifiers[i].fxName);
         GUILayout.FlexibleSpace();
+        GUILayout.Label(fx.FXModifiers[i].controllerName);
+        GUILayout.Label(fx.FXModifiers[i].effectMode.ToString());
+        
         if (GUILayout.Button("Edit"))
         {
           parent.OpenModifierEditWindow(fx.FXModifiers[i]);

@@ -17,14 +17,17 @@ namespace Waterfall
     public List<WaterfallMaterial> materials;
 
 
-    public Transform modelTransform;
+    public List<Transform> modelTransforms;
     public Vector3 modelPositionOffset = Vector3.zero;
     public Vector3 modelRotationOffset = Vector3.zero;
 
-    public WaterfallModel() { }
+    public WaterfallModel()
+    {
+      modelTransforms = new List<Transform>();
+    }
 
 
-    public WaterfallModel(ConfigNode node)
+    public WaterfallModel(ConfigNode node):this()
     {
       Load(node);
     }
@@ -32,12 +35,11 @@ namespace Waterfall
     {
       if (!node.TryGetValue("path", ref path))
         Utils.LogError(String.Format("[WaterfallModel]: Unabled to find required path string in MODEL node"));
-      node.TryGetValue("positionOffset", ref positionOffsetString);
-      node.TryGetValue("rotationOffset", ref rotationOffestString);
+      node.TryGetValue("positionOffset", ref modelPositionOffset);
+      node.TryGetValue("rotationOffset", ref modelRotationOffset);
 
       materials = new List<WaterfallMaterial>();
-      ConfigNode materialNode = new ConfigNode();
-      if (node.TryGetNode(WaterfallConstants.MaterialNodeName, ref materialNode))
+      foreach (ConfigNode materialNode in node.GetNodes(WaterfallConstants.MaterialNodeName))
       {
         materials.Add(new WaterfallMaterial(materialNode));
       }
@@ -64,15 +66,20 @@ namespace Waterfall
         Utils.LogError(String.Format("[WaterfallModel]: Unabled to find model {0} in GameDatabase", path));
       GameObject inst = GameObject.Instantiate(GameDatabase.Instance.GetModelPrefab(path), parent.position, parent.rotation);
       inst.SetActive(true);
-      modelTransform = inst.GetComponent<Transform>();
+
+      
+      Transform modelTransform = inst.GetComponent<Transform>();
       modelTransform.localScale = Vector3.one;
       modelTransform.SetParent(parent, true);
       modelTransform.localPosition = modelPositionOffset;
+
       if (modelRotationOffset == Vector3.zero)
         modelTransform.localRotation = Quaternion.identity;
       else 
         modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
       Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} ", modelTransform.position));
+
+      modelTransforms.Add(modelTransform);
 
       foreach (WaterfallMaterial m in materials)
       {
@@ -89,12 +96,15 @@ namespace Waterfall
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
 
-      modelTransform.localPosition = modelPositionOffset;
-      if (modelRotationOffset == Vector3.zero)
-        modelTransform.localRotation = Quaternion.identity;
-      else
-        modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
+      foreach (Transform modelTransform in modelTransforms)
+      {
 
+        modelTransform.localPosition = modelPositionOffset;
+        if (modelRotationOffset == Vector3.zero)
+          modelTransform.localRotation = Quaternion.identity;
+        else
+          modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
+      }
     
     }
   }

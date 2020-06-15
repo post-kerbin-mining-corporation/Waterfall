@@ -26,15 +26,18 @@ namespace Waterfall
     public string transformName = "";
     public string modifierTypeName = "";
     // The Transform that holds the thing the effect should modify
-    protected Transform xform;
+    protected List<Transform> xforms;
     protected WaterfallEffect parentEffect;
 
     // The combination mode of this effect with the base
     public EffectModifierMode effectMode = EffectModifierMode.REPLACE;
 
 
-    public EffectModifier() { }
-    public EffectModifier(ConfigNode node) { Load(node); }
+    public EffectModifier()
+    {
+      xforms = new List<Transform>();
+    }
+    public EffectModifier(ConfigNode node) : this() { Load(node); }
     public virtual void Load(ConfigNode node)
     {
       node.TryGetValue("name", ref fxName);
@@ -49,11 +52,19 @@ namespace Waterfall
     public virtual void Init(WaterfallEffect parentEffect)
     {
       Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName));
-      Transform root = parentEffect.GetModelTransform();
-      xform = root.FindDeepChild(transformName);
-      if (xform == null)
+      List<Transform> roots = parentEffect.GetModelTransforms();
+      
+      foreach (Transform t in roots)
       {
-        Utils.LogError(String.Format("[EffectModifier]: Unabled to find transform {0} on modifier {1}", transformName, fxName));
+        Transform t1 = t.FindDeepChild(transformName);
+        if (t1 == null)
+        {
+          Utils.LogError(String.Format("[EffectModifier]: Unabled to find transform {0} on modifier {1}", transformName, fxName));
+        }
+        else
+        {
+          xforms.Add(t1);
+        }
       }
     }
     public virtual ConfigNode Save()

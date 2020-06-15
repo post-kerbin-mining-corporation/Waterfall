@@ -16,7 +16,7 @@ namespace Waterfall
 
     public FloatCurve curve;
 
-    Material m;
+    Material[] m;
 
     public EffectFloatModifier()
     {
@@ -47,30 +47,47 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      m = xform.GetComponent<Renderer>().material;
+      m = new Material[xforms.Count];
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        m[i] = xforms[i].GetComponent<Renderer>().material;
+      }
     }
     protected override void ApplyReplace(float strength)
     {
       float toSet = curve.Evaluate(strength);
-      m.SetFloat(floatName, toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        m[i].SetFloat(floatName, toSet);
+      }
     }
     protected override void ApplyAdd(float strength)
     {
-      float original = m.GetFloat(floatName);
-      float toSet = curve.Evaluate(strength);
-      m.SetFloat(floatName, original + toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        float original = m[i].GetFloat(floatName);
+        float toSet = curve.Evaluate(strength);
+        m[i].SetFloat(floatName, original - toSet);
+      }
     }
     protected override void ApplySubtract(float strength)
     {
-      float original = m.GetFloat(floatName);
-      float toSet = curve.Evaluate(strength);
-      m.SetFloat(floatName, original - toSet);
+    
+      for (int i = 0; i < m.Length; i++)
+      {
+        float original = m[i].GetFloat(floatName);
+        float toSet = curve.Evaluate(strength);
+        m[i].SetFloat(floatName, original - toSet);
+      }
     }
     protected override void ApplyMultiply(float strength)
     {
-      float original = m.GetFloat(floatName);
-      float toSet = curve.Evaluate(strength);
-      m.SetFloat(floatName, original * toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        float original = m[i].GetFloat(floatName);
+        float toSet = curve.Evaluate(strength);
+        m[i].SetFloat(floatName, original * toSet);
+      }
     }
 
     public void ApplyFloatName(string newFloatName)

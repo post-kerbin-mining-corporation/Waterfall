@@ -20,7 +20,7 @@ namespace Waterfall
     public FloatCurve bCurve;
     public FloatCurve aCurve;
 
-    Material m;
+    Material[] m;
 
     public EffectColorModifier()
     {
@@ -63,30 +63,47 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      m = xform.GetComponent<Renderer>().material;
+      m = new Material[xforms.Count];
+      for (int i = 0; i < xforms.Count; i++)
+      {
+        m[i] = xforms[i].GetComponent<Renderer>().material;
+      }
     }
     protected override void ApplyReplace(float strength)
     {
       Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
-      m.SetColor(colorName, toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        m[i].SetColor(colorName, toSet);
+      }
     }
     protected override void ApplyAdd(float strength)
     {
-      Color original = m.GetColor(colorName);
-      Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
-      m.SetColor(colorName, original + toSet);
+      
+      for (int i = 0; i < m.Length; i++)
+      {
+        Color original = m[i].GetColor(colorName);
+        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        m[i].SetColor(colorName, original + toSet);
+      }
     }
     protected override void ApplySubtract(float strength)
     {
-      Color original = m.GetColor(colorName);
-      Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
-      m.SetColor(colorName, original - toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        Color original = m[i].GetColor(colorName);
+        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        m[i].SetColor(colorName, original - toSet);
+      }
     }
     protected override void ApplyMultiply(float strength)
     {
-      Color original = m.GetColor(colorName);
-      Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
-      m.SetColor(colorName, original * toSet);
+      for (int i = 0; i < m.Length; i++)
+      {
+        Color original = m[i].GetColor(colorName);
+        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        m[i].SetColor(colorName, original * toSet);
+      }
     }
 
     public void ApplyMaterialName(string newColorName)

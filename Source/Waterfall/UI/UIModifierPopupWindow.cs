@@ -31,7 +31,7 @@ namespace Waterfall.UI
 
     public UIModifierPopupWindow( bool show) : base(show)
     {
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 300);
+      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 400);
 
     }
 
@@ -49,7 +49,7 @@ namespace Waterfall.UI
       effect = fx;
       windowMode = ModifierPopupMode.Add;
 
-      Transform[] xFormOptions = fx.GetModelTransform().GetComponentsInChildren<Transform>();
+      Transform[] xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>();
       transformOptions = new string[xFormOptions.Length];
       for (int i=0;i < xFormOptions.Length; i++)
       {
@@ -124,7 +124,7 @@ namespace Waterfall.UI
       GUILayout.Label("Modifier type");
       modifierFlag = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length,4), GUIResources.GetStyle("radio_text_button"));
       GUILayout.Label("Target transform name");
-      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length,2), GUIResources.GetStyle("radio_text_button"));
+      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length,3), GUIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
       GUILayout.Label("Controller name");
       controller = GUILayout.TextArea(controller);
