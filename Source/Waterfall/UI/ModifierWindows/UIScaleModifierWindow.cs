@@ -33,7 +33,7 @@ namespace Waterfall.UI
     {
       
       base.InitUI();
-      windowTitle = "Scale Modifier Editor";
+      windowTitle = "Modifier Editor - Transform Scale";
     }
 
 
@@ -145,6 +145,11 @@ namespace Waterfall.UI
           break;
       }
       UpdateModifierPanel();
+    }
+
+    protected override void UpdateModifierPanel()
+    {
+      GenerateCurveThumbs(scaleMod);
     }
     Texture2D miniXCurve;
     Texture2D miniYCurve;

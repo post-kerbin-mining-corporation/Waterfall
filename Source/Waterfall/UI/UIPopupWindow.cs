@@ -75,7 +75,7 @@ namespace Waterfall.UI
       if (showWindow)
       {
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
-        windowPos = GUI.Window(windowID, windowPos, DrawWindow, new GUIContent(), GUIResources.GetStyle("window_main"));
+        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), GUIResources.GetStyle("window_main"),GUILayout.ExpandHeight(true));
       }
     }
 

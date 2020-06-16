@@ -26,6 +26,7 @@ namespace Waterfall
 
     protected ModuleWaterfallFX parentModule;
     protected ConfigNode savedNode;
+    protected bool effectVisible = true;
 
     public List<EffectModifier> FXModifiers
     {
@@ -201,6 +202,14 @@ namespace Waterfall
       mod.Init(this);
       fxModifiers.Add(mod);
 
+    }
+    public void SetEnabled(bool state)
+    {
+      if (effectVisible != state)
+      {
+        effectVisible = state;
+        model.SetEnabled(state);
+      }
     }
   }
 

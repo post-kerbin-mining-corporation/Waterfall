@@ -18,6 +18,10 @@ namespace Waterfall.UI
     Vector2 effectsScrollListPosition = Vector2.zero;
     Vector2 partsScrollListPosition = Vector2.zero;
 
+    bool useControllers = false;
+
+    float densityControllerValue = 0f;
+    float throttleControllerValue = 0f;
     #endregion
 
     #region GUI Widgets
@@ -129,10 +133,6 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
     }
 
-    bool useControllers = false;
-
-    float densityControllerValue = 0f;
-    float throttleControllerValue = 0f;
 
     protected void DrawControllers()
     {
@@ -140,7 +140,7 @@ namespace Waterfall.UI
 
       useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
       GUILayout.BeginVertical();
-      GUILayout.Label("CONTROLLERS");
+      GUILayout.Label("<b>CONTROLLERS</b>");
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
@@ -176,8 +176,8 @@ namespace Waterfall.UI
 
     protected void DrawPartsList()
     {
-      GUILayout.BeginVertical();
-      GUILayout.Label("FX MODULES");
+      GUILayout.BeginVertical(GUILayout.MaxWidth(120f));
+      GUILayout.Label("<b>FX MODULES</b>");
       partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.Width(200f), GUILayout.MinHeight(100f));
       for (int i=0; i< effectsModules.Count; i++)
       {
@@ -194,7 +194,7 @@ namespace Waterfall.UI
     protected void DrawEffectsList()
     {
       GUILayout.BeginVertical();
-      GUILayout.Label("EFFECTS");
+      GUILayout.Label("<b>EFFECTS</b>");
       effectsScrollListPosition = GUILayout.BeginScrollView(effectsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.MinHeight(200f));
 
       for (int i = 0; i < effectUIWidgets.Count; i++)
@@ -241,19 +241,19 @@ namespace Waterfall.UI
 
       }
     }
-
     protected List<UIModifierWindow> editWindows = new List<UIModifierWindow>();
 
     public void OpenModifierEditWindow(EffectModifier fxMod)
     {
-      foreach (UIModifierWindow editWin in editWindows)
+      foreach (UIModifierWindow editWin in editWindows.ToList())
       {
-        if (editWin.modifier == fxMod)
-        {
-          editWin.SetWindowState(true);
-          return;
+        editWindows.Remove(editWin);
+        //if (editWin.modifier == fxMod)
+        //{
+        //  editWin.SetWindowState(true);
+        //  return;
           
-        }
+        //}
       }
       try
       {

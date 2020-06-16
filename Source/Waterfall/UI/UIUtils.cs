@@ -9,6 +9,13 @@ namespace Waterfall.UI
 {
   public static class UIUtils
   {
+    public static FloatCurve CurveCopyBuffer;
+
+    public static void CopyFloatCurve(FloatCurve curve)
+    {
+      CurveCopyBuffer = curve;
+    }
+
     public static void IconDataField(Rect uiRect, AtlasIcon icon, string value, GUIStyle dataStyle)
     {
       Color color = GUI.color;
@@ -42,13 +49,13 @@ namespace Waterfall.UI
       Rect xRect = new Rect(0, 0, width, uiRect.height);
       Rect yRect = new Rect(2 * width, 0, width, uiRect.height);
       Rect zRect = new Rect(4 * width, 0, width, uiRect.height);
-      Rect xFieldRect = new Rect(width-20f, 0, width*2, uiRect.height);
-      Rect yFieldRect = new Rect(3 * width - 20f, 0, width*2, uiRect.height);
-      Rect zFieldRect = new Rect(5 * width - 20f, 0, width*2, uiRect.height);
+      Rect xFieldRect = new Rect(width-22f, 0, width*1.4f, uiRect.height);
+      Rect yFieldRect = new Rect(3 * width - 22f, 0, width*1.4f, uiRect.height);
+      Rect zFieldRect = new Rect(5 * width - 22f, 0, width*1.4f, uiRect.height);
 
-      GUI.Label(xRect, "X", labelStyle);
-      GUI.Label(yRect, "Y", labelStyle);
-      GUI.Label(zRect, "Z", labelStyle);
+      GUI.Label(xRect, "<b>X</b>", labelStyle);
+      GUI.Label(yRect, "<b>Y</b>", labelStyle);
+      GUI.Label(zRect, "<b>Z</b>", labelStyle);
 
       textFields[0] = GUI.TextField(xFieldRect, textFields[0], textAreaStyle);
       textFields[1] = GUI.TextField(yFieldRect, textFields[1], textAreaStyle);
@@ -77,8 +84,8 @@ namespace Waterfall.UI
       Rect xFieldRect = new Rect(width - 5f, 0, width , uiRect.height);
       Rect yFieldRect = new Rect(3 * width - 5f, 0, width, uiRect.height);
 
-      GUI.Label(xRect, "X", labelStyle);
-      GUI.Label(yRect, "Y", labelStyle);
+      GUI.Label(xRect, "<b>X</b>", labelStyle);
+      GUI.Label(yRect, "<b>Y</b>", labelStyle);
 
       textFields[0] = GUI.TextField(xFieldRect, textFields[0], textAreaStyle);
       textFields[1] = GUI.TextField(yFieldRect, textFields[1], textAreaStyle);

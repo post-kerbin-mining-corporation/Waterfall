@@ -46,7 +46,7 @@ namespace Waterfall.UI
 
 
       InitializeShaderProperties(matl.materials[0]);
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 600, 750);
+      WindowPosition = new Rect(Screen.width / 2-300, Screen.height / 2f, 600, 100);
     }
 
     protected override void InitUI()
@@ -70,7 +70,10 @@ namespace Waterfall.UI
       }
       matl = modelToEdit.materials[materialID];
       showWindow = true;
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 678, 750);
+
+      InitializeShaderProperties(matl.materials[0]);
+
+      WindowPosition = new Rect(Screen.width / 2 - 300, Screen.height / 2f, 600, 100);
     }
 
     protected override void DrawWindow(int windowId)
@@ -115,15 +118,19 @@ namespace Waterfall.UI
     }
       protected void DrawMaterialEdit()
     {
+      float headerWidth = 120f;
       bool delta = false;
+      GUILayout.Label("<b>Textures</b>");
       foreach (KeyValuePair<string, string> kvp in textureValues.ToList())
       {
         GUILayout.BeginHorizontal();
-        GUILayout.Label(kvp.Key, GUILayout.Width(120f));
+        GUILayout.Label($"{kvp.Key}", GUILayout.Width(headerWidth));
+        GUILayout.Label("Texture Path");
         GUILayout.Label(kvp.Value);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"{kvp.Key} Scale", GUILayout.Width(70f));
+        GUILayout.Space(headerWidth);
+        GUILayout.Label($"UV Scale", GUILayout.Width(headerWidth));
         textureScaleValues[kvp.Key] = UIUtils.Vector2InputField(GUILayoutUtility.GetRect(200f, 30f), textureScaleValues[kvp.Key], textureScaleStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
         if (delta)
         {
@@ -132,7 +139,8 @@ namespace Waterfall.UI
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"{kvp.Key} Offset", GUILayout.Width(120f));
+        GUILayout.Space(headerWidth);
+        GUILayout.Label($"UV Offset", GUILayout.Width(headerWidth));
         textureOffsetValues[kvp.Key] = UIUtils.Vector2InputField(GUILayoutUtility.GetRect(200f, 30f), textureOffsetValues[kvp.Key], textureOffsetStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
         if (delta)
         {
@@ -140,12 +148,13 @@ namespace Waterfall.UI
         }
         GUILayout.EndHorizontal();
       }
+      GUILayout.Label("<b>Material Parameters</b>");
       foreach (KeyValuePair<string, Color> kvp in colorValues.ToList())
       {
         GUILayout.BeginHorizontal();
-        GUILayout.Label(kvp.Key, GUILayout.Width(120f));
+        GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
         GUILayout.Space(10);
-        Rect tRect = GUILayoutUtility.GetRect(48, 20);
+        Rect tRect = GUILayoutUtility.GetRect(20, 20);
 
         GUI.DrawTexture(tRect, colorTextures[kvp.Key]);
 
@@ -153,7 +162,7 @@ namespace Waterfall.UI
         colorValues[kvp.Key] = UIUtils.ColorInputField(GUILayoutUtility.GetRect(200f, 30f), colorValues[kvp.Key], colorStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
         if (delta)
         {
-          Utils.Log($"Changed color ");
+          Utils.Log($"Changed color");
           colorTextures[kvp.Key] = MaterialUtils.GenerateColorTexture(64, 32, colorValues[kvp.Key]);
           matl.SetColor(kvp.Key, colorValues[kvp.Key]);
         }
@@ -162,7 +171,7 @@ namespace Waterfall.UI
       foreach (KeyValuePair<string, float> kvp in floatValues.ToList())
       {
         GUILayout.BeginHorizontal();
-        GUILayout.Label(kvp.Key, GUILayout.Width(120f));
+        GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
         floatStrings[kvp.Key] = GUILayout.TextArea(floatStrings[kvp.Key]);
 
         float parsed = kvp.Value;
@@ -196,7 +205,7 @@ namespace Waterfall.UI
           {
             colorValues.Add(mProp.Key, m.GetColor(mProp.Key));
             colorStrings.Add(mProp.Key, MaterialUtils.ColorToStringArray(m.GetColor(mProp.Key)));
-            colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(64,32, m.GetColor(mProp.Key)));
+            colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(32,32, m.GetColor(mProp.Key)));
           }
           if (mProp.Value == WaterfallMaterialPropertyType.Float)
           {

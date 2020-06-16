@@ -30,7 +30,7 @@ namespace Waterfall.UI
     {
       
       base.InitUI();
-      windowTitle = "Position Modifier Editor";
+      windowTitle = "Modifier Editor - Transform Position";
     }
 
 
@@ -142,6 +142,11 @@ namespace Waterfall.UI
           break;
       }
       UpdateModifierPanel();
+    }
+
+    protected override void UpdateModifierPanel()
+    {
+      GenerateCurveThumbs(posMod);
     }
     Texture2D miniXCurve;
     Texture2D miniYCurve;

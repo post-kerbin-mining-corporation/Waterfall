@@ -107,6 +107,17 @@ namespace Waterfall
       }
     
     }
+    public void SetEnabled(bool state)
+    {
+      foreach (Transform modelTransform in modelTransforms)
+      {
+        Renderer[] renderers  = modelTransform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+          renderer.enabled = state;
+        }
+      }
+     }
   }
 
 }

@@ -43,7 +43,7 @@ namespace Waterfall.UI
     protected override void InitUI()
     {
       base.InitUI();
-      windowTitle = "Color Modifier Editor";
+      windowTitle = "Modifier Editor - Material Color";
     }
     /// <summary>
     /// Draws the modifier content

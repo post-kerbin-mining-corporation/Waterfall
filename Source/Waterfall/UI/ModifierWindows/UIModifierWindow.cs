@@ -46,6 +46,7 @@ namespace Waterfall.UI
       combineModes = Enum.GetNames(typeof(EffectModifierMode));
       combineModeFlag = (int)mod.effectMode;
       modifier = mod;
+      windowPos = new Rect(WaterfallUI.Instance.WindowPosition.xMax+5f, WaterfallUI.Instance.WindowPosition.yMin, 500f, 100f);
     }
 
     /// <summary>
@@ -76,7 +77,6 @@ namespace Waterfall.UI
       // Draw the header/tab controls
       DrawHeader();
       DrawModifierPanel();
-      GUI.DragWindow();
     }
     /// <summary>
     /// Draws the title panel (title, close button)
@@ -106,7 +106,7 @@ namespace Waterfall.UI
       GUILayout.BeginVertical();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Modifier ID");
+      GUILayout.Label("Modifier Name");
       modifier.fxName = GUILayout.TextArea(modifier.fxName);
       GUILayout.EndHorizontal();
 
@@ -159,7 +159,7 @@ namespace Waterfall.UI
 
     protected void CopyCurve(FloatCurve toCopy)
     {
-      copyBuffer = toCopy;
+      UIUtils.CopyFloatCurve(toCopy);
     }
     public virtual void UpdateCurves(FloatCurve newCurve, string tag)
     {
@@ -167,8 +167,8 @@ namespace Waterfall.UI
     }
     protected void PasteCurve(FloatCurve value, out FloatCurve target)
     {
-      if (copyBuffer != null)
-        target = copyBuffer;
+      if (UIUtils.CurveCopyBuffer != null)
+        target = UIUtils.CurveCopyBuffer;
       else
         target = value;
       UpdateModifierPanel();

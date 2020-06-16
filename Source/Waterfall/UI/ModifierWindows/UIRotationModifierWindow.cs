@@ -30,7 +30,7 @@ namespace Waterfall.UI
     {
       
       base.InitUI();
-      windowTitle = "Rotation Modifier Editor";
+      windowTitle = "Modifier Editor - Transform Rotation";
     }
 
 
@@ -146,8 +146,11 @@ namespace Waterfall.UI
     Texture2D miniXCurve;
     Texture2D miniYCurve;
     Texture2D miniZCurve;
-    
 
+    protected override void UpdateModifierPanel()
+    {
+      GenerateCurveThumbs(rotMod);
+    }
     protected void GenerateCurveThumbs(EffectRotationModifier rotMod)
     {
       miniXCurve = GraphUtils.GenerateCurveTexture(texWidth, texHeight, rotMod.xCurve, Color.red);

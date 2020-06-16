@@ -56,6 +56,7 @@ namespace Waterfall.UI
       {
         transformOptions[i] = xFormOptions[i].name;
       }
+      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 400);
     }
 
     protected override void InitUI()

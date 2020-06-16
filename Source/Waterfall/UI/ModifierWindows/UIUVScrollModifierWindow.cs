@@ -33,7 +33,7 @@ namespace Waterfall.UI
     {
 
       base.InitUI();
-      windowTitle = "UV Scroll Modifier Editor";
+      windowTitle = "Modifier Editor - UV Scroll";
     }
 
 
