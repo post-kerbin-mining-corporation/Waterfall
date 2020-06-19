@@ -71,7 +71,10 @@ namespace Waterfall
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-      engineController = host.GetComponent<ModuleEngines>();
+      if (host.engineID != "")
+        engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == host.engineID);
+      else
+        engineController = host.GetComponent<ModuleEngines>();
     }
     public override float Get()
     {
