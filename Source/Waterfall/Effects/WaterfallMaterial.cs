@@ -130,6 +130,17 @@ namespace Waterfall
         newProp.propertyValue = value;
         matProperties.Add(newProp);
       }
+      else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialFloatProperty t = (WaterfallMaterialFloatProperty)p;
+            t.propertyValue = value;
+          }
+        }
+      }
       foreach (Material mat in materials)
       {
         mat.SetFloat(propertyName, value);
@@ -156,6 +167,16 @@ namespace Waterfall
         newProp.textureOffset = materials[0].GetTextureOffset(propertyName);
         newProp.textureScale = value;
         matProperties.Add(newProp);
+      } else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialTextureProperty t = (WaterfallMaterialTextureProperty)p;
+            t.textureScale = value;
+          }
+        }
       }
       foreach (Material mat in materials)
       {
@@ -183,6 +204,16 @@ namespace Waterfall
         newProp.textureScale = materials[0].GetTextureScale(propertyName);
         newProp.textureOffset = value;
         matProperties.Add(newProp);
+      } else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialTextureProperty t = (WaterfallMaterialTextureProperty)p;
+            t.textureOffset = value;
+          }
+        }
       }
       foreach (Material mat in materials)
       {
@@ -209,6 +240,16 @@ namespace Waterfall
         newProp.propertyName = propertyName;
         newProp.propertyValue = value;
         matProperties.Add(newProp);
+      } else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialColorProperty t = (WaterfallMaterialColorProperty)p;
+            t.propertyValue = value;
+          }
+        }
       }
       foreach (Material mat in materials)
       {

@@ -172,6 +172,11 @@ namespace Waterfall.UI
         Utils.Log(selectedModule.Export().ToString());
         
       }
+      if (GUILayout.Button("Copy selected to clipboard"))
+      {
+        GUIUtility.systemCopyBuffer = selectedModule.Export().ToString();
+
+      }
     }
 
     protected void DrawPartsList()
