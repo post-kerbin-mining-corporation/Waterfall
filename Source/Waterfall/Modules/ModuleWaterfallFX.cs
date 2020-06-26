@@ -56,6 +56,11 @@ namespace Waterfall
           AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
           allControllers.Add(aCtrl.name, aCtrl);
         }
+        if (ctrlType == "custom")
+        {
+          CustomController aCtrl = new CustomController(controllerDataNode);
+          allControllers.Add(aCtrl.name, aCtrl);
+        }
       }
 
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading effects on moduleID {0}", moduleID));
@@ -242,6 +247,13 @@ namespace Waterfall
     {
       allControllers[name].SetOverrideValue(value);
     }
-
+    /// <summary>
+    /// Sets this controller value
+    /// </summary>
+    /// <param name="mode"></param>
+    public void SetControllerValue(string name, float value)
+    {
+      allControllers[name].Set(value);
+    }
   }
 }

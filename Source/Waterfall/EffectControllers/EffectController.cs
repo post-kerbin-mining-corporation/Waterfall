@@ -15,6 +15,7 @@ namespace Waterfall
     public string name = "unnamedController";
     protected bool overridden = false;
     protected float overrideValue = 0.0f;
+    protected float value = 0.0f;
     protected ModuleWaterfallFX parentModule;
 
     /// <summary>
@@ -34,6 +35,14 @@ namespace Waterfall
     /// <param name="host"></param>
     public virtual void Initialize(ModuleWaterfallFX host) {
       parentModule = host;
+    }
+    /// <summary>
+    /// Sets the value of the controller
+    /// </summary>
+    /// <param name="mode"></param>
+    public virtual void Set(float newValue)
+    {
+      value = newValue;
     }
 
     /// <summary>
@@ -61,7 +70,7 @@ namespace Waterfall
   public class ThrottleController : WaterfallController
   {
     public float currentThrottle = 1;
-    ModuleEngines engineController;
+    ModuleEnginesFX engineController;
 
     public ThrottleController(ConfigNode node)
     {
@@ -72,12 +81,13 @@ namespace Waterfall
     {
       base.Initialize(host);
       if (host.engineID != "")
-        engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == host.engineID);
+        engineController = host.GetComponents<ModuleEnginesFX>().ToList().Find(x => x.engineID == host.engineID);
       else
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.GetComponent<ModuleEnginesFX>();
     }
     public override float Get()
     {
+
       if (overridden)
         return overrideValue;
       return engineController.requestedThrottle;
@@ -107,6 +117,27 @@ namespace Waterfall
       if (overridden)
         return overrideValue;
       return (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude);
+    }
+  }
+
+  [System.Serializable]
+  public class CustomController : WaterfallController
+  {
+    public CustomController(ConfigNode node)
+    {
+      name = "throttle";
+      node.TryGetValue("name", ref name);
+    }
+    public override void Initialize(ModuleWaterfallFX host)
+    {
+      base.Initialize(host);
+    }
+    public override float Get()
+    {
+
+      if (overridden)
+        return overrideValue;
+      return value;
     }
   }
 }
