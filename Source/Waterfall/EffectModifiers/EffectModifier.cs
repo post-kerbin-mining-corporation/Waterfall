@@ -25,9 +25,15 @@ namespace Waterfall
     public string controllerName = "";
     public string transformName = "";
     public string modifierTypeName = "";
+
+    public bool useRandomness = false;
+    public string randomnessController = "random";
+    public float randomScale = 1f;
     // The Transform that holds the thing the effect should modify
     protected List<Transform> xforms;
     protected WaterfallEffect parentEffect;
+    protected float randomValue = 0f;
+
 
     // The combination mode of this effect with the base
     public EffectModifierMode effectMode = EffectModifierMode.REPLACE;
@@ -44,13 +50,17 @@ namespace Waterfall
       node.TryGetValue("controllerName", ref controllerName);
       node.TryGetValue("transformName", ref transformName);
       node.TryGetEnum<EffectModifierMode>("combinationType", ref effectMode, EffectModifierMode.REPLACE);
+      node.TryGetValue("randomnessScale", ref randomScale);
+      node.TryGetValue("useRandomness", ref useRandomness);
+      node.TryGetValue("randomnessController", ref randomnessController);
       Utils.Log(String.Format("[EffectModifier]: Loding modifier {0} ", fxName));
     }
     /// <summary>
     /// Initialize the effect
     /// </summary>
-    public virtual void Init(WaterfallEffect parentEffect)
+    public virtual void Init(WaterfallEffect effect)
     {
+      parentEffect = effect;
       Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName));
       List<Transform> roots = parentEffect.GetModelTransforms();
       
@@ -74,6 +84,10 @@ namespace Waterfall
       node.AddValue("controllerName", controllerName);
       node.AddValue("transformName", transformName);
       node.AddValue("combinationType", effectMode.ToString());
+      node.AddValue("useRandomness", useRandomness);
+      node.AddValue("randomnessController", randomnessController);
+      node.AddValue("randomnessScale", randomScale);
+
 
 
       return node;
@@ -84,6 +98,14 @@ namespace Waterfall
     /// <param name="strength"></param>
     public virtual void Apply(float strength)
     {
+
+      if (useRandomness)
+      {
+        randomValue = parentEffect.parentModule.GetControllerValue(randomnessController) * randomScale;
+
+        Utils.Log($"{useRandomness} {parentEffect.parentModule.GetControllerValue(randomnessController)} {randomScale} {randomValue}");
+      }
+
       switch (effectMode)
       {
         case EffectModifierMode.REPLACE:

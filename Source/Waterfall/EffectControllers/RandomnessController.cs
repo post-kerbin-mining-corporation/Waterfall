@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace Waterfall
+{
+
+  /// <summary>
+  /// A controller that generates randomness
+  /// </summary>
+  [System.Serializable]
+  public class RandomnessController : WaterfallController
+  {
+    public Vector2 range = new Vector2();
+
+
+    public RandomnessController(ConfigNode node)
+    {
+      name = "random";
+      node.TryGetValue("name", ref name);
+      node.TryGetValue("range", ref range);
+    }
+
+    public override void Initialize(ModuleWaterfallFX host)
+    {
+      base.Initialize(host);
+    }
+
+    public override float Get()
+    {
+      
+      
+      return UnityEngine.Random.Range(range.x, range.y);
+    }
+  }
+
+}

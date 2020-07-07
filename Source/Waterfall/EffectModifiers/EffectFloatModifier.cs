@@ -55,7 +55,7 @@ namespace Waterfall
     }
     protected override void ApplyReplace(float strength)
     {
-      float toSet = curve.Evaluate(strength);
+      float toSet = curve.Evaluate(strength) + randomValue;
       for (int i = 0; i < m.Length; i++)
       {
         m[i].SetFloat(floatName, toSet);
@@ -66,7 +66,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         float original = m[i].GetFloat(floatName);
-        float toSet = curve.Evaluate(strength);
+        float toSet = curve.Evaluate(strength) + randomValue;
         m[i].SetFloat(floatName, original - toSet);
       }
     }
@@ -76,7 +76,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         float original = m[i].GetFloat(floatName);
-        float toSet = curve.Evaluate(strength);
+        float toSet = curve.Evaluate(strength) + randomValue;
         m[i].SetFloat(floatName, original - toSet);
       }
     }
@@ -85,7 +85,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         float original = m[i].GetFloat(floatName);
-        float toSet = curve.Evaluate(strength);
+        float toSet = curve.Evaluate(strength) + randomValue;
         m[i].SetFloat(floatName, original * toSet);
       }
     }

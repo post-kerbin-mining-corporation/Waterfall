@@ -122,6 +122,19 @@ namespace Waterfall.UI
       modifier.effectMode = (EffectModifierMode)combineModeFlag;
       GUILayout.EndHorizontal();
 
+      GUILayout.BeginHorizontal();
+      modifier.useRandomness = GUILayout.Toggle(modifier.useRandomness, "Use Randomness");
+      
+      if (modifier.useRandomness)
+      {
+        
+        GUILayout.Label("Controller");
+        modifier.randomnessController = GUILayout.TextArea(modifier.randomnessController);
+        GUILayout.Label("Scale");
+        modifier.randomScale = float.Parse(GUILayout.TextArea(modifier.randomScale.ToString()));
+
+      }
+      GUILayout.EndHorizontal();
       GUILayout.EndVertical();
     }
 

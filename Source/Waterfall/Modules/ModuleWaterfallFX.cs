@@ -58,8 +58,13 @@ namespace Waterfall
         }
         if (ctrlType == "custom")
         {
-          CustomController aCtrl = new CustomController(controllerDataNode);
-          allControllers.Add(aCtrl.name, aCtrl);
+          CustomController cCtrl = new CustomController(controllerDataNode);
+          allControllers.Add(cCtrl.name, cCtrl);
+        }
+        if (ctrlType == "random")
+        {
+          RandomnessController rCtrl = new RandomnessController(controllerDataNode);
+          allControllers.Add(rCtrl.name, rCtrl);
         }
       }
 
@@ -98,14 +103,14 @@ namespace Waterfall
     /// Dumps the entire set of EFFECTS to a confignode
     /// </summary>
     /// <returns></returns>
-    public ConfigNode Export()
+    public String Export()
     {
-      ConfigNode node = new ConfigNode();
+      string toRet = "";
       foreach (WaterfallEffect fx in allFX)
       {
-        node.AddNode(fx.Save());
+        toRet += $"{fx.Save().ToString()}{Environment.NewLine}";
       }
-      return node;
+      return toRet;
     }
 
     public void Start()

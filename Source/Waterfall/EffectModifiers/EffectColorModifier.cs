@@ -71,7 +71,7 @@ namespace Waterfall
     }
     protected override void ApplyReplace(float strength)
     {
-      Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+      Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
       for (int i = 0; i < m.Length; i++)
       {
         m[i].SetColor(colorName, toSet);
@@ -83,7 +83,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         Color original = m[i].GetColor(colorName);
-        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
         m[i].SetColor(colorName, original + toSet);
       }
     }
@@ -92,7 +92,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         Color original = m[i].GetColor(colorName);
-        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
         m[i].SetColor(colorName, original - toSet);
       }
     }
@@ -101,7 +101,7 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         Color original = m[i].GetColor(colorName);
-        Color toSet = new Color(rCurve.Evaluate(strength), gCurve.Evaluate(strength), bCurve.Evaluate(strength), aCurve.Evaluate(strength));
+        Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
         m[i].SetColor(colorName, original * toSet);
       }
     }

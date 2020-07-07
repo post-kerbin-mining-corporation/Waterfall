@@ -24,7 +24,7 @@ namespace Waterfall
     protected Transform parentTransform;
     protected Transform effectTransform;
 
-    protected ModuleWaterfallFX parentModule;
+    public ModuleWaterfallFX parentModule;
     protected ConfigNode savedNode;
     protected bool effectVisible = true;
 

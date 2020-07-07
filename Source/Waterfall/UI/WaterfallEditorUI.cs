@@ -174,7 +174,7 @@ namespace Waterfall.UI
       }
       if (GUILayout.Button("Copy selected to clipboard"))
       {
-        GUIUtility.systemCopyBuffer = selectedModule.Export().ToString();
+        GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
 
       }
     }
