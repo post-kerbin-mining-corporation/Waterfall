@@ -12,6 +12,7 @@ namespace Waterfall.UI
   {
     Vector3 modelRotation;
     Vector3 modelOffset;
+    Vector3 modelScale = Vector3.one;
     Vector2 modifierListPosition = Vector2.zero;
     WaterfallEffect fx;
     WaterfallUI parent;
@@ -20,6 +21,7 @@ namespace Waterfall.UI
     bool enabled = true;
     string[] modelOffsetString;
     string[] modelRotationString;
+    string[] modelScaleString;
 
     public UIEffectWidget(WaterfallUI uiHost, WaterfallEffect effect) : base(uiHost)
     {
@@ -27,7 +29,7 @@ namespace Waterfall.UI
       fx = effect;
       modelOffsetString = new string[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
       modelRotationString = new string[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
-
+      modelScaleString = new string[] { effect.FXModel.modelScaleOffset.x.ToString(), effect.FXModel.modelScaleOffset.y.ToString(), effect.FXModel.modelScaleOffset.z.ToString() };
     }
     /// <summary>
     /// Do localization of UI strings
@@ -89,6 +91,9 @@ namespace Waterfall.UI
         GUILayout.Label("Rotation Offset");
         modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
 
+        GUILayout.Label("Scale Offset");
+        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
+
 
         GUILayout.EndVertical();
 
@@ -109,7 +114,6 @@ namespace Waterfall.UI
         GUILayout.Label("<b>Mode</b>", GUILayout.Width(80));
         GUILayout.Space(80);
         GUILayout.EndHorizontal();
-        //modifierListPosition = GUILayout.BeginScrollView(modifierListPosition, GUILayout.MinHeight(150f));
         for (int i = 0; i < fx.FXModifiers.Count; i++)
         {
           GUILayout.BeginHorizontal(GUI.skin.textArea);
@@ -129,7 +133,6 @@ namespace Waterfall.UI
           }
           GUILayout.EndHorizontal();
         }
-       // GUILayout.EndScrollView();
         GUILayout.EndVertical();
       }
       GUILayout.EndHorizontal();
@@ -137,9 +140,9 @@ namespace Waterfall.UI
     }
     public void Update()
     {
-      if (fx.FXModel.modelPositionOffset != modelOffset || fx.FXModel.modelRotationOffset != modelRotation)
+      if (fx.FXModel.modelPositionOffset != modelOffset || fx.FXModel.modelRotationOffset != modelRotation || fx.FXModel.modelScaleOffset != modelScale)
       {
-        fx.FXModel.ApplyOffsets(modelOffset, modelRotation);
+        fx.FXModel.ApplyOffsets(modelOffset, modelRotation, modelScale);
       }
     }
   }

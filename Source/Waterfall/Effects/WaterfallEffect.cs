@@ -208,7 +208,7 @@ namespace Waterfall
       if (effectVisible != state)
       {
         effectVisible = state;
-        model.SetEnabled(state);
+        effectTransform.gameObject.SetActive(state);
       }
     }
   }
