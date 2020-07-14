@@ -106,6 +106,7 @@
     <Compile Include="UI\UIAppToolbarWindow.cs" />
     <Compile Include="UI\UIBaseWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIColorModifierWindow.cs" />
+    <Compile Include="UI\UIColorPickerWindow.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Compile Include="UI\UICurveEditWindow.cs" />
     <Compile Include="UI\UIEffectWidget.cs" />

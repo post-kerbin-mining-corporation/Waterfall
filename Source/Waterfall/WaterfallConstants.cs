@@ -35,6 +35,8 @@ namespace Waterfall
       ["_TintFalloff"] = WaterfallMaterialPropertyType.Float,
       ["_Falloff"] = WaterfallMaterialPropertyType.Float,
       ["_Fresnel"] = WaterfallMaterialPropertyType.Float,
+      ["_FresnelInvert"] = WaterfallMaterialPropertyType.Float,
+      ["_Intensity"] = WaterfallMaterialPropertyType.Float,
       ["_Noise"] = WaterfallMaterialPropertyType.Float,
       ["_Brightness"] = WaterfallMaterialPropertyType.Float,
       ["_SpeedX"] = WaterfallMaterialPropertyType.Float,

@@ -186,7 +186,16 @@ namespace Waterfall
       return 0f;
       
     }
+    /// <summary>
+    /// Gets the list of controllers
+    /// </summary>
+    /// <param name="controllerName"></param>
+    /// <returns></returns>
+    public List<string> GetControllerNames()
+    {
+      return allControllers.Keys.ToList();
 
+    }
     /// <summary>
     /// Does initialization of everything woo
     /// </summary>

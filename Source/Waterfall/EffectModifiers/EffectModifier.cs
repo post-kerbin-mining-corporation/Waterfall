@@ -31,7 +31,7 @@ namespace Waterfall
     public float randomScale = 1f;
     // The Transform that holds the thing the effect should modify
     protected List<Transform> xforms;
-    protected WaterfallEffect parentEffect;
+    public WaterfallEffect parentEffect;
     protected float randomValue = 0f;
 
 
@@ -103,7 +103,7 @@ namespace Waterfall
       {
         randomValue = parentEffect.parentModule.GetControllerValue(randomnessController) * randomScale;
 
-        Utils.Log($"{useRandomness} {parentEffect.parentModule.GetControllerValue(randomnessController)} {randomScale} {randomValue}");
+        //Utils.Log($"{useRandomness} {parentEffect.parentModule.GetControllerValue(randomnessController)} {randomScale} {randomValue}");
       }
 
       switch (effectMode)

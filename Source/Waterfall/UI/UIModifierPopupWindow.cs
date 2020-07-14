@@ -20,11 +20,13 @@ namespace Waterfall.UI
     ModifierPopupMode windowMode;
     EffectModifier modifier;
     WaterfallEffect effect;
-    string controller = "throttle";
-    string transformName = "writeMe";
+    
     string newModifierName = "newModifier";
     string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float"};
     int modifierFlag = 0;
+
+    string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float" };
+    int controllerFlag = 0;
 
     int transformFlag = 0;
     string[] transformOptions;
@@ -49,7 +51,8 @@ namespace Waterfall.UI
       showWindow = true;
       effect = fx;
       windowMode = ModifierPopupMode.Add;
-
+      controllerTypes = fx.parentModule.GetControllerNames().ToArray();
+      
       Transform[] xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>();
       transformOptions = new string[xFormOptions.Length];
       for (int i=0;i < xFormOptions.Length; i++)
@@ -129,9 +132,8 @@ namespace Waterfall.UI
       transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length,3), GUIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
       GUILayout.Label("Controller name");
-      controller = GUILayout.TextArea(controller);
+      controllerFlag = GUILayout.SelectionGrid(controllerFlag, controllerTypes, Mathf.Min(controllerTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
-      transformName = transformOptions[transformFlag];
       if (GUILayout.Button("Add"))
       {
        
@@ -150,48 +152,48 @@ namespace Waterfall.UI
       {
         EffectPositionModifier newMod = new EffectPositionModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "Rotation")
       {
         EffectRotationModifier newMod = new EffectRotationModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "Scale")
       {
         EffectScaleModifier newMod = new EffectScaleModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "UV Scroll")
       {
         EffectUVScrollModifier newMod = new EffectUVScrollModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "Material Color")
       {
         EffectColorModifier newMod = new EffectColorModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "Material Float")
       {
         EffectFloatModifier newMod = new EffectFloatModifier();
         newMod.fxName = newModifierName;
-        newMod.transformName = transformName;
-        newMod.controllerName = controller;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
       else

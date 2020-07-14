@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Waterfall;
 
 namespace Waterfall.UI
 {
@@ -25,6 +21,7 @@ namespace Waterfall.UI
     Dictionary<string, Vector2> textureScaleValues = new Dictionary<string, Vector2>();
     Dictionary<string, Vector2> textureOffsetValues = new Dictionary<string, Vector2>();
     Dictionary<string, Texture2D> colorTextures = new Dictionary<string, Texture2D>();
+    Dictionary<string, bool> colorEdits = new Dictionary<string, bool>();
 
     Dictionary<string, string[]> colorStrings = new Dictionary<string, string[]>();
     Dictionary<string, string> floatStrings = new Dictionary<string, string>();
@@ -34,7 +31,7 @@ namespace Waterfall.UI
 
     public UIMaterialEditWindow(WaterfallModel modelToEdit, bool show) : base(show)
     {
-      model  = modelToEdit;
+      model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
 
       materialList = new string[model.materials.Count];
@@ -46,7 +43,7 @@ namespace Waterfall.UI
 
 
       InitializeShaderProperties(matl.materials[0]);
-      WindowPosition = new Rect(Screen.width / 2-300, Screen.height / 2f, 600, 100);
+      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
     }
 
     protected override void InitUI()
@@ -73,7 +70,7 @@ namespace Waterfall.UI
 
       InitializeShaderProperties(matl.materials[0]);
 
-      WindowPosition = new Rect(Screen.width / 2 - 300, Screen.height / 2f, 600, 100);
+      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
     }
 
     protected override void DrawWindow(int windowId)
@@ -89,7 +86,7 @@ namespace Waterfall.UI
     protected void DrawTitle()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
+      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f));
 
       GUILayout.FlexibleSpace();
 
@@ -107,7 +104,7 @@ namespace Waterfall.UI
     protected void DrawMaterials()
     {
       GUILayout.BeginHorizontal();
-      materialID = GUILayout.SelectionGrid(materialID, materialList, materialList.Length, GUIResources.GetStyle("radio_text_button"));
+      materialID = GUILayout.SelectionGrid(materialID, materialList, 2, GUIResources.GetStyle("radio_text_button"));
       if (materialID != savedID)
       {
         savedID = materialID;
@@ -116,7 +113,7 @@ namespace Waterfall.UI
       }
       GUILayout.EndHorizontal();
     }
-      protected void DrawMaterialEdit()
+    protected void DrawMaterialEdit()
     {
       float headerWidth = 120f;
       bool delta = false;
@@ -154,15 +151,47 @@ namespace Waterfall.UI
         GUILayout.BeginHorizontal();
         GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
         GUILayout.Space(10);
-        Rect tRect = GUILayoutUtility.GetRect(20, 20);
 
+        // Button to set that we are toggling the color picker
+        if (GUILayout.Button("", GUILayout.Width(60)))
+        {
+          colorEdits[kvp.Key] = !colorEdits[kvp.Key];
+          Utils.Log($"[CP] Edit flag state {colorEdits[kvp.Key]}");
+          // if yes, open the window
+          if (colorEdits[kvp.Key])
+          {
+            WaterfallUI.Instance.OpenColorEditWindow(colorValues[kvp.Key]);
+            Utils.Log("[CP] Open Window");
+          }
+        }
+
+        // If picker open
+        if (colorEdits[kvp.Key])
+        {
+          // Close all other pickers
+          foreach (KeyValuePair<string, bool> kvp2 in colorEdits.ToList())
+          {
+            if (kvp2.Key != kvp.Key)
+              colorEdits[kvp2.Key] = false;
+          }
+
+          Color c = WaterfallUI.Instance.GetColorFromPicker();
+          if (!c.IsEqualTo(colorValues[kvp.Key]))
+          {
+            colorValues[kvp.Key] = c;
+            delta = true;
+          }
+        }
+        Rect tRect = GUILayoutUtility.GetLastRect();
+        tRect = new Rect(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
         GUI.DrawTexture(tRect, colorTextures[kvp.Key]);
 
-        GUILayout.Space(10);
-        colorValues[kvp.Key] = UIUtils.ColorInputField(GUILayoutUtility.GetRect(200f, 30f), colorValues[kvp.Key], colorStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
+
+
+        //GUILayout.Space(10);
+        //colorValues[kvp.Key] = UIUtils.ColorInputField(GUILayoutUtility.GetRect(200f, 30f), colorValues[kvp.Key], colorStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
         if (delta)
         {
-          Utils.Log($"Changed color");
           colorTextures[kvp.Key] = MaterialUtils.GenerateColorTexture(64, 32, colorValues[kvp.Key]);
           matl.SetColor(kvp.Key, colorValues[kvp.Key]);
         }
@@ -178,7 +207,7 @@ namespace Waterfall.UI
         if (float.TryParse(floatStrings[kvp.Key], out parsed))
         {
           floatValues[kvp.Key] = parsed;
-          matl.SetFloat(kvp.Key,parsed);
+          matl.SetFloat(kvp.Key, parsed);
         }
         GUILayout.EndHorizontal();
       }
@@ -189,12 +218,13 @@ namespace Waterfall.UI
       colorValues = new Dictionary<string, Color>();
       floatValues = new Dictionary<string, float>();
       textureValues = new Dictionary<string, string>();
-       textureScaleValues = new Dictionary<string, Vector2>();
+      textureScaleValues = new Dictionary<string, Vector2>();
       textureOffsetValues = new Dictionary<string, Vector2>();
       colorStrings = new Dictionary<string, string[]>();
+      colorEdits = new Dictionary<string, bool>();
       floatStrings = new Dictionary<string, string>();
       textureOffsetStrings = new Dictionary<string, string[]>();
-     textureScaleStrings = new Dictionary<string, string[]>();
+      textureScaleStrings = new Dictionary<string, string[]>();
       colorTextures = new Dictionary<string, Texture2D>();
 
       foreach (KeyValuePair<string, WaterfallMaterialPropertyType> mProp in WaterfallConstants.ShaderPropertyMap)
@@ -204,8 +234,9 @@ namespace Waterfall.UI
           if (mProp.Value == WaterfallMaterialPropertyType.Color)
           {
             colorValues.Add(mProp.Key, m.GetColor(mProp.Key));
+            colorEdits.Add(mProp.Key, false);
             colorStrings.Add(mProp.Key, MaterialUtils.ColorToStringArray(m.GetColor(mProp.Key)));
-            colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(32,32, m.GetColor(mProp.Key)));
+            colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(32, 32, m.GetColor(mProp.Key)));
           }
           if (mProp.Value == WaterfallMaterialPropertyType.Float)
           {
@@ -217,12 +248,12 @@ namespace Waterfall.UI
             textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
             textureScaleValues.Add(mProp.Key, m.GetTextureScale(mProp.Key));
             textureOffsetValues.Add(mProp.Key, m.GetTextureOffset(mProp.Key));
-            textureOffsetStrings.Add(mProp.Key, new string[] {$"{m.GetTextureOffset(mProp.Key).x}", $"{m.GetTextureOffset(mProp.Key).y}" });
+            textureOffsetStrings.Add(mProp.Key, new string[] { $"{m.GetTextureOffset(mProp.Key).x}", $"{m.GetTextureOffset(mProp.Key).y}" });
             textureScaleStrings.Add(mProp.Key, new string[] { $"{m.GetTextureScale(mProp.Key).x}", $"{m.GetTextureScale(mProp.Key).y}" });
           }
         }
       }
-    }    
+    }
   }
 }
 

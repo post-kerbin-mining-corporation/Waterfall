@@ -32,12 +32,14 @@ namespace Waterfall.UI
     int combineModeFlag = 0;
     int controllerFlag = 0;
     protected int selectionFlag = 0;
+    protected string randomText;
     #endregion
 
 
     public UIModifierWindow(EffectModifier mod, bool show) : base(show)
     {
-      controllerNames = new string[] { "throttle", "atmosphereDepth" };
+
+      controllerNames = mod.parentEffect.parentModule.GetControllerNames().ToArray();
       for (int i = 0; i < controllerNames.Length; i++)
       {
         if (controllerNames[i] == mod.controllerName)
@@ -46,6 +48,7 @@ namespace Waterfall.UI
       combineModes = Enum.GetNames(typeof(EffectModifierMode));
       combineModeFlag = (int)mod.effectMode;
       modifier = mod;
+      randomText = modifier.randomScale.ToString();
       windowPos = new Rect(WaterfallUI.Instance.WindowPosition.xMax+5f, WaterfallUI.Instance.WindowPosition.yMin, 500f, 100f);
     }
 
@@ -77,6 +80,7 @@ namespace Waterfall.UI
       // Draw the header/tab controls
       DrawHeader();
       DrawModifierPanel();
+      GUI.DragWindow();
     }
     /// <summary>
     /// Draws the title panel (title, close button)
@@ -124,14 +128,18 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       modifier.useRandomness = GUILayout.Toggle(modifier.useRandomness, "Use Randomness");
-      
+      GUILayout.EndHorizontal();
+      GUILayout.BeginHorizontal();
       if (modifier.useRandomness)
       {
         
         GUILayout.Label("Controller");
         modifier.randomnessController = GUILayout.TextArea(modifier.randomnessController);
         GUILayout.Label("Scale");
-        modifier.randomScale = float.Parse(GUILayout.TextArea(modifier.randomScale.ToString()));
+        randomText = GUILayout.TextArea(randomText);
+        if (float.TryParse(randomText, out modifier.randomScale))
+        {
+        }
 
       }
       GUILayout.EndHorizontal();

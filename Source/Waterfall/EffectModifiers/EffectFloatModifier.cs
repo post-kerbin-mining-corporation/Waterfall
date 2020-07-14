@@ -21,6 +21,8 @@ namespace Waterfall
     public EffectFloatModifier()
     {
       curve = new FloatCurve();
+
+      modifierTypeName = "Material Float";
     }
     public EffectFloatModifier(ConfigNode node) { Load(node); }
 
@@ -32,7 +34,7 @@ namespace Waterfall
       curve = new FloatCurve();
       curve.Load(node.GetNode("floatCurve"));
 
-      modifierTypeName = this.GetType().Name;
+      modifierTypeName = "Material Float";
     }
     public override ConfigNode Save()
     {

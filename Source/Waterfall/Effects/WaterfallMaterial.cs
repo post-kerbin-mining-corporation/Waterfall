@@ -63,8 +63,10 @@ namespace Waterfall
     {
       ConfigNode node = new ConfigNode();
       node.name = WaterfallConstants.MaterialNodeName;
+      if (baseTransformName != "")
       node.AddValue("baseTransform", baseTransformName);
-      node.AddValue("transform", transformName);
+      if (transformName != "")
+        node.AddValue("transform", transformName);
       node.AddValue("shader", shaderName);
       foreach (WaterfallMaterialProperty p in matProperties)
       {

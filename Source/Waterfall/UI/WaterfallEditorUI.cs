@@ -27,6 +27,10 @@ namespace Waterfall.UI
     #region GUI Widgets
     UICurveEditWindow curveEditWindow;
     UIModifierPopupWindow modifierPopupWindow;
+    UIModifierWindow currentModWinForCurve;
+    UIMaterialEditWindow materialEditWindow;
+    UIColorPickerWindow colorPickWindow;
+    string currentCurveTag;
     #endregion
 
     #region Vessel Data
@@ -55,6 +59,7 @@ namespace Waterfall.UI
     protected override void Start()
     {
       base.Start();
+      windowPos = new Rect(200f, 200f, 800f, 600f);
       GetVesselData();
     }
 
@@ -81,6 +86,10 @@ namespace Waterfall.UI
       {
         modifierPopupWindow.Draw();
       }
+      if (colorPickWindow != null)
+      {
+        colorPickWindow.Draw();
+      }
     }
 
 
@@ -93,8 +102,6 @@ namespace Waterfall.UI
       // Draw the header/tab controls
       DrawHeader();
 
-
-      GUILayout.BeginHorizontal();
       // Draw the parts list
       DrawPartsList();
 
@@ -102,7 +109,6 @@ namespace Waterfall.UI
 
       
       DrawEffectsList();
-      GUILayout.EndHorizontal();
       GUI.DragWindow();
     }
 
@@ -160,6 +166,7 @@ namespace Waterfall.UI
 
     protected void DrawExporters()
     {
+      GUILayout.BeginVertical();
       if (GUILayout.Button("Dump all to log"))
       {
         for (int i = 0; i < effectsModules.Count; i++)
@@ -177,30 +184,38 @@ namespace Waterfall.UI
         GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
 
       }
+      GUILayout.EndVertical();
     }
 
     protected void DrawPartsList()
     {
-      GUILayout.BeginVertical(GUILayout.MaxWidth(120f));
+      GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+      GUILayout.BeginVertical();
       GUILayout.Label("<b>FX MODULES</b>");
-      partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.Width(200f), GUILayout.MinHeight(100f));
+      partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.Height(40f));
+
+      GUILayout.BeginHorizontal();
       for (int i=0; i< effectsModules.Count; i++)
       {
-        if (GUILayout.Button($"{effectsModules[i].moduleID}\n{effectsModules[i].FX.Count} Effects"))
+
+        if (GUILayout.Button($"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)", GUILayout.MaxWidth(250f))) 
         {
           SelectFXModule(effectsModules[i]);
         }
       }
+      GUILayout.EndHorizontal();
+
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
+      GUILayout.EndHorizontal();
     }
 
 
     protected void DrawEffectsList()
     {
-      GUILayout.BeginVertical();
+      GUILayout.BeginVertical(GUILayout.ExpandHeight(true));
       GUILayout.Label("<b>EFFECTS</b>");
-      effectsScrollListPosition = GUILayout.BeginScrollView(effectsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.MinHeight(200f));
+      effectsScrollListPosition = GUILayout.BeginScrollView(effectsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true), GUILayout.MinHeight(350f));
 
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
@@ -329,9 +344,6 @@ namespace Waterfall.UI
       return curveEditWindow;
     }
 
-    UIModifierWindow currentModWinForCurve;
-    UIMaterialEditWindow materialEditWindow;
-    string currentCurveTag;
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
     {
@@ -362,7 +374,33 @@ namespace Waterfall.UI
       }
       return materialEditWindow;
     }
+    public UIColorPickerWindow OpenColorEditWindow(Color c)
+    {
 
+      if (colorPickWindow != null)
+      {
+        Utils.Log("[WaterfallUI] Changing Color Picker target");
+        colorPickWindow.ChangeColor(c);
+      }
+      else
+      {
+        Utils.Log("[WaterfallUI] Opening Color Picker");
+        colorPickWindow = new UIColorPickerWindow(c, true);
+      }
+      return colorPickWindow;
+    }
+
+    public Color GetColorFromPicker()
+    {
+      if (colorPickWindow != null)
+        return colorPickWindow.GetColor();
+      else
+      {
+        return Color.black;
+      }
+
+
+    }
     public void OpenEffectModifierAddWindow(WaterfallEffect fx)
     {
       if (modifierPopupWindow == null)
@@ -400,6 +438,11 @@ namespace Waterfall.UI
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
         effectUIWidgets[i].Update();
+      }
+
+      if (colorPickWindow != null)
+      {
+        colorPickWindow.Update();
       }
     }
   }

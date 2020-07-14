@@ -21,6 +21,7 @@ namespace Waterfall
       xCurve = new FloatCurve();
       yCurve = new FloatCurve();
       zCurve = new FloatCurve();
+      modifierTypeName = "Scale";
     }
     public EffectScaleModifier(ConfigNode node) { Load(node); }
 
@@ -33,7 +34,7 @@ namespace Waterfall
       xCurve.Load(node.GetNode("xCurve"));
       yCurve.Load(node.GetNode("yCurve"));
       zCurve.Load(node.GetNode("zCurve"));
-      modifierTypeName = this.GetType().Name;
+      modifierTypeName = "Scale";
     }
     public override ConfigNode Save()
     {

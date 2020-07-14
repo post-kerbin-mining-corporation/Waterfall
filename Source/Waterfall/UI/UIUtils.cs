@@ -49,9 +49,9 @@ namespace Waterfall.UI
       Rect xRect = new Rect(0, 0, width, uiRect.height);
       Rect yRect = new Rect(2 * width, 0, width, uiRect.height);
       Rect zRect = new Rect(4 * width, 0, width, uiRect.height);
-      Rect xFieldRect = new Rect(width-22f, 0, width*1.4f, uiRect.height);
-      Rect yFieldRect = new Rect(3 * width - 22f, 0, width*1.4f, uiRect.height);
-      Rect zFieldRect = new Rect(5 * width - 22f, 0, width*1.4f, uiRect.height);
+      Rect xFieldRect = new Rect(0.5f*width, 0, width*1.8f, uiRect.height);
+      Rect yFieldRect = new Rect(2.5f * width, 0, width*1.8f, uiRect.height);
+      Rect zFieldRect = new Rect(4.5f * width, 0, width*1.8f, uiRect.height);
 
       GUI.Label(xRect, "<b>X</b>", labelStyle);
       GUI.Label(yRect, "<b>Y</b>", labelStyle);

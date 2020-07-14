@@ -28,6 +28,8 @@ namespace Waterfall
       gCurve = new FloatCurve();
       bCurve = new FloatCurve();
       aCurve = new FloatCurve();
+
+      modifierTypeName = "Material Color";
     }
     public EffectColorModifier(ConfigNode node) { Load(node); }
 
@@ -45,7 +47,7 @@ namespace Waterfall
       bCurve.Load(node.GetNode("bCurve"));
       aCurve.Load(node.GetNode("aCurve"));
 
-      modifierTypeName = this.GetType().Name;
+      modifierTypeName = "Material Color";
     }
     public override ConfigNode Save()
     {

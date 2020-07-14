@@ -49,9 +49,10 @@ namespace Waterfall.UI
       
       if (!showUI)
       {
-        if (GUILayout.Button("[+]", GUILayout.ExpandHeight(true)))
+        if (GUILayout.Button("[+]", GUILayout.ExpandHeight(false)))
           showUI = true;
-        GUILayout.BeginVertical(GUILayout.MaxWidth(250f));
+
+        GUILayout.BeginVertical(GUILayout.MaxWidth(200f));
         GUILayout.BeginHorizontal();
         GUILayout.Label($"<b>{fx.name}</b>");
         GUILayout.FlexibleSpace();
@@ -67,7 +68,7 @@ namespace Waterfall.UI
       {
         if (GUILayout.Button("[-]", GUILayout.ExpandHeight(true)))
           showUI = false;
-        GUILayout.BeginVertical(GUILayout.MaxWidth(250f));
+        GUILayout.BeginVertical(GUILayout.MaxWidth(200f));
         GUILayout.BeginHorizontal();
         GUILayout.Label($"<b>{fx.name}</b>");
         GUILayout.FlexibleSpace();
@@ -83,10 +84,10 @@ namespace Waterfall.UI
         }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
-        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
+        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
 
         GUILayout.Label("Rotation Offset");
-        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(230f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
 
 
         GUILayout.EndVertical();
@@ -103,16 +104,18 @@ namespace Waterfall.UI
         GUILayout.BeginHorizontal();
         GUILayout.Label("    <b>Modifier Name</b>");
         GUILayout.FlexibleSpace();
+        GUILayout.Label("<b>Type</b>", GUILayout.Width(120));
         GUILayout.Label("<b>Controller</b>", GUILayout.Width(120));
         GUILayout.Label("<b>Mode</b>", GUILayout.Width(80));
         GUILayout.Space(80);
         GUILayout.EndHorizontal();
-        modifierListPosition = GUILayout.BeginScrollView(modifierListPosition, GUILayout.MinHeight(150f));
+        //modifierListPosition = GUILayout.BeginScrollView(modifierListPosition, GUILayout.MinHeight(150f));
         for (int i = 0; i < fx.FXModifiers.Count; i++)
         {
           GUILayout.BeginHorizontal(GUI.skin.textArea);
           GUILayout.Label(fx.FXModifiers[i].fxName);
           GUILayout.FlexibleSpace();
+          GUILayout.Label(fx.FXModifiers[i].modifierTypeName, GUILayout.Width(120));
           GUILayout.Label(fx.FXModifiers[i].controllerName, GUILayout.Width(120));
           GUILayout.Label(fx.FXModifiers[i].effectMode.ToString(), GUILayout.Width(80));
 
@@ -126,7 +129,7 @@ namespace Waterfall.UI
           }
           GUILayout.EndHorizontal();
         }
-        GUILayout.EndScrollView();
+       // GUILayout.EndScrollView();
         GUILayout.EndVertical();
       }
       GUILayout.EndHorizontal();
