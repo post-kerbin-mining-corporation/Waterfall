@@ -15,6 +15,7 @@ namespace Waterfall.UI
     int savedID = -1;
 
 
+    Dictionary<string, Vector4> vec4Values = new Dictionary<string, Vector4>();
     Dictionary<string, Color> colorValues = new Dictionary<string, Color>();
     Dictionary<string, float> floatValues = new Dictionary<string, float>();
     Dictionary<string, string> textureValues = new Dictionary<string, string>();
@@ -24,6 +25,7 @@ namespace Waterfall.UI
     Dictionary<string, bool> colorEdits = new Dictionary<string, bool>();
 
     Dictionary<string, string[]> colorStrings = new Dictionary<string, string[]>();
+    Dictionary<string, string[]> vec4Strings = new Dictionary<string, string[]>();
     Dictionary<string, string> floatStrings = new Dictionary<string, string>();
     Dictionary<string, string[]> textureOffsetStrings = new Dictionary<string, string[]>();
     Dictionary<string, string[]> textureScaleStrings = new Dictionary<string, string[]>();
@@ -37,7 +39,7 @@ namespace Waterfall.UI
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {
-        materialList[i] = model.materials[i].materials[0].name;
+        materialList[i] = $"{model.materials[i].transformName} ({model.materials[i].materials[0].name.Split('(').First()})";
       }
       matl = modelToEdit.materials[materialID];
 
@@ -199,18 +201,52 @@ namespace Waterfall.UI
       }
       foreach (KeyValuePair<string, float> kvp in floatValues.ToList())
       {
+        float sliderVal;
+        string textVal;
         GUILayout.BeginHorizontal();
         GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
-        floatStrings[kvp.Key] = GUILayout.TextArea(floatStrings[kvp.Key]);
+        sliderVal = GUILayout.HorizontalSlider(floatValues[kvp.Key], WaterfallConstants.ShaderPropertyMap[kvp.Key].floatRange.x, WaterfallConstants.ShaderPropertyMap[kvp.Key].floatRange.y);
+
+        //floatStrings[kvp.Key] = GUILayout.TextArea(floatStrings[kvp.Key]);
+        textVal = GUILayout.TextArea(floatValues[kvp.Key].ToString("F2"), GUILayout.Width(90f));
+
+        
+        
 
         float parsed = kvp.Value;
-        if (float.TryParse(floatStrings[kvp.Key], out parsed))
+        if (float.TryParse(textVal, out parsed))
         {
-          floatValues[kvp.Key] = parsed;
-          matl.SetFloat(kvp.Key, parsed);
+
+          if (parsed != floatValues[kvp.Key])
+          {
+            floatValues[kvp.Key] = parsed;
+            matl.SetFloat(kvp.Key, parsed);
+          }
+        }
+        if (sliderVal != floatValues[kvp.Key])
+        {
+          floatValues[kvp.Key] = sliderVal;
+          matl.SetFloat(kvp.Key, floatValues[kvp.Key]);
         }
         GUILayout.EndHorizontal();
       }
+      foreach (KeyValuePair<string, Vector4> kvp in vec4Values.ToList())
+      {
+        Vector3 vecVal;
+        string textVal;
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
+        vecVal = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), kvp.Value, vec4Strings[kvp.Key], GUI.skin.label, GUI.skin.textArea);
+        Vector4 temp = new Vector4(vecVal.x, vecVal.y, vecVal.z, 0f);
+        if (temp != vec4Values[kvp.Key])
+        {
+          vec4Values[kvp.Key] = temp;
+          matl.SetVector4(kvp.Key, temp);
+        }
+
+       
+        GUILayout.EndHorizontal();
+      }   
     }
 
     protected void InitializeShaderProperties(Material m)
@@ -220,30 +256,42 @@ namespace Waterfall.UI
       textureValues = new Dictionary<string, string>();
       textureScaleValues = new Dictionary<string, Vector2>();
       textureOffsetValues = new Dictionary<string, Vector2>();
+      vec4Values = new Dictionary<string, Vector4>();
+
       colorStrings = new Dictionary<string, string[]>();
       colorEdits = new Dictionary<string, bool>();
       floatStrings = new Dictionary<string, string>();
       textureOffsetStrings = new Dictionary<string, string[]>();
       textureScaleStrings = new Dictionary<string, string[]>();
+      vec4Strings = new Dictionary<string, string[]>();
       colorTextures = new Dictionary<string, Texture2D>();
 
-      foreach (KeyValuePair<string, WaterfallMaterialPropertyType> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
+        
         if (m.HasProperty(mProp.Key))
         {
-          if (mProp.Value == WaterfallMaterialPropertyType.Color)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Color)
           {
             colorValues.Add(mProp.Key, m.GetColor(mProp.Key));
             colorEdits.Add(mProp.Key, false);
             colorStrings.Add(mProp.Key, MaterialUtils.ColorToStringArray(m.GetColor(mProp.Key)));
             colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(32, 32, m.GetColor(mProp.Key)));
           }
-          if (mProp.Value == WaterfallMaterialPropertyType.Float)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Float)
           {
             floatValues.Add(mProp.Key, m.GetFloat(mProp.Key));
             floatStrings.Add(mProp.Key, m.GetFloat(mProp.Key).ToString());
           }
-          if (mProp.Value == WaterfallMaterialPropertyType.Texture)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Vector4)
+          {
+            
+            Vector4 vec4 = m.GetVector(mProp.Key);
+            
+            vec4Values.Add(mProp.Key, vec4);
+            vec4Strings.Add(mProp.Key, new string[] { $"{vec4.x}", $"{vec4.y}", $"{vec4.z}", $"{vec4.w}" });
+          }
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Texture)
           {
             textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
             textureScaleValues.Add(mProp.Key, m.GetTextureScale(mProp.Key));

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Waterfall;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -15,6 +12,7 @@ namespace Waterfall
     public static string MaterialNodeName = "MATERIAL";
     public static string FloatNodeName = "FLOAT";
     public static string ColorNodeName = "COLOR";
+    public static string Vector4NodeName = "VECTOR4";
     public static string TextureNodeName = "TEXTURE";
 
 
@@ -25,25 +23,27 @@ namespace Waterfall
     public static string PositionModifierNodeName = "POSITIONMODIFIER";
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
-    public static Dictionary<string, WaterfallMaterialPropertyType> ShaderPropertyMap = new Dictionary<string, WaterfallMaterialPropertyType>
+    public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
     {
-      ["_MainColor"] = WaterfallMaterialPropertyType.Color,
-      ["_EmissiveColor"] = WaterfallMaterialPropertyType.Color,
-      ["_TintColor"] = WaterfallMaterialPropertyType.Color,
-      ["_StartTint"] = WaterfallMaterialPropertyType.Color,
-      ["_EndTint"] = WaterfallMaterialPropertyType.Color,
-      ["_TintFalloff"] = WaterfallMaterialPropertyType.Float,
-      ["_Falloff"] = WaterfallMaterialPropertyType.Float,
-      ["_Fresnel"] = WaterfallMaterialPropertyType.Float,
-      ["_FresnelInvert"] = WaterfallMaterialPropertyType.Float,
-      ["_Intensity"] = WaterfallMaterialPropertyType.Float,
-      ["_Noise"] = WaterfallMaterialPropertyType.Float,
-      ["_Brightness"] = WaterfallMaterialPropertyType.Float,
-      ["_SpeedX"] = WaterfallMaterialPropertyType.Float,
-      ["_SpeedY"] = WaterfallMaterialPropertyType.Float,
-      ["_TileX"] = WaterfallMaterialPropertyType.Float,
-      ["_TileY"] = WaterfallMaterialPropertyType.Float,
-      ["_MainTex"] = WaterfallMaterialPropertyType.Texture
+      ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
+      ["_EmissiveColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
+      ["_TintColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
+      ["_StartTint"] = new MaterialData(WaterfallMaterialPropertyType.Color),
+      ["_EndTint"] = new MaterialData(WaterfallMaterialPropertyType.Color),
+      ["_TintFalloff"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f)),
+      ["_Falloff"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 10f)),
+      ["_Fresnel"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 10f)),
+      ["_FresnelInvert"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5)),
+      ["_Intensity"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 10f)),
+      ["_Noise"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 15)),
+      ["_Brightness"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 10f)),
+      ["_SpeedX"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 200f)),
+      ["_SpeedY"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 200f)),
+      ["_TileX"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
+      ["_TileY"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
+      ["_MainTex"] = new MaterialData(WaterfallMaterialPropertyType.Texture),
+      ["_ExhaustDirScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_PlumeDir"] = new MaterialData(WaterfallMaterialPropertyType.Vector4)
 
     };
 

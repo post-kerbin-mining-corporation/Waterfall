@@ -166,7 +166,7 @@ namespace Waterfall
           effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
 
         effectTransform.localScale = new Vector3(effectTransform.localScale.x * ScaleOffset.x, effectTransform.localScale.y * ScaleOffset.y, effectTransform.localScale.z * ScaleOffset.z);
-
+        savedScale = effectTransform.localScale;
         Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}");
 
       }
@@ -184,9 +184,12 @@ namespace Waterfall
 
     public void Update()
     {
-      for (int i=0; i < fxModifiers.Count; i++)
+      if (effectVisible)
       {
-        fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
+        for (int i = 0; i < fxModifiers.Count; i++)
+        {
+          fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
+        }
       }
     }
 
@@ -203,12 +206,20 @@ namespace Waterfall
       fxModifiers.Add(mod);
 
     }
+    Vector3 savedScale;
     public void SetEnabled(bool state)
     {
       if (effectVisible != state)
       {
+        if (state)
+        {
+          effectTransform.localScale = savedScale;
+        } else
+        {
+          effectTransform.localScale = Vector3.one*0.00001f;
+        }
         effectVisible = state;
-        effectTransform.gameObject.SetActive(state);
+        //model.SetEnabled(state);
       }
     }
   }

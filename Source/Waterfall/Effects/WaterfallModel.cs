@@ -115,6 +115,16 @@ namespace Waterfall
     {
       foreach (Transform modelTransform in modelTransforms)
       {
+        SkinnedMeshRenderer[] skinRenderers = modelTransform.GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (SkinnedMeshRenderer renderer in skinRenderers)
+        {
+          renderer.enabled = state;
+        }
+        Renderer[] renderers = modelTransform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+         // renderer.enabled = state;
+        }
         //modelTransform.gameObject.SetActive(state);
       }
     }

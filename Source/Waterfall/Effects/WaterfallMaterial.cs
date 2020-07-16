@@ -150,6 +150,44 @@ namespace Waterfall
     }
 
     /// <summary>
+    /// Sets a shader Vec4 on this material. If it doesn't exist as a material property object, create it.
+    /// </summary>
+    /// <param name="propertyName"></param>
+    /// <param name="value"></param>
+    public void SetVector4(string propertyName, Vector4 value)
+    {
+      bool existsSavedProperty = false;
+      foreach (WaterfallMaterialProperty p in matProperties)
+      {
+        if (p.propertyName == propertyName)
+          existsSavedProperty = true;
+      }
+      if (!existsSavedProperty)
+      {
+        WaterfallMaterialVector4Property newProp = new WaterfallMaterialVector4Property();
+        newProp.propertyName = propertyName;
+        newProp.propertyValue = value;
+        matProperties.Add(newProp);
+      }
+      else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialVector4Property t = (WaterfallMaterialVector4Property)p;
+            t.propertyValue = value;
+          }
+        }
+      }
+      foreach (Material mat in materials)
+      {
+        mat.SetFloatArray(propertyName, new float[] { value.x, value.y, value.z, value.w});
+      }
+    }
+
+
+    /// <summary>
     /// Sets the texture scale for this material. If it doesn't exist as a material property object, create it.
     /// </summary>
     /// <param name="propertyName"></param>

@@ -73,8 +73,8 @@ namespace Waterfall
       //int xAlphaEnd = (int)Mathf.Round(color.a * (float)texWidth);
       for (int x = 0; x < texWidth; x++)
       {
-        
-        c = HSBColor.ToColor(new HSBColor((float)x / (float)texWidth, 1f,1f));
+
+        c = HSBColor.ToColor(new HSBColor((float)x / (float)texWidth, 1f, 1f));
         for (int y = 0; y < texHeight; y++)
         {
           tex.SetPixel(x, y, c);
@@ -113,11 +113,11 @@ namespace Waterfall
     public static List<string> FindValidShaderProperties(Material m, WaterfallMaterialPropertyType propType)
     {
       List<string> validProps = new List<string>();
-      foreach (KeyValuePair<string, WaterfallMaterialPropertyType> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
         if (m.HasProperty(mProp.Key))
         {
-          if (mProp.Value == propType)
+          if (mProp.Value.type == propType)
           {
             validProps.Add(mProp.Key);
           }
@@ -127,8 +127,8 @@ namespace Waterfall
     }
   }
 
- 
-[System.Serializable]
+
+  [System.Serializable]
   public struct HSBColor
   {
     public float h;
@@ -363,22 +363,22 @@ namespace Waterfall
       textureScaleStrings = new Dictionary<string, string[]>();
       colorTextures = new Dictionary<string, Texture2D>();
 
-      foreach (KeyValuePair<string, WaterfallMaterialPropertyType> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
         if (m.HasProperty(mProp.Key))
         {
-          if (mProp.Value == WaterfallMaterialPropertyType.Color)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Color)
           {
             colorValues.Add(mProp.Key, m.GetColor(mProp.Key));
             colorStrings.Add(mProp.Key, MaterialUtils.ColorToStringArray(m.GetColor(mProp.Key)));
             colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(64, 32, m.GetColor(mProp.Key)));
           }
-          if (mProp.Value == WaterfallMaterialPropertyType.Float)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Float)
           {
             floatValues.Add(mProp.Key, m.GetFloat(mProp.Key));
             floatStrings.Add(mProp.Key, m.GetFloat(mProp.Key).ToString());
           }
-          if (mProp.Value == WaterfallMaterialPropertyType.Texture)
+          if (mProp.Value.type == WaterfallMaterialPropertyType.Texture)
           {
             textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
             textureScaleValues.Add(mProp.Key, m.GetTextureScale(mProp.Key));
@@ -387,13 +387,21 @@ namespace Waterfall
             textureScaleStrings.Add(mProp.Key, new string[] { $"{m.GetTextureScale(mProp.Key).x}", $"{m.GetTextureScale(mProp.Key).y}" });
           }
         }
-
       }
-
-
-
     }
-
-    
+  }
+  public class MaterialData
+  {
+    public Vector2 floatRange;
+    public WaterfallMaterialPropertyType type;
+    public MaterialData (WaterfallMaterialPropertyType theType, Vector2 range)
+    {
+      type = theType;
+      floatRange = range;
+    }
+    public MaterialData(WaterfallMaterialPropertyType theType)
+    {
+      type = theType;
+    }
   }
 }

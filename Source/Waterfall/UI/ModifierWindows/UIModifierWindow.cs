@@ -110,6 +110,10 @@ namespace Waterfall.UI
       GUILayout.BeginVertical();
 
       GUILayout.BeginHorizontal();
+      GUILayout.Label($"Transform Target {modifier.transformName}");
+      GUILayout.EndHorizontal();
+
+      GUILayout.BeginHorizontal();
       GUILayout.Label("Modifier Name");
       modifier.fxName = GUILayout.TextArea(modifier.fxName);
       GUILayout.EndHorizontal();

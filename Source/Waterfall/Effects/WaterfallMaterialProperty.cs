@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Waterfall
@@ -29,7 +25,7 @@ namespace Waterfall
 
   public class WaterfallMaterialTextureProperty : WaterfallMaterialProperty
   {
-    
+
     public string texturePath;
     public Vector2 textureScale = Vector2.one;
     public Vector2 textureOffset = Vector2.zero;
@@ -147,10 +143,48 @@ namespace Waterfall
     }
   }
 
+  public class WaterfallMaterialVector4Property : WaterfallMaterialProperty
+  {
+
+    public Vector4 propertyValue;
+
+
+    public WaterfallMaterialVector4Property()
+    {
+      propertyType = WaterfallMaterialPropertyType.Vector4;
+    }
+    public WaterfallMaterialVector4Property(ConfigNode node)
+    {
+      Load(node);
+      propertyType = WaterfallMaterialPropertyType.Vector4;
+    }
+    public override void Load(ConfigNode node)
+    {
+      node.TryGetValue("vectorName", ref propertyName);
+      node.TryGetValue("value", ref propertyValue);
+      Utils.Log($"[WaterfallMaterialVector4Property]: loaded Vector4 {propertyName} with value {propertyValue.ToString()}");
+    }
+    public override void Initialize(Material m)
+    {
+      m.SetVector(propertyName, propertyValue);
+    }
+    public override ConfigNode Save()
+    {
+      ConfigNode node = new ConfigNode();
+      node.name = WaterfallConstants.Vector4NodeName;
+      node.AddValue("vectorName", propertyName);
+      node.AddValue("value", propertyValue);
+
+      return node;
+
+    }
+  }
+
   public enum WaterfallMaterialPropertyType
   {
     Texture,
-      Color,
-      Float
+    Color,
+    Float,
+    Vector4
   }
 }

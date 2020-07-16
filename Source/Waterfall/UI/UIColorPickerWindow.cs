@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Waterfall;
 
+
 namespace Waterfall.UI
 {
   public class UIColorPickerWindow : UIPopupWindow
   {
-
+    int colorFieldSize = 150;
     float sliderWidth = 150f;
     protected string windowTitle = "";
 
@@ -68,7 +69,7 @@ namespace Waterfall.UI
       GenerateTextures();
       rainbow = MaterialUtils.GenerateRainbowGradient(120, 20);
       aTexture = MaterialUtils.GenerateGradientTexture(100, 20, Color.black, Color.white);
-      colorField = MaterialUtils.GenerateColorField(120, 120, currentHSVColor.ToColor());
+      colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
       WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f, 210, 100);
     }
 
@@ -106,7 +107,7 @@ namespace Waterfall.UI
       GenerateTextures();
       rainbow = MaterialUtils.GenerateRainbowGradient(120, 20);
       aTexture = MaterialUtils.GenerateGradientTexture(100, 20, Color.black, Color.white);
-      colorField = MaterialUtils.GenerateColorField(120, 120, currentHSVColor.ToColor());
+      colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
       WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f,210, 100);
       showWindow = true;
     }
@@ -146,21 +147,52 @@ namespace Waterfall.UI
       Rect tRect = GUILayoutUtility.GetRect(120, 20, GUILayout.Width(sliderWidth));
       GUI.DrawTexture(tRect, swatch);
       GUILayout.Space(4);
-      tRect = GUILayoutUtility.GetRect(120, 20, GUILayout.Width(sliderWidth));
+      tRect = GUILayoutUtility.GetRect(150, 20, GUILayout.Width(sliderWidth));
       GUI.DrawTexture(tRect,rainbow);
       hueValue = GUILayout.HorizontalSlider(hueValue, 0f, 1f, GUILayout.Width(sliderWidth));
-
-      tRect = GUILayoutUtility.GetRect(sliderWidth, sliderWidth, GUILayout.Width(sliderWidth));
+      currentHSVColor = new HSBColor(hueValue, currentHSVColor.s, currentHSVColor.b);
+      tRect = GUILayoutUtility.GetRect(colorFieldSize, colorFieldSize, GUILayout.Width(colorFieldSize));
       GUI.DrawTexture(tRect, colorField);
+
+      var eventType = Event.current.type;
+      if (eventType == EventType.Repaint)
+        if (Input.GetMouseButtonDown(0))
+        {
+          Vector2 screenPoint = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
+          Rect screenRect = GUIUtility.GUIToScreenRect(tRect);
+
+        
+          if (tRect.Contains(Event.current.mousePosition))
+          {
+            int x = (int)Mathf.Clamp(Event.current.mousePosition.x-tRect.xMin,0,sliderWidth);
+            int y = colorFieldSize - (int)Mathf.Clamp(Event.current.mousePosition.y - tRect.yMin, 0, sliderWidth);
+            Color sampled = ((Texture2D)colorField).GetPixel(x, y);
+            Utils.Log($"Color picked at {x}, {y} is {sampled}");
+            currentHSVColor = new HSBColor(sampled);
+            currentColor = new Color(sampled.r, sampled.g, sampled.b, currentColor.a);
+            aValue = currentColor.a * 255f;
+            rValue = currentColor.r * 255f;
+            gValue = currentColor.g * 255f;
+            bValue = currentColor.b * 255f;
+
+            aText = aValue.ToString("F0");
+            rText = rValue.ToString("F0");
+            gText = gValue.ToString("F0");
+            bText = bValue.ToString("F0");
+          }
+        }
+
       GUILayout.EndVertical();
       GUILayout.Space(4);
-      currentHSVColor = new HSBColor(hueValue, currentHSVColor.s, currentHSVColor.b);
+      
+
+
+      
 
       if (!currentHSVColor.ToColor().Equals(prevHSVColor.ToColor()))
       {
-        colorField = MaterialUtils.GenerateColorField(120, 120, currentHSVColor.ToColor());
+        colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
         prevHSVColor = currentHSVColor;
-        //currentColor = currentHSVColor.ToColor();
         
       }
       
@@ -214,7 +246,7 @@ namespace Waterfall.UI
 
       if (fieldText != gText)
       {
-        if (float.TryParse(fieldText, out rValue))
+        if (float.TryParse(fieldText, out gValue))
         {
           gText = fieldText;
         }
@@ -283,7 +315,7 @@ namespace Waterfall.UI
 
         currentHSVColor = new HSBColor(currentColor);
         hueValue = currentHSVColor.h;
-        colorField = MaterialUtils.GenerateColorField(120, 120, currentHSVColor.ToColor());
+        colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
         prevColor = currentColor;
       }
     }
