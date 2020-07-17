@@ -55,7 +55,7 @@ namespace Waterfall
 
       node.name = WaterfallConstants.ColorModifierNodeName;
       node.AddValue("colorName", colorName);
-      
+
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
@@ -81,7 +81,7 @@ namespace Waterfall
     }
     protected override void ApplyAdd(float strength)
     {
-      
+
       for (int i = 0; i < m.Length; i++)
       {
         Color original = m[i].GetColor(colorName);
@@ -107,7 +107,10 @@ namespace Waterfall
         m[i].SetColor(colorName, original * toSet);
       }
     }
-
+    public Material GetMaterial()
+    {
+      return m;
+    }
     public void ApplyMaterialName(string newColorName)
     {
       colorName = newColorName;

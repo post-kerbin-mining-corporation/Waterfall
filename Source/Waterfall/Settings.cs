@@ -28,6 +28,10 @@ namespace Waterfall
   public static class Settings
   {
     /// Settings go here
+    public static bool DebugModules = true;
+    public static bool Debugsettings = true;
+    public static bool DebugEffects = true;
+    public static bool DebugModifiers = true;
     public static bool DebugMode = true;
     public static bool DebugUIMode = true;
 
@@ -37,7 +41,7 @@ namespace Waterfall
     public static void Load()
     {
       ConfigNode settingsNode;
-    
+
       Utils.Log("[Settings]: Started loading");
       if (GameDatabase.Instance.ExistsConfigNode("Waterfall/WATERFALL_SETTINGS"))
       {
@@ -47,7 +51,7 @@ namespace Waterfall
 
         // Setting parsing goes here
         //settingsNode.TryGetValue("MinimumWarpFactor", ref TimeWarpLimit);
-        
+
 
       }
       else

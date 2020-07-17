@@ -24,6 +24,8 @@ namespace Waterfall.UI
 
     #region  Data
     string floatName = "_TintColor";
+    int floatIndex = 0;
+    string[] floatNames;
     public EffectFloatModifier floatMod;
     #endregion
 
@@ -31,6 +33,7 @@ namespace Waterfall.UI
     {
       floatMod = mod;
       floatName = floatMod.floatName;
+      floatNames = MaterialUtils.FindValidShaderProperties(floatMod.GetMaterial(), WaterfallMaterialPropertyType.Float).ToArray();
       GenerateCurveThumbs(mod);
     }
 
@@ -51,10 +54,17 @@ namespace Waterfall.UI
       GUILayout.BeginHorizontal();
       GUILayout.Label("Shader Float Name");
       floatName = GUILayout.TextArea(floatName);
-      if (GUILayout.Button("Apply"))
+      int selectedIndex = GUILayoutx.SelectionList(floatIndex, floatNames, GUI.skin.textArea);
+      if (selectedIndex != floatIndex)
       {
+        floatIndex = selectedIndex;
+        floatName = floatNames[floatIndex];
         floatMod.ApplyFloatName(floatName);
       }
+    //  if (GUILayout.Button("Apply"))
+  //    {
+//        floatMod.ApplyFloatName(floatName);
+      //}
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();

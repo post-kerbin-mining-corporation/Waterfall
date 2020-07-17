@@ -20,7 +20,7 @@ namespace Waterfall.UI
     ModifierPopupMode windowMode;
     EffectModifier modifier;
     WaterfallEffect effect;
-    
+
     string newModifierName = "newModifier";
     string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float"};
     int modifierFlag = 0;
@@ -52,9 +52,10 @@ namespace Waterfall.UI
       effect = fx;
       windowMode = ModifierPopupMode.Add;
       controllerTypes = fx.parentModule.GetControllerNames().ToArray();
-      
-      Transform[] xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>();
-      transformOptions = new string[xFormOptions.Length];
+
+      List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
+
+      transformOptions = new string[xFormOptions.Count];
       for (int i=0;i < xFormOptions.Length; i++)
       {
         transformOptions[i] = xFormOptions[i].name;
@@ -72,7 +73,7 @@ namespace Waterfall.UI
 
 
     }
-    
+
 
     protected override void DrawWindow(int windowId)
     {
@@ -127,7 +128,31 @@ namespace Waterfall.UI
       newModifierName = GUILayout.TextArea(newModifierName);
       GUILayout.EndHorizontal();
       GUILayout.Label("Modifier type");
-      modifierFlag = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length,4), GUIResources.GetStyle("radio_text_button"));
+      int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length,4), GUIResources.GetStyle("radio_text_button"));
+      if (modifierFlagChanged)
+      {
+        modifierFlag = modifierFlagChanged;
+        if (modifierTypes[modifierFlag].Contains("Material"))
+        {
+          List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
+
+          transformOptions = new string[xFormOptions.Count];
+          for (int i=0;i < xFormOptions.Length; i++)
+          {
+            transformOptions[i] = xFormOptions[i].gameObject.name;
+          }
+        }
+        else
+        {
+          List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
+
+          transformOptions = new string[xFormOptions.Count];
+          for (int i=0;i < xFormOptions.Length; i++)
+          {
+            transformOptions[i] = xFormOptions[i].name;
+          }
+        }
+      }
       GUILayout.Label("Target transform name");
       transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length,3), GUIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
@@ -136,7 +161,7 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
       if (GUILayout.Button("Add"))
       {
-       
+
         effect.AddModifier(CreateNewModifier());
         showWindow = false;
       }
@@ -145,7 +170,7 @@ namespace Waterfall.UI
         showWindow = false;
       }
     }
-    
+
     EffectModifier CreateNewModifier()
     {
       if (modifierTypes[modifierFlag] == "Position")
@@ -203,4 +228,3 @@ namespace Waterfall.UI
     }
   }
 }
-

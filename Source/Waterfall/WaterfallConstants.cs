@@ -6,7 +6,8 @@ namespace Waterfall
   public static class WaterfallConstants
   {
     public static string ControllerNodeName = "CONTROLLER";
-    public static string TemplateNodeName = "EFFECTTEMPLATE";
+    public static string TemplatLibraryeNodeName = "EFFECTTEMPLATE";
+    public static string TemplateNodeName = "TEMPLATE";
     public static string EffectNodeName = "EFFECT";
     public static string ModelNodeName = "MODEL";
     public static string MaterialNodeName = "MATERIAL";

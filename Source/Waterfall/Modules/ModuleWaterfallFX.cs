@@ -32,75 +32,79 @@ namespace Waterfall
     public override void OnLoad(ConfigNode node)
     {
       base.OnLoad(node);
-
-      ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
-      ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
-      ConfigNode[] templateNodes = node.GetNodes("TEMPLATE");
-
-      Utils.Log(String.Format("[ModuleWaterfallFX]: Loading controllers on moduleID {0}", moduleID));
-      allControllers = new Dictionary<string, WaterfallController>();
-      foreach (ConfigNode controllerDataNode in controllerNodes)
+      if (HighLogic.LoadedSceneIsFlight)
       {
-        string ctrlType = "throttle";
-        if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
+        ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
+        ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
+        ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
+
+        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Controllers on moduleID {0}", moduleID), LogType.Modules);
+        allControllers = new Dictionary<string, WaterfallController>();
+        foreach (ConfigNode controllerDataNode in controllerNodes)
         {
-          Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
+          string ctrlType = "throttle";
+          if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
+          {
+            Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
+          }
+          if (ctrlType == "throttle")
+          {
+            ThrottleController tCtrl = new ThrottleController(controllerDataNode);
+            allControllers.Add(tCtrl.name, tCtrl);
+          }
+          if (ctrlType == "atmosphere_density")
+          {
+            AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
+            allControllers.Add(aCtrl.name, aCtrl);
+          }
+          if (ctrlType == "custom")
+          {
+            CustomController cCtrl = new CustomController(controllerDataNode);
+            allControllers.Add(cCtrl.name, cCtrl);
+          }
+          if (ctrlType == "random")
+          {
+            RandomnessController rCtrl = new RandomnessController(controllerDataNode);
+            allControllers.Add(rCtrl.name, rCtrl);
+          }
         }
-        if (ctrlType == "throttle")
+
+        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Effects on moduleID {0}", moduleID), LogType.Modules);
+        allFX = new List<WaterfallEffect>();
+        foreach (ConfigNode fxDataNode in effectNodes)
         {
-          ThrottleController tCtrl = new ThrottleController(controllerDataNode);
-          allControllers.Add(tCtrl.name, tCtrl);
+          allFX.Add(new WaterfallEffect(fxDataNode));
         }
-        if (ctrlType == "atmosphere_density")
+
+        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Template effects on moduleID {0}", moduleID), LogType.Modules);
+        foreach (ConfigNode templateNode in templateNodes)
         {
-          AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
-          allControllers.Add(aCtrl.name, aCtrl);
-        }
-        if (ctrlType == "custom")
-        {
-          CustomController cCtrl = new CustomController(controllerDataNode);
-          allControllers.Add(cCtrl.name, cCtrl);
-        }
-        if (ctrlType == "random")
-        {
-          RandomnessController rCtrl = new RandomnessController(controllerDataNode);
-          allControllers.Add(rCtrl.name, rCtrl);
+          string templateName = "";
+          string overrideTransformName = "";
+          Vector3 scaleOffset = Vector3.one;
+          Vector3 positionOffset = Vector3.zero;
+          Vector3 rotationOffset = Vector3.zero;
+
+          templateNode.TryGetValue("templateName", ref templateName);
+          templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
+          templateNode.TryGetValue("scale", ref scaleOffset);
+          templateNode.TryGetValue("rotation", ref rotationOffset);
+          templateNode.TryGetValue("position", ref positionOffset);
+
+          WaterfallEffectTemplate template =  WaterfallTemplates.GetTemplate(templateName);
+
+          foreach (WaterfallEffect fx in template.allFX)
+          {
+            allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
+          }
+          Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template}", LogType.Modules);
         }
       }
-
-      Utils.Log(String.Format("[ModuleWaterfallFX]: Loading effects on moduleID {0}", moduleID));
-      allFX = new List<WaterfallEffect>();
-      foreach (ConfigNode fxDataNode in effectNodes)
-      {
-        allFX.Add(new WaterfallEffect(fxDataNode));
-      }
-
-      Utils.Log(String.Format("[ModuleWaterfallFX]: Loading templated effects on moduleID {0}", moduleID));
-      foreach (ConfigNode templateNode in templateNodes)
-      {
-        string templateName = "";
-        Vector3 scaleOffset = Vector3.one;
-        Vector3 positionOffset = Vector3.zero;
-        Vector3 rotationOffset = Vector3.zero;
-
-        templateNode.TryGetValue("templateName", ref templateName);
-        templateNode.TryGetValue("scale", ref scaleOffset);
-        templateNode.TryGetValue("rotation", ref rotationOffset);
-        templateNode.TryGetValue("position", ref positionOffset);
-
-        WaterfallEffectTemplate template =  WaterfallTemplates.GetTemplate(templateName);
-        
-        foreach (WaterfallEffect fx in template.allFX)
-        {
-          allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset));
-        }
-        Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template}" );
-      }
-      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects");
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
     }
 
     /// <summary>
-    /// Dumps the entire set of EFFECTS to a confignode
+    /// Dumps the entire set of EFFECTS to a confignode, then to a string
     /// </summary>
     /// <returns></returns>
     public String Export()
@@ -121,11 +125,12 @@ namespace Waterfall
         Initialize();
       }
     }
+
     void ReloadDatabaseNodes()
     {
       if (allFX == null || allFX.Count == 0)
       {
-        Debug.Log(String.Format("[ModuleWaterfallFX]: Reloading ConfigNodes for {0}", part.partInfo.name));
+        Debug.Log(String.Format("[ModuleWaterfallFX]: Reloading ConfigNodes for {0}", part.partInfo.name), LogType.Modules);
 
         ConfigNode cfg;
         foreach (UrlDir.UrlConfig pNode in GameDatabase.Instance.GetConfigs("PART"))
@@ -143,12 +148,12 @@ namespace Waterfall
               catch (InvalidOperationException)
               {
                 // Thrown if predicate is not fulfilled, ie moduleName is not unqiue
-                Debug.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: Multiple ModuleWaterfallFX nodes found with identical or no moduleName"));
+                Debug.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: Multiple ModuleWaterfallFX nodes found with identical or no moduleName"), LogType.Modules);
               }
               catch (ArgumentNullException)
               {
                 // Thrown if ModuleCryoTank is not found (a Large Problem (tm))
-                Debug.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: No ModuleWaterfallFX nodes found in part"));
+                Debug.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: No ModuleWaterfallFX nodes found in part"), LogType.Modules);
               }
             }
             else
@@ -160,7 +165,7 @@ namespace Waterfall
       }
     }
 
-
+    // VAB Inforstrings are blank
     public string GetModuleTitle()
     {
       return "";
@@ -168,7 +173,6 @@ namespace Waterfall
 
     public override string GetInfo()
     {
-
       return "";
     }
 
@@ -184,7 +188,7 @@ namespace Waterfall
         return allControllers[controllerName].Get();
       }
       return 0f;
-      
+
     }
     /// <summary>
     /// Gets the list of controllers
@@ -201,7 +205,7 @@ namespace Waterfall
     /// </summary>
     protected void Initialize()
     {
-      Utils.Log("[ModuleWaterfallFX]: Initializing");
+      Utils.Log("[ModuleWaterfallFX]: Initializing", LogType.Modules);
       InitializeControllers();
       InitializeEffects();
     }
@@ -223,7 +227,7 @@ namespace Waterfall
     /// </summary>
     protected void InitializeEffects()
     {
-      Utils.Log("[ModuleWaterfallFX]: Initializing Effects");
+      Utils.Log("[ModuleWaterfallFX]: Initializing Effects", LogType.Modules);
       for (int i = 0; i < allFX.Count; i++)
       {
         allFX[i].InitializeEffect(this);
@@ -242,7 +246,17 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Sets this module as overridden by something: its controllers will be set to override
+    /// Sets a specific controller's value
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    public void SetControllerValue(string name, float value)
+    {
+      allControllers[name].Set(value);
+    }
+
+    /// <summary>
+    /// Sets this module controllers as overridden by something: its controllers will be set to override
     /// </summary>
     /// <param name="mode"></param>
     public void SetControllerOverride(bool mode)
@@ -254,20 +268,15 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Sets this module's as overridden by something: its controllers will be set to override
+    /// Sets a specific controller as overridden by something: its controllers will be set to override and a value will be supplied
     /// </summary>
-    /// <param name="mode"></param>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
     public void SetControllerOverrideValue(string name, float value)
     {
       allControllers[name].SetOverrideValue(value);
     }
-    /// <summary>
-    /// Sets this controller value
-    /// </summary>
-    /// <param name="mode"></param>
-    public void SetControllerValue(string name, float value)
-    {
-      allControllers[name].Set(value);
-    }
+
+
   }
 }

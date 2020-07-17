@@ -26,7 +26,7 @@ namespace Waterfall
         return WaterfallTemplates.Library[name];
       } else
       {
-        Utils.LogError($"[Template Libary]: Can't find effect {name}");
+        Utils.LogError($"[Template Libary]: Can't find effect template {name}", LogType.Settings);
         return null;
       }
     }
@@ -36,13 +36,13 @@ namespace Waterfall
     /// </summary>
     public static void LoadTemplates()
     {
-      Utils.Log($"[Template Libary]: Loading effect templates");
-      ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(WaterfallConstants.TemplateNodeName);
+      Utils.Log($"[Template Libary]: Loading effect templates", LogType.Settings);
+      ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(WaterfallConstants.TemplatLibraryeNodeName);
 
       foreach (ConfigNode node in nodes)
       {
         Library.Add(node.GetValue("templateName"), new WaterfallEffectTemplate(node));
-        Utils.Log($"[Template Libary]: Added template {node.GetValue("templateName")}");
+        Utils.Log($"[Template Libary]: Added template {node.GetValue("templateName")}", LogType.Settings);
       }
     }
 

@@ -27,6 +27,8 @@ namespace Waterfall.UI
 
     #region  Data
     string colorName = "_TintColor";
+    int colorIndex = 0;
+    string[] colorNames;
     public EffectColorModifier colorMod;
     #endregion
 
@@ -34,6 +36,7 @@ namespace Waterfall.UI
     {
       colorMod = mod;
       colorName = colorMod.colorName;
+      colorNames = MaterialUtils.FindValidShaderProperties(colorMod.GetMaterial(), WaterfallMaterialPropertyType.Color).ToArray();
       GenerateCurveThumbs(mod);
     }
 
@@ -50,14 +53,21 @@ namespace Waterfall.UI
     /// </summary>
     protected override void DrawModifierPanel()
     {
-      
+
       GUILayout.BeginHorizontal();
       GUILayout.Label("Shader Color Name");
-      colorName = GUILayout.TextArea(colorName);
-      if (GUILayout.Button("Apply"))
+      int selectedIndex = GUILayoutx.SelectionList(colorIndex, colorNames, GUI.skin.textArea);
+      if (selectedIndex != colorIndex)
       {
+        colorIndex = selectedIndex;
+        colorName = colorNames[colorIndex];
         colorMod.ApplyMaterialName(colorName);
       }
+      //colorName = GUILayout.TextArea(colorName);
+    //  if (GUILayout.Button("Apply"))
+  //    {
+//        colorMod.ApplyMaterialName(colorName);
+      //}
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
@@ -139,7 +149,7 @@ namespace Waterfall.UI
       {
         PasteCurve(colorMod.aCurve, out colorMod.aCurve);
       }
-      GUILayout.EndHorizontal();    
+      GUILayout.EndHorizontal();
     }
     public override void UpdateCurves(FloatCurve newCurve, string tag)
     {
