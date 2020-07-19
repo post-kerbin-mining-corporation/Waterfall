@@ -12,18 +12,19 @@ namespace Waterfall
     public CustomController(ConfigNode node)
     {
       name = "throttle";
+      linkedTo = "custom";
       node.TryGetValue("name", ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
     }
-    public override float Get()
+    public override List<float> Get()
     {
 
       if (overridden)
-        return overrideValue;
-      return value;
+        return new List<float>() { overrideValue };
+      return new List<float>() { value };
     }
   }
 }

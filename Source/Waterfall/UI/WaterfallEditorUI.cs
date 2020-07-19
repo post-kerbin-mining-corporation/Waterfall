@@ -19,9 +19,11 @@ namespace Waterfall.UI
     Vector2 partsScrollListPosition = Vector2.zero;
 
     bool useControllers = false;
-
     float densityControllerValue = 0f;
     float throttleControllerValue = 0f;
+    Vector2 randomControllerValue;
+    float rcsControllerValue;
+
     #endregion
 
     #region GUI Widgets
@@ -148,6 +150,7 @@ namespace Waterfall.UI
       GUILayout.BeginVertical();
       GUILayout.Label("<b>CONTROLLERS</b>");
 
+      // 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
@@ -158,6 +161,28 @@ namespace Waterfall.UI
       GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
       GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.EndHorizontal();
+
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Randomness Min/Max", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      string xValue = GUILayout.TextArea(randomControllerValue.x.ToString(), GUILayout.MaxWidth(60f));
+      string yValue = GUILayout.TextArea(randomControllerValue.y.ToString(), GUILayout.MaxWidth(60f));
+
+      float xParsed;
+      float yParsed;
+      if (float.TryParse(xValue, out xParsed) && float.TryParse(yValue, out yParsed))
+      {
+        if (xParsed != randomControllerValue.x || yParsed != randomControllerValue.y)
+          randomControllerValue = new Vector2(xParsed, yParsed);
+      }
+      
+      GUILayout.EndHorizontal();
+
+
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
+      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();
@@ -431,9 +456,29 @@ namespace Waterfall.UI
     {
       for (int i = 0; i < effectsModules.Count; i++)
       {
-        effectsModules[i].SetControllerOverride(useControllers);
-        effectsModules[i].SetControllerOverrideValue("atmosphereDepth", densityControllerValue);
-        effectsModules[i].SetControllerOverrideValue("throttle", throttleControllerValue);
+        
+        for (int j = 0; j < effectsModules[i].Controllers.Count; j++)
+        {
+          effectsModules[i].SetControllerOverride(effectsModules[i].Controllers[j].name, useControllers);
+          if (effectsModules[i].Controllers[j].linkedTo == "throttle")
+          {
+            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, throttleControllerValue);
+          }
+          if (effectsModules[i].Controllers[j].linkedTo == "atmosphere_density")
+          {
+            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, densityControllerValue);
+          }
+          if (effectsModules[i].Controllers[j].linkedTo == "rcs")
+          {
+            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, rcsControllerValue);
+          }
+          if (effectsModules[i].Controllers[j].linkedTo == "random")
+          {
+            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, randomControllerValue.x);
+          }
+
+          
+        }
       }
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {

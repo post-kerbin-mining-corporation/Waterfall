@@ -13,6 +13,7 @@ namespace Waterfall
   {
     // 
     public string name = "unnamedController";
+    public string linkedTo = "unnamedController";
     protected bool overridden = false;
     protected float overrideValue = 0.0f;
     protected float value = 0.0f;
@@ -22,11 +23,11 @@ namespace Waterfall
     /// Get the value of the controller. 
     /// </summary>
     /// <returns></returns>
-    public virtual float Get() {
+    public virtual List<float> Get() {
       if (overridden)
-        return overrideValue;
+        return new List<float>() { overrideValue };
       else
-        return 0f;
+        return new List<float>() { 0f };
     }
 
     /// <summary>

@@ -86,6 +86,7 @@
     <Compile Include="EffectControllers\CustomController.cs" />
     <Compile Include="EffectControllers\EffectController.cs" />
     <Compile Include="EffectControllers\RandomnessController.cs" />
+    <Compile Include="EffectControllers\RCSController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />
     <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectModifier.cs" />

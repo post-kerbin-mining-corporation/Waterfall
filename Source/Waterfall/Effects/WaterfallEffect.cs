@@ -26,7 +26,7 @@ namespace Waterfall
     protected ConfigNode savedNode;
     protected bool effectVisible = true;
     protected Vector3 savedScale;
-
+    protected List<Transform> effectTransforms;
     public List<EffectModifier> FXModifiers
     {
       get { return fxModifiers; }
@@ -83,7 +83,7 @@ namespace Waterfall
 
       if (!node.TryGetValue("parentName", ref parentName))
       {
-        Utils.LogError(String.Format("[WaterfallEffect]: EFFECT with name {0} does not define parentName, which is required", name), LogType.Effects);
+        Utils.LogError(String.Format("[WaterfallEffect]: EFFECT with name {0} does not define parentName, which is required", name));
         return;
       }
       model = new WaterfallModel(node.GetNode(WaterfallConstants.ModelNodeName));
@@ -137,14 +137,21 @@ namespace Waterfall
 
       return node;
     }
-
-    public void InitializeEffect(ModuleWaterfallFX host)
+    public void CleanupEffect(ModuleWaterfallFX host)
+    {
+      Utils.Log(String.Format("[WaterfallEffect]: Deleting effect {0} ", name), LogType.Effects);
+      foreach (Transform t in effectTransforms)
+      {
+        GameObject.Destroy(effectTransform.gameObject);
+      }
+    }
+     public void InitializeEffect(ModuleWaterfallFX host)
     {
 
       Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} ", name), LogType.Effects);
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
-
+      effectTransforms = new List<Transform>();
       for (int i = 0; i < parents.Length; i++)
       {
         GameObject effect = new GameObject($"Waterfall_FX_{name}_{i}");
@@ -152,7 +159,7 @@ namespace Waterfall
 
         if (parents[i] == null)
         {
-          Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName), LogType.Effects);
+          Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
           return;
         }
         model.Initialize(effectTransform);
@@ -168,7 +175,7 @@ namespace Waterfall
         effectTransform.localScale = new Vector3(effectTransform.localScale.x * ScaleOffset.x, effectTransform.localScale.y * ScaleOffset.y, effectTransform.localScale.z * ScaleOffset.z);
         savedScale = effectTransform.localScale;
         Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}", LogType.Effects);
-
+        effectTransforms.Add(effectTransform);
       }
 
       for (int i = 0; i < fxModifiers.Count; i++)

@@ -56,7 +56,7 @@ namespace Waterfall.UI
       List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
 
       transformOptions = new string[xFormOptions.Count];
-      for (int i=0;i < xFormOptions.Length; i++)
+      for (int i=0;i < xFormOptions.Count; i++)
       {
         transformOptions[i] = xFormOptions[i].name;
       }
@@ -129,25 +129,26 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
       GUILayout.Label("Modifier type");
       int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length,4), GUIResources.GetStyle("radio_text_button"));
-      if (modifierFlagChanged)
+
+      if (modiferFlagChanged != modifierFlag)
       {
-        modifierFlag = modifierFlagChanged;
+        modifierFlag = modiferFlagChanged;
         if (modifierTypes[modifierFlag].Contains("Material"))
         {
-          List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
+          List<Renderer> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
-          for (int i=0;i < xFormOptions.Length; i++)
+          for (int i=0;i < xFormOptions.Count; i++)
           {
             transformOptions[i] = xFormOptions[i].gameObject.name;
           }
         }
         else
         {
-          List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
+          List<Transform> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
-          for (int i=0;i < xFormOptions.Length; i++)
+          for (int i=0;i < xFormOptions.Count; i++)
           {
             transformOptions[i] = xFormOptions[i].name;
           }

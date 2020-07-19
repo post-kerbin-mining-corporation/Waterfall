@@ -69,7 +69,7 @@ namespace Waterfall
         Transform t1 = t.FindDeepChild(transformName);
         if (t1 == null)
         {
-          Utils.LogError(String.Format("[EffectModifier]: Unabled to find transform {0} on modifier {1}", transformName, fxName));
+          Utils.LogError(String.Format("[EffectModifier]: Unable to find transform {0} on modifier {1}", transformName, fxName));
         }
         else
         {
@@ -96,12 +96,12 @@ namespace Waterfall
     /// Apply the effect with the various combine modes
     /// </summary>
     /// <param name="strength"></param>
-    public virtual void Apply(float strength)
+    public virtual void Apply(List<float> strength)
     {
-
+      
       if (useRandomness)
       {
-        randomValue = parentEffect.parentModule.GetControllerValue(randomnessController) * randomScale;
+        randomValue = parentEffect.parentModule.GetControllerValue(randomnessController)[0] * randomScale;
 
         //Utils.Log($"{useRandomness} {parentEffect.parentModule.GetControllerValue(randomnessController)} {randomScale} {randomValue}");
       }
@@ -123,16 +123,16 @@ namespace Waterfall
       }
     }
 
-    protected virtual void ApplyReplace(float strength)
+    protected virtual void ApplyReplace(List<float> strength)
     { }
 
-    protected virtual void ApplyAdd(float strength)
+    protected virtual void ApplyAdd(List<float> strength)
     { }
 
-    protected virtual void ApplyMultiply(float strength)
+    protected virtual void ApplyMultiply(List<float> strength)
     { }
 
-    protected virtual void ApplySubtract(float strength)
+    protected virtual void ApplySubtract(List<float> strength)
     { }
 
   }

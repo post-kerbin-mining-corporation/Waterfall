@@ -29,7 +29,7 @@ namespace Waterfall
   {
     /// Settings go here
     public static bool DebugModules = true;
-    public static bool Debugsettings = true;
+    public static bool DebugSettings = true;
     public static bool DebugEffects = true;
     public static bool DebugModifiers = true;
     public static bool DebugMode = true;

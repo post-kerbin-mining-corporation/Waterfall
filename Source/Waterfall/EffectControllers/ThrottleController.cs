@@ -19,6 +19,7 @@ namespace Waterfall
     public ThrottleController(ConfigNode node)
     {
       name = "throttle";
+      linkedTo = "throttle";
       node.TryGetValue("name", ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
@@ -33,18 +34,18 @@ namespace Waterfall
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
 
     }
-    public override float Get()
+    public override List<float> Get()
     {
 
       if (overridden)
-        return overrideValue;
+        return new List<float>() { overrideValue };
 
       if (engineController == null)
       {
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
-        return 0f;
+        return new List<float>() { 0f };
       }
-      return engineController.requestedThrottle;
+      return new List<float>() { engineController.requestedThrottle };
     }
   }
 

@@ -55,8 +55,9 @@ namespace Waterfall
         m[i] = xforms[i].GetComponent<Renderer>().material;
       }
     }
-    public override void Apply(float strength)
+    public override void Apply(List<float> strengthList)
     {
+      float strength = strengthList[0];
       for (int i = 0; i < m.Length; i++)
       {
         Vector2 original = m[i].GetTextureOffset(textureName);

@@ -56,7 +56,7 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Shader Color Name");
-      int selectedIndex = GUILayoutx.SelectionList(colorIndex, colorNames, GUI.skin.textArea);
+      int selectedIndex = GUILayout.SelectionGrid(colorIndex, colorNames, 4);
       if (selectedIndex != colorIndex)
       {
         colorIndex = selectedIndex;

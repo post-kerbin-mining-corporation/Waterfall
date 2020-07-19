@@ -54,7 +54,7 @@ namespace Waterfall.UI
       GUILayout.BeginHorizontal();
       GUILayout.Label("Shader Float Name");
       floatName = GUILayout.TextArea(floatName);
-      int selectedIndex = GUILayoutx.SelectionList(floatIndex, floatNames, GUI.skin.textArea);
+      int selectedIndex = GUILayout.SelectionGrid(floatIndex, floatNames, 4);
       if (selectedIndex != floatIndex)
       {
         floatIndex = selectedIndex;

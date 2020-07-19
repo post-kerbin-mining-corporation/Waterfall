@@ -54,29 +54,33 @@ namespace Waterfall
       base.Init(parentEffect);
       baseRotation = xforms[0].localRotation;
     }
-    protected override void ApplyReplace(float strength)
+    protected override void ApplyReplace(List<float> strengthList)
     {
+      float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }
-    protected override void ApplyAdd(float strength)
+    protected override void ApplyAdd(List<float> strengthList)
     {
+      float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }
-    protected override void ApplySubtract(float strength)
+    protected override void ApplySubtract(List<float> strengthList)
     {
+      float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }
-    protected override void ApplyMultiply(float strength)
+    protected override void ApplyMultiply(List<float> strengthList)
     {
+      float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));

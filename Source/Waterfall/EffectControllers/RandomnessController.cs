@@ -18,6 +18,7 @@ namespace Waterfall
     public RandomnessController(ConfigNode node)
     {
       name = "random";
+      linkedTo = "random";
       node.TryGetValue("name", ref name);
       node.TryGetValue("range", ref range);
     }
@@ -27,11 +28,11 @@ namespace Waterfall
       base.Initialize(host);
     }
 
-    public override float Get()
+    public override List<float> Get()
     {
       
       
-      return UnityEngine.Random.Range(range.x, range.y);
+      return new List<float>() { UnityEngine.Random.Range(range.x, range.y) };
     }
   }
 

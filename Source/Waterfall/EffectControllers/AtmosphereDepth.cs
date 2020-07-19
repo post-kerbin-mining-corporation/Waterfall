@@ -17,6 +17,7 @@ namespace Waterfall
     public AtmosphereDensityController(ConfigNode node)
     {
       name = "atmosphereDensity";
+      linkedTo = "atmosphere_density";
       node.TryGetValue("name", ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
@@ -24,11 +25,11 @@ namespace Waterfall
       base.Initialize(host);
 
     }
-    public override float Get()
+    public override List<float> Get()
     {
       if (overridden)
-        return overrideValue;
-      return (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude);
+        return new List<float>() { overrideValue };
+      return new List<float>() { (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) };
     }
   }
 }
