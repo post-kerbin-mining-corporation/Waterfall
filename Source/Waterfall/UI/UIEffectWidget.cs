@@ -17,7 +17,7 @@ namespace Waterfall.UI
     WaterfallEffect fx;
     WaterfallUI parent;
 
-    bool showUI = true;
+    bool showUI = false;
     bool enabled = true;
     string[] modelOffsetString;
     string[] modelRotationString;
@@ -27,6 +27,10 @@ namespace Waterfall.UI
     {
       parent = uiHost;
       fx = effect;
+      modelRotation = effect.FXModel.modelRotationOffset;
+      modelScale = effect.FXModel.modelScaleOffset;
+      modelOffset = effect.FXModel.modelPositionOffset ;
+
       modelOffsetString = new string[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
       modelRotationString = new string[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
       modelScaleString = new string[] { effect.FXModel.modelScaleOffset.x.ToString(), effect.FXModel.modelScaleOffset.y.ToString(), effect.FXModel.modelScaleOffset.z.ToString() };
@@ -59,12 +63,28 @@ namespace Waterfall.UI
         GUILayout.Label($"<b>{fx.name}</b>");
         GUILayout.FlexibleSpace();
         GUILayout.Label("Drawn");
-        enabled = GUILayout.Toggle(enabled, "");
+        bool toggle = GUILayout.Toggle(enabled, "");
+        if (toggle != enabled)
+        {
+
+          enabled = toggle;
+          Utils.Log($"[EffectWidget] Set state of {fx.name} to {enabled}", LogType.UI);
+          fx.SetEnabled(enabled);
+        }
         fx.SetEnabled(enabled);
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.Label($"<b>{fx.FXModifiers.Count} Effect Modifiers</b>");
         GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Copy"))
+        {
+          parent.CopyEffect(this.fx);
+        }
+        if (GUILayout.Button("Delete"))
+        {
+          parent.OpenEffectDeleteWindow(fx);
+        }
+        
       }
       else
       {
@@ -75,8 +95,14 @@ namespace Waterfall.UI
         GUILayout.Label($"<b>{fx.name}</b>");
         GUILayout.FlexibleSpace();
         GUILayout.Label("Drawn");
-        enabled = GUILayout.Toggle(enabled, "");
-        fx.SetEnabled(enabled);
+        bool toggle = GUILayout.Toggle(enabled, "");
+        if (toggle != enabled)
+        {
+
+          enabled = toggle;
+          Utils.Log($"[EffectWidget] Set state of {fx.name} to {enabled}", LogType.UI);
+          fx.SetEnabled(enabled);
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

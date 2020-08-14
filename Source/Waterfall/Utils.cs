@@ -44,7 +44,7 @@ namespace Waterfall
       if (logType == LogType.Any) doLog = true;
 
       if (doLog)
-        Debug.Log(String.Format("[{0}]: {1}", ModName, str));
+        Debug.Log(String.Format("[{0}]{1}", ModName, str));
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ namespace Waterfall
     /// <param name="str">Error string </param>
     public static void LogError(string str)
     {
-      Debug.LogError(String.Format("[{0}]: {1}", ModName, str));
+      Debug.LogError(String.Format("[{0}]{1}", ModName, str));
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ namespace Waterfall
     /// <param name="str">warning string </param>
     public static void LogWarning(string str)
     {
-      Debug.LogWarning(String.Format("[{0}]: {1}", ModName, str));
+      Debug.LogWarning(String.Format("[{0}]{1}", ModName, str));
     }
 
     public static ConfigNode SerializeFloatCurve(string name, FloatCurve curve)

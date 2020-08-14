@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using KSP.UI.Screens;
-using KSP.Localization;
 
 namespace Waterfall.UI
 {
@@ -29,9 +26,11 @@ namespace Waterfall.UI
     #region GUI Widgets
     UICurveEditWindow curveEditWindow;
     UIModifierPopupWindow modifierPopupWindow;
+    UIAddEffectWindow effectAddWindow;
     UIModifierWindow currentModWinForCurve;
     UIMaterialEditWindow materialEditWindow;
     UIColorPickerWindow colorPickWindow;
+    UITexturePickerWindow texturePickWindow;
     string currentCurveTag;
     #endregion
 
@@ -70,7 +69,7 @@ namespace Waterfall.UI
     /// </summary>
     protected override void Draw()
     {
-     
+
       base.Draw();
       foreach (UIModifierWindow modWin in editWindows)
       {
@@ -88,9 +87,17 @@ namespace Waterfall.UI
       {
         modifierPopupWindow.Draw();
       }
+      if (effectAddWindow != null)
+      {
+        effectAddWindow.Draw();
+      }
       if (colorPickWindow != null)
       {
         colorPickWindow.Draw();
+      }
+      if (texturePickWindow != null)
+      {
+        texturePickWindow.Draw();
       }
     }
 
@@ -109,7 +116,7 @@ namespace Waterfall.UI
 
       // Draw the effects list
 
-      
+
       DrawEffectsList();
       GUI.DragWindow();
     }
@@ -123,7 +130,7 @@ namespace Waterfall.UI
       GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
 
       GUILayout.FlexibleSpace();
-      
+
       Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = resources.GetColor("cancel_color");
       if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
@@ -175,7 +182,7 @@ namespace Waterfall.UI
         if (xParsed != randomControllerValue.x || yParsed != randomControllerValue.y)
           randomControllerValue = new Vector2(xParsed, yParsed);
       }
-      
+
       GUILayout.EndHorizontal();
 
 
@@ -202,7 +209,7 @@ namespace Waterfall.UI
       if (GUILayout.Button("Dump selected to log"))
       {
         Utils.Log(selectedModule.Export().ToString());
-        
+
       }
       if (GUILayout.Button("Copy selected to clipboard"))
       {
@@ -220,10 +227,10 @@ namespace Waterfall.UI
       partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.Height(40f));
 
       GUILayout.BeginHorizontal();
-      for (int i=0; i< effectsModules.Count; i++)
+      for (int i = 0; i < effectsModules.Count; i++)
       {
 
-        if (GUILayout.Button($"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)", GUILayout.MaxWidth(250f))) 
+        if (GUILayout.Button($"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)", GUILayout.MaxWidth(250f)))
         {
           SelectFXModule(effectsModules[i]);
         }
@@ -239,7 +246,19 @@ namespace Waterfall.UI
     protected void DrawEffectsList()
     {
       GUILayout.BeginVertical(GUILayout.ExpandHeight(true));
+      GUILayout.BeginHorizontal();
       GUILayout.Label("<b>EFFECTS</b>");
+      GUILayout.FlexibleSpace();
+      if (selectedModule != null)
+      {
+        if (GUILayout.Button("Add"))
+        {
+          OpenEffectAddWindow();
+        }
+      }
+      GUILayout.EndHorizontal();
+
+
       effectsScrollListPosition = GUILayout.BeginScrollView(effectsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true), GUILayout.MinHeight(350f));
 
       for (int i = 0; i < effectUIWidgets.Count; i++)
@@ -255,7 +274,7 @@ namespace Waterfall.UI
       selectedModule = fxMod;
       RefreshEffectList();
     }
-   
+
     public void RefreshEffectList()
     {
       effectUIWidgets.Clear();
@@ -281,24 +300,20 @@ namespace Waterfall.UI
         if (effectsModules.Count > 0)
         {
           SelectFXModule(effectsModules[0]);
-           
-         }
+
+        }
 
       }
     }
     protected List<UIModifierWindow> editWindows = new List<UIModifierWindow>();
+
+
 
     public void OpenModifierEditWindow(EffectModifier fxMod)
     {
       foreach (UIModifierWindow editWin in editWindows.ToList())
       {
         editWindows.Remove(editWin);
-        //if (editWin.modifier == fxMod)
-        //{
-        //  editWin.SetWindowState(true);
-        //  return;
-          
-        //}
       }
       try
       {
@@ -308,7 +323,8 @@ namespace Waterfall.UI
           editWindows.Add(new UIColorModifierWindow(colMod, true));
         }
 
-      } catch (InvalidCastException e) {}
+      }
+      catch (InvalidCastException e) { }
       try
       {
         EffectScaleModifier scaleMod = (EffectScaleModifier)fxMod;
@@ -388,7 +404,7 @@ namespace Waterfall.UI
 
     public UIMaterialEditWindow OpenMaterialEditWindow(WaterfallModel mdl)
     {
-      
+
       if (materialEditWindow != null)
       {
         materialEditWindow.ChangeMaterial(mdl);
@@ -415,6 +431,33 @@ namespace Waterfall.UI
       return colorPickWindow;
     }
 
+    public UITexturePickerWindow OpenTextureEditWindow(string t, string current)
+    {
+
+      if (texturePickWindow != null)
+      {
+        Utils.Log("[WaterfallUI] Changing Texture Picker target");
+        texturePickWindow.ChangeTexture(t, current);
+      }
+      else
+      {
+        Utils.Log("[WaterfallUI] Opening Texture Picker");
+        texturePickWindow = new UITexturePickerWindow(t, current, true);
+      }
+      return texturePickWindow;
+    }
+
+    public string GetTextureFromPicker()
+    {
+      if (texturePickWindow != null)
+        return texturePickWindow.GetTexturePath();
+      else
+      {
+        return "";
+      }
+
+
+    }
     public Color GetColorFromPicker()
     {
       if (colorPickWindow != null)
@@ -426,6 +469,31 @@ namespace Waterfall.UI
 
 
     }
+    public void CopyEffect(WaterfallEffect toCopy)
+    {
+      selectedModule.CopyEffect(toCopy);
+      RefreshEffectList();
+    }
+
+    public void OpenEffectAddWindow()
+    {
+      if (effectAddWindow == null)
+      {
+        effectAddWindow = new UIAddEffectWindow(true);
+
+      }
+      effectAddWindow.SetAddMode(selectedModule);
+    }
+    public void OpenEffectDeleteWindow(WaterfallEffect toDelete)
+    {
+      if (effectAddWindow == null)
+      {
+        effectAddWindow = new UIAddEffectWindow(true);
+
+      }
+      effectAddWindow.SetDeleteMode(selectedModule, toDelete);
+    }
+
     public void OpenEffectModifierAddWindow(WaterfallEffect fx)
     {
       if (modifierPopupWindow == null)
@@ -440,7 +508,7 @@ namespace Waterfall.UI
       if (modifierPopupWindow == null)
       {
         modifierPopupWindow = new UIModifierPopupWindow(true);
-        
+
       }
       modifierPopupWindow.SetDeleteMode(fx, toDelete);
     }
@@ -456,7 +524,7 @@ namespace Waterfall.UI
     {
       for (int i = 0; i < effectsModules.Count; i++)
       {
-        
+
         for (int j = 0; j < effectsModules[i].Controllers.Count; j++)
         {
           effectsModules[i].SetControllerOverride(effectsModules[i].Controllers[j].name, useControllers);
@@ -477,7 +545,7 @@ namespace Waterfall.UI
             effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, randomControllerValue.x);
           }
 
-          
+
         }
       }
       for (int i = 0; i < effectUIWidgets.Count; i++)
@@ -488,6 +556,10 @@ namespace Waterfall.UI
       if (colorPickWindow != null)
       {
         colorPickWindow.Update();
+      }
+      if (texturePickWindow != null)
+      {
+        texturePickWindow.Update();
       }
     }
   }

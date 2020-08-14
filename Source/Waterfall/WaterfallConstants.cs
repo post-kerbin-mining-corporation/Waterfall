@@ -43,8 +43,18 @@ namespace Waterfall
       ["_TileX"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
       ["_TileY"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
       ["_MainTex"] = new MaterialData(WaterfallMaterialPropertyType.Texture),
-      ["_ExhaustDirScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
-      ["_PlumeDir"] = new MaterialData(WaterfallMaterialPropertyType.Vector4)
+      
+      ["_PlumeDir"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
+      ["_FadeIn"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_FadeOut"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_ExpandOffset"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(-10f, 10f)),
+      ["_ExpandBounded"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(-10f, 10f)),
+      ["_ExpandLinear"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(-10f, 10f)),
+      ["_ExpandSquare"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(-10f, 10f)),
+      
+      ["_FalloffStart"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Symmetry"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 24f)),
+      ["_SymmetryStrength"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
 
     };
 

@@ -30,6 +30,15 @@ namespace Waterfall
     }
 
     /// <summary>
+    /// Requests a shader by name
+    /// </summary>
+    /// <returns></returns>
+    public static List<string> GetAllShadersNames()
+    {
+      return ShaderDictionary.Keys.ToList();
+    }
+
+    /// <summary>
     /// Loads all shaders in the plugin's data directory
     /// </summary>
     public static void LoadShaders()

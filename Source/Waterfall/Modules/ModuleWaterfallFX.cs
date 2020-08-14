@@ -231,6 +231,29 @@ namespace Waterfall
       return allControllers.Keys.ToList();
 
     }
+
+    public void AddEffect(WaterfallEffect newEffect)
+    {
+      Utils.Log("[ModuleWaterfallFX]: Added new effect", LogType.Modules);
+      allFX.Add(newEffect);
+      newEffect.InitializeEffect(this, true);
+    }
+    public void CopyEffect(WaterfallEffect toCopy)
+    {
+      Utils.Log($"[ModuleWaterfallFX]: Copying effect {toCopy}", LogType.Modules);
+
+      WaterfallEffect newEffect = new WaterfallEffect(toCopy);
+      allFX.Add(newEffect);
+      newEffect.InitializeEffect(this, false);
+    }
+
+    public void RemoveEffect(WaterfallEffect toRemove)
+    {
+      Utils.Log("[ModuleWaterfallFX]: Deleting effect", LogType.Modules);
+
+      toRemove.CleanupEffect(this);
+      allFX.Remove(toRemove);
+    }
     /// <summary>
     /// Does initialization of everything woo
     /// </summary>
@@ -262,7 +285,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Initializing Effects", LogType.Modules);
       for (int i = 0; i < allFX.Count; i++)
       {
-        allFX[i].InitializeEffect(this);
+        allFX[i].InitializeEffect(this, false);
       }
     }
     protected void ReinitializeEffects()
@@ -270,7 +293,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Reitializing Effects", LogType.Modules);
       for (int i = 0; i < allFX.Count; i++)
       {
-        allFX[i].InitializeEffect(this);
+        allFX[i].InitializeEffect(this, false);
       }
     }
 

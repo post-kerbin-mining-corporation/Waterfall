@@ -20,7 +20,10 @@ namespace Waterfall
 
     public List<Material> materials;
 
-    public WaterfallMaterial() { }
+    public WaterfallMaterial() {
+
+      matProperties = new List<WaterfallMaterialProperty>();
+    }
     public WaterfallMaterial(ConfigNode node)
     {
       Load(node);
@@ -64,7 +67,7 @@ namespace Waterfall
       ConfigNode node = new ConfigNode();
       node.name = WaterfallConstants.MaterialNodeName;
       if (baseTransformName != "")
-      node.AddValue("baseTransform", baseTransformName);
+        node.AddValue("baseTransform", baseTransformName);
       if (transformName != "")
         node.AddValue("transform", transformName);
       node.AddValue("shader", shaderName);
@@ -104,10 +107,17 @@ namespace Waterfall
       foreach (Material mat in materials)
       {
         mat.shader = ShaderLoader.GetShader(shaderName);
+       
+        
         foreach (WaterfallMaterialProperty p in matProperties)
         {
           p.Initialize(mat);
         }
+        if (mat.HasProperty("_TimeOffset"))
+        {
+          mat.SetFloat("_TimeOffset", UnityEngine.Random.Range(-10, 10));
+        }
+
         Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader));
       }
     }
@@ -221,6 +231,47 @@ namespace Waterfall
       foreach (Material mat in materials)
       {
         mat.SetTextureScale(propertyName, value);
+      }
+    }
+
+    /// <summary>
+    /// Sets the texture for this material. If it doesn't exist as a material property object, create it.
+    /// </summary>
+    /// <param name="propertyName"></param>
+    /// <param name="value"></param>
+    public void SetTexture(string propertyName, string value)
+    {
+      Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value}");
+      bool existsSavedProperty = false;
+      foreach (WaterfallMaterialProperty p in matProperties)
+      {
+        if (p.propertyName == propertyName)
+          existsSavedProperty = true;
+      }
+      if (!existsSavedProperty)
+      {
+        WaterfallMaterialTextureProperty newProp = new WaterfallMaterialTextureProperty();
+        newProp.propertyName = propertyName;
+        newProp.texturePath = value;
+        newProp.textureScale = materials[0].GetTextureScale(propertyName);
+        newProp.textureOffset = materials[0].GetTextureOffset(propertyName);
+        matProperties.Add(newProp);
+      }
+      else
+      {
+        foreach (WaterfallMaterialProperty p in matProperties)
+        {
+          if (p.propertyName == propertyName)
+          {
+            WaterfallMaterialTextureProperty t = (WaterfallMaterialTextureProperty)p;
+            t.texturePath = value;
+          }
+        }
+      }
+      foreach (Material mat in materials)
+      {
+        Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value} on {mat}");
+        mat.SetTexture(propertyName, GameDatabase.Instance.GetTexture(value, false));
       }
     }
 

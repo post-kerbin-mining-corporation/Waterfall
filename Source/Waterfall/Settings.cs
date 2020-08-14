@@ -18,7 +18,9 @@ namespace Waterfall
     }
     protected void Start()
     {
+      
       Settings.Load();
+      WaterfallAssets.Load();
     }
   }
 

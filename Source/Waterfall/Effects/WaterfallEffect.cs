@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Waterfall
@@ -43,7 +41,17 @@ namespace Waterfall
       get { return savedNode; }
     }
 
-    public WaterfallEffect() {}
+    public WaterfallEffect() { }
+
+    public WaterfallEffect(string parent, WaterfallModel mdl)
+    {
+      parentName = parent;
+      model = mdl;
+      PositionOffset = Vector3.zero;
+      RotationOffset = Vector3.zero;
+      ScaleOffset = Vector3.one;
+      fxModifiers = new List<EffectModifier>();
+    }
 
     public WaterfallEffect(ConfigNode node)
     {
@@ -69,6 +77,13 @@ namespace Waterfall
       ScaleOffset = scaleOffset;
       if (overrideTransformName != "")
         fx.savedNode.SetValue("parentName", overrideTransformName, true);
+      Load(fx.savedNode);
+    }
+    public WaterfallEffect(WaterfallEffect fx)
+    {
+      PositionOffset = fx.PositionOffset;
+      RotationOffset = fx.RotationOffset;
+      ScaleOffset = fx.ScaleOffset;
       Load(fx.savedNode);
     }
 
@@ -145,10 +160,11 @@ namespace Waterfall
         GameObject.Destroy(effectTransform.gameObject);
       }
     }
-     public void InitializeEffect(ModuleWaterfallFX host)
+
+    public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing)
     {
 
-      Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} ", name), LogType.Effects);
+      Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1}", name, parentName), LogType.Effects);
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
       effectTransforms = new List<Transform>();
@@ -162,7 +178,7 @@ namespace Waterfall
           Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
           return;
         }
-        model.Initialize(effectTransform);
+        model.Initialize(effectTransform, fromNothing);
 
         effectTransform.SetParent(parents[i], true);
         effectTransform.localPosition = PositionOffset;
@@ -183,6 +199,7 @@ namespace Waterfall
         fxModifiers[i].Init(this);
       }
     }
+
 
     public List<Transform> GetModelTransforms()
     {
@@ -216,17 +233,18 @@ namespace Waterfall
 
     public void SetEnabled(bool state)
     {
-      if (effectVisible != state)
+      foreach (Transform t in effectTransforms)
       {
         if (state)
         {
-          effectTransform.localScale = savedScale;
+          t.localScale = savedScale;
         } else
         {
-          effectTransform.localScale = Vector3.one*0.00001f;
+          t.localScale = Vector3.one*0.00001f;
         }
-        effectVisible = state;
       }
+      effectVisible = state;
+     
     }
   }
 

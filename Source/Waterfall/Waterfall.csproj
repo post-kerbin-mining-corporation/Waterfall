@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="AssetLibraries.cs" />
     <Compile Include="EffectControllers\AtmosphereDepth.cs" />
     <Compile Include="EffectControllers\CustomController.cs" />
     <Compile Include="EffectControllers\EffectController.cs" />
@@ -103,24 +104,26 @@
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UIColorPickerWindow.cs" />
+    <Compile Include="UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIFloatModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIPositionModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIRotationModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIScaleModifierWindow.cs" />
+    <Compile Include="UI\UIAddEffectWindow.cs" />
     <Compile Include="UI\UIAppToolbarWindow.cs" />
     <Compile Include="UI\UIBaseWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIColorModifierWindow.cs" />
-    <Compile Include="UI\UIColorPickerWindow.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Compile Include="UI\UICurveEditWindow.cs" />
     <Compile Include="UI\UIEffectWidget.cs" />
     <Compile Include="UI\ModifierWindows\UIModifierWindow.cs" />
     <Compile Include="UI\UIMaterialEditWindow.cs" />
     <Compile Include="UI\UIModelEditWindow.cs" />
-    <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
+    <Compile Include="UI\UITexturePickerWindow.cs" />
     <Compile Include="UI\UIUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIUVScrollModifierWindow.cs" />
     <Compile Include="UI\UIWidget.cs" />
