@@ -172,17 +172,31 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Randomness Min/Max", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+
       string xValue = GUILayout.TextArea(randomControllerValue.x.ToString(), GUILayout.MaxWidth(60f));
       string yValue = GUILayout.TextArea(randomControllerValue.y.ToString(), GUILayout.MaxWidth(60f));
 
       float xParsed;
       float yParsed;
-      if (float.TryParse(xValue, out xParsed) && float.TryParse(yValue, out yParsed))
+      Vector2 newRand = new Vector2(randomControllerValue.x, randomControllerValue.y);
+      if (float.TryParse(xValue, out xParsed))
       {
-        if (xParsed != randomControllerValue.x || yParsed != randomControllerValue.y)
-          randomControllerValue = new Vector2(xParsed, yParsed);
+        if (xParsed != randomControllerValue.x)
+        {
+          newRand.x = xParsed;
+        }
       }
-
+      if (float.TryParse(yValue, out yParsed))
+      {
+        if (yParsed != randomControllerValue.y)
+        {
+          newRand.y = yParsed;
+        }
+      }
+      if (newRand.x != randomControllerValue.x || newRand.y != randomControllerValue.y)
+      {
+        randomControllerValue = new Vector2(xParsed, yParsed);
+      }
       GUILayout.EndHorizontal();
 
 

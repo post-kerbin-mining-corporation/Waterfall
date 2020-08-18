@@ -245,20 +245,24 @@ namespace Waterfall.UI
         {
           floatValues[kvp.Key] = sliderVal;
           floatStrings[kvp.Key] = sliderVal.ToString();
-          model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
-        }
 
-        //= GUILayout.TextArea(floatStrings[kvp.Key]);
+          model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
+          
+        }
+        
         textVal = GUILayout.TextArea(floatStrings[kvp.Key], GUILayout.Width(90f));
 
+        
         if (textVal != floatStrings[kvp.Key])
         {
           float outVal;
           if (float.TryParse(textVal, out outVal))
           {
             floatValues[kvp.Key] = outVal;
-            floatStrings[kvp.Key] = textVal;
+
+            model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
           }
+          floatStrings[kvp.Key] = textVal;
         }
 
         //float parsed = kvp.Value;

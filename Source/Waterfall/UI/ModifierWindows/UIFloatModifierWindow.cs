@@ -32,8 +32,8 @@ namespace Waterfall.UI
     public UIFloatModifierWindow(EffectFloatModifier mod, bool show) : base((EffectModifier)mod, show)
     {
       floatMod = mod;
-      floatName = floatMod.floatName;
       floatNames = MaterialUtils.FindValidShaderProperties(floatMod.GetMaterial(), WaterfallMaterialPropertyType.Float).ToArray();
+      floatIndex = floatNames.ToList().FindIndex(x => x == floatMod.floatName);
       GenerateCurveThumbs(mod);
     }
 
@@ -53,7 +53,6 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Shader Float Name");
-      floatName = GUILayout.TextArea(floatName);
       int selectedIndex = GUILayout.SelectionGrid(floatIndex, floatNames, 4);
       if (selectedIndex != floatIndex)
       {
@@ -61,10 +60,6 @@ namespace Waterfall.UI
         floatName = floatNames[floatIndex];
         floatMod.ApplyFloatName(floatName);
       }
-    //  if (GUILayout.Button("Apply"))
-  //    {
-//        floatMod.ApplyFloatName(floatName);
-      //}
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();

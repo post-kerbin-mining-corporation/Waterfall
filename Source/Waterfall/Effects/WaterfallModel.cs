@@ -77,15 +77,16 @@ namespace Waterfall
       inst.SetActive(true);
 
       Transform modelTransform = inst.GetComponent<Transform>();
-      modelTransform.localScale = modelScaleOffset;
+      
       modelTransform.SetParent(parent, true);
+      modelTransform.localScale = modelScaleOffset;
       modelTransform.localPosition = modelPositionOffset;
 
       if (modelRotationOffset == Vector3.zero)
         modelTransform.localRotation = Quaternion.identity;
       else
         modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
-      Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}", modelTransform.position, modelRotationOffset));
+      Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelTransform.position, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
 
@@ -108,7 +109,7 @@ namespace Waterfall
       {
         m.Initialize(modelTransform);
       }
-
+      ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
     }
 
     public void ApplyOffsets(Vector3 position, Vector3 rotation, Vector3 scale)

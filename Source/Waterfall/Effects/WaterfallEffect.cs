@@ -155,9 +155,10 @@ namespace Waterfall
     public void CleanupEffect(ModuleWaterfallFX host)
     {
       Utils.Log(String.Format("[WaterfallEffect]: Deleting effect {0} ", name), LogType.Effects);
-      foreach (Transform t in effectTransforms)
+      for (int i= model.modelTransforms.Count-1; i >= 0 ; i--)
+      
       {
-        GameObject.Destroy(effectTransform.gameObject);
+        GameObject.Destroy(model.modelTransforms[i].gameObject);
       }
     }
 
@@ -178,7 +179,6 @@ namespace Waterfall
           Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
           return;
         }
-        model.Initialize(effectTransform, fromNothing);
 
         effectTransform.SetParent(parents[i], true);
         effectTransform.localPosition = PositionOffset;
@@ -188,9 +188,11 @@ namespace Waterfall
         else
           effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
 
-        effectTransform.localScale = new Vector3(effectTransform.localScale.x * ScaleOffset.x, effectTransform.localScale.y * ScaleOffset.y, effectTransform.localScale.z * ScaleOffset.z);
+        effectTransform.localScale = new Vector3( ScaleOffset.x, ScaleOffset.y, ScaleOffset.z);
         savedScale = effectTransform.localScale;
         Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}", LogType.Effects);
+        model.Initialize(effectTransform, fromNothing);
+        
         effectTransforms.Add(effectTransform);
       }
 
@@ -242,6 +244,7 @@ namespace Waterfall
         {
           t.localScale = Vector3.one*0.00001f;
         }
+        Utils.Log($"Set scale to {t.localScale}");
       }
       effectVisible = state;
      

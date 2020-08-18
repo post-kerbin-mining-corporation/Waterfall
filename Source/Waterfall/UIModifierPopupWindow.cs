@@ -54,7 +54,7 @@ namespace Waterfall.UI
       controllerTypes = fx.parentModule.GetControllerNames().ToArray();
 
       List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
-
+      modifierFlag = 0;
       transformOptions = new string[xFormOptions.Count];
       for (int i=0;i < xFormOptions.Count; i++)
       {
