@@ -181,14 +181,16 @@ namespace Waterfall
         }
 
         effectTransform.SetParent(parents[i], true);
-        effectTransform.localPosition = PositionOffset;
+        effectTransform.localPosition = Vector3.zero; // PositionOffset;
+        effectTransform.localRotation = Quaternion.identity;
+        effectTransform.localScale = Vector3.one;
 
-        if (RotationOffset == Vector3.zero)
-          effectTransform.localRotation = Quaternion.identity;
-        else
-          effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
+        //if (RotationOffset == Vector3.zero)
+        //  effectTransform.localRotation = Quaternion.identity;
+        //else
+        //  effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
 
-        effectTransform.localScale = new Vector3( ScaleOffset.x, ScaleOffset.y, ScaleOffset.z);
+        //effectTransform.localScale = new Vector3( ScaleOffset.x, ScaleOffset.y, ScaleOffset.z);
         savedScale = effectTransform.localScale;
         Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}", LogType.Effects);
         model.Initialize(effectTransform, fromNothing);
@@ -244,7 +246,6 @@ namespace Waterfall
         {
           t.localScale = Vector3.one*0.00001f;
         }
-        Utils.Log($"Set scale to {t.localScale}");
       }
       effectVisible = state;
      

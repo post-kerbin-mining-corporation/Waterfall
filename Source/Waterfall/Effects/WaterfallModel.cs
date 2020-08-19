@@ -117,7 +117,9 @@ namespace Waterfall
       modelPositionOffset = position;
       modelRotationOffset = rotation;
       modelScaleOffset = scale;
+
       Utils.Log($"[WaterfallModel] Applying geometric offsets {position}, {rotation}, {scale}");
+
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
       scaleOffsetString = $"{scale.x}, {scale.y}, {scale.z}";

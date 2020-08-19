@@ -299,6 +299,7 @@ namespace Waterfall.UI
 
     protected void InitializeShaderProperties(Material m)
     {
+      Utils.Log($"[MaterialEditor] Generating shader property map for {m}");
       colorValues = new Dictionary<string, Color>();
       floatValues = new Dictionary<string, float>();
       textureValues = new Dictionary<string, string>();
@@ -317,7 +318,8 @@ namespace Waterfall.UI
 
       foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
-        
+
+        Utils.Log($"[MaterialEditor] Testing {mProp.Key}, {mProp.Value}");
         if (m.HasProperty(mProp.Key))
         {
           if (mProp.Value.type == WaterfallMaterialPropertyType.Color)
