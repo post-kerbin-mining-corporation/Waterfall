@@ -21,6 +21,14 @@ namespace Waterfall.UI
     Vector2 randomControllerValue;
     float rcsControllerValue;
 
+    public Vector3 modelRotation;
+    public Vector3 modelOffset;
+    public Vector3 modelScale = Vector3.one;
+    string templateName = "";
+    string[] modelOffsetString;
+    string[] modelRotationString;
+    string[] modelScaleString;
+
     #endregion
 
     #region GUI Widgets
@@ -61,6 +69,9 @@ namespace Waterfall.UI
     {
       base.Start();
       windowPos = new Rect(200f, 200f, 800f, 600f);
+      modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+      modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+      modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       GetVesselData();
     }
 
@@ -144,6 +155,7 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       DrawControllers();
+      DrawTemplateControl();
       DrawExporters();
       GUILayout.EndHorizontal();
     }
@@ -152,9 +164,9 @@ namespace Waterfall.UI
     protected void DrawControllers()
     {
       GUILayout.BeginHorizontal();
-
-      useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
       GUILayout.BeginVertical();
+      useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
+      
       GUILayout.Label("<b>CONTROLLERS</b>");
 
       // 
@@ -209,25 +221,52 @@ namespace Waterfall.UI
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
     }
-
-    protected void DrawExporters()
+    protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
-      if (GUILayout.Button("Dump all to log"))
-      {
-        for (int i = 0; i < effectsModules.Count; i++)
-        {
-          Utils.Log(effectsModules[i].Export().ToString());
-        }
-      }
-      if (GUILayout.Button("Dump selected to log"))
+
+      GUILayout.Label("<b>TEMPLATES</b>");
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Template Name");
+      templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
+      GUILayout.EndHorizontal();
+      GUILayout.Label("Template Offset");
+      modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
+    
+      GUILayout.Label("Template Rotation ");
+      modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+
+      GUILayout.Label("Template Scale");
+      modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
+
+
+      GUILayout.EndVertical();
+    }
+     protected void DrawExporters()
+    {
+      GUILayout.BeginVertical();
+
+      GUILayout.Label("<b>EXPORT</b>");
+      if (GUILayout.Button("Dump selected Effects\n to log", GUILayout.Width(150f), GUILayout.Height(60)))
       {
         Utils.Log(selectedModule.Export().ToString());
 
       }
-      if (GUILayout.Button("Copy selected to clipboard"))
+      if (GUILayout.Button("Copy selected Effects\n to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
       {
         GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
+
+      }
+      if (GUILayout.Button("Copy selected Effects\n as template to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+      {
+        ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
+        node.AddValue("templateName", templateName);
+        foreach (WaterfallEffect fx in selectedModule.FX)
+        {
+          node.AddNode(fx.Save());
+        }
+
+        GUIUtility.systemCopyBuffer = (node.ToString());
 
       }
       GUILayout.EndVertical();
@@ -564,6 +603,7 @@ namespace Waterfall.UI
       }
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
+        
         effectUIWidgets[i].Update();
       }
 
