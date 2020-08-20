@@ -85,7 +85,7 @@ namespace Waterfall
       if (modelRotationOffset == Vector3.zero)
         modelTransform.localRotation = Quaternion.identity;
       else
-        modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
+        modelTransform.localEulerAngles = modelRotationOffset;
       Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelTransform.position, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
@@ -111,7 +111,13 @@ namespace Waterfall
       }
       ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
     }
-
+    public void Update()
+    {
+      foreach (WaterfallMaterial m in materials)
+      {
+        m.Update();
+      }
+    }
     public void ApplyOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
     {
       modelPositionOffset = position;
@@ -132,7 +138,9 @@ namespace Waterfall
         if (modelRotationOffset == Vector3.zero)
           modelTransform.localRotation = Quaternion.identity;
         else
-          modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
+        {
+          modelTransform.localEulerAngles = modelRotationOffset;
+        }
       }
 
     }

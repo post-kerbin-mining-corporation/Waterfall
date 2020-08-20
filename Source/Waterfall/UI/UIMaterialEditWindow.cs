@@ -344,7 +344,14 @@ namespace Waterfall.UI
           }
           if (mProp.Value.type == WaterfallMaterialPropertyType.Texture)
           {
-            textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
+            if (m.GetTexture(mProp.Key))
+            {
+              textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
+            }
+            else
+            {
+              textureValues.Add(mProp.Key, null);
+            }
             textureEdits.Add(mProp.Key, false);
             textureScaleValues.Add(mProp.Key, m.GetTextureScale(mProp.Key));
             textureOffsetValues.Add(mProp.Key, m.GetTextureOffset(mProp.Key));

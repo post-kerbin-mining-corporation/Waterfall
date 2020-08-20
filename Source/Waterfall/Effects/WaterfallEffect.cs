@@ -84,7 +84,7 @@ namespace Waterfall
       PositionOffset = fx.PositionOffset;
       RotationOffset = fx.RotationOffset;
       ScaleOffset = fx.ScaleOffset;
-      Load(fx.savedNode);
+      Load(fx.Save());
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ namespace Waterfall
         effectTransform.SetParent(parents[i], true);
         effectTransform.localPosition = Vector3.zero; // PositionOffset;
         effectTransform.localRotation = Quaternion.identity;
-        effectTransform.localScale = Vector3.one;
+        //effectTransform.localScale = Vector3.one;
 
         //if (RotationOffset == Vector3.zero)
         //  effectTransform.localRotation = Quaternion.identity;
@@ -214,9 +214,11 @@ namespace Waterfall
     {
       if (effectVisible)
       {
+        model.Update();
         for (int i = 0; i < fxModifiers.Count; i++)
         {
           fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
+         
         }
       }
     }
