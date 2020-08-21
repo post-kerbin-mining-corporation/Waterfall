@@ -15,7 +15,7 @@ namespace Waterfall
     public Vector2 range = new Vector2();
 
 
-    public RandomnessController(ConfigNode node)
+    public override void SetupController(ConfigNode node)
     {
       name = "random";
       linkedTo = "random";

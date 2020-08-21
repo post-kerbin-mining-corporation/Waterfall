@@ -16,7 +16,7 @@ namespace Waterfall
     public float currentThrottle = 1;
     ModuleRCSFX rcsController;
 
-    public RCSController(ConfigNode node)
+    public override void SetupController(ConfigNode node)
     {
       name = "rcs";
       linkedTo = "rcs";

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Waterfall
 {
 
-  public class WaterfallModel
+  public class WaterfallModel:ScriptableObject
   {
     public string path;
     public string positionOffsetString;
@@ -21,20 +21,21 @@ namespace Waterfall
     public Vector3 modelRotationOffset = Vector3.zero;
     public Vector3 modelScaleOffset = Vector3.one;
 
-    public WaterfallModel()
+    public void SetupModel()
     {
       modelTransforms = new List<Transform>();
     }
 
-    public WaterfallModel(string modelPath, string shader)
+    public void SetupModel(string modelPath, string shader)
     {
       modelTransforms = new List<Transform>();
       path = modelPath;
       overrideShader = shader;
     }
 
-    public WaterfallModel(ConfigNode node) : this()
+    public void SetupModel(ConfigNode node)
     {
+      modelTransforms = new List<Transform>();
       Load(node);
     }
     public void Load(ConfigNode node)
@@ -48,7 +49,9 @@ namespace Waterfall
       materials = new List<WaterfallMaterial>();
       foreach (ConfigNode materialNode in node.GetNodes(WaterfallConstants.MaterialNodeName))
       {
-        materials.Add(new WaterfallMaterial(materialNode));
+        WaterfallMaterial newMat = ScriptableObject.CreateInstance<WaterfallMaterial>();
+        newMat.SetupMaterial(materialNode);
+        materials.Add(newMat);
       }
     }
     public ConfigNode Save()

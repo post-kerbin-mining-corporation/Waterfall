@@ -32,7 +32,9 @@ namespace Waterfall
       allFX = new List<WaterfallEffect>();
       foreach (ConfigNode fxDataNode in effectNodes)
       {
-        allFX.Add(new WaterfallEffect(fxDataNode));
+        WaterfallEffect newFX = ScriptableObject.CreateInstance<WaterfallEffect>();
+        newFX.SetupEffect(fxDataNode);
+        allFX.Add(newFX);
       }
     }
     

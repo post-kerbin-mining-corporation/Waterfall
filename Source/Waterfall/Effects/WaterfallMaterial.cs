@@ -27,7 +27,7 @@ namespace Waterfall
       }
     }
   }
-  public class WaterfallMaterial
+  public class WaterfallMaterial:ScriptableObject
   {
     public string shaderName;
     public string transformName = "";
@@ -40,12 +40,12 @@ namespace Waterfall
     protected List<WaterfallSkinnedMesh> skinnedMeshes;
     protected List<MeshFilter> targetFilter;
     protected List<Mesh> bakedMesh;
-    public WaterfallMaterial()
+    public void SetupMaterial()
     {
 
       matProperties = new List<WaterfallMaterialProperty>();
     }
-    public WaterfallMaterial(ConfigNode node)
+    public void SetupMaterial(ConfigNode node)
     {
       Load(node);
     }

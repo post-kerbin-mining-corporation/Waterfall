@@ -7,7 +7,7 @@ namespace Waterfall
   /// <summary>
   /// This class represents a single effect. An effect contains a MODEL with various PROPERTIES, modified by EFFECTS
   /// </summary>
-  public class WaterfallEffect
+  public class WaterfallEffect:ScriptableObject
   {
     public string name = "";
     public string parentName = "";
@@ -42,9 +42,9 @@ namespace Waterfall
       get { return savedNode; }
     }
 
-    public WaterfallEffect() { }
+    public void SetupEffect() { }
 
-    public WaterfallEffect(string parent, WaterfallModel mdl)
+    public void SetupEffect(string parent, WaterfallModel mdl)
     {
       parentName = parent;
       model = mdl;
@@ -54,7 +54,7 @@ namespace Waterfall
       fxModifiers = new List<EffectModifier>();
     }
 
-    public WaterfallEffect(ConfigNode node)
+    public void SetupEffect(ConfigNode node)
     {
       TemplatePositionOffset = Vector3.zero;
       TemplateRotationOffset = Vector3.zero;
@@ -62,7 +62,7 @@ namespace Waterfall
       Load(node);
     }
 
-    public WaterfallEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
+    public void SetupEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
     {
       TemplatePositionOffset = positionOffset;
       TemplateRotationOffset = rotationOffset;
@@ -71,7 +71,7 @@ namespace Waterfall
       Load(node);
     }
 
-    public WaterfallEffect(WaterfallEffect fx, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset, string overrideTransformName)
+    public void SetupEffect(WaterfallEffect fx, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset, string overrideTransformName)
     {
       TemplatePositionOffset = positionOffset;
       TemplateRotationOffset = rotationOffset;
@@ -80,7 +80,7 @@ namespace Waterfall
         fx.savedNode.SetValue("parentName", overrideTransformName, true);
       Load(fx.savedNode);
     }
-    public WaterfallEffect(WaterfallEffect fx)
+    public void SetupEffect(WaterfallEffect fx)
     {
       TemplatePositionOffset = fx.TemplatePositionOffset;
       TemplateRotationOffset = fx.TemplateRotationOffset;
@@ -102,7 +102,8 @@ namespace Waterfall
         Utils.LogError(String.Format("[WaterfallEffect]: EFFECT with name {0} does not define parentName, which is required", name));
         return;
       }
-      model = new WaterfallModel(node.GetNode(WaterfallConstants.ModelNodeName));
+      model = ScriptableObject.CreateInstance<WaterfallModel>();
+        model.SetupModel(node.GetNode(WaterfallConstants.ModelNodeName));
       fxModifiers = new List<EffectModifier>();
 
       // types

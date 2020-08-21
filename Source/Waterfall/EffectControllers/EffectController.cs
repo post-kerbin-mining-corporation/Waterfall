@@ -9,7 +9,7 @@ namespace Waterfall
   /// <summary>
   /// A generic effect controller
   /// </summary>
-  public class WaterfallController
+  public class WaterfallController: ScriptableObject
   {
     // 
     public string name = "unnamedController";
@@ -18,6 +18,8 @@ namespace Waterfall
     protected float overrideValue = 0.0f;
     protected float value = 0.0f;
     protected ModuleWaterfallFX parentModule;
+
+    public virtual void SetupController(ConfigNode node) { }
 
     /// <summary>
     /// Get the value of the controller. 

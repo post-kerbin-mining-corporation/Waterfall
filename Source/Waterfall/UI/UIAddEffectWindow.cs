@@ -156,11 +156,11 @@ namespace Waterfall.UI
 
     WaterfallEffect CreateNewEffect()
     {
-      WaterfallModel model = new WaterfallModel(modelOptions[modelFlag], shaderOptions[shaderFlag]);
+      WaterfallModel model = ScriptableObject.CreateInstance<WaterfallModel>();
+      model.SetupModel(modelOptions[modelFlag], shaderOptions[shaderFlag]);     
       
-      
-      WaterfallEffect newFX = new WaterfallEffect(parentName, model
-        );
+      WaterfallEffect newFX = ScriptableObject.CreateInstance<WaterfallEffect>();
+      newFX.SetupEffect(parentName, model);
       newFX.name = newEffectName;
 
       return newFX;

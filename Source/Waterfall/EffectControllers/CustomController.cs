@@ -9,7 +9,7 @@ namespace Waterfall
   [System.Serializable]
   public class CustomController : WaterfallController
   {
-    public CustomController(ConfigNode node)
+    public override void SetupController(ConfigNode node)
     {
       name = "throttle";
       linkedTo = "custom";

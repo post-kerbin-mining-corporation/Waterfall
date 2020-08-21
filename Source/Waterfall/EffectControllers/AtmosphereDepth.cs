@@ -14,7 +14,7 @@ namespace Waterfall
   {
     public float atmosphereDepth = 1;
 
-    public AtmosphereDensityController(ConfigNode node)
+    public override void SetupController(ConfigNode node)
     {
       name = "atmosphereDensity";
       linkedTo = "atmosphere_density";
