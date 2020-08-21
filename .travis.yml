@@ -1,0 +1,34 @@
+language: python
+python:
+  - 3.6
+install:
+  - pip install awscli boto3 requests
+branches:
+  only:
+    - master
+script:
+  - git clone https://github.com/post-kerbin-mining-corporation/build-deploy.git  # clone this repo, it contains the stuff that does the heavy lifting
+  - cd build-deploy
+  - git checkout master
+  - cd ..
+  - pytest -s --testpath "GameData/" build-deploy/src/tests/  # run the deploy tests
+  - python build-deploy/src/package.py --f ".mod_data.yml"  # Build package
+before_deploy:
+  - python build-deploy/src/stage.py --f ".mod_data.yml" # Run the staging script
+deploy:
+  - provider: script
+    script: python build-deploy/src/deploy.py --f ".mod_data.yml" # Deploy package to spacedock, curse, github
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: s3 # releases to S3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "nertea-ksp-modding-releases"
+    local_dir: deploy/Waterfall
+    skip_cleanup: true
+    acl: public_read
+    region: us-east-2
+    upload-dir: waterfall
+    on:
+      branch: master

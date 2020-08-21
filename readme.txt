@@ -1,31 +1,26 @@
-# Waterfall
-
-A mod for Kerbal Space Program, intended to provide an alternate way to simulate engine visual effects.
-
-* [Features](#features)
-* [Dependencies](#dependencies)
-* [Installation](#installation)
-* [Contributing](#contributing)
-* [License](#licensing)
-
-## Features
+===============
+Waterfall 0.1.0
+===============
 
 TBW
 
-
-## Installation
+============
+INSTALLATION
+============
 
 To install, place the GameData folder inside your Kerbal Space Program folder. If asked to overwrite files, please do so.
 
-NOTE: Do NOT rename or move folders within the GameData folder - this mod uses absolute paths to assets and will break if this happens.
+=======
+KSP-AVC
+=======
 
-## Contributing
+This mod is compatible with KSP-AVC version checking. For a comprehensive version checking experience, please download the appropriate plugin (http://forum.kerbalspaceprogram.com/threads/79745).
 
-I certainly accept pull requests. Please target all such things to the `dev` branch though!
+=========
+LICENSING
+=========
 
-## Licensing
-
-MIT license:
+This software is distributed under the MIT license.
 
 Copyright (c) 2019 Chris Adderley
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.

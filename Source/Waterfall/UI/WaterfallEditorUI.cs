@@ -171,15 +171,15 @@ namespace Waterfall.UI
 
       // 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(throttleControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(throttleControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
@@ -213,61 +213,113 @@ namespace Waterfall.UI
 
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
     }
+
+    protected bool templatesOpen = false;
+    protected bool exportsOpen = false;
     protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
 
-      GUILayout.Label("<b>TEMPLATES</b>");
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Template Name");
-      templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
+      if (templatesOpen)
+      {
+        if (GUILayout.Button("-", GUILayout.Width(30)))
+        {
+          templatesOpen = false;
+        }
+      }
+      else
+      {
+        if (GUILayout.Button("+", GUILayout.Width(30)))
+        {
+          templatesOpen = true;
+        }
+      }
+      
+      GUILayout.Label("<b>TEMPLATES</b>");
       GUILayout.EndHorizontal();
-      GUILayout.Label("Template Offset");
-      modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
-    
-      GUILayout.Label("Template Rotation ");
-      modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+      if (templatesOpen)
+      {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Template Name");
+        templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
+        GUILayout.EndHorizontal();
+        GUILayout.Label("Template Offset");
+        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
 
-      GUILayout.Label("Template Scale");
-      modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
+        GUILayout.Label("Template Rotation ");
+        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
 
+        GUILayout.Label("Template Scale");
+        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
 
+      }
       GUILayout.EndVertical();
     }
      protected void DrawExporters()
     {
       GUILayout.BeginVertical();
+      GUILayout.BeginHorizontal();
+      if (exportsOpen)
+      {
+        if (GUILayout.Button("-", GUILayout.Width(30)))
+        {
+          exportsOpen = false;
+        }
+      }
+      else
+      {
+        if (GUILayout.Button("+", GUILayout.Width(30)))
+        {
+          exportsOpen = true;
+        }
+      }
 
       GUILayout.Label("<b>EXPORT</b>");
-      if (GUILayout.Button("Dump selected Effects\n to log", GUILayout.Width(150f), GUILayout.Height(60)))
-      {
-        Utils.Log(selectedModule.Export().ToString());
+      GUILayout.EndHorizontal();
 
-      }
-      if (GUILayout.Button("Copy selected Effects\n to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+      if (exportsOpen)
       {
-        GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
-
-      }
-      if (GUILayout.Button("Copy selected Effects\n as template to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
-      {
-        ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
-        node.AddValue("templateName", templateName);
-        foreach (WaterfallEffect fx in selectedModule.FX)
+        if (GUILayout.Button("Dump selected Effects\n to log", GUILayout.Width(150f), GUILayout.Height(60)))
         {
-          node.AddNode(fx.Save());
+          Utils.Log(selectedModule.Export().ToString());
+
         }
+        if (GUILayout.Button("Copy selected Effects\n to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
 
-        GUIUtility.systemCopyBuffer = (node.ToString());
+        }
+        if (GUILayout.Button("Copy selected Effects\n as template to \nclipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
+          node.AddValue("templateName", templateName);
+          foreach (WaterfallEffect fx in selectedModule.FX)
+          {
+            node.AddNode(fx.Save());
+          }
 
+          GUIUtility.systemCopyBuffer = (node.ToString());
+
+        }
+        if (GUILayout.Button("Copy template offset\nvalues to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          string copiedString = "";
+          copiedString += $"position = {modelOffset.x},{modelOffset.y},{modelOffset.z}\n";
+          copiedString += $"rotation = {modelRotation.x}, {modelRotation.y}, {modelRotation.z}\n";
+          copiedString += $"scale = {modelScale.x}, {modelScale.y}, {modelScale.z}";
+
+          GUIUtility.systemCopyBuffer = copiedString;
+
+        }
       }
       GUILayout.EndVertical();
     }
@@ -334,6 +386,13 @@ namespace Waterfall.UI
       foreach (WaterfallEffect fx in selectedModule.FX)
       {
         effectUIWidgets.Add(new UIEffectWidget(this, fx));
+
+        modelRotation = fx.TemplateRotationOffset;
+        modelScale = fx.TemplateScaleOffset;
+        modelOffset = fx.TemplatePositionOffset;
+        modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+        modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+        modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       }
     }
     public void GetVesselData()
