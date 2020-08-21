@@ -93,7 +93,12 @@ namespace Waterfall
       }
 
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Effects on moduleID {0}", moduleID), LogType.Modules);
-      allFX = new List<WaterfallEffect>();
+
+      if (allFX == null)
+      {
+        allFX = new List<WaterfallEffect>();
+      }
+
       foreach (ConfigNode fxDataNode in effectNodes)
       {
         allFX.Add(new WaterfallEffect(fxDataNode));
@@ -108,12 +113,13 @@ namespace Waterfall
         Vector3 positionOffset = Vector3.zero;
         Vector3 rotationOffset = Vector3.zero;
 
+        
         templateNode.TryGetValue("templateName", ref templateName);
         templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
-        templateNode.TryGetValue("scale", ref scaleOffset);
-        templateNode.TryGetValue("rotation", ref rotationOffset);
-        templateNode.TryGetValue("position", ref positionOffset);
-
+        templateNode.TryParseVector3("scale", ref scaleOffset);
+        templateNode.TryParseVector3("rotation", ref rotationOffset);
+        templateNode.TryParseVector3("position", ref positionOffset);
+        
         WaterfallEffectTemplate template =  WaterfallTemplates.GetTemplate(templateName);
 
         foreach (WaterfallEffect fx in template.allFX)

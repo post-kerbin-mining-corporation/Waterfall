@@ -79,14 +79,14 @@ namespace Waterfall
       Transform modelTransform = inst.GetComponent<Transform>();
       
       modelTransform.SetParent(parent, true);
-      modelTransform.localScale = modelScaleOffset;
-      modelTransform.localPosition = modelPositionOffset;
+      //modelTransform.localScale = modelScaleOffset;
+      //modelTransform.localPosition = modelPositionOffset;
 
-      if (modelRotationOffset == Vector3.zero)
-        modelTransform.localRotation = Quaternion.identity;
-      else
-        modelTransform.localEulerAngles = modelRotationOffset;
-      Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelTransform.position, modelRotationOffset, modelScaleOffset));
+      //if (modelRotationOffset == Vector3.zero)
+      //  modelTransform.localRotation = Quaternion.identity;
+      //else
+      //  modelTransform.localEulerAngles = modelRotationOffset;
+      //Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
 
@@ -124,7 +124,7 @@ namespace Waterfall
       modelRotationOffset = rotation;
       modelScaleOffset = scale;
 
-      Utils.Log($"[WaterfallModel] Applying geometric offsets {position}, {rotation}, {scale}");
+      Utils.Log($"[WaterfallModel] Applying model offsets {position}, {rotation}, {scale}");
 
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";

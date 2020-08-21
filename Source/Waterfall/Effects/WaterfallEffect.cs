@@ -181,16 +181,21 @@ namespace Waterfall
           return;
         }
         effectTransform.SetParent(parents[i], true);
-        baseScale = effectTransform.localScale;
+        effectTransform.localPosition = Vector3.zero;
+        effectTransform.localEulerAngles = Vector3.zero;
 
-        effectTransform.localPosition =  TemplatePositionOffset;
+        model.Initialize(effectTransform, fromNothing);
+
+
+        baseScale = effectTransform.localScale;
+        effectTransform.localPosition = TemplatePositionOffset;
         effectTransform.localEulerAngles = TemplateRotationOffset;
         effectTransform.localScale = Vector3.Scale(baseScale, TemplateScaleOffset);
-
         savedScale = effectTransform.localScale;
-        Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}", LogType.Effects);
-        model.Initialize(effectTransform, fromNothing);
-        
+
+
+        Utils.Log($"[WaterfallEffect] Applyied template offsets {TemplatePositionOffset}, {TemplateRotationOffset}, {TemplateScaleOffset}");
+
         effectTransforms.Add(effectTransform);
       }
 
