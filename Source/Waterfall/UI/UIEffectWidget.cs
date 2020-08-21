@@ -170,6 +170,10 @@ namespace Waterfall.UI
       {
         fx.FXModel.ApplyOffsets(modelOffset, modelRotation, modelScale);
       }
+      if (parent.modelOffset != fx.TemplatePositionOffset || parent.modelRotation != fx.TemplateRotationOffset || parent.modelScale != fx.TemplateScaleOffset)
+      {
+        fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
+      }
     }
   }
 }

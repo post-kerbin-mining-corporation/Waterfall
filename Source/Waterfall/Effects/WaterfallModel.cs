@@ -77,15 +77,16 @@ namespace Waterfall
       inst.SetActive(true);
 
       Transform modelTransform = inst.GetComponent<Transform>();
-      modelTransform.localScale = modelScaleOffset;
+      
       modelTransform.SetParent(parent, true);
+      modelTransform.localScale = modelScaleOffset;
       modelTransform.localPosition = modelPositionOffset;
 
       if (modelRotationOffset == Vector3.zero)
         modelTransform.localRotation = Quaternion.identity;
       else
-        modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
-      Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}", modelTransform.position, modelRotationOffset));
+        modelTransform.localEulerAngles = modelRotationOffset;
+      Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelTransform.position, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
 
@@ -108,15 +109,23 @@ namespace Waterfall
       {
         m.Initialize(modelTransform);
       }
-
+      ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
     }
-
+    public void Update()
+    {
+      foreach (WaterfallMaterial m in materials)
+      {
+        m.Update();
+      }
+    }
     public void ApplyOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
     {
       modelPositionOffset = position;
       modelRotationOffset = rotation;
       modelScaleOffset = scale;
+
       Utils.Log($"[WaterfallModel] Applying geometric offsets {position}, {rotation}, {scale}");
+
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
       scaleOffsetString = $"{scale.x}, {scale.y}, {scale.z}";
@@ -129,7 +138,9 @@ namespace Waterfall
         if (modelRotationOffset == Vector3.zero)
           modelTransform.localRotation = Quaternion.identity;
         else
-          modelTransform.localRotation = Quaternion.LookRotation(modelRotationOffset);
+        {
+          modelTransform.localEulerAngles = modelRotationOffset;
+        }
       }
 
     }

@@ -12,9 +12,10 @@ namespace Waterfall
     public string name = "";
     public string parentName = "";
 
-    public Vector3 PositionOffset { get; set; }
-    public Vector3 RotationOffset { get; set; }
-    public Vector3 ScaleOffset { get; set; }
+    public Vector3 TemplatePositionOffset { get; set; }
+    public Vector3 TemplateRotationOffset { get; set; }
+    public Vector3 TemplateScaleOffset { get; set; }
+    public Vector3 baseScale { get; set; }
     public ModuleWaterfallFX parentModule;
 
     protected WaterfallModel model;
@@ -47,44 +48,44 @@ namespace Waterfall
     {
       parentName = parent;
       model = mdl;
-      PositionOffset = Vector3.zero;
-      RotationOffset = Vector3.zero;
-      ScaleOffset = Vector3.one;
+      TemplatePositionOffset = Vector3.zero;
+      TemplateRotationOffset = Vector3.zero;
+      TemplateScaleOffset = Vector3.one;
       fxModifiers = new List<EffectModifier>();
     }
 
     public WaterfallEffect(ConfigNode node)
     {
-      PositionOffset = Vector3.zero;
-      RotationOffset = Vector3.zero;
-      ScaleOffset = Vector3.one;
+      TemplatePositionOffset = Vector3.zero;
+      TemplateRotationOffset = Vector3.zero;
+      TemplateScaleOffset = Vector3.one;
       Load(node);
     }
 
     public WaterfallEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
     {
-      PositionOffset = positionOffset;
-      RotationOffset = rotationOffset;
-      ScaleOffset = scaleOffset;
+      TemplatePositionOffset = positionOffset;
+      TemplateRotationOffset = rotationOffset;
+      TemplateScaleOffset = scaleOffset;
 
       Load(node);
     }
 
     public WaterfallEffect(WaterfallEffect fx, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset, string overrideTransformName)
     {
-      PositionOffset = positionOffset;
-      RotationOffset = rotationOffset;
-      ScaleOffset = scaleOffset;
+      TemplatePositionOffset = positionOffset;
+      TemplateRotationOffset = rotationOffset;
+      TemplateScaleOffset = scaleOffset;
       if (overrideTransformName != "")
         fx.savedNode.SetValue("parentName", overrideTransformName, true);
       Load(fx.savedNode);
     }
     public WaterfallEffect(WaterfallEffect fx)
     {
-      PositionOffset = fx.PositionOffset;
-      RotationOffset = fx.RotationOffset;
-      ScaleOffset = fx.ScaleOffset;
-      Load(fx.savedNode);
+      TemplatePositionOffset = fx.TemplatePositionOffset;
+      TemplateRotationOffset = fx.TemplateRotationOffset;
+      TemplateScaleOffset = fx.TemplateScaleOffset;
+      Load(fx.Save());
     }
 
     /// <summary>
@@ -155,9 +156,10 @@ namespace Waterfall
     public void CleanupEffect(ModuleWaterfallFX host)
     {
       Utils.Log(String.Format("[WaterfallEffect]: Deleting effect {0} ", name), LogType.Effects);
-      foreach (Transform t in effectTransforms)
+      for (int i= model.modelTransforms.Count-1; i >= 0 ; i--)
+      
       {
-        GameObject.Destroy(effectTransform.gameObject);
+        GameObject.Destroy(model.modelTransforms[i].gameObject);
       }
     }
 
@@ -178,19 +180,17 @@ namespace Waterfall
           Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
           return;
         }
-        model.Initialize(effectTransform, fromNothing);
-
         effectTransform.SetParent(parents[i], true);
-        effectTransform.localPosition = PositionOffset;
+        baseScale = effectTransform.localScale;
 
-        if (RotationOffset == Vector3.zero)
-          effectTransform.localRotation = Quaternion.identity;
-        else
-          effectTransform.localRotation = Quaternion.LookRotation(RotationOffset);
+        effectTransform.localPosition =  TemplatePositionOffset;
+        effectTransform.localEulerAngles = TemplateRotationOffset;
+        effectTransform.localScale = Vector3.Scale(baseScale, TemplateScaleOffset);
 
-        effectTransform.localScale = new Vector3(effectTransform.localScale.x * ScaleOffset.x, effectTransform.localScale.y * ScaleOffset.y, effectTransform.localScale.z * ScaleOffset.z);
         savedScale = effectTransform.localScale;
         Utils.Log($"[WaterfallEffect]: Effect GameObject {effect.name} generated at {effectTransform.localPosition}, {effectTransform.localRotation}, {effectTransform.localScale}", LogType.Effects);
+        model.Initialize(effectTransform, fromNothing);
+        
         effectTransforms.Add(effectTransform);
       }
 
@@ -199,7 +199,29 @@ namespace Waterfall
         fxModifiers[i].Init(this);
       }
     }
+    public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
+    {
+      TemplatePositionOffset = position;
+      TemplateRotationOffset = rotation;
+      TemplateScaleOffset = scale;
 
+      Utils.Log($"[WaterfallEffect] Applying template offsets {position}, {rotation}, {scale}");
+
+
+      foreach (Transform modelTransform in effectTransforms)
+      {
+        modelTransform.localPosition = TemplatePositionOffset;
+        modelTransform.localScale = Vector3.Scale(baseScale, TemplateScaleOffset); ;
+
+        if (TemplateRotationOffset == Vector3.zero)
+          modelTransform.localRotation = Quaternion.identity;
+        else
+        {
+          modelTransform.localEulerAngles = TemplateRotationOffset;
+        }
+      }
+
+    }
 
     public List<Transform> GetModelTransforms()
     {
@@ -210,9 +232,11 @@ namespace Waterfall
     {
       if (effectVisible)
       {
+        model.Update();
         for (int i = 0; i < fxModifiers.Count; i++)
         {
           fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
+         
         }
       }
     }
@@ -237,7 +261,7 @@ namespace Waterfall
       {
         if (state)
         {
-          t.localScale = savedScale;
+          t.localScale = Vector3.Scale(baseScale, TemplateScaleOffset);
         } else
         {
           t.localScale = Vector3.one*0.00001f;

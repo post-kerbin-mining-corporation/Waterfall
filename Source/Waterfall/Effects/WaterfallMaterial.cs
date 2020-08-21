@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Waterfall
@@ -10,6 +7,26 @@ namespace Waterfall
   /// <summary>
   /// Defines a material managed by Waterfall
   /// </summary>
+  /// 
+  public class WaterfallSkinnedMesh
+  {
+    public SkinnedMeshRenderer SMR;
+    public Mesh SkinedMesh;
+    public WaterfallSkinnedMesh(SkinnedMeshRenderer skin, MeshFilter filter)
+    {
+      SMR = skin;
+      SkinedMesh = skin.sharedMesh;
+    }
+
+    public void Recalculate()
+    {
+      SMR.BakeMesh(SkinedMesh);
+      if (SkinedMesh)
+      {
+        SkinedMesh.RecalculateNormals();
+      }
+    }
+  }
   public class WaterfallMaterial
   {
     public string shaderName;
@@ -19,8 +36,12 @@ namespace Waterfall
     public List<WaterfallMaterialProperty> matProperties;
 
     public List<Material> materials;
-
-    public WaterfallMaterial() {
+    protected Renderer targetMeshRenderer;
+    protected List<WaterfallSkinnedMesh> skinnedMeshes;
+    protected List<MeshFilter> targetFilter;
+    protected List<Mesh> bakedMesh;
+    public WaterfallMaterial()
+    {
 
       matProperties = new List<WaterfallMaterialProperty>();
     }
@@ -85,6 +106,7 @@ namespace Waterfall
     public void Initialize(Transform parentTransform)
     {
       materials = new List<Material>();
+      skinnedMeshes = new List<WaterfallSkinnedMesh>();
       if (baseTransformName != "")
       {
         Transform[] candidates = parentTransform.GetComponentsInChildren<Transform>();
@@ -94,21 +116,37 @@ namespace Waterfall
           Renderer r = t.GetComponent<Renderer>();
           if (r != null && r.material != null)
           {
+            if (t.GetComponent<SkinnedMeshRenderer>() != null)
+            {
+              skinnedMeshes.Add(new WaterfallSkinnedMesh(
+                t.GetComponent<SkinnedMeshRenderer>(),
+                t.GetComponent<MeshFilter>()));
+            }
+
             Utils.Log($"Added rendered material from {t.name}");
             materials.Add(r.material);
           }
         }
-      } else
+      }
+      else
       {
         Transform materialTarget = parentTransform.FindDeepChild(transformName);
-        materials.Add(materialTarget.GetComponent<Renderer>().material);
+        targetMeshRenderer = materialTarget.GetComponent<Renderer>();
+        if (materialTarget.GetComponent<SkinnedMeshRenderer>() != null)
+        {
+          skinnedMeshes.Add(new WaterfallSkinnedMesh(
+            materialTarget.GetComponent<SkinnedMeshRenderer>(), 
+            materialTarget.GetComponent<MeshFilter>()));
+        }
+
+        materials.Add(targetMeshRenderer.material);
       }
-      
+
       foreach (Material mat in materials)
       {
         mat.shader = ShaderLoader.GetShader(shaderName);
-       
-        
+
+
         foreach (WaterfallMaterialProperty p in matProperties)
         {
           p.Initialize(mat);
@@ -121,7 +159,17 @@ namespace Waterfall
         Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader));
       }
     }
-    
+
+    public void Update()
+    {
+      if (skinnedMeshes != null)
+      {
+        foreach (WaterfallSkinnedMesh smr in skinnedMeshes)
+        {
+          smr.Recalculate();
+        }
+      }
+    }
     /// <summary>
     /// Sets a shader float on this material. If it doesn't exist as a material property object, create it.
     /// </summary>
@@ -192,7 +240,7 @@ namespace Waterfall
       }
       foreach (Material mat in materials)
       {
-        mat.SetFloatArray(propertyName, new float[] { value.x, value.y, value.z, value.w});
+        mat.SetFloatArray(propertyName, new float[] { value.x, value.y, value.z, value.w });
       }
     }
 
@@ -217,7 +265,8 @@ namespace Waterfall
         newProp.textureOffset = materials[0].GetTextureOffset(propertyName);
         newProp.textureScale = value;
         matProperties.Add(newProp);
-      } else
+      }
+      else
       {
         foreach (WaterfallMaterialProperty p in matProperties)
         {
@@ -295,7 +344,8 @@ namespace Waterfall
         newProp.textureScale = materials[0].GetTextureScale(propertyName);
         newProp.textureOffset = value;
         matProperties.Add(newProp);
-      } else
+      }
+      else
       {
         foreach (WaterfallMaterialProperty p in matProperties)
         {
@@ -331,7 +381,8 @@ namespace Waterfall
         newProp.propertyName = propertyName;
         newProp.propertyValue = value;
         matProperties.Add(newProp);
-      } else
+      }
+      else
       {
         foreach (WaterfallMaterialProperty p in matProperties)
         {
@@ -346,7 +397,7 @@ namespace Waterfall
       {
         mat.SetColor(propertyName, value);
       }
-     }
+    }
   }
-  
+
 }

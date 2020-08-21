@@ -21,6 +21,14 @@ namespace Waterfall.UI
     Vector2 randomControllerValue;
     float rcsControllerValue;
 
+    public Vector3 modelRotation;
+    public Vector3 modelOffset;
+    public Vector3 modelScale = Vector3.one;
+    string templateName = "";
+    string[] modelOffsetString;
+    string[] modelRotationString;
+    string[] modelScaleString;
+
     #endregion
 
     #region GUI Widgets
@@ -61,6 +69,9 @@ namespace Waterfall.UI
     {
       base.Start();
       windowPos = new Rect(200f, 200f, 800f, 600f);
+      modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+      modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+      modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       GetVesselData();
     }
 
@@ -144,6 +155,7 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       DrawControllers();
+      DrawTemplateControl();
       DrawExporters();
       GUILayout.EndHorizontal();
     }
@@ -152,69 +164,162 @@ namespace Waterfall.UI
     protected void DrawControllers()
     {
       GUILayout.BeginHorizontal();
-
-      useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
       GUILayout.BeginVertical();
+      useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
+      
       GUILayout.Label("<b>CONTROLLERS</b>");
 
       // 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(throttleControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(throttleControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Randomness Min/Max", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+
       string xValue = GUILayout.TextArea(randomControllerValue.x.ToString(), GUILayout.MaxWidth(60f));
       string yValue = GUILayout.TextArea(randomControllerValue.y.ToString(), GUILayout.MaxWidth(60f));
 
       float xParsed;
       float yParsed;
-      if (float.TryParse(xValue, out xParsed) && float.TryParse(yValue, out yParsed))
+      Vector2 newRand = new Vector2(randomControllerValue.x, randomControllerValue.y);
+      if (float.TryParse(xValue, out xParsed))
       {
-        if (xParsed != randomControllerValue.x || yParsed != randomControllerValue.y)
-          randomControllerValue = new Vector2(xParsed, yParsed);
+        if (xParsed != randomControllerValue.x)
+        {
+          newRand.x = xParsed;
+        }
       }
-
+      if (float.TryParse(yValue, out yParsed))
+      {
+        if (yParsed != randomControllerValue.y)
+        {
+          newRand.y = yParsed;
+        }
+      }
+      if (newRand.x != randomControllerValue.x || newRand.y != randomControllerValue.y)
+      {
+        randomControllerValue = new Vector2(xParsed, yParsed);
+      }
       GUILayout.EndHorizontal();
 
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(120f));
-      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(60f));
+      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
+      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
     }
 
-    protected void DrawExporters()
+    protected bool templatesOpen = false;
+    protected bool exportsOpen = false;
+    protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
-      if (GUILayout.Button("Dump all to log"))
+
+      GUILayout.BeginHorizontal();
+      if (templatesOpen)
       {
-        for (int i = 0; i < effectsModules.Count; i++)
+        if (GUILayout.Button("-", GUILayout.Width(30)))
         {
-          Utils.Log(effectsModules[i].Export().ToString());
+          templatesOpen = false;
         }
       }
-      if (GUILayout.Button("Dump selected to log"))
+      else
       {
-        Utils.Log(selectedModule.Export().ToString());
+        if (GUILayout.Button("+", GUILayout.Width(30)))
+        {
+          templatesOpen = true;
+        }
+      }
+      
+      GUILayout.Label("<b>TEMPLATES</b>");
+      GUILayout.EndHorizontal();
+      if (templatesOpen)
+      {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Template Name");
+        templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
+        GUILayout.EndHorizontal();
+        GUILayout.Label("Template Offset");
+        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
+
+        GUILayout.Label("Template Rotation ");
+        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+
+        GUILayout.Label("Template Scale");
+        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
 
       }
-      if (GUILayout.Button("Copy selected to clipboard"))
+      GUILayout.EndVertical();
+    }
+     protected void DrawExporters()
+    {
+      GUILayout.BeginVertical();
+      GUILayout.BeginHorizontal();
+      if (exportsOpen)
       {
-        GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
+        if (GUILayout.Button("-", GUILayout.Width(30)))
+        {
+          exportsOpen = false;
+        }
+      }
+      else
+      {
+        if (GUILayout.Button("+", GUILayout.Width(30)))
+        {
+          exportsOpen = true;
+        }
+      }
 
+      GUILayout.Label("<b>EXPORT</b>");
+      GUILayout.EndHorizontal();
+
+      if (exportsOpen)
+      {
+        if (GUILayout.Button("Dump selected Effects\n to log", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          Utils.Log(selectedModule.Export().ToString());
+
+        }
+        if (GUILayout.Button("Copy selected Effects\n to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
+
+        }
+        if (GUILayout.Button("Copy selected Effects\n as template to \nclipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
+          node.AddValue("templateName", templateName);
+          foreach (WaterfallEffect fx in selectedModule.FX)
+          {
+            node.AddNode(fx.Save());
+          }
+
+          GUIUtility.systemCopyBuffer = (node.ToString());
+
+        }
+        if (GUILayout.Button("Copy template offset\nvalues to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        {
+          string copiedString = "";
+          copiedString += $"position = {modelOffset.x},{modelOffset.y},{modelOffset.z}\n";
+          copiedString += $"rotation = {modelRotation.x}, {modelRotation.y}, {modelRotation.z}\n";
+          copiedString += $"scale = {modelScale.x}, {modelScale.y}, {modelScale.z}";
+
+          GUIUtility.systemCopyBuffer = copiedString;
+
+        }
       }
       GUILayout.EndVertical();
     }
@@ -281,6 +386,13 @@ namespace Waterfall.UI
       foreach (WaterfallEffect fx in selectedModule.FX)
       {
         effectUIWidgets.Add(new UIEffectWidget(this, fx));
+
+        modelRotation = fx.TemplateRotationOffset;
+        modelScale = fx.TemplateScaleOffset;
+        modelOffset = fx.TemplatePositionOffset;
+        modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+        modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+        modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       }
     }
     public void GetVesselData()
@@ -550,6 +662,7 @@ namespace Waterfall.UI
       }
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
+        
         effectUIWidgets[i].Update();
       }
 

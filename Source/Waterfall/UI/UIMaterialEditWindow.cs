@@ -245,20 +245,24 @@ namespace Waterfall.UI
         {
           floatValues[kvp.Key] = sliderVal;
           floatStrings[kvp.Key] = sliderVal.ToString();
-          model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
-        }
 
-        //= GUILayout.TextArea(floatStrings[kvp.Key]);
+          model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
+          
+        }
+        
         textVal = GUILayout.TextArea(floatStrings[kvp.Key], GUILayout.Width(90f));
 
+        
         if (textVal != floatStrings[kvp.Key])
         {
           float outVal;
           if (float.TryParse(textVal, out outVal))
           {
             floatValues[kvp.Key] = outVal;
-            floatStrings[kvp.Key] = textVal;
+
+            model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
           }
+          floatStrings[kvp.Key] = textVal;
         }
 
         //float parsed = kvp.Value;
@@ -295,6 +299,7 @@ namespace Waterfall.UI
 
     protected void InitializeShaderProperties(Material m)
     {
+      Utils.Log($"[MaterialEditor] Generating shader property map for {m}");
       colorValues = new Dictionary<string, Color>();
       floatValues = new Dictionary<string, float>();
       textureValues = new Dictionary<string, string>();
@@ -313,7 +318,8 @@ namespace Waterfall.UI
 
       foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
-        
+
+        Utils.Log($"[MaterialEditor] Testing {mProp.Key}, {mProp.Value}");
         if (m.HasProperty(mProp.Key))
         {
           if (mProp.Value.type == WaterfallMaterialPropertyType.Color)
@@ -338,7 +344,14 @@ namespace Waterfall.UI
           }
           if (mProp.Value.type == WaterfallMaterialPropertyType.Texture)
           {
-            textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
+            if (m.GetTexture(mProp.Key))
+            {
+              textureValues.Add(mProp.Key, m.GetTexture(mProp.Key).name);
+            }
+            else
+            {
+              textureValues.Add(mProp.Key, null);
+            }
             textureEdits.Add(mProp.Key, false);
             textureScaleValues.Add(mProp.Key, m.GetTextureScale(mProp.Key));
             textureOffsetValues.Add(mProp.Key, m.GetTextureOffset(mProp.Key));

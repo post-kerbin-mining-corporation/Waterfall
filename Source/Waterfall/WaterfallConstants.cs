@@ -42,9 +42,11 @@ namespace Waterfall
       ["_SpeedY"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 200f)),
       ["_TileX"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
       ["_TileY"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 25f)),
+
       ["_MainTex"] = new MaterialData(WaterfallMaterialPropertyType.Texture),
       
       ["_PlumeDir"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
+      ["_DirAdjust"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_FadeIn"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_FadeOut"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_ExpandOffset"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(-10f, 10f)),
