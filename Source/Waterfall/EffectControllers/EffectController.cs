@@ -9,6 +9,7 @@ namespace Waterfall
   /// <summary>
   /// A generic effect controller
   /// </summary>
+  [Serializable]
   public class WaterfallController
   {
     // 
