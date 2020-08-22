@@ -73,7 +73,16 @@ namespace Waterfall
       return node;
     }
   }
+  public static class ConfigNodeParseExtension
+  {
+    public static bool TryParseVector3(this ConfigNode theNode, string valueName, ref Vector3 result)
+    {
+      if (!theNode.HasValue(valueName)) return false;
 
+      result = ConfigNode.ParseVector3(theNode.GetValue(valueName));
+      return true;
+    }
+  }
   public static class TransformDeepChildExtension
   {
     //Breadth-first search

@@ -103,6 +103,7 @@
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
+    <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UIColorPickerWindow.cs" />
     <Compile Include="UIModifierPopupWindow.cs" />

@@ -10,7 +10,7 @@ namespace Waterfall
   /// <summary>
   /// A controller that pulls from throttle settings
   /// </summary>
-  [System.Serializable]
+  [Serializable]
   public class RCSController : WaterfallController
   {
     public float currentThrottle = 1;
