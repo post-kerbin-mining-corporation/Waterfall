@@ -11,7 +11,7 @@ namespace Waterfall
   /// <summary>
   /// Class to load shaders and config level data for the mod.
   /// </summary>
-  [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
+  [KSPAddon(KSPAddon.Startup.Instantly, false)]
   public  class WaterfallData: MonoBehaviour
   { 
 

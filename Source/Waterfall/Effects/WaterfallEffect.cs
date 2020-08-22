@@ -262,6 +262,7 @@ namespace Waterfall
 
     public void SetEnabled(bool state)
     {
+      if (effectTransforms != null)
       foreach (Transform t in effectTransforms)
       {
         if (state)
