@@ -130,7 +130,11 @@ namespace Waterfall
         allFX = new List<WaterfallEffect>();
       } else
       {
-        allFX.Clear();
+        if (effectNodes.Length > 0 && allFX.Count > 0 || allFX.Count > 0 && templateNodes.Length >0)
+        {
+          CleanupEffects();
+          allFX.Clear();
+        }
       }
       
       foreach (ConfigNode fxDataNode in effectNodes)
@@ -138,6 +142,7 @@ namespace Waterfall
         allFX.Add(new WaterfallEffect(fxDataNode));
       }
 
+      
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Template effects on moduleID {0}", moduleID), LogType.Modules);
       foreach (ConfigNode templateNode in templateNodes)
       {
@@ -160,7 +165,7 @@ namespace Waterfall
         {
           allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
         }
-        Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template}", LogType.Modules);
+        Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template.templateName}", LogType.Modules);
       }
 
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
