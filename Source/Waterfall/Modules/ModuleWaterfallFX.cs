@@ -130,7 +130,8 @@ namespace Waterfall
         allFX = new List<WaterfallEffect>();
       } else
       {
-        allFX.Clear();
+        if (effectNodes.Length > 0)
+          allFX.Clear();
       }
       
       foreach (ConfigNode fxDataNode in effectNodes)
