@@ -99,6 +99,7 @@ namespace Waterfall
         {
           WaterfallMaterial m = new WaterfallMaterial();
           m.shaderName = overrideShader;
+          
           m.materials = new List<Material>();
           m.transformName = r.transform.name;
           materials.Add(m);

@@ -319,7 +319,6 @@ namespace Waterfall.UI
       foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
 
-        Utils.Log($"[MaterialEditor] Testing {mProp.Key}, {mProp.Value}");
         if (m.HasProperty(mProp.Key))
         {
           if (mProp.Value.type == WaterfallMaterialPropertyType.Color)
