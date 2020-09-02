@@ -194,7 +194,7 @@ namespace Waterfall
         savedScale = effectTransform.localScale;
 
 
-        Utils.Log($"[WaterfallEffect] Applyied template offsets {TemplatePositionOffset}, {TemplateRotationOffset}, {TemplateScaleOffset}");
+        Utils.Log($"[WaterfallEffect] Applied template offsets {TemplatePositionOffset}, {TemplateRotationOffset}, {TemplateScaleOffset}");
 
         effectTransforms.Add(effectTransform);
       }
