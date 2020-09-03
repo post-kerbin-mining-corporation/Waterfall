@@ -34,6 +34,7 @@ namespace Waterfall.UI
 
     public UIMaterialEditWindow(WaterfallModel modelToEdit, bool show) : base(show)
     {
+      materialID = 0;
       model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
 
@@ -62,7 +63,7 @@ namespace Waterfall.UI
     {
       model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
-
+      materialID = 0;
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {

@@ -1,3 +1,9 @@
+v0.1.3
+------
+- Fixed a number of bugs related to the Material Editor and new effect creation
+- Fixed Color Modifiers not working on multi-engine setups
+- Improved behaviour of Transform effect blending modes (still not perfect but eh)
+
 v0.1.2
 ------
 - Bugfixes
