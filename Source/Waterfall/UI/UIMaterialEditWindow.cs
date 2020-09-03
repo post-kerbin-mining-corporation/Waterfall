@@ -34,6 +34,7 @@ namespace Waterfall.UI
 
     public UIMaterialEditWindow(WaterfallModel modelToEdit, bool show) : base(show)
     {
+      materialID = 0;
       model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
 
@@ -62,7 +63,7 @@ namespace Waterfall.UI
     {
       model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
-
+      materialID = 0;
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {
@@ -319,7 +320,6 @@ namespace Waterfall.UI
       foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
       {
 
-        Utils.Log($"[MaterialEditor] Testing {mProp.Key}, {mProp.Value}");
         if (m.HasProperty(mProp.Key))
         {
           if (mProp.Value.type == WaterfallMaterialPropertyType.Color)

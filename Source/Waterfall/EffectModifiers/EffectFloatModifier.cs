@@ -58,7 +58,7 @@ namespace Waterfall
     }
     protected override void ApplyReplace(List<float> strengthList)
     {
-      
+
       float strength = strengthList[0];
       if (strengthList.Count > 1)
       {
@@ -80,14 +80,19 @@ namespace Waterfall
     }
     protected override void ApplyAdd(List<float> strengthList)
     {
+
       float strength = strengthList[0];
       if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
-          float original = m[i].GetFloat(floatName);
           strength = strengthList[i];
           float toSet = curve.Evaluate(strength) + randomValue;
+
+          
+
+          float original = m[i].GetFloat(floatName);
+          
           m[i].SetFloat(floatName, original + toSet);
         }
       }

@@ -67,6 +67,7 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+        baseRotation = xforms[0].localRotation;
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }
@@ -75,6 +76,7 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+        baseRotation = xforms[0].localRotation;
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }
@@ -83,6 +85,7 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+        baseRotation = xforms[0].localRotation;
         xforms[i].localRotation = Quaternion.LookRotation(new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue));
       }
     }

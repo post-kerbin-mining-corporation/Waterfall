@@ -37,6 +37,7 @@ namespace Waterfall.UI
       colorMod = mod;
       colorName = colorMod.colorName;
       colorNames = MaterialUtils.FindValidShaderProperties(colorMod.GetMaterial(), WaterfallMaterialPropertyType.Color).ToArray();
+      colorIndex = colorNames.ToList().FindIndex(x => x == colorMod.colorName);
       GenerateCurveThumbs(mod);
     }
 

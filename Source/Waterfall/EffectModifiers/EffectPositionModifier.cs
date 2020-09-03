@@ -66,6 +66,8 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+
+        basePosition = xforms[i].localPosition;
         xforms[i].localPosition = basePosition + new Vector3(xCurve.Evaluate(strength) + randomValue, yCurve.Evaluate(strength) + randomValue, zCurve.Evaluate(strength) + randomValue);
       }
     }
@@ -74,6 +76,7 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+        basePosition = xforms[i].localPosition;
         xforms[i].localPosition = basePosition - new Vector3(xCurve.Evaluate(strength) + randomValue, yCurve.Evaluate(strength) + randomValue, zCurve.Evaluate(strength) + randomValue);
       }
     }
@@ -82,6 +85,7 @@ namespace Waterfall
       float strength = strengthList[0];
       for (int i = 0; i < xforms.Count; i++)
       {
+        basePosition = xforms[i].localPosition;
         xforms[i].localPosition = new Vector3(basePosition.x * xCurve.Evaluate(strength) + randomValue, basePosition.y * yCurve.Evaluate(strength) + randomValue, basePosition.z * zCurve.Evaluate(strength) + randomValue);
       }
     }

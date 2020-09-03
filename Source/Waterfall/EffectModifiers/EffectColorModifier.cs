@@ -73,18 +73,18 @@ namespace Waterfall
     }
     protected override void ApplyReplace(List<float> strengthList)
     {
-      if (strengthList.Count > 0)
+      float strength = strengthList[0];
+      if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
-          float strength = strengthList[i];
+          strength = strengthList[i];
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
           m[i].SetColor(colorName, toSet);
         }
       }
       else
       {
-        float strength = strengthList[0];
         Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
         for (int i = 0; i < m.Length; i++)
         {
@@ -94,7 +94,7 @@ namespace Waterfall
     }
     protected override void ApplyAdd(List<float> strengthList)
     {
-      if (strengthList.Count > 0)
+      if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
@@ -117,7 +117,7 @@ namespace Waterfall
     }
     protected override void ApplySubtract(List<float> strengthList)
     {
-      if (strengthList.Count > 0)
+      if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
@@ -141,7 +141,7 @@ namespace Waterfall
     }
     protected override void ApplyMultiply(List<float> strengthList)
     {
-      if (strengthList.Count > 0)
+      if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {

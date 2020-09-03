@@ -78,7 +78,7 @@ namespace Waterfall.UI
       GUILayout.Label("<b>Selected Texture</b>");
       
       Rect bRect = GUILayoutUtility.GetRect(64f,64f);
-      if (texThumbs != null)
+      if (texThumbs != null && currentTexturePath != null)
         GUI.DrawTexture(bRect, texThumbs[currentTexturePath]);
       GUILayout.Label(currentTexturePath);
       GUILayout.EndHorizontal();
