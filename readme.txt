@@ -1,8 +1,21 @@
 ===============
-Waterfall 0.1.3
+Waterfall 0.2.0
 ===============
 
-TBW
+Waterfall is a mod for Kerbal Space Program that provides a cool new way to create and drive engine effects for smooth rocket plumes. It has
+- Support for atmospheric expansion and all kinds of dynamic effects
+- Cross-compatible with SmokeScreen for adding smoke effects
+- Ingame editor to create and drive effects. 
+- A set of template effects to use on your engines 
+
+This is a framework mod and does nothing by itself. Pick up a mod that supplies configs in order to have some effect on your game
+
+===========
+DEPENDENCIES
+============
+
+Required:
+- ModuleManager (v4.1.4)
 
 ============
 INSTALLATION
