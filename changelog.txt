@@ -1,3 +1,24 @@
+v0.2.0
+------
+- Split configuration for Restock and Restock+ parts into a different mod
+- Fixed plume scaling in the case where multiple plume parent transforms have different scales (i.e. nuPoodle)
+- Fixed a couple of minor bugs
+- Renamed/restructured templates:
+ - waterfall-hydrolox-lower-1: lower stage hydrolox engine 
+ - waterfall-hydrolox-lower-2: lower stage hydrolox engine, energetic, orange
+ - waterfall-hydrolox-rs25-1: lower stage hydrolox engine based on SSME 
+ - waterfall-hydrolox-upper-1: upper stage hydrolox engine, suitable for orbital engines
+ - waterfall-kerolox-lower-1: Reddish kerolox lower stage engine, suitable for energetic lifting engine
+ - waterfall-kerolox-lower-2: orangeish kerolox lower stage engine, suitable for energetic lifting engine
+ - waterfall-kerolox-lower-3: extra burny kerolox lower stage engine, suitable for energetic lifting engine
+ - waterfall-kerolox-sustainer-1: reddish kerolox lower stage engine, somewhat based on Titan 3 engine
+ - waterfall-kerolox-upper-1: Reddish kerolox, suitable for generic upper stage engine
+ - waterfall-kerolox-upper-2:Red/white kerolox, suitable for low thrust upper stage engine
+ - waterfall-ntr-lh2-1: LH2-based nuclear rocket engine
+ - waterfall-ion-xenon-1: Xenon Gridded Thruster engine
+ - waterfall-rcs-jet-1: White RCS jet
+- Added a set of sounds for authors to use, from KW and NFT
+
 v0.1.3
 ------
 - Fixed a number of bugs related to the Material Editor and new effect creation

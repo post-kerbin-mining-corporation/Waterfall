@@ -71,7 +71,7 @@ namespace Waterfall.UI
           Utils.Log($"[EffectWidget] Set state of {fx.name} to {enabled}", LogType.UI);
           fx.SetEnabled(enabled);
         }
-        fx.SetEnabled(enabled);
+        //fx.SetEnabled(enabled);
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.Label($"<b>{fx.FXModifiers.Count} Effect Modifiers</b>");
