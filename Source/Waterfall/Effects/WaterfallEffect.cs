@@ -15,13 +15,12 @@ namespace Waterfall
     public Vector3 TemplatePositionOffset { get; set; }
     public Vector3 TemplateRotationOffset { get; set; }
     public Vector3 TemplateScaleOffset { get; set; }
-    public Vector3 baseScale { get; set; }
+    public List<Vector3> baseScales;
     public ModuleWaterfallFX parentModule;
 
     protected WaterfallModel model;
     protected List<EffectModifier> fxModifiers;
     protected Transform parentTransform;
-    protected Transform effectTransform;
     protected ConfigNode savedNode;
     protected bool effectVisible = true;
     protected Vector3 savedScale;
@@ -166,14 +165,16 @@ namespace Waterfall
     public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing)
     {
 
-      Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1}", name, parentName), LogType.Effects);
+      
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
+      Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1} [{2} instances]", name, parentName, parents.Length), LogType.Effects);
       effectTransforms = new List<Transform>();
+      baseScales = new List<Vector3>();
       for (int i = 0; i < parents.Length; i++)
       {
         GameObject effect = new GameObject($"Waterfall_FX_{name}_{i}");
-        effectTransform = effect.transform;
+        Transform effectTransform = effect.transform;
 
         if (parents[i] == null)
         {
@@ -187,12 +188,15 @@ namespace Waterfall
         model.Initialize(effectTransform, fromNothing);
 
 
-        baseScale = effectTransform.localScale;
+        
+        baseScales.Add(effectTransform.localScale);
+        Utils.Log($"[WaterfallEffect] local Scale {baseScales[i]}, baseScale, {effectTransform.localScale}");
+
         effectTransform.localPosition = TemplatePositionOffset;
         effectTransform.localEulerAngles = TemplateRotationOffset;
-        effectTransform.localScale = Vector3.Scale(baseScale, TemplateScaleOffset);
-        savedScale = effectTransform.localScale;
+        effectTransform.localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
 
+        Utils.Log($"[WaterfallEffect] local Scale {effectTransform.localScale}, baseScale, {baseScales[i]}, {Vector3.Scale(baseScales[i], TemplateScaleOffset)}");
 
         Utils.Log($"[WaterfallEffect] Applied template offsets {TemplatePositionOffset}, {TemplateRotationOffset}, {TemplateScaleOffset}");
 
@@ -210,19 +214,23 @@ namespace Waterfall
       TemplateRotationOffset = rotation;
       TemplateScaleOffset = scale;
 
-      Utils.Log($"[WaterfallEffect] Applying template offsets {position}, {rotation}, {scale}");
+      Utils.Log($"[WaterfallEffect] Applying template offsets from FN2 {position}, {rotation}, {scale}");
 
 
-      foreach (Transform modelTransform in effectTransforms)
-      {
-        modelTransform.localPosition = TemplatePositionOffset;
-        modelTransform.localScale = Vector3.Scale(baseScale, TemplateScaleOffset); ;
+      for (int i=0; i< effectTransforms.Count;  i++)
+      { 
+
+
+
+
+        effectTransforms[i].localPosition = TemplatePositionOffset;
+      effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset); 
 
         if (TemplateRotationOffset == Vector3.zero)
-          modelTransform.localRotation = Quaternion.identity;
+        effectTransforms[i].localRotation = Quaternion.identity;
         else
         {
-          modelTransform.localEulerAngles = TemplateRotationOffset;
+        effectTransforms[i].localEulerAngles = TemplateRotationOffset;
         }
       }
 
@@ -263,14 +271,16 @@ namespace Waterfall
     public void SetEnabled(bool state)
     {
       if (effectTransforms != null)
-      foreach (Transform t in effectTransforms)
-      {
-        if (state)
+
+        for (int i = 0; i < effectTransforms.Count; i++)
         {
-          t.localScale = Vector3.Scale(baseScale, TemplateScaleOffset);
+          if (state)
+        {
+            
+            effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
         } else
         {
-          t.localScale = Vector3.one*0.00001f;
+            effectTransforms[i].localScale = Vector3.one*0.00001f;
         }
       }
       effectVisible = state;
