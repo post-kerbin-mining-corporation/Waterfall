@@ -1,3 +1,8 @@
+v0.2.1 
+------
+- Fixed a few ModuleManager errors
+- Added compiled shaders for Linux and OSX (somewhat experimental)
+
 v0.2.0
 ------
 - Split configuration for Restock and Restock+ parts into a different mod
