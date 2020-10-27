@@ -53,7 +53,12 @@ namespace Waterfall
 
         // Setting parsing goes here
         //settingsNode.TryGetValue("MinimumWarpFactor", ref TimeWarpLimit);
-
+        settingsNode.TryGetValue("DebugModules", ref DebugModules);
+        settingsNode.TryGetValue("DebugSettings", ref DebugSettings);
+        settingsNode.TryGetValue("DebugEffects", ref DebugEffects);
+        settingsNode.TryGetValue("DebugModifiers", ref DebugModifiers);
+        settingsNode.TryGetValue("DebugMode", ref DebugMode);
+        settingsNode.TryGetValue("DebugUIMode", ref DebugUIMode);
 
       }
       else
