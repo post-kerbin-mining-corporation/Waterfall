@@ -47,11 +47,11 @@ namespace Waterfall
       node.TryGetValue("textureScale", ref textureScale);
       node.TryGetValue("textureOffset", ref textureOffset);
 
-      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Loading new texture for slot {0} ", propertyName));
+      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Loading new texture for slot {0} ", propertyName), LogType.Effects);
     }
     public override void Initialize(Material m)
     {
-      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Setting new texture for slot {0} ", propertyName));
+      Utils.Log(String.Format("[WaterfallMaterialTextureProperty]: Setting new texture for slot {0} ", propertyName), LogType.Effects);
       Texture loadedTexture = GameDatabase.Instance.GetTexture(texturePath, false);
       m.SetTexture(propertyName, loadedTexture);
       m.SetTextureScale(propertyName, textureScale);
@@ -125,7 +125,7 @@ namespace Waterfall
     {
       node.TryGetValue("colorName", ref propertyName);
       node.TryGetValue("colorValue", ref propertyValue);
-      Utils.Log($"[WaterfallMaterialColorProperty]: loaded color {propertyName} with value {propertyValue.ToString()}");
+      Utils.Log($"[WaterfallMaterialColorProperty]: loaded color {propertyName} with value {propertyValue.ToString()}", LogType.Effects);
     }
     public override void Initialize(Material m)
     {
@@ -162,7 +162,7 @@ namespace Waterfall
     {
       node.TryGetValue("vectorName", ref propertyName);
       node.TryGetValue("value", ref propertyValue);
-      Utils.Log($"[WaterfallMaterialVector4Property]: loaded Vector4 {propertyName} with value {propertyValue.ToString()}");
+      Utils.Log($"[WaterfallMaterialVector4Property]: loaded Vector4 {propertyName} with value {propertyValue.ToString()}", LogType.Effects);
     }
     public override void Initialize(Material m)
     {

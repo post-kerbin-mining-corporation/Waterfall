@@ -169,7 +169,7 @@ namespace Waterfall.UI
     /// <param name="toEdit"></param>
     protected void EditCurve(FloatCurve toEdit)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve.ToString()}");
+      Utils.Log($"Started editing curve {toEdit.Curve.ToString()}", LogType.UI);
       curveEditor =  WaterfallUI.Instance.OpenCurveEditor(toEdit);
     }
     /// <summary>
@@ -178,7 +178,7 @@ namespace Waterfall.UI
     /// <param name="toEdit"></param>
     protected void EditCurve(FloatCurve toEdit, string tag)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve.ToString()}");
+      Utils.Log($"Started editing curve {toEdit.Curve.ToString()}", LogType.UI);
       curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, this, tag);
     }
 

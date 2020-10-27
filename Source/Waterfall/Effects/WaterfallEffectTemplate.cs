@@ -28,7 +28,7 @@ namespace Waterfall
       // Load up all the effects
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       
-      Utils.Log($"[WaterfallEffectTemplate]: Loading effects on {templateName}");
+      Utils.Log($"[WaterfallEffectTemplate]: Loading effects on {templateName}", LogType.Effects);
       allFX = new List<WaterfallEffect>();
       foreach (ConfigNode fxDataNode in effectNodes)
       {
