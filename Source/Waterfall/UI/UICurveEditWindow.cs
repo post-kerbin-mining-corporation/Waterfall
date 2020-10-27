@@ -55,7 +55,7 @@ namespace Waterfall.UI
     {
       modifier = modWin;
       modifierTag = tag;
-      Utils.Log($"Started editing curve {curveToEdit.ToString()}");
+      Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
 
       WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
@@ -67,7 +67,7 @@ namespace Waterfall.UI
     public void ChangeCurve(FloatCurve curveToEdit)
     {
 
-      Utils.Log($"Started editing curve {curveToEdit.ToString()}");
+      Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
       curve = curveToEdit;
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
@@ -77,7 +77,7 @@ namespace Waterfall.UI
     {
       modifier = modWin;
       modifierTag = tag;
-      Utils.Log($"Started editing curve {curveToEdit.ToString()}");
+      Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
       curve = curveToEdit;
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);

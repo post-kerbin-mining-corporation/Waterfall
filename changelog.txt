@@ -1,5 +1,7 @@
 v0.2.1 
 ------
+- Log levels can now be specified in settings
+- Lowered log levels by default (less logspam)
 - Fixed a few ModuleManager errors
 - Added compiled shaders for Linux and OSX (somewhat experimental)
 

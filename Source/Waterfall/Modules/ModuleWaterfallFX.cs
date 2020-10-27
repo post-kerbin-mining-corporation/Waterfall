@@ -382,7 +382,7 @@ namespace Waterfall
       if (allControllers.ContainsKey(name))
         allControllers[name].Set(value);
       else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerValue for id {name}");
+        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerValue for id {name}", LogType.Modules);
     }
 
     /// <summary>
@@ -407,7 +407,7 @@ namespace Waterfall
       if (allControllers.ContainsKey(name))
         allControllers[name].SetOverride(mode);
       else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverride for id {name}");
+        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverride for id {name}", LogType.Modules);
 
     }
 
@@ -421,7 +421,7 @@ namespace Waterfall
       if (allControllers.ContainsKey(name))
         allControllers[name].SetOverrideValue(value);
       else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverrideValue for id {name}");
+        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverrideValue for id {name}", LogType.Modules);
     }
 
 

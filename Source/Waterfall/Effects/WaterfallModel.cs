@@ -70,7 +70,7 @@ namespace Waterfall
 
     public void Initialize(Transform parent, bool fromNothing)
     {
-      Utils.Log(String.Format("[WaterfallModel]: Instantiating model from {0} ", path));
+      Utils.Log(String.Format("[WaterfallModel]: Instantiating model from {0} ", path), LogType.Effects);
       if (!GameDatabase.Instance.ExistsModel(path))
         Utils.LogError(String.Format("[WaterfallModel]: Unabled to find model {0} in GameDatabase", path));
       GameObject inst = GameObject.Instantiate(GameDatabase.Instance.GetModelPrefab(path), parent.position, parent.rotation);
@@ -125,7 +125,7 @@ namespace Waterfall
       modelRotationOffset = rotation;
       modelScaleOffset = scale;
 
-      Utils.Log($"[WaterfallModel] Applying model offsets {position}, {rotation}, {scale}");
+      Utils.Log($"[WaterfallModel] Applying model offsets {position}, {rotation}, {scale}", LogType.Effects);
 
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";

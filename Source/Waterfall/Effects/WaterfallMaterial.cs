@@ -62,7 +62,7 @@ namespace Waterfall
       node.TryGetValue("shader", ref shaderName);
 
       materials = new List<Material>();
-      Utils.Log(String.Format("[WaterfallMaterial]: Loading new material for {0} ", transformName));
+      Utils.Log(String.Format("[WaterfallMaterial]: Loading new material for {0} ", transformName), LogType.Effects);
 
       matProperties = new List<WaterfallMaterialProperty>();
       foreach (ConfigNode subnode in node.GetNodes(WaterfallConstants.TextureNodeName))
@@ -156,7 +156,7 @@ namespace Waterfall
           mat.SetFloat("_TimeOffset", UnityEngine.Random.Range(-10, 10));
         }
 
-        Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader));
+        Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
       }
     }
 
@@ -290,7 +290,7 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetTexture(string propertyName, string value)
     {
-      Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value}");
+      Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value}", LogType.Effects);
       bool existsSavedProperty = false;
       foreach (WaterfallMaterialProperty p in matProperties)
       {
@@ -319,7 +319,7 @@ namespace Waterfall
       }
       foreach (Material mat in materials)
       {
-        Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value} on {mat}");
+        Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value} on {mat}", LogType.Effects);
         mat.SetTexture(propertyName, GameDatabase.Instance.GetTexture(value, false));
       }
     }

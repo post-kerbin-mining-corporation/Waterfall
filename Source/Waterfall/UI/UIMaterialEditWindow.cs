@@ -36,7 +36,7 @@ namespace Waterfall.UI
     {
       materialID = 0;
       model = modelToEdit;
-      Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
+      Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}", LogType.UI);
 
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
@@ -62,7 +62,7 @@ namespace Waterfall.UI
     public void ChangeMaterial(WaterfallModel modelToEdit)
     {
       model = modelToEdit;
-      Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}");
+      Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit.ToString()}", LogType.UI);
       materialID = 0;
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
@@ -132,12 +132,12 @@ namespace Waterfall.UI
         if (GUILayout.Button(kvp.Value))
         {
           textureEdits[kvp.Key] = !textureEdits[kvp.Key];
-          Utils.Log($"[TP] Edit flag state {textureEdits[kvp.Key]}");
+          Utils.Log($"[TP] Edit flag state {textureEdits[kvp.Key]}", LogType.UI);
           // if yes, open the window
           if (textureEdits[kvp.Key])
           {
             WaterfallUI.Instance.OpenTextureEditWindow(kvp.Key, textureValues[kvp.Key]);
-            Utils.Log("[TP] Open Window");
+            Utils.Log("[TP] Open Window", LogType.UI);
           }
         }
 
@@ -193,12 +193,12 @@ namespace Waterfall.UI
         if (GUILayout.Button("", GUILayout.Width(60)))
         {
           colorEdits[kvp.Key] = !colorEdits[kvp.Key];
-          Utils.Log($"[CP] Edit flag state {colorEdits[kvp.Key]}");
+          Utils.Log($"[CP] Edit flag state {colorEdits[kvp.Key]}", LogType.UI);
           // if yes, open the window
           if (colorEdits[kvp.Key])
           {
             WaterfallUI.Instance.OpenColorEditWindow(colorValues[kvp.Key]);
-            Utils.Log("[CP] Open Window");
+            Utils.Log("[CP] Open Window", LogType.UI);
           }
         }
 
@@ -300,7 +300,7 @@ namespace Waterfall.UI
 
     protected void InitializeShaderProperties(Material m)
     {
-      Utils.Log($"[MaterialEditor] Generating shader property map for {m}");
+      Utils.Log($"[MaterialEditor] Generating shader property map for {m}", LogType.UI);
       colorValues = new Dictionary<string, Color>();
       floatValues = new Dictionary<string, float>();
       textureValues = new Dictionary<string, string>();
