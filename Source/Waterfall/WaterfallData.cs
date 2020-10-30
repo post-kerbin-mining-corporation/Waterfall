@@ -25,6 +25,7 @@ namespace Waterfall
 
     protected void Start()
     {
+      WaterfallParticleLoader.LoadParticles();
       ShaderLoader.LoadShaders();
       WaterfallTemplates.LoadTemplates();
     }
