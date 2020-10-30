@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Waterfall.Modules;
 
 namespace Waterfall.UI
 {
@@ -39,6 +40,7 @@ namespace Waterfall.UI
     UIMaterialEditWindow materialEditWindow;
     UIColorPickerWindow colorPickWindow;
     UITexturePickerWindow texturePickWindow;
+    UISmokeEditWindow smokeEditWindow;
     string currentCurveTag;
     #endregion
 
@@ -85,6 +87,10 @@ namespace Waterfall.UI
       foreach (UIModifierWindow modWin in editWindows)
       {
         modWin.Draw();
+      }
+      if (smokeEditWindow != null)
+      {
+        smokeEditWindow.Draw();
       }
       if (curveEditWindow != null)
       {
@@ -216,6 +222,23 @@ namespace Waterfall.UI
       GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
       rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
       GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
+      GUILayout.EndHorizontal();
+
+      
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Smoke Control", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
+      if (GUILayout.Button("Open", GUILayout.MaxWidth(100f)))
+      {
+        if (selectedModule)
+        {
+          ModuleWaterfallSmoke smoke = selectedModule.part.GetComponent<ModuleWaterfallSmoke>();
+          if (smoke)
+            OpenSmokeEditor(smoke);
+        }
+        
+      }
+
+     
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();
@@ -513,6 +536,20 @@ namespace Waterfall.UI
       }
       return curveEditWindow;
     }
+    public UISmokeEditWindow OpenSmokeEditor(ModuleWaterfallSmoke toEdit)
+    {
+
+      
+      if (smokeEditWindow != null)
+      {
+        
+      }
+      else
+      {
+        smokeEditWindow = new UISmokeEditWindow(toEdit, true);
+      }
+      return smokeEditWindow;
+    }
 
     public UIMaterialEditWindow OpenMaterialEditWindow(WaterfallModel mdl)
     {
@@ -673,6 +710,11 @@ namespace Waterfall.UI
       if (texturePickWindow != null)
       {
         texturePickWindow.Update();
+      }
+
+      if (smokeEditWindow != null)
+      {
+        smokeEditWindow.Update();
       }
     }
   }

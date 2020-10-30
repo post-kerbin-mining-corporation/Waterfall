@@ -79,6 +79,7 @@ namespace Waterfall.UI
 
     protected override void DrawWindow(int windowId)
     {
+    
       // Draw the header/tab controls
       DrawTitle();
       DrawMaterials();

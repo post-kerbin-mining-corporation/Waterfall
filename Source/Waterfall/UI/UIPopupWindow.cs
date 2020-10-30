@@ -62,6 +62,7 @@ namespace Waterfall.UI
         Utils.Log("[UI]: Start fired");
       showWindow = show;
 
+
     }
     
     /// <summary>

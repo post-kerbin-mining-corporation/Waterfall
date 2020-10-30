@@ -1,3 +1,8 @@
+v0.2.2
+------
+- More less logspam
+- Future improvements
+
 v0.2.1 
 ------
 - Log levels can now be specified in settings

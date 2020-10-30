@@ -72,6 +72,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
@@ -103,6 +107,7 @@
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
+    <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UIColorPickerWindow.cs" />
@@ -124,6 +129,7 @@
     <Compile Include="UI\UIModelEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
+    <Compile Include="UI\UISmokeEditWindow.cs" />
     <Compile Include="UI\UITexturePickerWindow.cs" />
     <Compile Include="UI\UIUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIUVScrollModifierWindow.cs" />
@@ -132,6 +138,7 @@
     <Compile Include="Utils.cs" />
     <Compile Include="WaterfallData.cs" />
     <Compile Include="WaterfallConstants.cs" />
+    <Compile Include="WaterfallParticles.cs" />
     <Compile Include="WaterfallShaders.cs" />
     <Compile Include="WaterfallTemplates.cs" />
   </ItemGroup>
