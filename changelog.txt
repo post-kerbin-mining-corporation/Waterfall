@@ -1,3 +1,7 @@
+v0.2.3
+------
+- Fixed DDS format of some flare textures
+
 v0.2.2
 ------
 - More less logspam
