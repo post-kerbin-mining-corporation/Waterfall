@@ -16,14 +16,17 @@ namespace Waterfall.UI
     protected override void Awake()
     {
       base.Awake();
-      GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
-      GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGUIAppLauncherDestroyed);
+      if (Settings.ShowEffectEditor)
+      {
+        GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+        GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGUIAppLauncherDestroyed);
+      }
     }
 
     protected override void Start()
     {
       base.Start();
-      if (ApplicationLauncher.Ready)
+      if (Settings.ShowEffectEditor && ApplicationLauncher.Ready)
         OnGUIAppLauncherReady();
     }
 
@@ -53,7 +56,8 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: App Launcher Ready");
-      if (ApplicationLauncher.Ready && stockToolbarButton == null)
+      
+        if (ApplicationLauncher.Ready && stockToolbarButton == null)
       {
         stockToolbarButton = ApplicationLauncher.Instance.AddModApplication(
             OnToolbarButtonToggle,
@@ -82,7 +86,7 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: App Launcher Toggle Off");
-      stockToolbarButton.SetTexture((Texture)GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
+        stockToolbarButton.SetTexture((Texture)GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
     }
 
     protected void DummyVoid() { }

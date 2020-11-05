@@ -178,7 +178,7 @@ namespace Waterfall
 
         if (parents[i] == null)
         {
-          Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName));
+          Utils.LogError(String.Format("[WaterfallEffect]: Couldn't find Parent Transform {0} on model to attach effect to", parentName, LogType.Any));
           return;
         }
         effectTransform.SetParent(parents[i], true);
