@@ -1,3 +1,9 @@
+v0.2.4
+------
+- Added a ShowEffectEditor setting that controls whether the editor toolbar button is shown - this is off by default!
+- Fixed an issue where some effect models might be on the wrong layer, causing them to be shown in the part highlighter's advanced mode
+- Fixed some log messages that didn't have a log level
+
 v0.2.3
 ------
 - Fixed DDS format of some flare textures

@@ -53,7 +53,7 @@ namespace Waterfall
       node.TryGetValue("randomnessScale", ref randomScale);
       node.TryGetValue("useRandomness", ref useRandomness);
       node.TryGetValue("randomnessController", ref randomnessController);
-      Utils.Log(String.Format("[EffectModifier]: Loding modifier {0} ", fxName, LogType.Modifiers));
+      Utils.Log(String.Format("[EffectModifier]: Loading modifier {0} ", fxName), LogType.Modifiers);
     }
     /// <summary>
     /// Initialize the effect
@@ -61,7 +61,7 @@ namespace Waterfall
     public virtual void Init(WaterfallEffect effect)
     {
       parentEffect = effect;
-      Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName, LogType.Modifiers));
+      Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName), LogType.Modifiers);
       List<Transform> roots = parentEffect.GetModelTransforms();
       
       foreach (Transform t in roots)

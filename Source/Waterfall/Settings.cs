@@ -30,6 +30,7 @@ namespace Waterfall
   public static class Settings
   {
     /// Settings go here
+    public static bool ShowEffectEditor = true;
     public static bool DebugModules = true;
     public static bool DebugSettings = true;
     public static bool DebugEffects = true;
@@ -44,15 +45,16 @@ namespace Waterfall
     {
       ConfigNode settingsNode;
 
-      Utils.Log("[Settings]: Started loading");
+      Utils.Log("[Settings]: Started loading", LogType.Settings);
       if (GameDatabase.Instance.ExistsConfigNode("Waterfall/WATERFALL_SETTINGS"))
       {
-        Utils.Log("[Settings]: Located settings file");
+        Utils.Log("[Settings]: Using specified settings", LogType.Settings);
 
         settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WATERFALL_SETTINGS");
 
         // Setting parsing goes here
         //settingsNode.TryGetValue("MinimumWarpFactor", ref TimeWarpLimit);
+        settingsNode.TryGetValue("ShowEffectEditor", ref ShowEffectEditor);
         settingsNode.TryGetValue("DebugModules", ref DebugModules);
         settingsNode.TryGetValue("DebugSettings", ref DebugSettings);
         settingsNode.TryGetValue("DebugEffects", ref DebugEffects);
@@ -63,9 +65,9 @@ namespace Waterfall
       }
       else
       {
-        Utils.Log("[Settings]: Couldn't find settings file, using defaults");
+        Utils.Log("[Settings]: Couldn't find settings file, using defaults", LogType.Settings);
       }
-      Utils.Log("[Settings]: Finished loading");
+      Utils.Log("[Settings]: Finished loading", LogType.Settings);
     }
   }
 }

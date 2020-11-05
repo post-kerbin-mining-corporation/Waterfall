@@ -74,11 +74,13 @@ namespace Waterfall
       if (!GameDatabase.Instance.ExistsModel(path))
         Utils.LogError(String.Format("[WaterfallModel]: Unabled to find model {0} in GameDatabase", path));
       GameObject inst = GameObject.Instantiate(GameDatabase.Instance.GetModelPrefab(path), parent.position, parent.rotation);
+      inst.SetLayerRecursive(1);
       inst.SetActive(true);
 
       Transform modelTransform = inst.GetComponent<Transform>();
       
       modelTransform.SetParent(parent, true);
+
       //modelTransform.localScale = modelScaleOffset;
       //modelTransform.localPosition = modelPositionOffset;
 
