@@ -1,3 +1,7 @@
+v0.2.4
+------
+- Fixed an issue where some effect models might be on the wrong layer, causing them to be shown in the part highlighter's advanced mode
+
 v0.2.3
 ------
 - Fixed DDS format of some flare textures
