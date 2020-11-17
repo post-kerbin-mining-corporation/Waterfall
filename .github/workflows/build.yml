@@ -1,0 +1,36 @@
+name: build
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ actions ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checkout this repo
+    - uses: actions/checkout@v2
+    # Checkout another repo
+    - uses: actions/checkout@v2
+      with:
+        # Repository name with owner.
+        repository: 'post-kerbin-mining-corporation/build-deploy'
+        # branch
+        ref: 'actions'
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8' 
+        architecture: 'x64' 
+    - name: Installing dependencies
+      run: pip install awscli boto3 requests
+    - name: Running deploy tests
+      run: pytest -s --testpath "GameData/" build-deploy/src/tests/  # run the deploy tests
