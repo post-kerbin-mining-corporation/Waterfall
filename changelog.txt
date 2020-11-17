@@ -1,3 +1,7 @@
+v0.2.5
+------
+- Fixed randomness values for shaders being lost sometime in the past
+
 v0.2.4
 ------
 - Added a ShowEffectEditor setting that controls whether the editor toolbar button is shown - this is off by default!
