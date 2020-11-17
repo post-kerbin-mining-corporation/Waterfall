@@ -26,6 +26,7 @@ jobs:
         repository: 'post-kerbin-mining-corporation/build-deploy'
         # branch
         ref: 'actions'
+        path: 'build-deploy'
     - uses: actions/setup-python@v2
       with:
         python-version: '3.8' 
@@ -37,5 +38,4 @@ jobs:
     #- name: Running deploy tests
     #  run: pytest -s --testpath "GameData/" build-deploy/src/tests/  # run the deploy tests
     - name: Building package
-      run: |
-        echo ls 
+      run: python build-deploy/src/package.py --f ".mod_data.yml"  
