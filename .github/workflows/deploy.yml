@@ -43,3 +43,5 @@ jobs:
       run: python build-deploy/src/package.py --f ".mod_data.yml"  
     - name: Staging package
       run: python build-deploy/src/stage.py --f ".mod_data.yml" # Run the staging script
+    - name: Deploying package
+      run: python build-deploy/src/deploy.py --f ".mod_data.yml" # Deploy package to spacedock, curse, github
