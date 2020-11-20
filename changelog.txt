@@ -1,3 +1,7 @@
+v0.2.6
+------
+- Added new guard for multiple misconfigured modules that should break the game less when there is a critical configuration error
+
 v0.2.5
 ------
 - Fixed randomness values for shaders being lost sometime in the past
