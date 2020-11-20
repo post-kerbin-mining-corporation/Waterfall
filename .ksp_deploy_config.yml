@@ -1,0 +1,3 @@
+OAUTH_TOKEN_SSM_KEY: pkmc-bot-github-oauth-token
+GITHUB_USER_SSM_KEY: pkmc-bot-github-user
+GITHUB_USER_EMAIL_SSM_KEY: pkmc-bot-github-user-email
