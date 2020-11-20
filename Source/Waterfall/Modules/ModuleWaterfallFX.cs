@@ -199,6 +199,7 @@ namespace Waterfall
         if (allControllers == null || allControllers.Count == 0 || allFX == null || allFX.Count == 0)
         {
           ConfigNode oldNode = FetchConfig();
+          if (oldNode != null)
           Load(oldNode);
         }
       }
