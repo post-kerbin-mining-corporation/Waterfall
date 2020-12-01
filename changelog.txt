@@ -1,3 +1,7 @@
+v0.2.7
+------
+- Added IgnoreProjector tag on all shaders; should resolve some interactions with Scatterer
+
 v0.2.6
 ------
 - Added new guard for multiple misconfigured modules that should break the game less when there is a critical configuration error
