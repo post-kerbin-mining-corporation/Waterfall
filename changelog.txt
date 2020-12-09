@@ -1,3 +1,11 @@
+v0.2.8
+------
+- Added better HDR handling to shaders, should result in less TUFX breakage in HDR mode
+- Added new Billboard (Additive Directional) shader - a billboard that fades out when away from a specific angle
+- Added waterfall-spotlight-1 and waterfall-floodlight-1 templates
+- Added new Light controller (link effects to a light intensity)
+- Added two new flare textures to use
+
 v0.2.7
 ------
 - Added IgnoreProjector tag on all shaders; should resolve some interactions with Scatterer
