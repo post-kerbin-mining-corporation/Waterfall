@@ -90,6 +90,7 @@
     <Compile Include="EffectControllers\AtmosphereDepth.cs" />
     <Compile Include="EffectControllers\CustomController.cs" />
     <Compile Include="EffectControllers\EffectController.cs" />
+    <Compile Include="EffectControllers\LightController.cs" />
     <Compile Include="EffectControllers\RandomnessController.cs" />
     <Compile Include="EffectControllers\RCSController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />

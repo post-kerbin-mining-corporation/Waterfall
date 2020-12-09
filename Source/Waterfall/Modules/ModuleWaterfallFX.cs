@@ -117,6 +117,15 @@ namespace Waterfall
           if (ctrlType == "random")
           {
             RandomnessController rCtrl = new RandomnessController(controllerDataNode);
+            
+            allControllers.Add(rCtrl.name, rCtrl);
+            
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "light")
+          {
+            LightController rCtrl = new LightController(controllerDataNode);
+            rCtrl.lightName = controllerDataNode.GetValue("lightName");
             allControllers.Add(rCtrl.name, rCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
           }

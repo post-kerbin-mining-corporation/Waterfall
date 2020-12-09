@@ -57,6 +57,8 @@ namespace Waterfall
       ["_FalloffStart"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_Symmetry"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 24f)),
       ["_SymmetryStrength"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Direction"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
+      ["_DirectionScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
 
     };
 
