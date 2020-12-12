@@ -1,3 +1,7 @@
+v0.2.9
+------
+- Fixed OSX shader package
+
 v0.2.8
 ------
 - Added better HDR handling to shaders, should result in less TUFX breakage in HDR mode
