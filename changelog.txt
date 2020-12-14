@@ -1,3 +1,10 @@
+v0.2.9
+------
+- Fixed OSX shader package
+- Improved Light controller
+- Added new LightColorModifier, link a Material color to the color of a Light
+- Improved spotlight and floodlight templates (cones and flares adjust to RGB colour of the light, flare effect is no longer removed outside of the atmosphere)
+
 v0.2.8
 ------
 - Added better HDR handling to shaders, should result in less TUFX breakage in HDR mode

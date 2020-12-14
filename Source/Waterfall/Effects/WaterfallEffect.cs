@@ -112,6 +112,8 @@ namespace Waterfall
       ConfigNode[] uvOffsetNodes = node.GetNodes(WaterfallConstants.UVScrollModifierNodeName);
       ConfigNode[] floatNodes = node.GetNodes(WaterfallConstants.FloatModifierNodeName);
 
+      ConfigNode[] lightColorNodes = node.GetNodes(WaterfallConstants.LightColorNodeName);
+
       foreach (ConfigNode subNode in positionNodes)
       {
         fxModifiers.Add(new EffectPositionModifier(subNode));
@@ -135,6 +137,10 @@ namespace Waterfall
       foreach (ConfigNode subNode in floatNodes)
       {
         fxModifiers.Add(new EffectFloatModifier(subNode));
+      }
+      foreach (ConfigNode subNode in lightColorNodes)
+      {
+        fxModifiers.Add(new EffectLightColorModifier(subNode));
       }
     }
 
