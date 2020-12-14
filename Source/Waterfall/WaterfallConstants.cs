@@ -24,6 +24,8 @@ namespace Waterfall
     public static string PositionModifierNodeName = "POSITIONMODIFIER";
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
+    public static string LightColorNodeName = "LIGHTCOLORMODIFIER";
+
     public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
     {
       ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),

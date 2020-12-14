@@ -505,6 +505,17 @@ namespace Waterfall.UI
         }
       }
       catch (InvalidCastException e) { }
+
+      try
+      {
+        EffectLightColorModifier colMod = (EffectLightColorModifier)fxMod;
+        if (colMod != null)
+        {
+          editWindows.Add(new UILightColorModifierWindow(colMod, true));
+        }
+
+      }
+      catch (InvalidCastException e) { }
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)
