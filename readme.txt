@@ -1,6 +1,6 @@
-===============
-Waterfall 0.2.9
-===============
+================
+Waterfall 0.2.10
+================
 
 Waterfall is a mod for Kerbal Space Program that provides a cool new way to create and drive engine effects for smooth rocket plumes. It has
 - Support for atmospheric expansion and all kinds of dynamic effects
