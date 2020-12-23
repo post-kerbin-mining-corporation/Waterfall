@@ -1,3 +1,10 @@
+v0.3.0
+------
+- Fixed some bugs with the RCS controller
+- Updates to some templates
+- Added waterfall-hydrolox-lower-3: Delta IV lower stage hydrolox engine
+
+
 v0.2.10
 -------
 - KSP 1.11
