@@ -52,7 +52,7 @@ namespace Waterfall
       }
 
     
-      return rcsController.thrustForces.ToList();
+      return (rcsController.thrustForces).ToList().Select(x => x/rcsController.thrusterPower).ToList();
       
     }
   }
