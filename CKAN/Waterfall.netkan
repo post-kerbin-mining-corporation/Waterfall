@@ -8,7 +8,7 @@
     "author": "Chris Adderley (Nertea)",
     "license":      "CC-BY-NC-SA-4.0",
     "resources": {
-        "homepage":   "https://forum.kerbalspaceprogram.com/index.php?/topic/196309",
+        "homepage":   "https://forum.kerbalspaceprogram.com/index.php?/topic/196309-*",
         "repository": "https://github.com/post-kerbin-mining-corporation/Waterfall"
     },
     "depends": [
