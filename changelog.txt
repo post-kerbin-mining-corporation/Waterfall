@@ -1,3 +1,23 @@
+v0.4.0
+------
+- Fixed shader time offset causing random scaling of shader speed values
+- Reorganized the UI overall, with many improvements, some highlights
+ - It is now possible to export a complete ModuleWaterfallFX
+ - It is now possible to edit Effect names 
+ - It is now possible to re-order Effect Modifiers
+ - Added more detailed Controller UI
+   - Only controllers present on the module are shown
+   - Can add, edit and remove controllers
+   - Controllers can be overridden individually
+   - When not overridden, controllers will try to show the value of the controller
+ - Many QOL improvements
+- Added ability to specify noise type to Randomness controller: can use random (old one) or perlin (basic 1d perlin noise)
+- Added new controllers
+ - Mach: outputs current Mach number
+ - Gimbal: outputs gimbal fraction, where 1/-1 is full extension, 0 is centered. Needs axis specified.
+ - EngineEvent: event controller, fairly prototypical. Two events are currently available, ignition and flameout. 
+
+
 v0.3.0
 ------
 - Fixed some bugs with the RCS controller

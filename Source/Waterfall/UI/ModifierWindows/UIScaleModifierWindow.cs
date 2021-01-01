@@ -23,6 +23,9 @@ namespace Waterfall.UI
 
     #region  Data
     public EffectScaleModifier scaleMod;
+    CurveUpdateFunction xCurveFunction;
+    CurveUpdateFunction yCurveFunction;
+    CurveUpdateFunction zCurveFunction;
     #endregion
 
 
@@ -40,10 +43,28 @@ namespace Waterfall.UI
     public UIScaleModifierWindow(EffectScaleModifier mod, bool show) : base((EffectModifier)mod, show)
     {
       scaleMod = mod;
+      xCurveFunction = new CurveUpdateFunction(UpdateXCurve);
+      yCurveFunction = new CurveUpdateFunction(UpdateYCurve);
+      zCurveFunction = new CurveUpdateFunction(UpdateZCurve);
       GenerateCurveThumbs(mod);
     }
 
 
+    protected void UpdateXCurve(FloatCurve curve)
+    {
+      scaleMod.xCurve = curve;
+      UpdateModifierPanel();
+    }
+    protected void UpdateYCurve(FloatCurve curve)
+    {
+      scaleMod.yCurve = curve;
+      UpdateModifierPanel();
+    }
+    protected void UpdateZCurve(FloatCurve curve)
+    {
+      scaleMod.zCurve = curve;
+      UpdateModifierPanel();
+    }
     protected override void DrawHeader()
     {
       base.DrawHeader();
@@ -71,7 +92,7 @@ namespace Waterfall.UI
       Rect imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 5, buttonRect.width - 20, buttonRect.height - 10);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(scaleMod.xCurve, "x");
+        EditCurve(scaleMod.xCurve, xCurveFunction);
         selectionFlag = 1;
       }
       GUI.DrawTexture(imageRect, miniXCurve);
@@ -92,7 +113,7 @@ namespace Waterfall.UI
       imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(scaleMod.yCurve, "y");
+        EditCurve(scaleMod.yCurve, yCurveFunction);
         selectionFlag = 2;
       }
       GUI.DrawTexture(imageRect, miniYCurve);
@@ -113,7 +134,7 @@ namespace Waterfall.UI
       imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(scaleMod.zCurve, "z");
+        EditCurve(scaleMod.zCurve, zCurveFunction);
         selectionFlag = 3;
       }
       GUI.DrawTexture(imageRect, miniZCurve);
@@ -127,24 +148,6 @@ namespace Waterfall.UI
       }
       GUILayout.EndHorizontal();
 
-    }
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
-    {
-      base.UpdateCurves(newCurve, tag);
-      // Get the color from the UI.
-      switch (tag)
-      {
-        case "x":
-          scaleMod.xCurve = newCurve;
-          break;
-        case "y":
-          scaleMod.yCurve = newCurve;
-          break;
-        case "z":
-          scaleMod.zCurve = newCurve;
-          break;
-      }
-      UpdateModifierPanel();
     }
 
     protected override void UpdateModifierPanel()

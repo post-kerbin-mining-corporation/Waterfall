@@ -92,7 +92,7 @@ namespace Waterfall.UI
           showUI = false;
         GUILayout.BeginVertical(GUILayout.MaxWidth(200f));
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"<b>{fx.name}</b>");
+        fx.name = GUILayout.TextArea(fx.name);
         GUILayout.FlexibleSpace();
         GUILayout.Label("Drawn");
         bool toggle = GUILayout.Toggle(enabled, "");
@@ -112,13 +112,13 @@ namespace Waterfall.UI
         }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
-        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
+        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
 
         GUILayout.Label("Rotation Offset");
-        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
 
         GUILayout.Label("Scale Offset");
-        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
+        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
 
 
         GUILayout.EndVertical();
@@ -149,6 +149,34 @@ namespace Waterfall.UI
           GUILayout.Label(fx.FXModifiers[i].controllerName, GUILayout.Width(120));
           GUILayout.Label(fx.FXModifiers[i].effectMode.ToString(), GUILayout.Width(80));
 
+          if (GUILayout.Button("▲"))
+          {
+            int newIndex = Mathf.Clamp(i - 1, 0, 5000);
+
+            var item = fx.FXModifiers[i];
+
+            fx.FXModifiers.RemoveAt(i);
+
+            if (newIndex > i) newIndex--;
+            // the actual index could have shifted due to the removal
+
+            fx.FXModifiers.Insert(newIndex, item);
+            return;
+          }
+          if (GUILayout.Button("▼"))
+          {
+            int newIndex = Mathf.Clamp(i + 1, 0, fx.FXModifiers.Count-1);
+
+            var item = fx.FXModifiers[i];
+
+            fx.FXModifiers.RemoveAt(i);
+
+            //if (newIndex > i) newIndex--;
+            // the actual index could have shifted due to the removal
+
+            fx.FXModifiers.Insert(newIndex, item);
+            return;
+          }
           if (GUILayout.Button("Edit"))
           {
             parent.OpenModifierEditWindow(fx.FXModifiers[i]);
@@ -163,6 +191,15 @@ namespace Waterfall.UI
       }
       GUILayout.EndHorizontal();
       
+    }
+    public void MoveModifierUp()
+    {
+
+    }
+
+    public void MoveModifierDown()
+    {
+
     }
     public void Update()
     {

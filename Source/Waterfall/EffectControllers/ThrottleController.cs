@@ -16,6 +16,7 @@ namespace Waterfall
     public float currentThrottle = 1;
     ModuleEngines engineController;
 
+    public ThrottleController() { }
     public ThrottleController(ConfigNode node)
     {
       name = "throttle";

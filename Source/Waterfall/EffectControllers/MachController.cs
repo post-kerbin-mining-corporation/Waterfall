@@ -6,15 +6,14 @@ namespace Waterfall
   /// <summary>
   /// A controller that pulls from atmosphere density
   /// </summary>
-  public class AtmosphereDensityController : WaterfallController
+  public class MachController : WaterfallController
   {
-    public float atmosphereDepth = 1;
-
-    public AtmosphereDensityController() { }
-    public AtmosphereDensityController(ConfigNode node)
+    public float mach = 0;
+    public MachController() { }
+    public MachController(ConfigNode node)
     {
-      name = "atmosphereDensity";
-      linkedTo = "atmosphere_density";
+      name = "mach";
+      linkedTo = "mach";
       node.TryGetValue("name", ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
@@ -26,7 +25,7 @@ namespace Waterfall
     {
       if (overridden)
         return new List<float>() { overrideValue };
-      return new List<float>() { (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) };
+      return new List<float>() { (float)parentModule.vessel.mach };
     }
   }
 }
