@@ -36,6 +36,7 @@ namespace Waterfall.UI
     UICurveEditWindow curveEditWindow;
     UIModifierPopupWindow modifierPopupWindow;
     UIAddEffectWindow effectAddWindow;
+    UIControllerPopupWindow controlAddWindow;
     UIModifierWindow currentModWinForCurve;
     UIMaterialEditWindow materialEditWindow;
     UIColorPickerWindow colorPickWindow;
@@ -108,6 +109,10 @@ namespace Waterfall.UI
       {
         effectAddWindow.Draw();
       }
+      if (controlAddWindow != null)
+      {
+        controlAddWindow.Draw();
+      }
       if (colorPickWindow != null)
       {
         colorPickWindow.Draw();
@@ -126,10 +131,20 @@ namespace Waterfall.UI
     protected override void DrawWindow(int windowId)
     {
       // Draw the header/tab controls
+      
       DrawHeader();
-
-      // Draw the parts list
+      GUILayout.BeginHorizontal();
       DrawPartsList();
+      DrawExporters();
+      GUILayout.EndHorizontal();
+      //
+      GUILayout.BeginHorizontal();
+      DrawControllers();
+      DrawTemplateControl();
+      
+      GUILayout.EndHorizontal();
+      // Draw the parts list
+      
 
       // Draw the effects list
 
@@ -159,90 +174,74 @@ namespace Waterfall.UI
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
 
-      GUILayout.BeginHorizontal();
-      DrawControllers();
-      DrawTemplateControl();
-      DrawExporters();
-      GUILayout.EndHorizontal();
+      
     }
 
-
-    protected void DrawControllers()
+    void DrawController(WaterfallController ctrl)
     {
       GUILayout.BeginHorizontal();
+
+      
+      ctrl.overridden = GUILayout.Toggle(ctrl.overridden, "", GUILayout.Width(60));
+
+      GUILayout.Label(ctrl.name, GUILayout.MaxWidth(120f));
+      //GUILayout.Label(ctrl.linkedTo, GUILayout.MaxWidth(130f));
+
+
+      float sliderMax = 1f;
+      float sliderMin = 0f;
+      if (ctrl.linkedTo == "mach")
+        sliderMax = 15f;
+      if (ctrl.linkedTo == "gimbal")
+      {
+        sliderMin = -1f;
+      }
+
+      if (ctrl.overridden)
+      {
+        ctrl.overrideValue = GUILayout.HorizontalSlider(ctrl.overrideValue, sliderMin, sliderMax, GUILayout.MaxWidth(100f));
+      }
+      else
+      {
+        ctrl.overrideValue = GUILayout.HorizontalSlider(ctrl.Get()[0], 0f, sliderMax, GUILayout.MaxWidth(100f));
+      }
+      GUILayout.Label(ctrl.overrideValue.ToString("F2"), GUILayout.MinWidth(40f));
+
+      if (GUILayout.Button("Edit", GUILayout.Width(30)))
+      {
+        OpenControllerEditWindow(ctrl);
+      }
+      if (GUILayout.Button("x", GUILayout.Width(20)))
+      {
+        OpenControllerDeleteWindow(ctrl);
+      }
+
+      GUILayout.EndHorizontal();
+    }
+    protected void DrawControllers()
+    {
+
       GUILayout.BeginVertical();
-      useControllers = GUILayout.Toggle(useControllers, "Link to Editor", GUILayout.Width(150));
-      
       GUILayout.Label("<b>CONTROLLERS</b>");
-
-      // 
+      GUILayout.BeginVertical(GUI.skin.textArea);
+      // Title bar
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
-      throttleControllerValue = GUILayout.HorizontalSlider(throttleControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
-      GUILayout.Label(throttleControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
-      GUILayout.EndHorizontal();
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Atmosphere Depth", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
-      densityControllerValue = GUILayout.HorizontalSlider(densityControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
-      GUILayout.Label(densityControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
-      GUILayout.EndHorizontal();
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Randomness Min/Max", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-
-      string xValue = GUILayout.TextArea(randomControllerValue.x.ToString(), GUILayout.MaxWidth(60f));
-      string yValue = GUILayout.TextArea(randomControllerValue.y.ToString(), GUILayout.MaxWidth(60f));
-
-      float xParsed;
-      float yParsed;
-      Vector2 newRand = new Vector2(randomControllerValue.x, randomControllerValue.y);
-      if (float.TryParse(xValue, out xParsed))
+      GUILayout.Label("<b>Override</b>",GUILayout.Width(60));
+      GUILayout.Label("  <b>Name</b>", GUILayout.Width(120));
+      GUILayout.FlexibleSpace();
+      GUILayout.Space(140);
+      if (GUILayout.Button("Add New"))
       {
-        if (xParsed != randomControllerValue.x)
-        {
-          newRand.x = xParsed;
-        }
-      }
-      if (float.TryParse(yValue, out yParsed))
-      {
-        if (yParsed != randomControllerValue.y)
-        {
-          newRand.y = yParsed;
-        }
-      }
-      if (newRand.x != randomControllerValue.x || newRand.y != randomControllerValue.y)
-      {
-        randomControllerValue = new Vector2(xParsed, yParsed);
+        OpenControllerAddWindow();
       }
       GUILayout.EndHorizontal();
 
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("RCS Throttle", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
-      rcsControllerValue = GUILayout.HorizontalSlider(rcsControllerValue, 0f, 1f, GUILayout.MaxWidth(100f));
-      GUILayout.Label(rcsControllerValue.ToString("F2"), GUIResources.GetStyle("data_field"), GUILayout.MinWidth(40f));
-      GUILayout.EndHorizontal();
-
-      
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Smoke Control", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(120f));
-      if (GUILayout.Button("Open", GUILayout.MaxWidth(100f)))
+      foreach (WaterfallController ctrl in selectedModule.Controllers)
       {
-        if (selectedModule)
-        {
-          ModuleWaterfallSmoke smoke = selectedModule.part.GetComponent<ModuleWaterfallSmoke>();
-          if (smoke)
-            OpenSmokeEditor(smoke);
-        }
-        
+        DrawController(ctrl);
       }
-
-     
-      GUILayout.EndHorizontal();
-
       GUILayout.EndVertical();
-      GUILayout.EndHorizontal();
+      GUILayout.EndVertical();
     }
 
     protected bool templatesOpen = false;
@@ -250,78 +249,84 @@ namespace Waterfall.UI
     protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
-
-      GUILayout.BeginHorizontal();
-      if (templatesOpen)
-      {
-        if (GUILayout.Button("-", GUILayout.Width(30)))
-        {
-          templatesOpen = false;
-        }
-      }
-      else
-      {
-        if (GUILayout.Button("+", GUILayout.Width(30)))
-        {
-          templatesOpen = true;
-        }
-      }
-      
       GUILayout.Label("<b>TEMPLATES</b>");
-      GUILayout.EndHorizontal();
+      GUILayout.BeginVertical(GUI.skin.textArea);
+      //if (templatesOpen)
+      //{
+      //  if (GUILayout.Button("-", GUILayout.Width(30)))
+      //  {
+      //    templatesOpen = false;
+      //  }
+      //}
+      //else
+      //{
+      //  if (GUILayout.Button("+", GUILayout.Width(30)))
+      //  {
+      //    templatesOpen = true;
+      //  }
+      //}
+      templatesOpen = true;
+      
       if (templatesOpen)
       {
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Template Name");
+        GUILayout.Label("Name");
         templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
         GUILayout.EndHorizontal();
-        GUILayout.Label("Template Offset");
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
-
-        GUILayout.Label("Template Rotation ");
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Rotation ");
         modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
-
-        GUILayout.Label("Template Scale");
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Scale");
         modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
-
+        GUILayout.EndHorizontal();
       }
       GUILayout.EndVertical();
+      GUILayout.EndVertical();
     }
-     protected void DrawExporters()
+    protected void DrawExporters()
     {
       GUILayout.BeginVertical();
-      GUILayout.BeginHorizontal();
-      if (exportsOpen)
-      {
-        if (GUILayout.Button("-", GUILayout.Width(30)))
-        {
-          exportsOpen = false;
-        }
-      }
-      else
-      {
-        if (GUILayout.Button("+", GUILayout.Width(30)))
-        {
-          exportsOpen = true;
-        }
-      }
-
       GUILayout.Label("<b>EXPORT</b>");
-      GUILayout.EndHorizontal();
+      GUILayout.BeginVertical(GUI.skin.textArea);
+      //if (exportsOpen)
+      //{
+      //  if (GUILayout.Button("-", GUILayout.Width(30)))
+      //  {
+      //    exportsOpen = false;
+      //  }
+      //}
+      //else
+      //{
+      //  if (GUILayout.Button("+", GUILayout.Width(30)))
+      //  {
+      //    exportsOpen = true;
+      //  }
+      //}
+      exportsOpen = true;
+      
 
       if (exportsOpen)
       {
-        if (GUILayout.Button("Dump selected Effects\n to log", GUILayout.Width(150f), GUILayout.Height(60)))
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Generate Module and \ncopy to clipboard", GUILayout.Width(170f), GUILayout.Height(40)))
         {
-          Utils.Log(selectedModule.Export().ToString());
+          GUIUtility.systemCopyBuffer = (selectedModule.ExportModule().ToString());
 
         }
-        if (GUILayout.Button("Copy selected Effects\n to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        if (GUILayout.Button("Copy selected EFFECTS\nto clipboard", GUILayout.Width(170f), GUILayout.Height(40)))
         {
-          GUIUtility.systemCopyBuffer = (selectedModule.Export().ToString());
+          GUIUtility.systemCopyBuffer = (selectedModule.ExportEffects().ToString());
 
         }
-        if (GUILayout.Button("Copy selected Effects\n as template to \nclipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Generate template from\n and copy to clipboard", GUILayout.Width(170f), GUILayout.Height(40)))
         {
           ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
           node.AddValue("templateName", templateName);
@@ -333,7 +338,7 @@ namespace Waterfall.UI
           GUIUtility.systemCopyBuffer = (node.ToString());
 
         }
-        if (GUILayout.Button("Copy template offset\nvalues to clipboard", GUILayout.Width(150f), GUILayout.Height(60)))
+        if (GUILayout.Button("Copy template offset\nvalues to clipboard", GUILayout.Width(160f), GUILayout.Height(40)))
         {
           string copiedString = "";
           copiedString += $"position = {modelOffset.x},{modelOffset.y},{modelOffset.z}\n";
@@ -343,31 +348,30 @@ namespace Waterfall.UI
           GUIUtility.systemCopyBuffer = copiedString;
 
         }
+        GUILayout.EndHorizontal();
       }
+      GUILayout.EndVertical();
       GUILayout.EndVertical();
     }
 
     protected void DrawPartsList()
     {
-      GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
       GUILayout.BeginVertical();
-      GUILayout.Label("<b>FX MODULES</b>");
-      partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.ExpandWidth(true), GUILayout.Height(40f));
+      GUILayout.Label("<b>FX MODULES ON VESSEL</b>");
 
-      GUILayout.BeginHorizontal();
-      for (int i = 0; i < effectsModules.Count; i++)
+      partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.Width(340f));
+
+
+      int selectedModuleChanges = GUILayout.SelectionGrid(selectedModuleIndex, modulesString, Mathf.Min(modulesString.Length, 2), GUIResources.GetStyle("radio_text_button"));
+      
+      if (selectedModuleChanges != selectedModuleIndex)
       {
-
-        if (GUILayout.Button($"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)", GUILayout.MaxWidth(250f)))
-        {
-          SelectFXModule(effectsModules[i]);
-        }
+        selectedModuleIndex = selectedModuleChanges;
+        SelectFXModule(effectsModules[selectedModuleIndex]);
       }
-      GUILayout.EndHorizontal();
 
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
-      GUILayout.EndHorizontal();
     }
 
 
@@ -397,6 +401,7 @@ namespace Waterfall.UI
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
     }
+    int selectedModuleIndex = 0;
     public void SelectFXModule(ModuleWaterfallFX fxMod)
     {
       selectedModule = fxMod;
@@ -418,6 +423,8 @@ namespace Waterfall.UI
         modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       }
     }
+
+    string[] modulesString;
     public void GetVesselData()
     {
       vessel = FlightGlobals.ActiveVessel;
@@ -432,8 +439,13 @@ namespace Waterfall.UI
             effectsModules.Add(fxModule);
           }
         }
+        modulesString = new string[effectsModules.Count];
         if (effectsModules.Count > 0)
         {
+          for (int i=0; i < effectsModules.Count;i++) 
+          {
+            modulesString[i] = $"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)";
+          }
           SelectFXModule(effectsModules[0]);
 
         }
@@ -531,6 +543,18 @@ namespace Waterfall.UI
       return curveEditWindow;
     }
 
+    public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, CurveUpdateFunction curveFun)
+    {
+      if (curveEditWindow != null)
+      {
+        curveEditWindow.ChangeCurve(toEdit, curveFun);
+      }
+      else
+      {
+        curveEditWindow = new UICurveEditWindow(toEdit, curveFun, true);
+      }
+      return curveEditWindow;
+    }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
     {
@@ -550,10 +574,10 @@ namespace Waterfall.UI
     public UISmokeEditWindow OpenSmokeEditor(ModuleWaterfallSmoke toEdit)
     {
 
-      
+
       if (smokeEditWindow != null)
       {
-        
+
       }
       else
       {
@@ -635,6 +659,35 @@ namespace Waterfall.UI
       RefreshEffectList();
     }
 
+    public void OpenControllerAddWindow()
+    {
+      if (controlAddWindow == null)
+      {
+        controlAddWindow = new UIControllerPopupWindow(true);
+
+      }
+      controlAddWindow.SetAddMode(selectedModule);
+    }
+    public void OpenControllerDeleteWindow(WaterfallController toDelete)
+    {
+      if (controlAddWindow == null)
+      {
+        controlAddWindow = new UIControllerPopupWindow(true);
+
+      }
+      controlAddWindow.SetDeleteMode(toDelete, selectedModule);
+    }
+
+    public void OpenControllerEditWindow(WaterfallController toEdit)
+    {
+      if (controlAddWindow == null)
+      {
+        controlAddWindow = new UIControllerPopupWindow(true);
+
+      }
+      controlAddWindow.SetEditMode(toEdit, selectedModule);
+    }
+
     public void OpenEffectAddWindow()
     {
       if (effectAddWindow == null)
@@ -677,40 +730,17 @@ namespace Waterfall.UI
 
     public void UpdateCurve(FloatCurve curve)
     {
+      // update the curve
       currentModWinForCurve.UpdateCurves(curve, currentCurveTag);
     }
-
+   
     public void Update()
     {
-      for (int i = 0; i < effectsModules.Count; i++)
-      {
-
-        for (int j = 0; j < effectsModules[i].Controllers.Count; j++)
-        {
-          effectsModules[i].SetControllerOverride(effectsModules[i].Controllers[j].name, useControllers);
-          if (effectsModules[i].Controllers[j].linkedTo == "throttle")
-          {
-            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, throttleControllerValue);
-          }
-          if (effectsModules[i].Controllers[j].linkedTo == "atmosphere_density")
-          {
-            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, densityControllerValue);
-          }
-          if (effectsModules[i].Controllers[j].linkedTo == "rcs")
-          {
-            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, rcsControllerValue);
-          }
-          if (effectsModules[i].Controllers[j].linkedTo == "random")
-          {
-            effectsModules[i].SetControllerOverrideValue(effectsModules[i].Controllers[j].name, randomControllerValue.x);
-          }
-
-
-        }
-      }
+      
+      //}
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
-        
+
         effectUIWidgets[i].Update();
       }
 

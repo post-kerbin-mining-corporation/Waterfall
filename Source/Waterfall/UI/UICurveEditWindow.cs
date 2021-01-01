@@ -27,6 +27,7 @@ namespace Waterfall.UI
     private  FloatCurve curve;
     protected UIModifierWindow modifier;
     protected string modifierTag;
+    protected CurveUpdateFunction curveUpdateFun;
     #endregion
 
 
@@ -50,7 +51,17 @@ namespace Waterfall.UI
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
     }
+    public UICurveEditWindow(FloatCurve curveToEdit, CurveUpdateFunction curveFun, bool show) : base(show)
+    {
+      curveUpdateFun = curveFun;
+      Utils.Log($"Started editing curve {curveToEdit.ToString()}");
 
+      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
+      curve = curveToEdit;
+
+      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      UpdateCurve(out curve);
+    }
     public UICurveEditWindow(FloatCurve curveToEdit, UIModifierWindow modWin, string tag, bool show) : base(show)
     {
       modifier = modWin;
@@ -67,6 +78,15 @@ namespace Waterfall.UI
     public void ChangeCurve(FloatCurve curveToEdit)
     {
 
+      Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
+      curve = curveToEdit;
+      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      UpdateCurve(out curve);
+      showWindow = true;
+    }
+    public void ChangeCurve(FloatCurve curveToEdit,CurveUpdateFunction curveFun)
+    {
+      curveUpdateFun = curveFun;
       Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
       curve = curveToEdit;
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
@@ -273,10 +293,11 @@ namespace Waterfall.UI
 
       theCurve.FindMinMaxValue(out minY, out maxY);
       curve = theCurve;
-      WaterfallUI.Instance.UpdateCurve(curve);
+      curveUpdateFun(curve);
+      //WaterfallUI.Instance.UpdateCurve(curve);
       textVersion = GraphUtils.PointsToString(points);
       graphTexture = GraphUtils.GenerateCurveTexture(texWidth, texHeight, curve, Color.green);
-
+      
     }
 
 

@@ -167,7 +167,7 @@ namespace Waterfall.UI
             int x = (int)Mathf.Clamp(Event.current.mousePosition.x-tRect.xMin,0,sliderWidth);
             int y = colorFieldSize - (int)Mathf.Clamp(Event.current.mousePosition.y - tRect.yMin, 0, sliderWidth);
             Color sampled = ((Texture2D)colorField).GetPixel(x, y);
-            Utils.Log($"Color picked at {x}, {y} is {sampled}");
+            Utils.Log($"Color picked at {x}, {y} is {sampled}", LogType.UI);
             currentHSVColor = new HSBColor(sampled);
             currentColor = new Color(sampled.r, sampled.g, sampled.b, currentColor.a);
             aValue = currentColor.a * 255f;
@@ -310,7 +310,6 @@ namespace Waterfall.UI
     {
       if (!currentColor.Equals(prevColor))
       {
-        Debug.Log("Color changed");
         GenerateTextures();
 
         currentHSVColor = new HSBColor(currentColor);

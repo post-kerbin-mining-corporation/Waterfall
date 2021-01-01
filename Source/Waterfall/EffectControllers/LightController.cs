@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 namespace Waterfall
 {
@@ -17,11 +14,21 @@ namespace Waterfall
     public string lightName = "";
     Light lightController;
 
+
+    public LightController() { }
     public LightController(ConfigNode node)
     {
       name = "light";
       linkedTo = "light";
+      node.TryGetValue("lightName", ref lightName);
       node.TryGetValue("light", ref name);
+    }
+
+    public override ConfigNode Save()
+    {
+      ConfigNode c = base.Save();
+      c.AddValue("lightName", lightName);
+      return c;
     }
     public override void Initialize(ModuleWaterfallFX host)
     {
