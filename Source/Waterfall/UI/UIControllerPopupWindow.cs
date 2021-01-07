@@ -43,10 +43,11 @@ namespace Waterfall.UI
     string[] randTypes = new string[] { "random", "perlin" };
     int randFlag = 0;
 
-    string[] randomStrings = new string[2];
+    string[] randomStrings = new string[3];
     Vector2 randomRange;
     int perlinSeed = 0;
     float perlinScale = 1f;
+    float perlinSpeed = 1f;
 
     // Event
     string[] eventTypes = new string[] { "ignition", "flameout" };
@@ -87,8 +88,10 @@ namespace Waterfall.UI
         }
         if (r.noiseType == "perlin")
         {
-          randomStrings[1] = r.scale.ToString();
+          
           randomStrings[0] = r.seed.ToString();
+          randomStrings[1] = r.scale.ToString();
+          randomStrings[2] = r.speed.ToString();
         }
         EngineEventController e = (EngineEventController)control;
 
@@ -290,6 +293,7 @@ namespace Waterfall.UI
         newCtrl.range = randomRange;
         newCtrl.scale = perlinScale;
         newCtrl.seed = perlinSeed;
+        newCtrl.speed = perlinSpeed;
         newCtrl.noiseType = randTypes[randFlag];
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
@@ -428,6 +432,18 @@ namespace Waterfall.UI
             if (perlinScale != floatParsed)
             {
               perlinScale = floatParsed;
+            }
+          }
+          GUILayout.EndHorizontal();
+          GUILayout.BeginHorizontal();
+          GUILayout.Label("Speed", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+          randomStrings[2] = GUILayout.TextArea(randomStrings[2], GUILayout.MaxWidth(60f));
+          
+          if (float.TryParse(randomStrings[2], out floatParsed))
+          {
+            if (perlinSpeed != floatParsed)
+            {
+              perlinSpeed = floatParsed;
             }
           }
           GUILayout.EndHorizontal();

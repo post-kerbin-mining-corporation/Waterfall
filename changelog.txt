@@ -1,3 +1,11 @@
+v0.4.1
+------
+- Changing TextureScale, TextureOffset and Vector3/4 material properties in the editor will now apply to multiple instances of a plume (e.g on multiple thrust transforms) immediately rather than requiring reload
+- EffectRotationModifier now uses local Euler angles instead of local look rotation. 
+- Added a Speed parameter to the perlin noise controller
+- Exposed _Seed material parameter for noise in the UI
+- Added ability to specify Randomize Noise Seed at effect creation, which causes _Seed to be randomized upon effect creation. Disabling this allows the effect _Seed to be modified in the material editor
+
 v0.4.0
 ------
 - Fixed shader time offset causing random scaling of shader speed values
@@ -11,7 +19,7 @@ v0.4.0
    - Controllers can be overridden individually
    - When not overridden, controllers will try to show the value of the controller
  - Many QOL improvements
-- Added ability to specify noise type to Randomness controller: can use random (old one) or perlin (basic 1d perlin noise)
+- Added ability to specify noise type to Random controller: can use random (old one) or perlin (basic 1d perlin noise)
 - Added new controllers
  - Mach: outputs current Mach number
  - Gimbal: outputs gimbal fraction, where 1/-1 is full extension, 0 is centered. Needs axis specified.
