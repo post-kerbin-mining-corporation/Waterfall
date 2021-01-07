@@ -17,6 +17,7 @@ namespace Waterfall
     public delegate float NoiseFunction();
     public int seed = 0;
     public float scale = 1f;
+    public float speed = 1f;
     NoiseFunction noiseFunc;
 
     public RandomnessController() { }
@@ -28,6 +29,7 @@ namespace Waterfall
       node.TryGetValue("noiseType", ref noiseType);
       node.TryGetValue("range", ref range);
       node.TryGetValue("scale", ref scale);
+      node.TryGetValue("speed", ref speed);
       // Randomize seed if not specified
       if (!node.TryGetValue("seed", ref seed))
       {
@@ -44,6 +46,7 @@ namespace Waterfall
       if (noiseType == "perlin")
       {
         c.AddValue("scale", scale);
+        c.AddValue("speed", speed);
         c.AddValue("seed", seed);
       }
       
@@ -74,7 +77,7 @@ namespace Waterfall
     }
     public float PerlinNoise()
     {
-      return Mathf.PerlinNoise(seed+Time.time, seed + Time.time)*scale;
+      return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *scale;
     }
     public override List<float> Get()
     {
