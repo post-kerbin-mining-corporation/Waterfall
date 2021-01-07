@@ -71,10 +71,10 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         baseRotation = xforms[0].localEulerAngles;
-        xforms[i].localEulerAngles = new Vector3(
-          xCurve.Evaluate(strength) + baseRotation.x + randomValue,
-          yCurve.Evaluate(strength) + baseRotation.y + randomValue,
-          zCurve.Evaluate(strength) + baseRotation.z + randomValue);
+        xforms[i].localEulerAngles = baseRotation + new Vector3(
+          xCurve.Evaluate(strength) + randomValue,
+          yCurve.Evaluate(strength) + randomValue,
+          zCurve.Evaluate(strength) + randomValue);
       }
     }
     protected override void ApplySubtract(List<float> strengthList)
@@ -83,10 +83,10 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         baseRotation = xforms[0].localEulerAngles;
-        xforms[i].localEulerAngles = new Vector3(
-          xCurve.Evaluate(strength) - baseRotation.x + randomValue, 
-          yCurve.Evaluate(strength) - baseRotation.y + randomValue, 
-          zCurve.Evaluate(strength) - baseRotation.z + randomValue);
+        xforms[i].localEulerAngles = baseRotation - new Vector3(
+          xCurve.Evaluate(strength)  + randomValue, 
+          yCurve.Evaluate(strength) + randomValue, 
+          zCurve.Evaluate(strength) + randomValue);
       }
     }
     protected override void ApplyMultiply(List<float> strengthList)
@@ -96,9 +96,9 @@ namespace Waterfall
       {
         baseRotation = xforms[0].localEulerAngles;
         xforms[i].localEulerAngles = new Vector3(
-          xCurve.Evaluate(strength) * +baseRotation.x + randomValue, 
-          yCurve.Evaluate(strength) * +baseRotation.y + randomValue, 
-          zCurve.Evaluate(strength) * +baseRotation.z + randomValue);
+          xCurve.Evaluate(strength) * baseRotation.x + randomValue, 
+          yCurve.Evaluate(strength) * baseRotation.y + randomValue, 
+          zCurve.Evaluate(strength) * baseRotation.z + randomValue);
       }
     }
 
