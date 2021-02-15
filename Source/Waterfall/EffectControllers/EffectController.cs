@@ -15,8 +15,8 @@ namespace Waterfall
     // 
     public string name = "unnamedController";
     public string linkedTo = "unnamedController";
-    protected bool overridden = false;
-    protected float overrideValue = 0.0f;
+    public bool overridden = false;
+    public float overrideValue = 0.0f;
     protected float value = 0.0f;
     protected ModuleWaterfallFX parentModule;
 
@@ -30,7 +30,17 @@ namespace Waterfall
       else
         return new List<float>() { 0f };
     }
-
+    /// <summary>
+    ///  Saves the controller
+    /// </summary>
+    /// <param name="host"></param>
+    public virtual ConfigNode Save()
+    {
+      ConfigNode c = new ConfigNode(WaterfallConstants.ControllerNodeName);
+      c.AddValue("name", name);
+      c.AddValue("linkedTo", linkedTo);
+      return c;
+    }
     /// <summary>
     ///  Initialzies the controller
     /// </summary>

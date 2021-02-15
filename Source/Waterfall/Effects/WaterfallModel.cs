@@ -21,16 +21,19 @@ namespace Waterfall
     public Vector3 modelRotationOffset = Vector3.zero;
     public Vector3 modelScaleOffset = Vector3.one;
 
+    protected bool randomized = true;
+
     public WaterfallModel()
     {
       modelTransforms = new List<Transform>();
     }
 
-    public WaterfallModel(string modelPath, string shader)
+    public WaterfallModel(string modelPath, string shader, bool randomizeSeed)
     {
       modelTransforms = new List<Transform>();
       path = modelPath;
       overrideShader = shader;
+      randomized = randomizeSeed;
     }
 
     public WaterfallModel(ConfigNode node) : this()
@@ -101,7 +104,7 @@ namespace Waterfall
         {
           WaterfallMaterial m = new WaterfallMaterial();
           m.shaderName = overrideShader;
-          
+          m.useAutoRandomization = randomized;
           m.materials = new List<Material>();
           m.transformName = r.transform.name;
           materials.Add(m);
@@ -110,6 +113,7 @@ namespace Waterfall
 
       foreach (WaterfallMaterial m in materials)
       {
+        m.useAutoRandomization = randomized;
         m.Initialize(modelTransform);
       }
       ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
@@ -199,6 +203,8 @@ namespace Waterfall
               {
                 if (r.name == m.transformName)
                 {
+                  if (propertyName == "_Seed" && m.useAutoRandomization) { }
+                  else
                   r.material.SetFloat(propertyName,value);
                 }
               }
@@ -211,7 +217,21 @@ namespace Waterfall
       foreach (WaterfallMaterial m in materials)
       {
         if (m == targetMat)
+        {
           m.SetVector4(propertyName, value);
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
+              {
+                if (r.name == m.transformName)
+                {
+                  r.material.SetVector(propertyName, value);
+                }
+              }
+            }
+        }
+
       }
     }
     public void SetTextureScale(WaterfallMaterial targetMat, string propertyName, Vector2 value)
@@ -219,7 +239,21 @@ namespace Waterfall
       foreach (WaterfallMaterial m in materials)
       {
         if (m == targetMat)
+        {
           m.SetTextureScale(propertyName, value);
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
+              {
+                if (r.name == m.transformName)
+                {
+                  r.material.SetTextureScale(propertyName, value);
+                }
+              }
+            }
+        }
+
       }
     }
     public void SetTextureOffset(WaterfallMaterial targetMat, string propertyName, Vector2 value)
@@ -227,7 +261,20 @@ namespace Waterfall
       foreach (WaterfallMaterial m in materials)
       {
         if (m == targetMat)
+        {
           m.SetTextureOffset(propertyName, value);
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
+              {
+                if (r.name == m.transformName)
+                {
+                  r.material.SetTextureOffset(propertyName, value);
+                }
+              }
+            }
+        }
       }
     }
     public void SetColor(WaterfallMaterial targetMat, string propertyName, Color value)

@@ -22,7 +22,7 @@ namespace Waterfall.UI
     WaterfallEffect effect;
 
     string newModifierName = "newModifier";
-    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float"};
+    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float", "Light Material Color"};
     int modifierFlag = 0;
 
     string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float" };
@@ -54,7 +54,7 @@ namespace Waterfall.UI
       controllerTypes = fx.parentModule.GetControllerNames().ToArray();
 
       List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
-
+      modifierFlag = 0;
       transformOptions = new string[xFormOptions.Count];
       for (int i=0;i < xFormOptions.Count; i++)
       {
@@ -217,6 +217,14 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Material Float")
       {
         EffectFloatModifier newMod = new EffectFloatModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      else if (modifierTypes[modifierFlag] == "Light Material Color")
+      {
+        EffectLightColorModifier newMod = new EffectLightColorModifier();
         newMod.fxName = newModifierName;
         newMod.transformName = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];

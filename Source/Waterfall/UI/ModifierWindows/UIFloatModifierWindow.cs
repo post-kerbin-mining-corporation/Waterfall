@@ -23,6 +23,7 @@ namespace Waterfall.UI
     #endregion
 
     #region  Data
+    CurveUpdateFunction floatCurveFunction;
     string floatName = "_TintColor";
     int floatIndex = 0;
     string[] floatNames;
@@ -34,7 +35,15 @@ namespace Waterfall.UI
       floatMod = mod;
       floatNames = MaterialUtils.FindValidShaderProperties(floatMod.GetMaterial(), WaterfallMaterialPropertyType.Float).ToArray();
       floatIndex = floatNames.ToList().FindIndex(x => x == floatMod.floatName);
+      floatCurveFunction = new CurveUpdateFunction(UpdateFloatCurve);
       GenerateCurveThumbs(mod);
+    }
+
+
+    protected void UpdateFloatCurve(FloatCurve curve)
+    {
+      floatMod.curve = curve;
+      UpdateModifierPanel();
     }
 
     /// <summary>
@@ -68,7 +77,7 @@ namespace Waterfall.UI
       Rect imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(floatMod.curve, "red");
+        EditCurve(floatMod.curve, floatCurveFunction);
         selectionFlag = 1;
       }
       GUI.DrawTexture(imageRect, miniCurve);
@@ -84,9 +93,9 @@ namespace Waterfall.UI
     }
     public override void UpdateCurves(FloatCurve newCurve, string tag)
     {
-      base.UpdateCurves(newCurve, tag);
+      //base.UpdateCurves(newCurve, tag);
       // Get the color from the UI.
-      floatMod.curve = newCurve;
+      //floatMod.curve = newCurve;
       UpdateModifierPanel();
     }
 

@@ -24,6 +24,8 @@ namespace Waterfall
     public static string PositionModifierNodeName = "POSITIONMODIFIER";
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
+    public static string LightColorNodeName = "LIGHTCOLORMODIFIER";
+
     public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
     {
       ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
@@ -57,6 +59,9 @@ namespace Waterfall
       ["_FalloffStart"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_Symmetry"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 24f)),
       ["_SymmetryStrength"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Direction"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
+      ["_DirectionScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Seed"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1500f)),
 
     };
 

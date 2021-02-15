@@ -9,7 +9,7 @@ using KSP.Localization;
 
 namespace Waterfall.UI
 {
-
+  public delegate void CurveUpdateFunction(FloatCurve curve);
   public class UIModifierWindow : UIPopupWindow
   {
     #region GUI Variables
@@ -23,6 +23,8 @@ namespace Waterfall.UI
 
     #region GUI Widgets
     protected UICurveEditWindow curveEditor;
+    
+    CurveUpdateFunction curveFunc;
     #endregion
 
     #region Modifier Data
@@ -167,10 +169,11 @@ namespace Waterfall.UI
     /// Spawns the float editor panel to edit a float
     /// </summary>
     /// <param name="toEdit"></param>
-    protected void EditCurve(FloatCurve toEdit)
+    protected void EditCurve(FloatCurve toEdit, CurveUpdateFunction updateFunction)
     {
+
       Utils.Log($"Started editing curve {toEdit.Curve.ToString()}", LogType.UI);
-      curveEditor =  WaterfallUI.Instance.OpenCurveEditor(toEdit);
+      curveEditor =  WaterfallUI.Instance.OpenCurveEditor(toEdit, updateFunction);
     }
     /// <summary>
     /// Spawns the float editor panel to edit a float

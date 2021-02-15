@@ -1,0 +1,21 @@
+{
+    "spec_version": "v1.4",
+    "identifier":   "Waterfall",
+    "name":         "Waterfall Core",
+    "$kref":        "#/ckan/github/post-kerbin-mining-corporation/Waterfall",
+    "$vref":        "#/ckan/ksp-avc",
+    "abstract": "Core Waterfall plugin to drive engine effects, plus default effect templates. Does nothing on its own, other mods supply compatibility.",
+    "author": "Chris Adderley (Nertea)",
+    "license":      "CC-BY-NC-SA-4",
+    "resources": {
+        "homepage":   "https://forum.kerbalspaceprogram.com/index.php?/topic/196309",
+        "repository": "https://github.com/post-kerbin-mining-corporation/Waterfall"
+    },
+    "depends": [
+        { "name": "ModuleManager"   }
+    ],
+    "install": [ {
+        "find":       "Waterfall",
+        "install_to": "GameData"
+    } ]
+}

@@ -30,6 +30,10 @@ namespace Waterfall.UI
     int colorIndex = 0;
     string[] colorNames;
     public EffectColorModifier colorMod;
+    CurveUpdateFunction rCurveFunction;
+    CurveUpdateFunction gCurveFunction;
+    CurveUpdateFunction bCurveFunction;
+    CurveUpdateFunction aCurveFunction;
     #endregion
 
     public UIColorModifierWindow(EffectColorModifier mod, bool show) : base((EffectModifier)mod, show)
@@ -38,6 +42,10 @@ namespace Waterfall.UI
       colorName = colorMod.colorName;
       colorNames = MaterialUtils.FindValidShaderProperties(colorMod.GetMaterial(), WaterfallMaterialPropertyType.Color).ToArray();
       colorIndex = colorNames.ToList().FindIndex(x => x == colorMod.colorName);
+      rCurveFunction = new CurveUpdateFunction(UpdateRedCurve);
+      gCurveFunction = new CurveUpdateFunction(UpdateGreenCurve);
+      bCurveFunction = new CurveUpdateFunction(UpdateBlueCurve);
+      aCurveFunction = new CurveUpdateFunction(UpdateAlphaCurve);
       GenerateCurveThumbs(mod);
     }
 
@@ -48,6 +56,26 @@ namespace Waterfall.UI
     {
       base.InitUI();
       windowTitle = "Modifier Editor - Material Color";
+    }
+    protected void UpdateRedCurve(FloatCurve curve)
+    {
+      colorMod.rCurve = curve;
+      UpdateModifierPanel();
+    }
+    protected void UpdateBlueCurve(FloatCurve curve)
+    {
+      colorMod.bCurve = curve;
+      UpdateModifierPanel();
+    }
+    protected void UpdateGreenCurve(FloatCurve curve)
+    {
+      colorMod.gCurve = curve;
+      UpdateModifierPanel();
+    }
+    protected void UpdateAlphaCurve(FloatCurve curve)
+    {
+      colorMod.aCurve = curve;
+      UpdateModifierPanel();
     }
     /// <summary>
     /// Draws the modifier content
@@ -64,11 +92,6 @@ namespace Waterfall.UI
         colorName = colorNames[colorIndex];
         colorMod.ApplyMaterialName(colorName);
       }
-      //colorName = GUILayout.TextArea(colorName);
-    //  if (GUILayout.Button("Apply"))
-  //    {
-//        colorMod.ApplyMaterialName(colorName);
-      //}
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
@@ -77,7 +100,7 @@ namespace Waterfall.UI
       Rect imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(colorMod.rCurve, "red");
+        EditCurve(colorMod.rCurve, rCurveFunction);
         selectionFlag = 1;
       }
       GUI.DrawTexture(imageRect, miniRedCurve);
@@ -98,7 +121,7 @@ namespace Waterfall.UI
       if (GUI.Button(buttonRect, ""))
       {
         //EditCurve(colorMod.gCurve);
-        EditCurve(colorMod.gCurve, "green");
+        EditCurve(colorMod.gCurve, gCurveFunction);
         selectionFlag = 2;
       }
       GUI.DrawTexture(imageRect, miniGreenCurve);
@@ -118,7 +141,7 @@ namespace Waterfall.UI
       imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if(GUI.Button(buttonRect, ""))
       {
-        EditCurve(colorMod.bCurve, "blue");
+        EditCurve(colorMod.bCurve, bCurveFunction);
         selectionFlag = 3;
       }
       GUI.DrawTexture(imageRect, miniBlueCurve);
@@ -138,7 +161,7 @@ namespace Waterfall.UI
       imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
-        EditCurve(colorMod.aCurve, "alpha");
+        EditCurve(colorMod.aCurve, aCurveFunction);
         selectionFlag = 4;
       }
       GUI.DrawTexture(imageRect, miniAlphaCurve);
@@ -155,23 +178,6 @@ namespace Waterfall.UI
     public override void UpdateCurves(FloatCurve newCurve, string tag)
     {
       base.UpdateCurves(newCurve, tag);
-      // Get the color from the UI.
-      switch (tag)
-      {
-        case "red":
-          colorMod.rCurve = newCurve;
-          break;
-        case "green":
-          colorMod.gCurve = newCurve;
-          break;
-        case "blue":
-          colorMod.bCurve = newCurve;
-          break;
-        case "alpha":
-          colorMod.aCurve = newCurve;
-          break;
-      }
-      UpdateModifierPanel();
     }
 
     /// <summary>

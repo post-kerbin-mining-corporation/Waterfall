@@ -1,3 +1,76 @@
+v0.4.2
+------
+- Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
+- Updated Dynamic shader with a few bug fixes for HDR
+- UI less broken when you try to edit an effect that doesn't exist
+
+
+v0.4.1
+------
+- Changing TextureScale, TextureOffset and Vector3/4 material properties in the editor will now apply to multiple instances of a plume (e.g on multiple thrust transforms) immediately rather than requiring reload
+- EffectRotationModifier now uses local Euler angles instead of local look rotation. 
+- Added a Speed parameter to the perlin noise controller
+- Exposed _Seed material parameter for noise in the UI
+- Added ability to specify Randomize Noise Seed at effect creation, which causes _Seed to be randomized upon effect creation. Disabling this allows the effect _Seed to be modified in the material editor
+
+v0.4.0
+------
+- Fixed shader time offset causing random scaling of shader speed values
+- Reorganized the UI overall, with many improvements, some highlights
+ - It is now possible to export a complete ModuleWaterfallFX
+ - It is now possible to edit Effect names 
+ - It is now possible to re-order Effect Modifiers
+ - Added more detailed Controller UI
+   - Only controllers present on the module are shown
+   - Can add, edit and remove controllers
+   - Controllers can be overridden individually
+   - When not overridden, controllers will try to show the value of the controller
+ - Many QOL improvements
+- Added ability to specify noise type to Random controller: can use random (old one) or perlin (basic 1d perlin noise)
+- Added new controllers
+ - Mach: outputs current Mach number
+ - Gimbal: outputs gimbal fraction, where 1/-1 is full extension, 0 is centered. Needs axis specified.
+ - EngineEvent: event controller, fairly prototypical. Two events are currently available, ignition and flameout. 
+
+
+v0.3.0
+------
+- Fixed some bugs with the RCS controller
+- Updates to some templates
+- Added waterfall-hydrolox-lower-3: Delta IV lower stage hydrolox engine
+
+
+v0.2.10
+-------
+- KSP 1.11
+
+v0.2.9
+------
+- Fixed OSX shader package
+- Improved Light controller
+- Added new LightColorModifier, link a Material color to the color of a Light
+- Improved spotlight and floodlight templates (cones and flares adjust to RGB colour of the light, flare effect is no longer removed outside of the atmosphere)
+
+v0.2.8
+------
+- Added better HDR handling to shaders, should result in less TUFX breakage in HDR mode
+- Added new Billboard (Additive Directional) shader - a billboard that fades out when away from a specific angle
+- Added waterfall-spotlight-1 and waterfall-floodlight-1 templates
+- Added new Light controller (link effects to a light intensity)
+- Added two new flare textures to use
+
+v0.2.7
+------
+- Added IgnoreProjector tag on all shaders; should resolve some interactions with Scatterer
+
+v0.2.6
+------
+- Added new guard for multiple misconfigured modules that should break the game less when there is a critical configuration error
+
+v0.2.5
+------
+- Fixed randomness values for shaders being lost sometime in the past
+
 v0.2.4
 ------
 - Added a ShowEffectEditor setting that controls whether the editor toolbar button is shown - this is off by default!

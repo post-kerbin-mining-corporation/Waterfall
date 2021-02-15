@@ -32,7 +32,7 @@ namespace Waterfall
     public string shaderName;
     public string transformName = "";
     public string baseTransformName = "";
-
+    public bool useAutoRandomization = true;
     public List<WaterfallMaterialProperty> matProperties;
 
     public List<Material> materials;
@@ -60,6 +60,7 @@ namespace Waterfall
       node.TryGetValue("transform", ref transformName);
       node.TryGetValue("baseTransform", ref baseTransformName);
       node.TryGetValue("shader", ref shaderName);
+      node.TryGetValue("randomizeSeed", ref useAutoRandomization);
 
       materials = new List<Material>();
       Utils.Log(String.Format("[WaterfallMaterial]: Loading new material for {0} ", transformName), LogType.Effects);
@@ -92,6 +93,7 @@ namespace Waterfall
       if (transformName != "")
         node.AddValue("transform", transformName);
       node.AddValue("shader", shaderName);
+      node.AddValue("randomizeSeed", useAutoRandomization);
       foreach (WaterfallMaterialProperty p in matProperties)
       {
         node.AddNode(p.Save());
@@ -151,9 +153,9 @@ namespace Waterfall
         {
           p.Initialize(mat);
         }
-        if (mat.HasProperty("_TimeOffset"))
+        if (useAutoRandomization && mat.HasProperty("_Seed"))
         {
-          mat.SetFloat("_TimeOffset", UnityEngine.Random.Range(-10, 10));
+          mat.SetFloat("_Seed", UnityEngine.Random.Range(-10, 10));
         }
 
         Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
@@ -203,7 +205,9 @@ namespace Waterfall
       }
       foreach (Material mat in materials)
       {
-        mat.SetFloat(propertyName, value);
+        if (propertyName == "_Seed" && useAutoRandomization) { }
+        else 
+          mat.SetFloat(propertyName, value);
       }
     }
 

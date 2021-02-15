@@ -21,6 +21,7 @@ namespace Waterfall.UI
     string newEffectName = "newEffect";
     string[] shaderOptions;
     int shaderFlag = 0;
+    bool randomizeSeed = true;
 
     int modelFlag = 0;
     string[] modelOptions;
@@ -136,6 +137,11 @@ namespace Waterfall.UI
         GUIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
 
+      GUILayout.BeginHorizontal();
+      
+      randomizeSeed = GUILayout.Toggle(randomizeSeed, "Randomize Effect Seed");
+
+      GUILayout.EndHorizontal();
 
       if (GUILayout.Button("Add"))
       {
@@ -156,7 +162,7 @@ namespace Waterfall.UI
 
     WaterfallEffect CreateNewEffect()
     {
-      WaterfallModel model = new WaterfallModel(modelOptions[modelFlag], shaderOptions[shaderFlag]);
+      WaterfallModel model = new WaterfallModel(modelOptions[modelFlag], shaderOptions[shaderFlag], randomizeSeed);
       
       
       WaterfallEffect newFX = new WaterfallEffect(parentName, model

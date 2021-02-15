@@ -15,7 +15,7 @@ namespace Waterfall
   {
     public float currentThrottle = 1;
     ModuleRCSFX rcsController;
-
+    public RCSController() { }
     public RCSController(ConfigNode node)
     {
       name = "rcs";
@@ -52,7 +52,7 @@ namespace Waterfall
       }
 
     
-      return rcsController.thrustForces.ToList();
+      return (rcsController.thrustForces).ToList().Select(x => x/rcsController.thrusterPower).ToList();
       
     }
   }

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System.Collections.Generic;
+
+
 namespace Waterfall
 {
   /// <summary>
   /// A controller that pulls from atmosphere density
   /// </summary>
-  [System.Serializable]
   public class AtmosphereDensityController : WaterfallController
   {
     public float atmosphereDepth = 1;
 
+    public AtmosphereDensityController() { }
     public AtmosphereDensityController(ConfigNode node)
     {
       name = "atmosphereDensity";
@@ -29,7 +26,13 @@ namespace Waterfall
     {
       if (overridden)
         return new List<float>() { overrideValue };
-      return new List<float>() { (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) };
+      return new List<float>() {
+        (float)FlightGlobals.getAtmDensity(
+          FlightGlobals.getStaticPressure(parentModule.vessel.altitude, parentModule.vessel.mainBody), 
+          FlightGlobals.getExternalTemperature(parentModule.vessel.altitude, FlightGlobals.currentMainBody), 
+          FlightGlobals.currentMainBody)
+      //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
+      };
     }
   }
 }
