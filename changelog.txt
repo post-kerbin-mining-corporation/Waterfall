@@ -1,3 +1,10 @@
+v0.4.2
+------
+- Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
+- Updated Dynamic shader with a few bug fixes for HDR
+- UI less broken when you try to edit an effect that doesn't exist
+
+
 v0.4.1
 ------
 - Changing TextureScale, TextureOffset and Vector3/4 material properties in the editor will now apply to multiple instances of a plume (e.g on multiple thrust transforms) immediately rather than requiring reload

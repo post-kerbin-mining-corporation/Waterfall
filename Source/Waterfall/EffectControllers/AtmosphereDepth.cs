@@ -26,7 +26,13 @@ namespace Waterfall
     {
       if (overridden)
         return new List<float>() { overrideValue };
-      return new List<float>() { (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) };
+      return new List<float>() {
+        (float)FlightGlobals.getAtmDensity(
+          FlightGlobals.getStaticPressure(parentModule.vessel.altitude, parentModule.vessel.mainBody), 
+          FlightGlobals.getExternalTemperature(parentModule.vessel.altitude, FlightGlobals.currentMainBody), 
+          FlightGlobals.currentMainBody)
+      //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
+      };
     }
   }
 }

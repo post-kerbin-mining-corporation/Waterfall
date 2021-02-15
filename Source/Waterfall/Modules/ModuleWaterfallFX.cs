@@ -42,17 +42,19 @@ namespace Waterfall
     {
       base.OnLoad(node);
 
+      Utils.Log($"[ModuleWaterfallFX]: OnLoad called with contents \n{node.ToString()}", LogType.Modules);
+
       ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
 
       if (initialized)
       {
-        Utils.Log($"[ModuleWaterfallFX]: Cleaning up effects", LogType.Modules);
+        Utils.Log($"[ModuleWaterfallFX]: Already initialized, cleaning up effects", LogType.Modules);
         CleanupEffects();
       }
 
-      if (allControllers == null)
+      if (allControllers == null || allControllers.Count == 0)
       {
         Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Controllers on moduleID {0}", moduleID), LogType.Modules);
         allControllers = new Dictionary<string, WaterfallController>();
@@ -177,6 +179,7 @@ namespace Waterfall
       if (initialized)
       {
         Utils.Log($"[ModuleWaterfallFX]: Reinitializing", LogType.Modules);
+        InitializeControllers();
         ReinitializeEffects();
       }
 
@@ -229,12 +232,7 @@ namespace Waterfall
       base.OnAwake();
       if (HighLogic.LoadedSceneIsFlight)
       {
-        if (allControllers == null || allControllers.Count == 0 || allFX == null || allFX.Count == 0)
-        {
-          ConfigNode oldNode = FetchConfig();
-          if (oldNode != null)
-            Load(oldNode);
-        }
+        
       }
     }
     public void Start()
@@ -242,13 +240,20 @@ namespace Waterfall
 
       if (HighLogic.LoadedSceneIsFlight)
       {
+        if (allControllers == null || allControllers.Count == 0 || allFX == null || allFX.Count == 0)
+        {
+          ConfigNode oldNode = FetchConfig();
+          if (oldNode != null)
+            Load(oldNode);
+        }
         Initialize();
       }
     }
 
     ConfigNode FetchConfig()
     {
-      ConfigNode cfg;
+      Utils.Log(String.Format("[ModuleWaterfallFX]: Finding config for {0}", moduleID), LogType.Modules);
+      
       foreach (UrlDir.UrlConfig pNode in GameDatabase.Instance.GetConfigs("PART"))
       {
         if (pNode.name.Replace("_", ".") == part.partInfo.name)
@@ -263,7 +268,7 @@ namespace Waterfall
             catch (InvalidOperationException)
             {
               // Thrown if predicate is not fulfilled, ie moduleName is not unqiue
-              Utils.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: Multiple ModuleWaterfallFX nodes found with identical or no moduleName"), LogType.Modules);
+              Utils.Log(String.Format("[ModuleWaterfallFX]: Critical configuration error: Multiple ModuleWaterfallFX nodes found with identical or no moduleID {0}", moduleID), LogType.Modules);
             }
             catch (ArgumentNullException)
             {
