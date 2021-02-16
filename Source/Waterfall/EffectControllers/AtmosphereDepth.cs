@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -27,10 +27,8 @@ namespace Waterfall
       if (overridden)
         return new List<float>() { overrideValue };
       return new List<float>() {
-        (float)FlightGlobals.getAtmDensity(
-          FlightGlobals.getStaticPressure(parentModule.vessel.altitude, parentModule.vessel.mainBody), 
-          FlightGlobals.getExternalTemperature(parentModule.vessel.altitude, FlightGlobals.currentMainBody), 
-          FlightGlobals.currentMainBody)
+        Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent)
+        
       //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
       };
     }

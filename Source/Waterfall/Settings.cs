@@ -38,6 +38,8 @@ namespace Waterfall
     public static bool DebugMode = true;
     public static bool DebugUIMode = true;
 
+    public static float AtmosphereDensityExponent = 0.5128f;
+
     /// <summary>
     /// Load data from configuration
     /// </summary>
@@ -61,6 +63,7 @@ namespace Waterfall
         settingsNode.TryGetValue("DebugModifiers", ref DebugModifiers);
         settingsNode.TryGetValue("DebugMode", ref DebugMode);
         settingsNode.TryGetValue("DebugUIMode", ref DebugUIMode);
+        settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
 
       }
       else
