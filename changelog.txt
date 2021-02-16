@@ -1,9 +1,9 @@
 v0.4.2
 ------
+- Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for compatibility
 - Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
 - Updated Dynamic shader with a few bug fixes for HDR
 - UI less broken when you try to edit an effect that doesn't exist
-
 
 v0.4.1
 ------
