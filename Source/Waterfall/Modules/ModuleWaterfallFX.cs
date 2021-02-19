@@ -244,12 +244,141 @@ namespace Waterfall
         {
           ConfigNode oldNode = FetchConfig();
           if (oldNode != null)
-            Load(oldNode);
+          {
+            if (allControllers == null || allControllers.Count == 0)
+              LoadControllers(oldNode);
+            if (allFX == null || allFX.Count == 0)
+            {
+              LoadEffects(oldNode);
+            }
+          }
         }
         Initialize();
       }
     }
+    void LoadEffects(ConfigNode node)
+    {
+      Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Effects on moduleID {0}", moduleID), LogType.Modules);
+      ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
+      ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
 
+      if (allFX.Count == 0)
+      {
+
+
+        foreach (ConfigNode fxDataNode in effectNodes)
+        {
+          allFX.Add(new WaterfallEffect(fxDataNode));
+        }
+
+
+        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Template effects on moduleID {0}", moduleID), LogType.Modules);
+        foreach (ConfigNode templateNode in templateNodes)
+        {
+          string templateName = "";
+          string overrideTransformName = "";
+          Vector3 scaleOffset = Vector3.one;
+          Vector3 positionOffset = Vector3.zero;
+          Vector3 rotationOffset = Vector3.zero;
+
+
+          templateNode.TryGetValue("templateName", ref templateName);
+          templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
+          templateNode.TryParseVector3("scale", ref scaleOffset);
+          templateNode.TryParseVector3("rotation", ref rotationOffset);
+          templateNode.TryParseVector3("position", ref positionOffset);
+
+          WaterfallEffectTemplate template = WaterfallTemplates.GetTemplate(templateName);
+
+          foreach (WaterfallEffect fx in template.allFX)
+          {
+            allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
+          }
+          Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template.templateName}", LogType.Modules);
+        }
+      }
+
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
+    }
+    void LoadControllers(ConfigNode node)
+    {
+
+      ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
+
+      if (allControllers == null || allControllers.Count == 0)
+      {
+        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Controllers on moduleID {0}", moduleID), LogType.Modules);
+        allControllers = new Dictionary<string, WaterfallController>();
+        foreach (ConfigNode controllerDataNode in controllerNodes)
+        {
+          string ctrlType = "throttle";
+          if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
+          {
+            Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
+          }
+          if (ctrlType == "throttle")
+          {
+            ThrottleController tCtrl = new ThrottleController(controllerDataNode);
+            allControllers.Add(tCtrl.name, tCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Throttle Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "atmosphere_density")
+          {
+            AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
+            allControllers.Add(aCtrl.name, aCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Atmosphere Density Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "custom")
+          {
+            CustomController cCtrl = new CustomController(controllerDataNode);
+            allControllers.Add(cCtrl.name, cCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Custom Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "rcs")
+          {
+            RCSController rcsCtrl = new RCSController(controllerDataNode);
+            allControllers.Add(rcsCtrl.name, rcsCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded RCS Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "random")
+          {
+            RandomnessController rCtrl = new RandomnessController(controllerDataNode);
+
+            allControllers.Add(rCtrl.name, rCtrl);
+
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "light")
+          {
+            LightController rCtrl = new LightController(controllerDataNode);
+
+            allControllers.Add(rCtrl.name, rCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "engineEvent")
+          {
+            EngineEventController rCtrl = new EngineEventController(controllerDataNode);
+
+            allControllers.Add(rCtrl.name, rCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Engine Event Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "mach")
+          {
+            MachController rCtrl = new MachController(controllerDataNode);
+
+            allControllers.Add(rCtrl.name, rCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Mach Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "gimbal")
+          {
+            GimbalController rCtrl = new GimbalController(controllerDataNode);
+
+            allControllers.Add(rCtrl.name, rCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+        }
+      }
+    }
     ConfigNode FetchConfig()
     {
       Utils.Log(String.Format("[ModuleWaterfallFX]: Finding config for {0}", moduleID), LogType.Modules);
