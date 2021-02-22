@@ -112,7 +112,9 @@ namespace Waterfall
           }
           else if (!r[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
           {
+
             r[i].enabled = true;
+            m[i].SetFloat(floatName, applyValues[i]);
           }
           else if (r[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
           {
