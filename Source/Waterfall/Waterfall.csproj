@@ -103,6 +103,11 @@
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectScaleIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectPositionIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectColorIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectFloatIntegrator.cs" />
     <Compile Include="Effects\WaterfallEffect.cs" />
     <Compile Include="EffectModifiers\EffectUVScrollModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorModifier.cs" />

@@ -71,6 +71,40 @@ namespace Waterfall
         m[i] = xforms[i].GetComponent<Renderer>().material;
       }
     }
+
+
+    public List<Color> Get(List<float> strengthList)
+    {
+      List<Color> colorList = new List<Color>();
+
+      if (strengthList.Count > 1)
+      {
+        for (int i = 0; i < m.Length; i++)
+        {
+
+          colorList.Add(
+            new Color(
+              rCurve.Evaluate(strengthList[i]) + randomValue,
+            gCurve.Evaluate(strengthList[i]) + randomValue,
+            bCurve.Evaluate(strengthList[i]) + randomValue,
+            aCurve.Evaluate(strengthList[i]) + randomValue));
+        }
+      }
+      else
+      {
+        for (int i = 0; i < m.Length; i++)
+        {
+          colorList.Add(
+            new Color(
+              rCurve.Evaluate(strengthList[0]) + randomValue,
+            gCurve.Evaluate(strengthList[0]) + randomValue,
+            bCurve.Evaluate(strengthList[0]) + randomValue,
+            aCurve.Evaluate(strengthList[0]) + randomValue));
+        }
+      }
+      return colorList;
+    }
+
     protected override void ApplyReplace(List<float> strengthList)
     {
       float strength = strengthList[0];
@@ -80,7 +114,7 @@ namespace Waterfall
         {
           strength = strengthList[i];
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, toSet);
+         // m[i].SetColor(colorName, toSet);
         }
       }
       else
@@ -88,9 +122,9 @@ namespace Waterfall
         Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
         for (int i = 0; i < m.Length; i++)
         {
-          m[i].SetColor(colorName, toSet);
+         // m[i].SetColor(colorName, toSet);
         }
-      }      
+      }
     }
     protected override void ApplyAdd(List<float> strengthList)
     {
@@ -101,7 +135,7 @@ namespace Waterfall
           Color original = m[i].GetColor(colorName);
           float strength = strengthList[i];
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original + toSet);
+        //  m[i].SetColor(colorName, original + toSet);
         }
       }
       else
@@ -111,7 +145,7 @@ namespace Waterfall
         {
           Color original = m[i].GetColor(colorName);
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original + toSet);
+         // m[i].SetColor(colorName, original + toSet);
         }
       }
     }
@@ -124,7 +158,7 @@ namespace Waterfall
           Color original = m[i].GetColor(colorName);
           float strength = strengthList[i];
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original - toSet);
+         // m[i].SetColor(colorName, original - toSet);
 
         }
       }
@@ -135,7 +169,7 @@ namespace Waterfall
         {
           Color original = m[i].GetColor(colorName);
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original - toSet);
+        //  m[i].SetColor(colorName, original - toSet);
         }
       }
     }
@@ -148,7 +182,7 @@ namespace Waterfall
           Color original = m[i].GetColor(colorName);
           float strength = strengthList[i];
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original * toSet);
+        //  m[i].SetColor(colorName, original * toSet);
         }
       }
       else
@@ -158,7 +192,7 @@ namespace Waterfall
         {
           Color original = m[i].GetColor(colorName);
           Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original * toSet);
+        //  m[i].SetColor(colorName, original * toSet);
         }
       }
     }
@@ -169,6 +203,7 @@ namespace Waterfall
     public void ApplyMaterialName(string newColorName)
     {
       colorName = newColorName;
+      parentEffect.ModifierParameterChange(this);
     }
   }
 

@@ -171,6 +171,7 @@ namespace Waterfall
           smr.Recalculate();
         }
       }
+
     }
     /// <summary>
     /// Sets a shader float on this material. If it doesn't exist as a material property object, create it.

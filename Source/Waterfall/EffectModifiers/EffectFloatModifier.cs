@@ -12,7 +12,7 @@ namespace Waterfall
   /// </summary>
   public class EffectFloatModifier : EffectModifier
   {
-    public string floatName;
+    public string floatName = "";
 
     public FloatCurve curve;
 
@@ -56,6 +56,28 @@ namespace Waterfall
       }
 
     }
+    public List<float> Get(List<float> strengthList)
+    {
+      List<float> floatList = new List<float>();
+
+      if (strengthList.Count > 1)
+      {
+        for (int i = 0; i < m.Length; i++)
+        {
+          floatList.Add(curve.Evaluate(strengthList[i]) + randomValue);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < m.Length; i++)
+        {
+          floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
+        }
+      }
+      return floatList;
+    }
+
+    // Old stuff
     protected override void ApplyReplace(List<float> strengthList)
     {
 
@@ -66,7 +88,7 @@ namespace Waterfall
         {
           strength = strengthList[i];
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, toSet);
+         // m[i].SetFloat(floatName, toSet);
         }
       }
       else
@@ -74,7 +96,7 @@ namespace Waterfall
         for (int i = 0; i < m.Length; i++)
         {
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, toSet);
+          //m[i].SetFloat(floatName, toSet);
         }
       }
     }
@@ -93,7 +115,7 @@ namespace Waterfall
 
           float original = m[i].GetFloat(floatName);
           
-          m[i].SetFloat(floatName, original + toSet);
+        //  m[i].SetFloat(floatName, original + toSet);
         }
       }
       else
@@ -102,7 +124,7 @@ namespace Waterfall
         {
           float original = m[i].GetFloat(floatName);
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original + toSet);
+         // m[i].SetFloat(floatName, original + toSet);
         }
       }
     }
@@ -116,7 +138,7 @@ namespace Waterfall
           float original = m[i].GetFloat(floatName);
           strength = strengthList[i];
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original - toSet);
+         // m[i].SetFloat(floatName, original - toSet);
         }
       }
       else
@@ -125,7 +147,7 @@ namespace Waterfall
         {
           float original = m[i].GetFloat(floatName);
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original - toSet);
+         // m[i].SetFloat(floatName, original - toSet);
         }
       }
     }
@@ -139,7 +161,7 @@ namespace Waterfall
           float original = m[i].GetFloat(floatName);
           strength = strengthList[i];
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original * toSet);
+         // m[i].SetFloat(floatName, original * toSet);
         }
       }
       else
@@ -148,7 +170,7 @@ namespace Waterfall
         {
           float original = m[i].GetFloat(floatName);
           float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original * toSet);
+         // m[i].SetFloat(floatName, original * toSet);
         }
       }
     }
@@ -158,7 +180,9 @@ namespace Waterfall
     }
     public void ApplyFloatName(string newFloatName)
     {
+      
       floatName = newFloatName;
+      parentEffect.ModifierParameterChange(this);
     }
   }
 
