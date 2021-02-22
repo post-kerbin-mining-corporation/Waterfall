@@ -84,40 +84,6 @@ namespace Waterfall
       }
       return vectorList;
     }
-    protected override void ApplyReplace(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-      }
-    }
-    protected override void ApplyAdd(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        baseRotation = xforms[0].localEulerAngles;
-       
-      }
-    }
-    protected override void ApplySubtract(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        baseRotation = xforms[0].localEulerAngles;
-        
-      }
-    }
-    protected override void ApplyMultiply(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        baseRotation = xforms[0].localEulerAngles;
-       
-      }
-    }
 
   }
 
