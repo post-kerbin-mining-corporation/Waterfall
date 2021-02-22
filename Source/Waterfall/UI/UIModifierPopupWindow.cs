@@ -22,10 +22,10 @@ namespace Waterfall.UI
     WaterfallEffect effect;
 
     string newModifierName = "newModifier";
-    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float", "Light Material Color"};
+    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color"};
     int modifierFlag = 0;
 
-    string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "UV Scroll", "Material Color", "Material Float" };
+    string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float" };
     int controllerFlag = 0;
 
     int transformFlag = 0;

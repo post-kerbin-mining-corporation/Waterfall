@@ -1,10 +1,17 @@
-v0.4.2
+v0.5.0
 ------
-- Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for compatibility
+- Rewrote effect application backend with a few enhancements
+ - SUBTRACT, ADD blend modes actually work properly now
+ - Major performance improvements overall
+ - Even more major performance issues when effects are fully transparent
+- Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for better compatibility
 - Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
 - Updated Dynamic shader with a few bug fixes for HDR
+- Updated Alpha shader to not suck
 - UI less broken when you try to edit an effect that doesn't exist
-
+- Templates:
+ - Major template update from Zorg with dozens of new templates and many fixes/improvements
+ 
 v0.4.1
 ------
 - Changing TextureScale, TextureOffset and Vector3/4 material properties in the editor will now apply to multiple instances of a plume (e.g on multiple thrust transforms) immediately rather than requiring reload
