@@ -542,7 +542,7 @@ namespace Waterfall
 
     protected void LateUpdate()
     {
-      if (HighLogic.LoadedSceneIsFlight)
+      if (HighLogic.LoadedSceneIsFlight && allFX != null)
       {
         for (int i = 0; i < allFX.Count; i++)
         {
