@@ -213,9 +213,25 @@ namespace Waterfall
       {
         fxModifiers[i].Init(this);
       }
+
+      effectRendererMaterials = new List<Material>();
+      effectRendererTransforms = new List<Transform>();
+      effectRenderers = new List<Renderer>();
+      foreach (Transform t in model.modelTransforms)
+      {
+        Renderer[] renderers = t.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderers)
+        {
+          effectRenderers.Add(r);
+          effectRendererMaterials.Add(r.material);
+          effectRendererTransforms.Add(r.transform);
+        }
+      }
       InitializeIntegrators();
     }
-
+    List<Material> effectRendererMaterials;
+    List<Transform> effectRendererTransforms;
+    List<Renderer> effectRenderers;
     public List<EffectFloatIntegrator> floatIntegrators;
     public List<EffectPositionIntegrator> positionIntegrators;
     public List<EffectRotationIntegrator> rotationIntegrators;
@@ -587,7 +603,7 @@ namespace Waterfall
         for (int i = 0; i < fxModifiers.Count; i++)
         {
           fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
-         
+
         }
 
         for (int i = 0; i < floatIntegrators.Count; i++)
@@ -609,6 +625,15 @@ namespace Waterfall
         for (int i = 0; i < rotationIntegrators.Count; i++)
         {
           rotationIntegrators[i].Update();
+        }
+        Transform c = FlightCamera.fetch.cameras[0].transform;
+        for (int i = 0; i < effectRendererMaterials.Count; i++)
+        {
+          float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
+          int qDelta = 500-(int)Mathf.Clamp((camDist / 2000f)*500, 0, 500);
+          if (effectRendererMaterials[i].HasProperty("_Intensity"))
+            qDelta += 2;
+          effectRendererMaterials[i].renderQueue = 3000 + qDelta;
         }
       }
     }
