@@ -6,7 +6,7 @@ v0.5.0
  - Even more major performance issues when effects are fully transparent
 - Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for better compatibility
 - Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
-- UI less broken when you try to edit an effect that doesn't exist
+- Improved light color controllers
 - Shaders
   - Updated Additive (Dynamic) shader with a few bug fixes for HDR
   - Updated Alpha (Directional) shader to work sgnificantly better in general
@@ -14,7 +14,8 @@ v0.5.0
   - Added some manual z-sorting handling to deal with alpha/additive transparency sorting issues
 - Templates:
  - Major template update from Zorg with dozens of new templates and many fixes/improvements
- - Updates and improvements to existing templates
+ - New RS-25 plume by KnightOfStJohn
+ - Updates and improvements to existing garbo Nertea templates
  
 v0.4.1
 ------
