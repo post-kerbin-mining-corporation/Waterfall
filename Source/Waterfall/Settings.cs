@@ -38,22 +38,22 @@ namespace Waterfall
     public static bool DebugMode = true;
     public static bool DebugUIMode = true;
 
+    public static float AtmosphereDensityExponent = 0.5128f;
+    public static float MinimumEffectIntensity = 0.005f;
+
     /// <summary>
     /// Load data from configuration
     /// </summary>
     public static void Load()
     {
-      ConfigNode settingsNode;
+      ConfigNode settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WATERFALL_SETTINGS"); ;
 
       Utils.Log("[Settings]: Started loading", LogType.Settings);
-      if (GameDatabase.Instance.ExistsConfigNode("Waterfall/WATERFALL_SETTINGS"))
+      if (settingsNode != null)
       {
         Utils.Log("[Settings]: Using specified settings", LogType.Settings);
-
-        settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WATERFALL_SETTINGS");
-
         // Setting parsing goes here
-        //settingsNode.TryGetValue("MinimumWarpFactor", ref TimeWarpLimit);
+        
         settingsNode.TryGetValue("ShowEffectEditor", ref ShowEffectEditor);
         settingsNode.TryGetValue("DebugModules", ref DebugModules);
         settingsNode.TryGetValue("DebugSettings", ref DebugSettings);
@@ -61,6 +61,8 @@ namespace Waterfall
         settingsNode.TryGetValue("DebugModifiers", ref DebugModifiers);
         settingsNode.TryGetValue("DebugMode", ref DebugMode);
         settingsNode.TryGetValue("DebugUIMode", ref DebugUIMode);
+        settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
+        settingsNode.TryGetValue("MinimumEffectIntensity", ref MinimumEffectIntensity);
 
       }
       else

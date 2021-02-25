@@ -52,7 +52,7 @@ namespace Waterfall
       base.Init(parentEffect);
       m = new Material[xforms.Count];
       lights = new Light[xforms.Count];
-      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == lightTransformName).ToArray();
+      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == parentEffect.parentName).ToArray();
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;

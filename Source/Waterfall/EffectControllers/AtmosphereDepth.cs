@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -26,7 +26,11 @@ namespace Waterfall
     {
       if (overridden)
         return new List<float>() { overrideValue };
-      return new List<float>() { (float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) };
+      return new List<float>() {
+        Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent)
+        
+      //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
+      };
     }
   }
 }

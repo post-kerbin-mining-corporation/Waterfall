@@ -25,6 +25,7 @@ namespace Waterfall
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
     public static string LightColorNodeName = "LIGHTCOLORMODIFIER";
+    public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity"};
 
     public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
     {
@@ -62,6 +63,11 @@ namespace Waterfall
       ["_Direction"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
       ["_DirectionScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_Seed"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1500f)),
+      ["_DistortionTex"] = new MaterialData(WaterfallMaterialPropertyType.Texture),
+      ["_Strength"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f)),
+      ["_Highlight"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Blur"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f)),
+      ["_Swirl"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f))
 
     };
 

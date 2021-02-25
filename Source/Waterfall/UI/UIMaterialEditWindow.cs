@@ -277,7 +277,7 @@ namespace Waterfall.UI
         //    matl.SetFloat(kvp.Key, parsed);
         //  }
         //}
-
+        
         GUILayout.EndHorizontal();
       }
       foreach (KeyValuePair<string, Vector4> kvp in vec4Values.ToList())
@@ -296,7 +296,11 @@ namespace Waterfall.UI
 
        
         GUILayout.EndHorizontal();
-      }   
+      }
+      GUILayout.BeginHorizontal();
+      GUILayout.Space(headerWidth);
+      GUILayout.Label($"Queue: {matl.materials[0].renderQueue}", GUILayout.Width(headerWidth));
+      GUILayout.EndHorizontal();
     }
 
     protected void InitializeShaderProperties(Material m)

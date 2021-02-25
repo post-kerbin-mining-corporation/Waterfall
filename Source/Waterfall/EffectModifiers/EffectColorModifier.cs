@@ -71,97 +71,40 @@ namespace Waterfall
         m[i] = xforms[i].GetComponent<Renderer>().material;
       }
     }
-    protected override void ApplyReplace(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          strength = strengthList[i];
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, toSet);
-        }
-      }
-      else
-      {
-        Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-        for (int i = 0; i < m.Length; i++)
-        {
-          m[i].SetColor(colorName, toSet);
-        }
-      }      
-    }
-    protected override void ApplyAdd(List<float> strengthList)
-    {
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          Color original = m[i].GetColor(colorName);
-          float strength = strengthList[i];
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original + toSet);
-        }
-      }
-      else
-      {
-        float strength = strengthList[0];
-        for (int i = 0; i < m.Length; i++)
-        {
-          Color original = m[i].GetColor(colorName);
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original + toSet);
-        }
-      }
-    }
-    protected override void ApplySubtract(List<float> strengthList)
-    {
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          Color original = m[i].GetColor(colorName);
-          float strength = strengthList[i];
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original - toSet);
 
-        }
-      }
-      else
-      {
-        float strength = strengthList[0];
-        for (int i = 0; i < m.Length; i++)
-        {
-          Color original = m[i].GetColor(colorName);
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original - toSet);
-        }
-      }
-    }
-    protected override void ApplyMultiply(List<float> strengthList)
+
+    public List<Color> Get(List<float> strengthList)
     {
+      List<Color> colorList = new List<Color>();
+
       if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
-          Color original = m[i].GetColor(colorName);
-          float strength = strengthList[i];
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original * toSet);
+
+          colorList.Add(
+            new Color(
+              rCurve.Evaluate(strengthList[i]) + randomValue,
+            gCurve.Evaluate(strengthList[i]) + randomValue,
+            bCurve.Evaluate(strengthList[i]) + randomValue,
+            aCurve.Evaluate(strengthList[i]) + randomValue));
         }
       }
       else
       {
-        float strength = strengthList[0];
         for (int i = 0; i < m.Length; i++)
         {
-          Color original = m[i].GetColor(colorName);
-          Color toSet = new Color(rCurve.Evaluate(strength) + randomValue, gCurve.Evaluate(strength) + randomValue, bCurve.Evaluate(strength) + randomValue, aCurve.Evaluate(strength) + randomValue);
-          m[i].SetColor(colorName, original * toSet);
+          colorList.Add(
+            new Color(
+              rCurve.Evaluate(strengthList[0]) + randomValue,
+            gCurve.Evaluate(strengthList[0]) + randomValue,
+            bCurve.Evaluate(strengthList[0]) + randomValue,
+            aCurve.Evaluate(strengthList[0]) + randomValue));
         }
       }
+      return colorList;
     }
+
     public Material GetMaterial()
     {
       return m[0];
@@ -169,6 +112,7 @@ namespace Waterfall
     public void ApplyMaterialName(string newColorName)
     {
       colorName = newColorName;
+      parentEffect.ModifierParameterChange(this);
     }
   }
 

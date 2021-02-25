@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,11 +17,6 @@ namespace Waterfall.UI
     Vector2 effectsScrollListPosition = Vector2.zero;
     Vector2 partsScrollListPosition = Vector2.zero;
 
-    bool useControllers = false;
-    float densityControllerValue = 0f;
-    float throttleControllerValue = 0f;
-    Vector2 randomControllerValue;
-    float rcsControllerValue;
 
     public Vector3 modelRotation;
     public Vector3 modelOffset;
@@ -75,6 +71,13 @@ namespace Waterfall.UI
       modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
       modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
       modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
+      StartCoroutine(DelayedStart());
+
+    }
+
+    IEnumerator DelayedStart()
+    {
+      yield return 5;
       GetVesselData();
     }
 
@@ -225,23 +228,26 @@ namespace Waterfall.UI
       GUILayout.Label("<b>CONTROLLERS</b>");
       GUILayout.BeginVertical(GUI.skin.textArea);
       // Title bar
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("<b>Override</b>",GUILayout.Width(60));
-      GUILayout.Label("  <b>Name</b>", GUILayout.Width(120));
-      GUILayout.FlexibleSpace();
-      GUILayout.Space(140);
-      if (GUILayout.Button("Add New"))
+      if (selectedModule != null)
       {
-        OpenControllerAddWindow();
-      }
-      GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("<b>Override</b>", GUILayout.Width(60));
+        GUILayout.Label("  <b>Name</b>", GUILayout.Width(120));
+        GUILayout.FlexibleSpace();
+        GUILayout.Space(140);
+        if (GUILayout.Button("Add New"))
+        {
+          OpenControllerAddWindow();
+        }
+        GUILayout.EndHorizontal();
 
-      foreach (WaterfallController ctrl in selectedModule.Controllers)
-      {
-        DrawController(ctrl);
+        foreach (WaterfallController ctrl in selectedModule.Controllers)
+        {
+          DrawController(ctrl);
+        }
+        GUILayout.EndVertical();
+        GUILayout.EndVertical();
       }
-      GUILayout.EndVertical();
-      GUILayout.EndVertical();
     }
 
     protected bool templatesOpen = false;

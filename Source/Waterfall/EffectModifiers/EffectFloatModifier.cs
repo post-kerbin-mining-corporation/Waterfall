@@ -12,7 +12,7 @@ namespace Waterfall
   /// </summary>
   public class EffectFloatModifier : EffectModifier
   {
-    public string floatName;
+    public string floatName = "";
 
     public FloatCurve curve;
 
@@ -56,109 +56,36 @@ namespace Waterfall
       }
 
     }
-    protected override void ApplyReplace(List<float> strengthList)
+    public List<float> Get(List<float> strengthList)
     {
+      List<float> floatList = new List<float>();
 
-      float strength = strengthList[0];
       if (strengthList.Count > 1)
       {
         for (int i = 0; i < m.Length; i++)
         {
-          strength = strengthList[i];
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, toSet);
+          floatList.Add(curve.Evaluate(strengthList[i]) + randomValue);
         }
       }
       else
       {
         for (int i = 0; i < m.Length; i++)
         {
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, toSet);
+          floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
         }
       }
+      return floatList;
     }
-    protected override void ApplyAdd(List<float> strengthList)
-    {
 
-      float strength = strengthList[0];
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          strength = strengthList[i];
-          float toSet = curve.Evaluate(strength) + randomValue;
-
-          
-
-          float original = m[i].GetFloat(floatName);
-          
-          m[i].SetFloat(floatName, original + toSet);
-        }
-      }
-      else
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          float original = m[i].GetFloat(floatName);
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original + toSet);
-        }
-      }
-    }
-    protected override void ApplySubtract(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          float original = m[i].GetFloat(floatName);
-          strength = strengthList[i];
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original - toSet);
-        }
-      }
-      else
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          float original = m[i].GetFloat(floatName);
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original - toSet);
-        }
-      }
-    }
-    protected override void ApplyMultiply(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          float original = m[i].GetFloat(floatName);
-          strength = strengthList[i];
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original * toSet);
-        }
-      }
-      else
-      {
-        for (int i = 0; i < m.Length; i++)
-        {
-          float original = m[i].GetFloat(floatName);
-          float toSet = curve.Evaluate(strength) + randomValue;
-          m[i].SetFloat(floatName, original * toSet);
-        }
-      }
-    }
     public Material GetMaterial()
     {
       return m[0];
     }
     public void ApplyFloatName(string newFloatName)
     {
+      
       floatName = newFloatName;
+      parentEffect.ModifierParameterChange(this);
     }
   }
 

@@ -151,30 +151,14 @@ namespace Waterfall.UI
 
           if (GUILayout.Button("▲"))
           {
-            int newIndex = Mathf.Clamp(i - 1, 0, 5000);
-
-            var item = fx.FXModifiers[i];
-
-            fx.FXModifiers.RemoveAt(i);
-
-            if (newIndex > i) newIndex--;
-            // the actual index could have shifted due to the removal
-
-            fx.FXModifiers.Insert(newIndex, item);
+            fx.MoveModifierUp(i);
+            
             return;
           }
           if (GUILayout.Button("▼"))
           {
-            int newIndex = Mathf.Clamp(i + 1, 0, fx.FXModifiers.Count-1);
-
-            var item = fx.FXModifiers[i];
-
-            fx.FXModifiers.RemoveAt(i);
-
-            //if (newIndex > i) newIndex--;
-            // the actual index could have shifted due to the removal
-
-            fx.FXModifiers.Insert(newIndex, item);
+            fx.MoveModifierDown(i);
+            
             return;
           }
           if (GUILayout.Button("Edit"))

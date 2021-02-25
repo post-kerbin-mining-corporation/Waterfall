@@ -1,3 +1,22 @@
+v0.5.0
+------
+- Rewrote effect application backend with a few enhancements
+ - SUBTRACT, ADD modifier modes actually work properly now
+ - Performance improvements overall
+ - Even more major performance issues when effects are fully transparent
+- Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for better compatibility
+- Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
+- Improved light color controllers
+- Shaders
+  - Updated Additive (Dynamic) shader with a few bug fixes for HDR
+  - Updated Alpha (Directional) shader to work sgnificantly better in general
+  - Addded Alpha (Dynamic) shader which is broadly the same as Addtive but alpha
+  - Added some manual z-sorting handling to deal with alpha/additive transparency sorting issues
+- Templates:
+ - Major template update from Zorg with dozens of new templates and many fixes/improvements
+ - New RS-25 plume by KnightOfStJohn
+ - Updates and improvements to existing garbo Nertea templates
+ 
 v0.4.1
 ------
 - Changing TextureScale, TextureOffset and Vector3/4 material properties in the editor will now apply to multiple instances of a plume (e.g on multiple thrust transforms) immediately rather than requiring reload

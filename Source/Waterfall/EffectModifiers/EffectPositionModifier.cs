@@ -53,41 +53,33 @@ namespace Waterfall
       base.Init(parentEffect);
       basePosition = xforms[0].localPosition;
     }
-    protected override void ApplyReplace(List<float> strengthList)
+    public List<Vector3> Get(List<float> strengthList)
     {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        xforms[i].localPosition = new Vector3(xCurve.Evaluate(strength) + randomValue, yCurve.Evaluate(strength) + randomValue, zCurve.Evaluate(strength) + randomValue);
-      }
-    }
-    protected override void ApplyAdd(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
+      List<Vector3> vectorList = new List<Vector3>();
 
-        basePosition = xforms[i].localPosition;
-        xforms[i].localPosition = basePosition + new Vector3(xCurve.Evaluate(strength) + randomValue, yCurve.Evaluate(strength) + randomValue, zCurve.Evaluate(strength) + randomValue);
-      }
-    }
-    protected override void ApplySubtract(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
+      if (strengthList.Count > 1)
       {
-        basePosition = xforms[i].localPosition;
-        xforms[i].localPosition = basePosition - new Vector3(xCurve.Evaluate(strength) + randomValue, yCurve.Evaluate(strength) + randomValue, zCurve.Evaluate(strength) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          vectorList.Add(new Vector3(xCurve.Evaluate(strengthList[i]) + randomValue, 
+            yCurve.Evaluate(strengthList[i]) + randomValue, 
+            zCurve.Evaluate(strengthList[i]) + randomValue)
+
+            );
+        }
       }
-    }
-    protected override void ApplyMultiply(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
+      else
       {
-        basePosition = xforms[i].localPosition;
-        xforms[i].localPosition = new Vector3(basePosition.x * xCurve.Evaluate(strength) + randomValue, basePosition.y * yCurve.Evaluate(strength) + randomValue, basePosition.z * zCurve.Evaluate(strength) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          vectorList.Add(new Vector3(xCurve.Evaluate(strengthList[0]) + randomValue,
+            yCurve.Evaluate(strengthList[0]) + randomValue,
+            zCurve.Evaluate(strengthList[0]) + randomValue)
+
+            );
+        }
       }
+      return vectorList;
     }
     
   }

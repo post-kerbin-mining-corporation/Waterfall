@@ -54,52 +54,35 @@ namespace Waterfall
       base.Init(parentEffect);
       baseRotation = xforms[0].localEulerAngles;
     }
-    protected override void ApplyReplace(List<float> strengthList)
+
+
+    public List<Vector3> Get(List<float> strengthList)
     {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
+      List<Vector3> vectorList = new List<Vector3>();
+
+      if (strengthList.Count > 1)
       {
-        xforms[i].localEulerAngles = new Vector3(
-          xCurve.Evaluate(strength) + randomValue, 
-          yCurve.Evaluate(strength) + randomValue, 
-          zCurve.Evaluate(strength) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          vectorList.Add(new Vector3(xCurve.Evaluate(strengthList[i]) + randomValue,
+            yCurve.Evaluate(strengthList[i]) + randomValue,
+            zCurve.Evaluate(strengthList[i]) + randomValue)
+
+            );
+        }
       }
-    }
-    protected override void ApplyAdd(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
+      else
       {
-        baseRotation = xforms[0].localEulerAngles;
-        xforms[i].localEulerAngles = baseRotation + new Vector3(
-          xCurve.Evaluate(strength) + randomValue,
-          yCurve.Evaluate(strength) + randomValue,
-          zCurve.Evaluate(strength) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          vectorList.Add(new Vector3(xCurve.Evaluate(strengthList[0]) + randomValue,
+            yCurve.Evaluate(strengthList[0]) + randomValue,
+            zCurve.Evaluate(strengthList[0]) + randomValue)
+
+            );
+        }
       }
-    }
-    protected override void ApplySubtract(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        baseRotation = xforms[0].localEulerAngles;
-        xforms[i].localEulerAngles = baseRotation - new Vector3(
-          xCurve.Evaluate(strength)  + randomValue, 
-          yCurve.Evaluate(strength) + randomValue, 
-          zCurve.Evaluate(strength) + randomValue);
-      }
-    }
-    protected override void ApplyMultiply(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        baseRotation = xforms[0].localEulerAngles;
-        xforms[i].localEulerAngles = new Vector3(
-          xCurve.Evaluate(strength) * baseRotation.x + randomValue, 
-          yCurve.Evaluate(strength) * baseRotation.y + randomValue, 
-          zCurve.Evaluate(strength) * baseRotation.z + randomValue);
-      }
+      return vectorList;
     }
 
   }
