@@ -261,7 +261,7 @@ namespace Waterfall
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Effects on moduleID {0}", moduleID), LogType.Modules);
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
-
+      if (allFX == null) allFX = new List<WaterfallEffect>();
       if (allFX.Count == 0)
       {
 
