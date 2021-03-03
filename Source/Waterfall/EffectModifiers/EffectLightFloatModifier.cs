@@ -10,21 +10,21 @@ namespace Waterfall
   /// <summary>
   /// Material color modifier
   /// </summary>
-  public class EffectFloatModifier : EffectModifier
+  public class EffectLightFloatModifier : EffectModifier
   {
     public string floatName = "";
 
     public FloatCurve curve;
 
-    Material[] m;
+    Light[] l;
 
-    public EffectFloatModifier()
+    public EffectLightFloatModifier()
     {
       curve = new FloatCurve();
 
-      modifierTypeName = "Material Float";
+      modifierTypeName = "Light Float";
     }
-    public EffectFloatModifier(ConfigNode node) { Load(node); }
+    public EffectLightFloatModifier(ConfigNode node) { Load(node); }
 
     public override void Load(ConfigNode node)
     {
@@ -34,41 +34,41 @@ namespace Waterfall
       curve = new FloatCurve();
       curve.Load(node.GetNode("floatCurve"));
 
-      modifierTypeName = "Material Float";
+      modifierTypeName = "Light Float";
     }
     public override ConfigNode Save()
     {
       ConfigNode node = base.Save();
 
-      node.name = WaterfallConstants.FloatModifierNodeName;
+      node.name = WaterfallConstants.LightFloatModifierNodeName;
       node.AddValue("floatName", floatName);
+
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      m = new Material[xforms.Count];
+      l = new Light[xforms.Count];
       for (int i = 0; i < xforms.Count; i++)
       {
-        m[i] = xforms[i].GetComponent<Renderer>().material;
+        l[i] = xforms[i].GetComponent<Light>();
       }
 
     }
     public List<float> Get(List<float> strengthList)
     {
       List<float> floatList = new List<float>();
-
       if (strengthList.Count > 1)
       {
-        for (int i = 0; i < m.Length; i++)
+        for (int i = 0; i < l.Length; i++)
         {
           floatList.Add(curve.Evaluate(strengthList[i]) + randomValue);
         }
       }
       else
       {
-        for (int i = 0; i < m.Length; i++)
+        for (int i = 0; i < l.Length; i++)
         {
           floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
         }
@@ -76,9 +76,9 @@ namespace Waterfall
       return floatList;
     }
 
-    public Material GetMaterial()
+    public Light GetLight()
     {
-      return m[0];
+      return l[0];
     }
     public void ApplyFloatName(string newFloatName)
     {

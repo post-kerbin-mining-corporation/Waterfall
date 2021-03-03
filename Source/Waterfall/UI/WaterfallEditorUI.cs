@@ -35,6 +35,7 @@ namespace Waterfall.UI
     UIControllerPopupWindow controlAddWindow;
     UIModifierWindow currentModWinForCurve;
     UIMaterialEditWindow materialEditWindow;
+    UILightEditWindow lightEditWindow;
     UIColorPickerWindow colorPickWindow;
     UITexturePickerWindow texturePickWindow;
     UISmokeEditWindow smokeEditWindow;
@@ -103,6 +104,10 @@ namespace Waterfall.UI
       if (materialEditWindow != null)
       {
         materialEditWindow.Draw();
+      }
+      if (lightEditWindow != null)
+      {
+        lightEditWindow.Draw();
       }
       if (modifierPopupWindow != null)
       {
@@ -526,6 +531,27 @@ namespace Waterfall.UI
 
       try
       {
+        EffectColorFromLightModifier colMod = (EffectColorFromLightModifier)fxMod;
+        if (colMod != null)
+        {
+          editWindows.Add(new UIColorFromLightModifierWindow(colMod, true));
+        }
+
+      }
+      catch (InvalidCastException e) { }
+
+      try
+      {
+        EffectLightFloatModifier colMod = (EffectLightFloatModifier)fxMod;
+        if (colMod != null)
+        {
+          editWindows.Add(new UILightFloatModifierWindow(colMod, true));
+        }
+
+      }
+      catch (InvalidCastException e) { }
+      try
+      {
         EffectLightColorModifier colMod = (EffectLightColorModifier)fxMod;
         if (colMod != null)
         {
@@ -604,6 +630,19 @@ namespace Waterfall.UI
         materialEditWindow = new UIMaterialEditWindow(mdl, true);
       }
       return materialEditWindow;
+    }
+    public UILightEditWindow OpenLightEditWindow(WaterfallModel mdl)
+    {
+
+      if (lightEditWindow != null)
+      {
+        lightEditWindow.ChangeLight(mdl);
+      }
+      else
+      {
+        lightEditWindow = new UILightEditWindow(mdl, true);
+      }
+      return lightEditWindow;
     }
     public UIColorPickerWindow OpenColorEditWindow(Color c)
     {

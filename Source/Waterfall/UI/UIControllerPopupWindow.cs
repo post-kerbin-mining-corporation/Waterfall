@@ -43,9 +43,10 @@ namespace Waterfall.UI
     string[] randTypes = new string[] { "random", "perlin" };
     int randFlag = 0;
 
-    string[] randomStrings = new string[3];
+    string[] randomStrings = new string[4];
     Vector2 randomRange;
     int perlinSeed = 0;
+    float perlinMin = 0f;
     float perlinScale = 1f;
     float perlinSpeed = 1f;
 
@@ -92,6 +93,7 @@ namespace Waterfall.UI
           randomStrings[0] = r.seed.ToString();
           randomStrings[1] = r.scale.ToString();
           randomStrings[2] = r.speed.ToString();
+          randomStrings[3] = r.minimum.ToString();
         }
         EngineEventController e = (EngineEventController)control;
 
@@ -292,6 +294,7 @@ namespace Waterfall.UI
         newCtrl.name = newControllerName;
         newCtrl.range = randomRange;
         newCtrl.scale = perlinScale;
+        newCtrl.minimum = perlinMin;
         newCtrl.seed = perlinSeed;
         newCtrl.speed = perlinSpeed;
         newCtrl.noiseType = randTypes[randFlag];
@@ -424,9 +427,21 @@ namespace Waterfall.UI
           }
           GUILayout.EndHorizontal();
           GUILayout.BeginHorizontal();
-          GUILayout.Label("Scale", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-          randomStrings[1] = GUILayout.TextArea(randomStrings[1], GUILayout.MaxWidth(60f));
+          GUILayout.Label("Minimum", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+          randomStrings[3] = GUILayout.TextArea(randomStrings[3], GUILayout.MaxWidth(60f));
           float floatParsed;
+          if (float.TryParse(randomStrings[3], out floatParsed))
+          {
+            if (perlinMin != floatParsed)
+            {
+              perlinMin = floatParsed;
+            }
+          }
+          GUILayout.EndHorizontal();
+
+          GUILayout.BeginHorizontal();
+          GUILayout.Label("Maximum", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+          randomStrings[1] = GUILayout.TextArea(randomStrings[1], GUILayout.MaxWidth(60f));
           if (float.TryParse(randomStrings[1], out floatParsed))
           {
             if (perlinScale != floatParsed)
