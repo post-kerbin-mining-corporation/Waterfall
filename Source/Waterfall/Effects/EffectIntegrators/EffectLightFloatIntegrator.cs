@@ -73,72 +73,75 @@ namespace Waterfall
     }
     public void Update()
     {
-      if (handledModifiers.Count > 0)
+      if (Settings.EnableLights)
       {
-        List<float> applyValues = initialFloatValues;
-        foreach (EffectLightFloatModifier floatMod in handledModifiers)
+        if (handledModifiers.Count > 0)
         {
-          List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
-
-          if (floatMod.effectMode == EffectModifierMode.REPLACE)
-            applyValues = modResult;
-
-          if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] * modResult[i];
-
-          if (floatMod.effectMode == EffectModifierMode.ADD)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] + modResult[i];
-
-          if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] - modResult[i];
-
-        }
-        for (int i = 0; i < l.Length; i++)
-        {
-
-          if (testIntensity)
+          List<float> applyValues = initialFloatValues;
+          foreach (EffectLightFloatModifier floatMod in handledModifiers)
           {
-            if (l[i].enabled && applyValues[i] < Settings.MinimumEffectIntensity)
-            {
-              l[i].enabled = false;
-            }
-            else if (!l[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
-            {
+            List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
 
-              l[i].enabled = true;
-              if (floatName == "Intensity")
-                l[i].intensity = applyValues[i];
-              if (floatName == "Range")
-                l[i].range = applyValues[i];
-              if (floatName == "SpotAngle")
-                l[i].spotAngle = applyValues[i];
-            }
-            else if (l[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
-            {
-              if (floatName == "Intensity")
-                l[i].intensity = applyValues[i];
-              if (floatName == "Range")
-                l[i].range = applyValues[i];
-              if (floatName == "SpotAngle")
-                l[i].spotAngle = applyValues[i];
-            }
+            if (floatMod.effectMode == EffectModifierMode.REPLACE)
+              applyValues = modResult;
+
+            if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
+              for (int i = 0; i < applyValues.Count; i++)
+                applyValues[i] = applyValues[i] * modResult[i];
+
+            if (floatMod.effectMode == EffectModifierMode.ADD)
+              for (int i = 0; i < applyValues.Count; i++)
+                applyValues[i] = applyValues[i] + modResult[i];
+
+            if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
+              for (int i = 0; i < applyValues.Count; i++)
+                applyValues[i] = applyValues[i] - modResult[i];
 
           }
-          else
+          for (int i = 0; i < l.Length; i++)
           {
-            if (floatName == "Intensity")
-              l[i].intensity = applyValues[i];
-            if (floatName == "Range")
-              l[i].range = applyValues[i];
-            if (floatName == "SpotAngle")
-              l[i].spotAngle = applyValues[i];
+
+            if (testIntensity)
+            {
+              if (l[i].enabled && applyValues[i] < Settings.MinimumLightIntensity)
+              {
+                l[i].enabled = false;
+              }
+              else if (!l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
+              {
+
+                l[i].enabled = true;
+
+                if (floatName == "Intensity")
+                  l[i].intensity = applyValues[i];
+                if (floatName == "Range")
+                  l[i].range = applyValues[i];
+                if (floatName == "SpotAngle")
+                  l[i].spotAngle = applyValues[i];
+              }
+              else if (l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
+              {
+                if (floatName == "Intensity")
+                  l[i].intensity = applyValues[i];
+                if (floatName == "Range")
+                  l[i].range = applyValues[i];
+                if (floatName == "SpotAngle")
+                  l[i].spotAngle = applyValues[i];
+              }
+
+            }
+            else
+            {
+              if (floatName == "Intensity")
+                l[i].intensity = applyValues[i];
+              if (floatName == "Range")
+                l[i].range = applyValues[i];
+              if (floatName == "SpotAngle")
+                l[i].spotAngle = applyValues[i];
+            }
           }
         }
       }
-
     }
   }
 

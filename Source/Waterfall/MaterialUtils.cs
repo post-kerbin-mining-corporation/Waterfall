@@ -113,7 +113,7 @@ namespace Waterfall
     public static List<string> FindValidShaderProperties(Material m, WaterfallMaterialPropertyType propType)
     {
       List<string> validProps = new List<string>();
-      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in ShaderLoader.GetShaderPropertyMap())
       {
         if (m.HasProperty(mProp.Key))
         {
@@ -363,7 +363,7 @@ namespace Waterfall
       textureScaleStrings = new Dictionary<string, string[]>();
       colorTextures = new Dictionary<string, Texture2D>();
 
-      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in ShaderLoader.GetShaderPropertyMap())
       {
         if (m.HasProperty(mProp.Key))
         {

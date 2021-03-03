@@ -81,7 +81,7 @@ namespace Waterfall
         Transform materialTarget = parentTransform.FindDeepChild(transformName);
         Light l = materialTarget.GetComponent<Light>();
 
-
+        l.enabled = Settings.EnableLights;
         lights.Add(l);
       }
 

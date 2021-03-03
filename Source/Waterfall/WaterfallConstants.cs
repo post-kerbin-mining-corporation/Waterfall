@@ -31,7 +31,7 @@ namespace Waterfall
 
     public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity"};
 
-    public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
+    public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd= new Dictionary<string, MaterialData>
     {
       ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
       ["_EmissiveColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),

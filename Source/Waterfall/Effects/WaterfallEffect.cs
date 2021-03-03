@@ -783,8 +783,10 @@ namespace Waterfall
         {
           float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
           int qDelta = 500-(int)Mathf.Clamp((camDist / 2000f)*500, 0, 500);
-          if (effectRendererMaterials[i].HasProperty("_Intensity"))
+          if (effectRendererMaterials[i].HasProperty("_Strength"))
             qDelta += 2;
+          if (effectRendererMaterials[i].HasProperty("_Intensity"))
+            qDelta += 1;
           effectRendererMaterials[i].renderQueue = 3000 + qDelta;
         }
       }
