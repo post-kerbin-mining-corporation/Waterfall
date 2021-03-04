@@ -787,7 +787,7 @@ namespace Waterfall
             qDelta += 2;
           if (effectRendererMaterials[i].HasProperty("_Intensity"))
             qDelta += 1;
-          effectRendererMaterials[i].renderQueue = 3000 + qDelta;
+          effectRendererMaterials[i].renderQueue = 2500 + qDelta;
         }
       }
     }
