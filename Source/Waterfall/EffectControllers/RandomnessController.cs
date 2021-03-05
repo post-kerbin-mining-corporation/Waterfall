@@ -81,6 +81,7 @@ namespace Waterfall
     }
     public float PerlinNoise()
     {
+      
       return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *(scale-minimum)+minimum;
     }
     public override List<float> Get()

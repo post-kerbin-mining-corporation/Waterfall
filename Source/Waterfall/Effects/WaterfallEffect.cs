@@ -172,8 +172,8 @@ namespace Waterfall
     public void CleanupEffect(ModuleWaterfallFX host)
     {
       Utils.Log(String.Format("[WaterfallEffect]: Deleting effect {0} ", name), LogType.Effects);
-      for (int i= model.modelTransforms.Count-1; i >= 0 ; i--)
-      
+      for (int i = model.modelTransforms.Count - 1; i >= 0; i--)
+
       {
         GameObject.Destroy(model.modelTransforms[i].gameObject);
       }
@@ -182,7 +182,7 @@ namespace Waterfall
     public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing)
     {
 
-      
+
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
       Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1} [{2} instances]", name, parentName, parents.Length), LogType.Effects);
@@ -205,7 +205,7 @@ namespace Waterfall
         model.Initialize(effectTransform, fromNothing);
 
 
-        
+
         baseScales.Add(effectTransform.localScale);
         Utils.Log($"[WaterfallEffect] local Scale {baseScales[i]}, baseScale, {effectTransform.localScale}", LogType.Effects);
 
@@ -714,20 +714,20 @@ namespace Waterfall
       Utils.Log($"[WaterfallEffect] Applying template offsets from FN2 {position}, {rotation}, {scale}", LogType.Effects);
 
 
-      for (int i=0; i< effectTransforms.Count;  i++)
-      { 
+      for (int i = 0; i < effectTransforms.Count; i++)
+      {
 
 
 
 
         effectTransforms[i].localPosition = TemplatePositionOffset;
-      effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset); 
+        effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
 
         if (TemplateRotationOffset == Vector3.zero)
-        effectTransforms[i].localRotation = Quaternion.identity;
+          effectTransforms[i].localRotation = Quaternion.identity;
         else
         {
-        effectTransforms[i].localEulerAngles = TemplateRotationOffset;
+          effectTransforms[i].localEulerAngles = TemplateRotationOffset;
         }
       }
 
@@ -778,16 +778,32 @@ namespace Waterfall
           lightColorIntegrators[i].Update();
         }
 
+        bool isHDR = FlightCamera.fetch.cameras[0].allowHDR;
         Transform c = FlightCamera.fetch.cameras[0].transform;
         for (int i = 0; i < effectRendererMaterials.Count; i++)
         {
           float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
-          int qDelta = 500-(int)Mathf.Clamp((camDist / 2000f)*500, 0, 500);
+          int qDelta = 500 - (int)Mathf.Clamp((camDist / 2000f) * 500, 0, 500);
           if (effectRendererMaterials[i].HasProperty("_Strength"))
             qDelta += 2;
           if (effectRendererMaterials[i].HasProperty("_Intensity"))
             qDelta += 1;
           effectRendererMaterials[i].renderQueue = 2500 + qDelta;
+          if (effectRendererMaterials[i].HasProperty("_DestMode"))
+          {
+            if (isHDR)
+            {
+              effectRendererMaterials[i].SetFloat("_DestMode", 1f);
+              effectRendererMaterials[i].SetFloat("_ClipBrightness", 50f);
+            }
+            else
+            {
+              effectRendererMaterials[i].SetFloat("_DestMode", 6f);
+              effectRendererMaterials[i].SetFloat("_ClipBrightness", 1f);
+            }
+          }
+
+
         }
       }
     }
@@ -857,7 +873,7 @@ namespace Waterfall
 
     }
 
-   
+
     public void SetEnabled(bool state)
     {
       if (effectTransforms != null)
@@ -865,16 +881,17 @@ namespace Waterfall
         for (int i = 0; i < effectTransforms.Count; i++)
         {
           if (state)
-        {
-            
+          {
+
             effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
-        } else
-        {
-            effectTransforms[i].localScale = Vector3.one*0.00001f;
+          }
+          else
+          {
+            effectTransforms[i].localScale = Vector3.one * 0.00001f;
+          }
         }
-      }
       effectVisible = state;
-     
+
     }
   }
 
