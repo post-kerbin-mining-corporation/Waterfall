@@ -22,7 +22,7 @@ namespace Waterfall.UI
     WaterfallEffect effect;
 
     string newModifierName = "newModifier";
-    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color"};
+    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color" };
     int modifierFlag = 0;
 
     string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float" };
@@ -31,7 +31,7 @@ namespace Waterfall.UI
     int transformFlag = 0;
     string[] transformOptions;
 
-    public UIModifierPopupWindow( bool show) : base(show)
+    public UIModifierPopupWindow(bool show) : base(show)
     {
       WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 400);
 
@@ -43,7 +43,7 @@ namespace Waterfall.UI
       modifier = mod;
       effect = fx;
       windowMode = ModifierPopupMode.Delete;
-      WindowPosition = new Rect(Screen.width / 2-100, Screen.height / 2f-50, 200, 100);
+      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 200, 100);
     }
 
     public void SetAddMode(WaterfallEffect fx)
@@ -56,7 +56,7 @@ namespace Waterfall.UI
       List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
       modifierFlag = 0;
       transformOptions = new string[xFormOptions.Count];
-      for (int i=0;i < xFormOptions.Count; i++)
+      for (int i = 0; i < xFormOptions.Count; i++)
       {
         transformOptions[i] = xFormOptions[i].name;
       }
@@ -83,7 +83,7 @@ namespace Waterfall.UI
         DrawAdd();
       if (windowMode == ModifierPopupMode.Delete)
         DrawDelete();
-       GUI.DragWindow();
+      GUI.DragWindow();
 
     }
 
@@ -106,11 +106,11 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
     }
 
-   protected void DrawDelete()
+    protected void DrawDelete()
     {
       GUILayout.Label($"Are you sure you want to delete {modifier.fxName}?");
       GUILayout.BeginHorizontal();
-      if(GUILayout.Button("Yes"))
+      if (GUILayout.Button("Yes"))
       {
         effect.RemoveModifier(modifier);
         showWindow = false;
@@ -128,7 +128,7 @@ namespace Waterfall.UI
       newModifierName = GUILayout.TextArea(newModifierName);
       GUILayout.EndHorizontal();
       GUILayout.Label("Modifier type");
-      int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length,4), GUIResources.GetStyle("radio_text_button"));
+      int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
 
       if (modiferFlagChanged != modifierFlag)
       {
@@ -138,7 +138,18 @@ namespace Waterfall.UI
           List<Renderer> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
-          for (int i=0;i < xFormOptions.Count; i++)
+          for (int i = 0; i < xFormOptions.Count; i++)
+          {
+            transformOptions[i] = xFormOptions[i].gameObject.name;
+          }
+          
+        }
+        else if (modifierTypes[modifierFlag].Contains("Light"))
+        {
+          List<Light> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Light>().ToList();
+
+          transformOptions = new string[xFormOptions.Count];
+          for (int i = 0; i < xFormOptions.Count; i++)
           {
             transformOptions[i] = xFormOptions[i].gameObject.name;
           }
@@ -148,14 +159,15 @@ namespace Waterfall.UI
           List<Transform> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
-          for (int i=0;i < xFormOptions.Count; i++)
+          for (int i = 0; i < xFormOptions.Count; i++)
           {
             transformOptions[i] = xFormOptions[i].name;
           }
         }
+        transformFlag = 0;
       }
       GUILayout.Label("Target transform name");
-      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length,3), GUIResources.GetStyle("radio_text_button"));
+      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length, 3), GUIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
       GUILayout.Label("Controller name");
       controllerFlag = GUILayout.SelectionGrid(controllerFlag, controllerTypes, Mathf.Min(controllerTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
@@ -223,6 +235,22 @@ namespace Waterfall.UI
         return newMod;
       }
       else if (modifierTypes[modifierFlag] == "Light Material Color")
+      {
+        EffectLightColorModifier newMod = new EffectLightColorModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      else if (modifierTypes[modifierFlag] == "Light Float")
+      {
+        EffectLightFloatModifier newMod = new EffectLightFloatModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      else if (modifierTypes[modifierFlag] == "Light Color")
       {
         EffectLightColorModifier newMod = new EffectLightColorModifier();
         newMod.fxName = newModifierName;

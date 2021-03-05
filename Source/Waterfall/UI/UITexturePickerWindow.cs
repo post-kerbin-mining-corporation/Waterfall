@@ -84,23 +84,23 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
       GUILayout.BeginVertical();
       GUILayout.Label("<b>Available Textures</b>");
-      foreach (KeyValuePair<string,string> kvp in WaterfallAssets.Textures)
+      foreach (WaterfallAsset asset in WaterfallAssets.Textures)
       {
-        DrawTextureButton(kvp.Key);
+        DrawTextureButton(asset);
       }
       GUILayout.EndVertical();
     }
-    protected void DrawTextureButton(string name)
+    protected void DrawTextureButton(WaterfallAsset texture)
     {
       GUILayout.BeginHorizontal();
       if (GUILayout.Button("", GUILayout.Width(64), GUILayout.Height(64)))
       {
-        currentTexturePath = name;
+        currentTexturePath = texture.Path;
       }
       Rect bRect = GUILayoutUtility.GetLastRect();
       if (texThumbs != null)
-        GUI.DrawTexture(bRect, texThumbs[name]);
-      GUILayout.Label(WaterfallAssets.Textures[name]);
+        GUI.DrawTexture(bRect, texThumbs[texture.Path]);
+      GUILayout.Label(texture.Name);
       GUILayout.EndHorizontal();
     }
    
@@ -112,9 +112,9 @@ namespace Waterfall.UI
     public void GenerateTextures()
     {
       texThumbs = new Dictionary<string, Texture>();
-      foreach (KeyValuePair<string, string> kvp in WaterfallAssets.Textures)
+      foreach (WaterfallAsset asset in WaterfallAssets.Textures)
       {
-        texThumbs.Add(kvp.Key, GameDatabase.Instance.GetTexture(kvp.Key, false));
+        texThumbs.Add(asset.Path, GameDatabase.Instance.GetTexture(asset.Path, false));
       }
     }
   }

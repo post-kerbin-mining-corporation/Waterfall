@@ -17,6 +17,7 @@ namespace Waterfall
     public delegate float NoiseFunction();
     public int seed = 0;
     public float scale = 1f;
+    public float minimum = 0f;
     public float speed = 1f;
     NoiseFunction noiseFunc;
 
@@ -29,6 +30,7 @@ namespace Waterfall
       node.TryGetValue("noiseType", ref noiseType);
       node.TryGetValue("range", ref range);
       node.TryGetValue("scale", ref scale);
+      node.TryGetValue("mininum", ref minimum);
       node.TryGetValue("speed", ref speed);
       // Randomize seed if not specified
       if (!node.TryGetValue("seed", ref seed))
@@ -46,6 +48,7 @@ namespace Waterfall
       if (noiseType == "perlin")
       {
         c.AddValue("scale", scale);
+        c.AddValue("minimum", minimum);
         c.AddValue("speed", speed);
         c.AddValue("seed", seed);
       }
@@ -77,7 +80,7 @@ namespace Waterfall
     }
     public float PerlinNoise()
     {
-      return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *scale;
+      return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *(scale-minimum)+minimum;
     }
     public override List<float> Get()
     {

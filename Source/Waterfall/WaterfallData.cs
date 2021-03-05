@@ -27,6 +27,7 @@ namespace Waterfall
     {
       WaterfallParticleLoader.LoadParticles();
       ShaderLoader.LoadShaders();
+      ShaderLoader.LoadShaderProperties();
       WaterfallTemplates.LoadTemplates();
     }
     

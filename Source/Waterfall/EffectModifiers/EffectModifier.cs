@@ -63,7 +63,7 @@ namespace Waterfall
       parentEffect = effect;
       Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName), LogType.Modifiers);
       List<Transform> roots = parentEffect.GetModelTransforms();
-      
+      xforms = new List<Transform>();
       foreach (Transform t in roots)
       {
         Transform t1 = t.FindDeepChild(transformName);

@@ -1,16 +1,39 @@
+v0.6.0
+------
+- Moved 'engineID' field inside the Throttle controller
+- Added 'thrusterTransformName' field to RCS controllers, which will allow them to map to unique ModuleRCSFX 
+- Added a new 'minimum' field to perlin noise that allows the generation of negative numbers. Renamed old 'scale' to 'maximum', as that's what it was
+- When adding effects, can now select a Workflow, which filters Shaders and Models so they are easier to match up with valid choices
+- When selecting modifier types, visible target transforms are filtered so only valid ones are shows (e.g, no)
+- Better descriptions/text in the UI when selecting models, shaders, etc
+- Various UI fixes throughout
+- Added support for Lights
+ - More or less like EngineLight
+ - Add Lights through the usual workflow
+ - Apply modifiers to modify light parameters like other effects
+- Fix for render order of Alpha (Directional) shader
+- Fix for all shaders under HDR mode: significantly better looks!
+- Added new Deformation (Dynamic) shader
+- Added new simple plane models for use in various effects
+
 v0.5.0
 ------
 - Rewrote effect application backend with a few enhancements
- - SUBTRACT, ADD blend modes actually work properly now
- - Major performance improvements overall
+ - SUBTRACT, ADD modifier modes actually work properly now
+ - Performance improvements overall
  - Even more major performance issues when effects are fully transparent
 - Somewhat changed how atmospheric depth is calculated, result should be fairly in line with SmokeScreen/RealPlume implemenation for better compatibility
 - Fixed an issue where effects would occasionally not be reloaded correctly on game load if there was more than one ModuleWaterfallFX on a part
-- Updated Dynamic shader with a few bug fixes for HDR
-- Updated Alpha shader to not suck
-- UI less broken when you try to edit an effect that doesn't exist
+- Improved light color controllers
+- Shaders
+  - Updated Additive (Dynamic) shader with a few bug fixes for HDR
+  - Updated Alpha (Directional) shader to work sgnificantly better in general
+  - Addded Alpha (Dynamic) shader which is broadly the same as Addtive but alpha
+  - Added some manual z-sorting handling to deal with alpha/additive transparency sorting issues
 - Templates:
  - Major template update from Zorg with dozens of new templates and many fixes/improvements
+ - New RS-25 plume by KnightOfStJohn
+ - Updates and improvements to existing garbo Nertea templates
  
 v0.4.1
 ------

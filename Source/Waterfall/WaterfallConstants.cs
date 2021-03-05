@@ -11,6 +11,7 @@ namespace Waterfall
     public static string EffectNodeName = "EFFECT";
     public static string ModelNodeName = "MODEL";
     public static string MaterialNodeName = "MATERIAL";
+    public static string LightNodeName = "LIGHT";
     public static string FloatNodeName = "FLOAT";
     public static string ColorNodeName = "COLOR";
     public static string Vector4NodeName = "VECTOR4";
@@ -24,10 +25,13 @@ namespace Waterfall
     public static string PositionModifierNodeName = "POSITIONMODIFIER";
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
-    public static string LightColorNodeName = "LIGHTCOLORMODIFIER";
+    public static string ColorFromLightNodeName = "COLORLIGHTMODIFIER";
+    public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
+    public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
+
     public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity"};
 
-    public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
+    public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd= new Dictionary<string, MaterialData>
     {
       ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
       ["_EmissiveColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
@@ -63,6 +67,11 @@ namespace Waterfall
       ["_Direction"] = new MaterialData(WaterfallMaterialPropertyType.Vector4),
       ["_DirectionScale"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
       ["_Seed"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1500f)),
+      ["_DistortionTex"] = new MaterialData(WaterfallMaterialPropertyType.Texture),
+      ["_Strength"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f)),
+      ["_Highlight"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 1f)),
+      ["_Blur"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f)),
+      ["_Swirl"] = new MaterialData(WaterfallMaterialPropertyType.Float, new Vector2(0f, 5f))
 
     };
 

@@ -14,6 +14,7 @@ namespace Waterfall
 
     public string overrideShader= "";
     public List<WaterfallMaterial> materials;
+    public List<WaterfallLight> lights;
 
 
     public List<Transform> modelTransforms;
@@ -36,6 +37,17 @@ namespace Waterfall
       randomized = randomizeSeed;
     }
 
+    public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, bool randomizeSeed)
+    {
+      modelTransforms = new List<Transform>();
+      path = modelAsset.Path;
+      if (shaderAsset == null)
+        overrideShader = null;
+      else
+        overrideShader = shaderAsset.Name;
+      randomized = randomizeSeed;
+    }
+
     public WaterfallModel(ConfigNode node) : this()
     {
       Load(node);
@@ -53,6 +65,12 @@ namespace Waterfall
       {
         materials.Add(new WaterfallMaterial(materialNode));
       }
+
+      lights = new List<WaterfallLight>();
+      foreach (ConfigNode lightNode in node.GetNodes(WaterfallConstants.LightNodeName))
+      {
+        lights.Add(new WaterfallLight(lightNode));
+      }
     }
     public ConfigNode Save()
     {
@@ -66,7 +84,10 @@ namespace Waterfall
       {
         node.AddNode(m.Save());
       }
-
+      foreach (WaterfallLight l in lights)
+      {
+        node.AddNode(l.Save());
+      }
       return node;
     }
 
@@ -96,14 +117,26 @@ namespace Waterfall
       modelTransforms.Add(modelTransform);
 
       Renderer[] renderers = modelTransform.GetComponentsInChildren<Renderer>();
+      Light[] lightObjs = modelTransform.GetComponentsInChildren<Light>();
 
       if (fromNothing)
       {
         materials = new List<WaterfallMaterial>();
+        lights = new List<WaterfallLight>();
+
+        if (lightObjs.Length >0)
+        {
+          WaterfallLight l = new WaterfallLight();
+          l.lights = new List<Light>();
+          l.transformName = lightObjs[0].name;
+          lights.Add(l);
+        }
+
         foreach (Renderer r in renderers)
         {
           WaterfallMaterial m = new WaterfallMaterial();
-          m.shaderName = overrideShader;
+          if (overrideShader != null)
+            m.shaderName = overrideShader;
           m.useAutoRandomization = randomized;
           m.materials = new List<Material>();
           m.transformName = r.transform.name;
@@ -115,6 +148,11 @@ namespace Waterfall
       {
         m.useAutoRandomization = randomized;
         m.Initialize(modelTransform);
+      }
+      foreach (WaterfallLight l in lights)
+      {
+        
+        l.Initialize(modelTransform);
       }
       ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
     }
@@ -294,6 +332,102 @@ namespace Waterfall
                 {
                   r.material.SetColor(propertyName, value);
                 }
+              }
+            }
+        }
+      }
+    }
+
+    public void SetLightRange(WaterfallLight targetLight, float value)
+    {
+      foreach (WaterfallLight l in lights)
+      {
+        if (l == targetLight)
+        {
+          l.SetRange(value);
+
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Light li in t.GetComponentsInChildren<Light>())
+              {
+                li.range = value;
+              }
+            }
+        }
+      }
+    }
+    public void SetLightIntensity(WaterfallLight targetLight, float value)
+    {
+      foreach (WaterfallLight l in lights)
+      {
+        if (l == targetLight)
+        {
+          l.SetIntensity(value);
+
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Light li in t.GetComponentsInChildren<Light>())
+              {
+                li.intensity = value;
+              }
+            }
+        }
+      }
+    }
+    public void SetLightAngle(WaterfallLight targetLight, float value)
+    {
+      foreach (WaterfallLight l in lights)
+      {
+        if (l == targetLight)
+        {
+          l.SetAngle(value);
+
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Light li in t.GetComponentsInChildren<Light>())
+              {
+                li.spotAngle = value;
+              }
+            }
+        }
+      }
+    }
+    public void SetLightColor(WaterfallLight targetLight, Color value)
+    {
+      foreach (WaterfallLight l in lights)
+      {
+        if (l == targetLight)
+        {
+          l.SetColor(value);
+
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Light li in t.GetComponentsInChildren<Light>())
+              {
+                li.color = value;
+              }
+            }
+        }
+      }
+    }
+    public void SetLightType(WaterfallLight targetLight, LightType value)
+    {
+      foreach (WaterfallLight l in lights)
+      {
+        if (l == targetLight)
+        {
+          l.SetLightType(value);
+
+          if (modelTransforms.Count > 1)
+            foreach (Transform t in modelTransforms)
+            {
+              foreach (Light li in t.GetComponentsInChildren<Light>())
+              {
+                li.type = value;
               }
             }
         }
