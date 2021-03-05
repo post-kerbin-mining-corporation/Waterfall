@@ -45,6 +45,7 @@ namespace Waterfall
       c.AddValue("noiseType", noiseType);
       if (noiseType == "random")
         c.AddValue("range", range);
+
       if (noiseType == "perlin")
       {
         c.AddValue("scale", scale);
@@ -80,10 +81,13 @@ namespace Waterfall
     }
     public float PerlinNoise()
     {
+      
       return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *(scale-minimum)+minimum;
     }
     public override List<float> Get()
     {
+      if (overridden)
+        return new List<float>() { overrideValue };
 
 
       return new List<float>() { noiseFunc() };
