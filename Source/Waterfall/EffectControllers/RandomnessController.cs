@@ -45,6 +45,7 @@ namespace Waterfall
       c.AddValue("noiseType", noiseType);
       if (noiseType == "random")
         c.AddValue("range", range);
+
       if (noiseType == "perlin")
       {
         c.AddValue("scale", scale);
@@ -84,6 +85,8 @@ namespace Waterfall
     }
     public override List<float> Get()
     {
+      if (overridden)
+        return new List<float>() { overrideValue };
 
 
       return new List<float>() { noiseFunc() };
