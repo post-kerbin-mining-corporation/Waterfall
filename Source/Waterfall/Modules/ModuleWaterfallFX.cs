@@ -539,14 +539,22 @@ namespace Waterfall
         allFX[i].CleanupEffect(this);
       }
     }
-
+    bool isHDR = false;
     protected void LateUpdate()
     {
       if (HighLogic.LoadedSceneIsFlight && allFX != null)
       {
+        bool changeHDR = false;
+        if (FlightCamera.fetch.cameras[0].allowHDR != isHDR)
+        {
+          changeHDR = true;
+          isHDR = FlightCamera.fetch.cameras[0].allowHDR;
+        }
         for (int i = 0; i < allFX.Count; i++)
         {
           allFX[i].Update();
+          if (changeHDR)
+            allFX[i].SetHDR(isHDR);
         }
       }
     }

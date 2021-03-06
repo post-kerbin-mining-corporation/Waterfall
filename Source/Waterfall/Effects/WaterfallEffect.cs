@@ -778,29 +778,20 @@ namespace Waterfall
           lightColorIntegrators[i].Update();
         }
 
-        bool isHDR = FlightCamera.fetch.cameras[0].allowHDR;
+       
         Transform c = FlightCamera.fetch.cameras[0].transform;
         for (int i = 0; i < effectRendererMaterials.Count; i++)
         {
           float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
           int qDelta = 500 - (int)Mathf.Clamp((camDist / 2000f) * 500, 0, 500);
           if (effectRendererMaterials[i].HasProperty("_Strength"))
-            qDelta += 2;
+            qDelta = 3001;
           if (effectRendererMaterials[i].HasProperty("_Intensity"))
             qDelta += 1;
           effectRendererMaterials[i].renderQueue = 2500 + qDelta;
-          if (effectRendererMaterials[i].HasProperty("_DestMode"))
+
           {
-            if (isHDR)
-            {
-              effectRendererMaterials[i].SetFloat("_DestMode", 1f);
-              effectRendererMaterials[i].SetFloat("_ClipBrightness", 50f);
-            }
-            else
-            {
-              effectRendererMaterials[i].SetFloat("_DestMode", 6f);
-              effectRendererMaterials[i].SetFloat("_ClipBrightness", 1f);
-            }
+
           }
 
 
@@ -808,7 +799,24 @@ namespace Waterfall
       }
     }
 
+    public void SetHDR(bool isHDR)
+    {
+      for (int i = 0; i < effectRendererMaterials.Count; i++)
+      {
+        if (effectRendererMaterials[i].HasProperty("_DestMode"))
+          if (isHDR)
+          {
+            effectRendererMaterials[i].SetFloat("_DestMode", 1f);
+            effectRendererMaterials[i].SetFloat("_ClipBrightness", 50f);
+          }
+          else
+          {
+            effectRendererMaterials[i].SetFloat("_DestMode", 6f);
+            effectRendererMaterials[i].SetFloat("_ClipBrightness", 1f);
+          }
+      }
 
+    }
     public void RemoveModifier(EffectModifier mod)
     {
       fxModifiers.Remove(mod);

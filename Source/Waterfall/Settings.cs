@@ -43,6 +43,7 @@ namespace Waterfall
     public static float MinimumEffectIntensity = 0.005f;
     public static float MinimumLightIntensity = 0.05f;
     public static bool EnableLights = true;
+    public static bool EnableDistortion = true;
 
     /// <summary>
     /// Load data from configuration
@@ -67,7 +68,7 @@ namespace Waterfall
         settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
         settingsNode.TryGetValue("MinimumEffectIntensity", ref MinimumEffectIntensity);
         settingsNode.TryGetValue("EnableLights", ref EnableLights);
-
+        settingsNode.TryGetValue("EnableDistortion", ref EnableDistortion);
       }
       else
       {
