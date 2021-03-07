@@ -99,8 +99,9 @@ namespace Waterfall
       TemplateRotationOffset = parentTemplate.rotation;
       TemplateScaleOffset = parentTemplate.scale;
 
-      if (parentTemplate.overrideParentTransform != "")
+      if (parentTemplate.overrideParentTransform != "" && parentTemplate.overrideParentTransform != null)
         fx.savedNode.SetValue("parentName", parentTemplate.overrideParentTransform, true);
+
       Load(fx.savedNode);
     }
     public WaterfallEffect(WaterfallEffect fx)
