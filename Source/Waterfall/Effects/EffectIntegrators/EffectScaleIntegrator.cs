@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Waterfall
 {
@@ -56,7 +57,7 @@ namespace Waterfall
 
     public void Update()
     {
-      List<Vector3> applyValues = initialVectorValues;
+      List<Vector3> applyValues = initialVectorValues.ToList(); 
       foreach (EffectPositionModifier posMod in handledModifiers)
       {
         List<Vector3> modResult = posMod.Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));

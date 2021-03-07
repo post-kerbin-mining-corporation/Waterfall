@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Waterfall
 {
@@ -65,7 +66,7 @@ namespace Waterfall
     {
       if (handledModifiers.Count > 0)
       {
-        List<Color> applyValues = initialColorValues;
+        List<Color> applyValues = initialColorValues.ToList();
         foreach (EffectLightColorModifier colorMod in handledModifiers)
         {
           List<Color> modResult = colorMod.Get(parentEffect.parentModule.GetControllerValue(colorMod.controllerName));
