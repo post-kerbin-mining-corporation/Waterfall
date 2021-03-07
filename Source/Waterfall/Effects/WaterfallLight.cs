@@ -86,6 +86,7 @@ namespace Waterfall
       }
 
       Utils.Log($"[WaterfallLight]: Initialized WaterfallLight at {parentTransform}, {lights.Count} Count", LogType.Effects);
+      
       foreach (Light l in lights)
       {
         l.range =range;

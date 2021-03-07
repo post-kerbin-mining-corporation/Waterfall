@@ -39,6 +39,13 @@ namespace Waterfall
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
 
     }
+    public override ConfigNode Save()
+    {
+      ConfigNode c = base.Save();
+
+      c.AddValue("engineID", engineID);
+      return c;
+    }
     public override List<float> Get()
     {
 

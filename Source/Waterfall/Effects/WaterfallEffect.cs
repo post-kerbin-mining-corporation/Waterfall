@@ -17,6 +17,7 @@ namespace Waterfall
     public Vector3 TemplateScaleOffset { get; set; }
     public List<Vector3> baseScales;
     public ModuleWaterfallFX parentModule;
+    public WaterfallEffectTemplate parentTemplate;
 
     protected WaterfallModel model;
     protected List<EffectModifier> fxModifiers;
@@ -53,6 +54,18 @@ namespace Waterfall
       fxModifiers = new List<EffectModifier>();
     }
 
+    public WaterfallEffect(string parent, WaterfallModel mdl, WaterfallEffectTemplate templateOwner)
+    {
+      parentName = parent;
+      model = mdl;
+
+      parentTemplate = templateOwner;
+      TemplatePositionOffset = parentTemplate.position;
+      TemplateRotationOffset = parentTemplate.rotation;
+      TemplateScaleOffset = parentTemplate.scale;
+      fxModifiers = new List<EffectModifier>();
+    }
+
     public WaterfallEffect(ConfigNode node)
     {
       TemplatePositionOffset = Vector3.zero;
@@ -77,6 +90,17 @@ namespace Waterfall
       TemplateScaleOffset = scaleOffset;
       if (overrideTransformName != "")
         fx.savedNode.SetValue("parentName", overrideTransformName, true);
+      Load(fx.savedNode);
+    }
+    public WaterfallEffect(WaterfallEffect fx, WaterfallEffectTemplate templateOwner)
+    {
+      parentTemplate = templateOwner;
+      TemplatePositionOffset = parentTemplate.position;
+      TemplateRotationOffset = parentTemplate.rotation;
+      TemplateScaleOffset = parentTemplate.scale;
+
+      if (parentTemplate.overrideParentTransform != "")
+        fx.savedNode.SetValue("parentName", parentTemplate.overrideParentTransform, true);
       Load(fx.savedNode);
     }
     public WaterfallEffect(WaterfallEffect fx)
@@ -188,6 +212,7 @@ namespace Waterfall
       Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1} [{2} instances]", name, parentName, parents.Length), LogType.Effects);
       effectTransforms = new List<Transform>();
       baseScales = new List<Vector3>();
+
       for (int i = 0; i < parents.Length; i++)
       {
         GameObject effect = new GameObject($"Waterfall_FX_{name}_{i}");
@@ -778,23 +803,25 @@ namespace Waterfall
           lightColorIntegrators[i].Update();
         }
 
-       
+
+        int transparentQueueBase = 3000;
+        
+        int queueDepth = 750;
+        float sortedDepth = 1000f;
+        int distortQueue= transparentQueueBase + 2;
+
         Transform c = FlightCamera.fetch.cameras[0].transform;
         for (int i = 0; i < effectRendererMaterials.Count; i++)
         {
-          float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
-          int qDelta = 500 - (int)Mathf.Clamp((camDist / 2000f) * 500, 0, 500);
+          float camDistBounds = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
+          float camDistTransform = Vector3.Dot(effectRenderers[i].transform.position - c.position, c.forward);
+
+          int qDelta = queueDepth - (int)Mathf.Clamp((Mathf.Min(camDistBounds,camDistTransform) / sortedDepth) * queueDepth, 0, queueDepth);
           if (effectRendererMaterials[i].HasProperty("_Strength"))
-            qDelta = 3001;
+            qDelta = distortQueue;
           if (effectRendererMaterials[i].HasProperty("_Intensity"))
             qDelta += 1;
-          effectRendererMaterials[i].renderQueue = 2500 + qDelta;
-
-          {
-
-          }
-
-
+          effectRendererMaterials[i].renderQueue = transparentQueueBase + qDelta;
         }
       }
     }

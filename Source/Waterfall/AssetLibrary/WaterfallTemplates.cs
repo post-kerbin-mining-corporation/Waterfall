@@ -12,14 +12,14 @@ namespace Waterfall
   public static class WaterfallTemplates
   {
 
-    public static Dictionary<string, WaterfallEffectTemplate> Library = new Dictionary<string, WaterfallEffectTemplate>();
+    public static Dictionary<string, WaterfallTemplate> Library = new Dictionary<string, WaterfallTemplate>();
 
     /// <summary>
     /// Get an effect template by name
     /// </summary>
     /// <param name="name">The config name of the template</param>
     /// <returns>The template, if it exists</returns>
-    public static WaterfallEffectTemplate GetTemplate(string name)
+    public static WaterfallTemplate GetTemplate(string name)
     {
       if (WaterfallTemplates.Library.ContainsKey(name))
       {
@@ -43,7 +43,7 @@ namespace Waterfall
       {
         if (!Library.ContainsKey(node.GetValue("templateName")))
         {
-          Library.Add(node.GetValue("templateName"), new WaterfallEffectTemplate(node));
+          Library.Add(node.GetValue("templateName"), new WaterfallTemplate(node));
           Utils.Log($"[Template Libary]: Added template {node.GetValue("templateName")}", LogType.Settings);
         }
       }
