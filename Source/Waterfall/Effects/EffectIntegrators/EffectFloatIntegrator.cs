@@ -53,6 +53,8 @@ namespace Waterfall
       floatName = floatMod.floatName;
       handledModifiers = new List<EffectFloatModifier>();
       handledModifiers.Add(floatMod);
+
+     
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
         if (floatName == nm)

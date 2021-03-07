@@ -37,6 +37,14 @@ namespace Waterfall
         Utils.LogError("[RCSController] Could not find ModuleRCSFX on Initialize");
 
     }
+
+    public override ConfigNode Save()
+    {
+      ConfigNode c =  base.Save();
+
+      c.AddValue("thrusterTransformName", thrusterTransformName);
+      return c;
+    }
     public override List<float> Get()
     {
       if (rcsController == null)

@@ -234,9 +234,19 @@ namespace Waterfall.UI
           shaders[shaderFlag],
           randomizeSeed);
       }
-
-      WaterfallEffect newFX = new WaterfallEffect(parentName, model
-        );
+      WaterfallEffect newFX;
+      if (WaterfallUI.Instance.selectedTemplate == null)
+      {
+        Utils.Log($"[UIAddEffectWindow]: Creating effect", LogType.UI );
+         newFX = new WaterfallEffect(parentName, model
+          );
+      }
+      else
+      {
+        Utils.Log($"[UIAddEffectWindow]: Creating effect as part of template {WaterfallUI.Instance.selectedTemplate.templateName}", LogType.UI);
+        newFX = new WaterfallEffect(parentName, model, WaterfallUI.Instance.selectedTemplate
+          ); 
+      }
       newFX.name = newEffectName;
 
       return newFX;
