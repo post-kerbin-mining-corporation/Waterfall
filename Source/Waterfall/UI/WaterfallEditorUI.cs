@@ -264,43 +264,47 @@ namespace Waterfall.UI
     protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
-      GUILayout.Label("<b>TEMPLATES</b>");
-      GUILayout.BeginVertical(GUI.skin.textArea);
-
-      GUILayout.BeginHorizontal();
-      int selectedTemplateChanges = GUILayout.SelectionGrid(selectedTemplateIndex, templatesString, 4, GUIResources.GetStyle("radio_text_button"));
-
-      if (selectedTemplateChanges != selectedTemplateIndex)
+      if (selectedModule.Templates != null && selectedModule.Templates.Count > 0)
       {
-        selectedTemplateIndex = selectedTemplateChanges;
-        SelectTemplate(selectedModule.Templates[selectedTemplateIndex]);
+        GUILayout.Label("<b>TEMPLATES</b>");
+        GUILayout.BeginVertical(GUI.skin.textArea);
+
+        GUILayout.BeginHorizontal();
+
+        int selectedTemplateChanges = GUILayout.SelectionGrid(selectedTemplateIndex, templatesString, 4, GUIResources.GetStyle("radio_text_button"));
+
+        if (selectedTemplateChanges != selectedTemplateIndex)
+        {
+          selectedTemplateIndex = selectedTemplateChanges;
+          SelectTemplate(selectedModule.Templates[selectedTemplateIndex]);
+        }
+        if (GUILayout.Button("Copy offsets", GUILayout.Width(160f), GUILayout.Height(40)))
+        {
+          string copiedString = "";
+          copiedString += $"position = {selectedTemplate.position.x},{selectedTemplate.position.y},{selectedTemplate.position.z}\n";
+          copiedString += $"rotation = {selectedTemplate.rotation.x}, {selectedTemplate.rotation.y}, {selectedTemplate.rotation.z}\n";
+          copiedString += $"scale = {selectedTemplate.scale.x}, {selectedTemplate.scale.y}, {selectedTemplate.scale.z}";
+
+          GUIUtility.systemCopyBuffer = copiedString;
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.Label(selectedModule.Templates[selectedTemplateIndex].templateName);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Offset");
+        modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Rotation ");
+        modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Scale");
+        modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
+        GUILayout.EndHorizontal();
+
+        GUILayout.EndVertical();
       }
-      if (GUILayout.Button("Copy offsets", GUILayout.Width(160f), GUILayout.Height(40)))
-      {
-        string copiedString = "";
-        copiedString += $"position = {selectedTemplate.position.x},{selectedTemplate.position.y},{selectedTemplate.position.z}\n";
-        copiedString += $"rotation = {selectedTemplate.rotation.x}, {selectedTemplate.rotation.y}, {selectedTemplate.rotation.z}\n";
-        copiedString += $"scale = {selectedTemplate.scale.x}, {selectedTemplate.scale.y}, {selectedTemplate.scale.z}";
-
-        GUIUtility.systemCopyBuffer = copiedString;
-      }
-      GUILayout.EndHorizontal();
-
-      GUILayout.Label(selectedModule.Templates[selectedTemplateIndex].templateName);
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Offset");
-      modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
-      GUILayout.EndHorizontal();
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Rotation ");
-      modelRotation = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelRotation, modelRotationString, GUI.skin.label, GUI.skin.textArea);
-      GUILayout.EndHorizontal();
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Scale");
-      modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
-      GUILayout.EndHorizontal();
-
-      GUILayout.EndVertical();
       GUILayout.EndVertical();
     }
     protected void DrawExporters()

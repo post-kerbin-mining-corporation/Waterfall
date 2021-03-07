@@ -792,7 +792,7 @@ namespace Waterfall
           scaleIntegrators[i].Update();
         }
         for (int i = 0; i < rotationIntegrators.Count; i++)
-        {
+        { 
           rotationIntegrators[i].Update();
         }
         for (int i = 0; i < lightFloatIntegrators.Count; i++)
