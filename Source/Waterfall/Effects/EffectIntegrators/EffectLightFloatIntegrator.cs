@@ -80,7 +80,7 @@ namespace Waterfall
         if (handledModifiers.Count > 0)
         {
 
-          List<float> applyValues = initialFloatValues.Select(x => x * lightBaseScale).ToList();
+          List<float> applyValues = initialFloatValues;
           foreach (EffectLightFloatModifier floatMod in handledModifiers)
           {
             List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
@@ -104,7 +104,7 @@ namespace Waterfall
 
           for (int i = 0; i < l.Length; i++)
           {
-
+            applyValues[i] *= lightBaseScale;
             if (testIntensity)
             {
               if (l[i].enabled && applyValues[i] < Settings.MinimumLightIntensity)
