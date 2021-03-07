@@ -57,6 +57,8 @@ namespace Waterfall
 
     public void Update()
     {
+      if (handledModifiers.Count == 0)
+        return;
       List<Vector3> applyValues = initialVectorValues.ToList(); 
       foreach (EffectPositionModifier posMod in handledModifiers)
       {

@@ -60,6 +60,8 @@ namespace Waterfall
     }
     public void Update()
     {
+      if (handledModifiers.Count == 0)
+        return;
       List<Color> applyValues = initialColorValues.ToList();
       foreach (EffectColorModifier colorMod in handledModifiers)
       {

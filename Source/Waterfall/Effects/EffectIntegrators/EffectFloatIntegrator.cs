@@ -83,6 +83,8 @@ namespace Waterfall
     }
     public void Update()
     {
+      if (handledModifiers.Count == 0)
+        return;
       List<float> applyValues = initialFloatValues.ToList();
 
       foreach (EffectFloatModifier floatMod in handledModifiers)
