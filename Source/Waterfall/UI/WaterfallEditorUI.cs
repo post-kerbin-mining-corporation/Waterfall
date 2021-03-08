@@ -278,6 +278,7 @@ namespace Waterfall.UI
           selectedTemplateIndex = selectedTemplateChanges;
           SelectTemplate(selectedModule.Templates[selectedTemplateIndex]);
         }
+
         if (GUILayout.Button("Copy offsets", GUILayout.Width(160f), GUILayout.Height(40)))
         {
           string copiedString = "";
@@ -846,6 +847,17 @@ namespace Waterfall.UI
       if (smokeEditWindow != null)
       {
         smokeEditWindow.Update();
+      }
+
+      if (selectedTemplate != null)
+      {
+        if (modelOffset != selectedTemplate.position || modelRotation != selectedTemplate.rotation || modelScale != selectedTemplate.scale)
+        {
+          selectedTemplate.position = modelOffset;
+          selectedTemplate.rotation = modelRotation;
+          selectedTemplate.scale = modelScale;
+
+        }
       }
     }
   }
