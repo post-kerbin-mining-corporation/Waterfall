@@ -67,6 +67,7 @@ namespace Waterfall
         settingsNode.TryGetValue("DebugUIMode", ref DebugUIMode);
         settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
         settingsNode.TryGetValue("MinimumEffectIntensity", ref MinimumEffectIntensity);
+        settingsNode.TryGetValue("MinimumLightIntensity", ref MinimumLightIntensity);
         settingsNode.TryGetValue("EnableLights", ref EnableLights);
         settingsNode.TryGetValue("EnableDistortion", ref EnableDistortion);
       }

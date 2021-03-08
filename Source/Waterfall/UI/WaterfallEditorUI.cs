@@ -144,24 +144,31 @@ namespace Waterfall.UI
     {
       // Draw the header/tab controls
 
-      DrawHeader();
-      GUILayout.BeginHorizontal();
-      DrawPartsList();
-      DrawExporters();
-      GUILayout.EndHorizontal();
-      //
-      GUILayout.BeginHorizontal();
-      DrawControllers();
-      DrawTemplateControl();
+      if (selectedModule != null)
+      {
+        DrawHeader();
+        GUILayout.BeginHorizontal();
+        DrawPartsList();
+        DrawExporters();
+        GUILayout.EndHorizontal();
+        //
+        GUILayout.BeginHorizontal();
+        DrawControllers();
+        DrawTemplateControl();
 
-      GUILayout.EndHorizontal();
-      // Draw the parts list
+        GUILayout.EndHorizontal();
+        // Draw the parts list
 
 
-      // Draw the effects list
+        // Draw the effects list
 
 
-      DrawEffectsList();
+        DrawEffectsList();
+      }
+      else
+      {
+        GUILayout.Label("Couldn't find any effects modules on this craft, add modules via config before using this editor..");
+      }
       GUI.DragWindow();
     }
 
@@ -278,6 +285,7 @@ namespace Waterfall.UI
           selectedTemplateIndex = selectedTemplateChanges;
           SelectTemplate(selectedModule.Templates[selectedTemplateIndex]);
         }
+
         if (GUILayout.Button("Copy offsets", GUILayout.Width(160f), GUILayout.Height(40)))
         {
           string copiedString = "";
@@ -846,6 +854,17 @@ namespace Waterfall.UI
       if (smokeEditWindow != null)
       {
         smokeEditWindow.Update();
+      }
+
+      if (selectedTemplate != null)
+      {
+        if (modelOffset != selectedTemplate.position || modelRotation != selectedTemplate.rotation || modelScale != selectedTemplate.scale)
+        {
+          selectedTemplate.position = modelOffset;
+          selectedTemplate.rotation = modelRotation;
+          selectedTemplate.scale = modelScale;
+
+        }
       }
     }
   }
