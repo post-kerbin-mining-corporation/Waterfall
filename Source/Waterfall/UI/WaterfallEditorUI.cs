@@ -144,24 +144,31 @@ namespace Waterfall.UI
     {
       // Draw the header/tab controls
 
-      DrawHeader();
-      GUILayout.BeginHorizontal();
-      DrawPartsList();
-      DrawExporters();
-      GUILayout.EndHorizontal();
-      //
-      GUILayout.BeginHorizontal();
-      DrawControllers();
-      DrawTemplateControl();
+      if (selectedModule != null)
+      {
+        DrawHeader();
+        GUILayout.BeginHorizontal();
+        DrawPartsList();
+        DrawExporters();
+        GUILayout.EndHorizontal();
+        //
+        GUILayout.BeginHorizontal();
+        DrawControllers();
+        DrawTemplateControl();
 
-      GUILayout.EndHorizontal();
-      // Draw the parts list
+        GUILayout.EndHorizontal();
+        // Draw the parts list
 
 
-      // Draw the effects list
+        // Draw the effects list
 
 
-      DrawEffectsList();
+        DrawEffectsList();
+      }
+      else
+      {
+        GUILayout.Label("Couldn't find any effects modules on this craft, add modules via config before using this editor..");
+      }
       GUI.DragWindow();
     }
 
