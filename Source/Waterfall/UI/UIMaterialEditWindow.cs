@@ -241,7 +241,9 @@ namespace Waterfall.UI
         string textVal;
         GUILayout.BeginHorizontal();
         GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
-        sliderVal = GUILayout.HorizontalSlider(floatValues[kvp.Key], WaterfallConstants.ShaderPropertyMap[kvp.Key].floatRange.x, WaterfallConstants.ShaderPropertyMap[kvp.Key].floatRange.y);
+        sliderVal = GUILayout.HorizontalSlider(floatValues[kvp.Key], 
+          ShaderLoader.GetShaderPropertyMap()[kvp.Key].floatRange.x,
+          ShaderLoader.GetShaderPropertyMap()[kvp.Key].floatRange.y);
 
         if (sliderVal != floatValues[kvp.Key])
         {
@@ -322,7 +324,7 @@ namespace Waterfall.UI
       vec4Strings = new Dictionary<string, string[]>();
       colorTextures = new Dictionary<string, Texture2D>();
 
-      foreach (KeyValuePair<string, MaterialData> mProp in WaterfallConstants.ShaderPropertyMap)
+      foreach (KeyValuePair<string, MaterialData> mProp in ShaderLoader.GetShaderPropertyMap())
       {
 
         if (m.HasProperty(mProp.Key))

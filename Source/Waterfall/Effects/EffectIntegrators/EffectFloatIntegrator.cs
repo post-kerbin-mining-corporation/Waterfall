@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,6 +54,8 @@ namespace Waterfall
       floatName = floatMod.floatName;
       handledModifiers = new List<EffectFloatModifier>();
       handledModifiers.Add(floatMod);
+
+     
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
         if (floatName == nm)
@@ -80,7 +83,10 @@ namespace Waterfall
     }
     public void Update()
     {
-      List<float> applyValues = initialFloatValues;
+      if (handledModifiers.Count == 0)
+        return;
+      List<float> applyValues = initialFloatValues.ToList();
+
       foreach (EffectFloatModifier floatMod in handledModifiers)
       {
         List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
@@ -101,6 +107,7 @@ namespace Waterfall
             applyValues[i] = applyValues[i] - modResult[i];
 
       }
+
       for (int i = 0; i < m.Length; i++)
       {
 

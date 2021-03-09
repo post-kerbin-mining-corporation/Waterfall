@@ -11,6 +11,7 @@ namespace Waterfall
     public static string EffectNodeName = "EFFECT";
     public static string ModelNodeName = "MODEL";
     public static string MaterialNodeName = "MATERIAL";
+    public static string LightNodeName = "LIGHT";
     public static string FloatNodeName = "FLOAT";
     public static string ColorNodeName = "COLOR";
     public static string Vector4NodeName = "VECTOR4";
@@ -24,10 +25,13 @@ namespace Waterfall
     public static string PositionModifierNodeName = "POSITIONMODIFIER";
     public static string RotationModifierNodeName = "ROTATIONMODIFIER";
 
-    public static string LightColorNodeName = "LIGHTCOLORMODIFIER";
+    public static string ColorFromLightNodeName = "COLORLIGHTMODIFIER";
+    public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
+    public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
+
     public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity"};
 
-    public static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>
+    public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd= new Dictionary<string, MaterialData>
     {
       ["_MainColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),
       ["_EmissiveColor"] = new MaterialData(WaterfallMaterialPropertyType.Color),

@@ -1,3 +1,25 @@
+v0.6.0
+------
+- Moved 'engineID' field inside the Throttle controller
+- Added 'thrusterTransformName' field to RCS controllers, which will allow them to map to unique ModuleRCSFX 
+- Added a new 'minimum' field to perlin noise that allows the generation of negative numbers. Renamed old 'scale' to 'maximum', as that's what it was
+- When adding effects, can now select a Workflow, which filters Shaders and Models so they are easier to match up with valid choices
+- When selecting modifier types, visible target transofrms are filtered so only valid ones are shows (e.g, no)
+- Fix for culling of Alpha (Directional) shader
+- Improved algorithm for effect sorting, should be better most of the time
+- Fix for all shaders under HDR mode: significantly better looks!
+- Better descriptions/text in the UI when selecting models, shaders, etc
+- Various UI fixes throughout
+- Added support for Lights
+ - More or less like EngineLight
+ - Add Lights through the usual workflow
+ - Apply modifiers to modify light parameters like other effects
+- Added new Deformation (Dynamic) shader
+- Added new simple plane models for use in various effects
+- Templates are now better
+ - Specifying multiple templates per module are now supported in configs
+ - Editing multiple templates at once is supported in the UI
+
 v0.5.0
 ------
 - Rewrote effect application backend with a few enhancements

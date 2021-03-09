@@ -13,6 +13,12 @@ namespace Waterfall
   public class WaterfallEffectTemplate
   {
     public string templateName;
+    public string overrideParentTransform;
+    public Vector3 position;
+    public Vector3 rotation;
+    public Vector3 scale;
+
+    public WaterfallTemplate template;
 
     public List<WaterfallEffect> allFX;
 
@@ -24,17 +30,39 @@ namespace Waterfall
 
     public void Load(ConfigNode node)
     {
-      node.TryGetValue("templateName", ref templateName);
-      // Load up all the effects
-      ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
-      
-      Utils.Log($"[WaterfallEffectTemplate]: Loading effects on {templateName}", LogType.Effects);
       allFX = new List<WaterfallEffect>();
-      foreach (ConfigNode fxDataNode in effectNodes)
+      position = Vector3.one;
+      rotation = Vector3.zero;
+      scale = Vector3.zero;
+
+
+      node.TryGetValue("templateName", ref templateName);
+      node.TryGetValue("overrideParentTransform", ref overrideParentTransform);
+      node.TryParseVector3("position", ref position);
+      node.TryParseVector3("rotation", ref rotation);
+      node.TryParseVector3("scale", ref scale);
+
+      template = WaterfallTemplates.GetTemplate(templateName);
+
+      foreach (WaterfallEffect fx in template.allFX)
       {
-        allFX.Add(new WaterfallEffect(fxDataNode));
+        allFX.Add(new WaterfallEffect(fx, this));
       }
     }
-    
+
+    public ConfigNode Save()
+    {
+      ConfigNode node = new ConfigNode();
+      node.name = WaterfallConstants.TemplateNodeName;
+      node.AddValue("templateName", templateName);
+      node.AddValue("overrideParentTransform", overrideParentTransform);
+      node.AddValue("scale", scale);
+      node.AddValue("rotation", rotation);
+      node.AddValue("position", position);
+
+
+      return node;
+    }
+
   }
 }

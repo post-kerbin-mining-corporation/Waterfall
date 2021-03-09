@@ -17,6 +17,7 @@ namespace Waterfall
     public Vector3 TemplateScaleOffset { get; set; }
     public List<Vector3> baseScales;
     public ModuleWaterfallFX parentModule;
+    public WaterfallEffectTemplate parentTemplate;
 
     protected WaterfallModel model;
     protected List<EffectModifier> fxModifiers;
@@ -53,6 +54,18 @@ namespace Waterfall
       fxModifiers = new List<EffectModifier>();
     }
 
+    public WaterfallEffect(string parent, WaterfallModel mdl, WaterfallEffectTemplate templateOwner)
+    {
+      parentName = parent;
+      model = mdl;
+
+      parentTemplate = templateOwner;
+      TemplatePositionOffset = parentTemplate.position;
+      TemplateRotationOffset = parentTemplate.rotation;
+      TemplateScaleOffset = parentTemplate.scale;
+      fxModifiers = new List<EffectModifier>();
+    }
+
     public WaterfallEffect(ConfigNode node)
     {
       TemplatePositionOffset = Vector3.zero;
@@ -77,6 +90,18 @@ namespace Waterfall
       TemplateScaleOffset = scaleOffset;
       if (overrideTransformName != "")
         fx.savedNode.SetValue("parentName", overrideTransformName, true);
+      Load(fx.savedNode);
+    }
+    public WaterfallEffect(WaterfallEffect fx, WaterfallEffectTemplate templateOwner)
+    {
+      parentTemplate = templateOwner;
+      TemplatePositionOffset = parentTemplate.position;
+      TemplateRotationOffset = parentTemplate.rotation;
+      TemplateScaleOffset = parentTemplate.scale;
+
+      if (parentTemplate.overrideParentTransform != "" && parentTemplate.overrideParentTransform != null)
+        fx.savedNode.SetValue("parentName", parentTemplate.overrideParentTransform, true);
+
       Load(fx.savedNode);
     }
     public WaterfallEffect(WaterfallEffect fx)
@@ -112,7 +137,10 @@ namespace Waterfall
       ConfigNode[] uvOffsetNodes = node.GetNodes(WaterfallConstants.UVScrollModifierNodeName);
       ConfigNode[] floatNodes = node.GetNodes(WaterfallConstants.FloatModifierNodeName);
 
-      ConfigNode[] lightColorNodes = node.GetNodes(WaterfallConstants.LightColorNodeName);
+      ConfigNode[] colorLightNodes = node.GetNodes(WaterfallConstants.ColorFromLightNodeName);
+
+      ConfigNode[] lightFloatNodes = node.GetNodes(WaterfallConstants.LightFloatModifierNodeName);
+      ConfigNode[] lightColorNodes = node.GetNodes(WaterfallConstants.LightColorModifierNodeName);
 
       foreach (ConfigNode subNode in positionNodes)
       {
@@ -138,6 +166,14 @@ namespace Waterfall
       {
         fxModifiers.Add(new EffectFloatModifier(subNode));
       }
+      foreach (ConfigNode subNode in colorLightNodes)
+      {
+        fxModifiers.Add(new EffectColorFromLightModifier(subNode));
+      }
+      foreach (ConfigNode subNode in lightFloatNodes)
+      {
+        fxModifiers.Add(new EffectLightFloatModifier(subNode));
+      }
       foreach (ConfigNode subNode in lightColorNodes)
       {
         fxModifiers.Add(new EffectLightColorModifier(subNode));
@@ -161,8 +197,8 @@ namespace Waterfall
     public void CleanupEffect(ModuleWaterfallFX host)
     {
       Utils.Log(String.Format("[WaterfallEffect]: Deleting effect {0} ", name), LogType.Effects);
-      for (int i= model.modelTransforms.Count-1; i >= 0 ; i--)
-      
+      for (int i = model.modelTransforms.Count - 1; i >= 0; i--)
+
       {
         GameObject.Destroy(model.modelTransforms[i].gameObject);
       }
@@ -171,12 +207,13 @@ namespace Waterfall
     public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing)
     {
 
-      
+
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
       Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1} [{2} instances]", name, parentName, parents.Length), LogType.Effects);
       effectTransforms = new List<Transform>();
       baseScales = new List<Vector3>();
+
       for (int i = 0; i < parents.Length; i++)
       {
         GameObject effect = new GameObject($"Waterfall_FX_{name}_{i}");
@@ -194,7 +231,7 @@ namespace Waterfall
         model.Initialize(effectTransform, fromNothing);
 
 
-        
+
         baseScales.Add(effectTransform.localScale);
         Utils.Log($"[WaterfallEffect] local Scale {baseScales[i]}, baseScale, {effectTransform.localScale}", LogType.Effects);
 
@@ -233,6 +270,8 @@ namespace Waterfall
     List<Transform> effectRendererTransforms;
     List<Renderer> effectRenderers;
     public List<EffectFloatIntegrator> floatIntegrators;
+    public List<EffectLightFloatIntegrator> lightFloatIntegrators;
+    public List<EffectLightColorIntegrator> lightColorIntegrators;
     public List<EffectPositionIntegrator> positionIntegrators;
     public List<EffectRotationIntegrator> rotationIntegrators;
     public List<EffectScaleIntegrator> scaleIntegrators;
@@ -245,6 +284,9 @@ namespace Waterfall
       colorIntegrators = new List<EffectColorIntegrator>();
       rotationIntegrators = new List<EffectRotationIntegrator>();
       scaleIntegrators = new List<EffectScaleIntegrator>();
+      lightFloatIntegrators = new List<EffectLightFloatIntegrator>();
+      lightColorIntegrators = new List<EffectLightColorIntegrator>();
+
       foreach (EffectModifier fxMod in fxModifiers)
       {
         ParseFloatModifier(fxMod);
@@ -252,6 +294,8 @@ namespace Waterfall
         ParsePositionModifier(fxMod);
         ParseRotationModifier(fxMod);
         ParseScaleModifier(fxMod);
+        ParseLightFloatModifier(fxMod);
+        ParseLightColorModifier(fxMod);
       }
     }
 
@@ -458,6 +502,89 @@ namespace Waterfall
       }
       catch (InvalidCastException e) { }
     }
+
+    void ParseLightFloatModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectLightFloatModifier floatMod = (EffectLightFloatModifier)fxMod;
+        if (floatMod != null)
+        {
+          bool needsNewIntegrator = true;
+          EffectLightFloatIntegrator targetIntegrator = null;
+
+          foreach (EffectLightFloatIntegrator floatInt in lightFloatIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (floatInt.handledModifiers.Contains(floatMod))
+              return;
+
+            // if there's already an integrator that has the transform name and float name, don't need to add
+            if (floatInt.floatName == floatMod.floatName && floatInt.transformName == floatMod.transformName)
+            {
+              targetIntegrator = floatInt;
+              needsNewIntegrator = false;
+            }
+
+          }
+          if (needsNewIntegrator && floatMod.floatName != "")
+          {
+            EffectLightFloatIntegrator newIntegrator = new EffectLightFloatIntegrator(this, floatMod);
+            lightFloatIntegrators.Add(newIntegrator);
+          }
+          else if (!needsNewIntegrator && floatMod.floatName != "")
+          {
+            if (targetIntegrator != null)
+            {
+              targetIntegrator.AddModifier(floatMod);
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
+
+    void ParseLightColorModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectLightColorModifier colorMod = (EffectLightColorModifier)fxMod;
+        if (colorMod != null)
+        {
+          bool needsNewIntegrator = true;
+          EffectLightColorIntegrator targetIntegrator = null;
+
+          foreach (EffectLightColorIntegrator integrator in lightColorIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (integrator.handledModifiers.Contains(colorMod))
+              return;
+
+            // if there's already an integrator that has the transform name and float name, don't need to add
+            if (integrator.colorName == colorMod.colorName && integrator.transformName == colorMod.transformName)
+            {
+              targetIntegrator = integrator;
+              needsNewIntegrator = false;
+            }
+
+          }
+          if (needsNewIntegrator && colorMod.colorName != "")
+          {
+            EffectLightColorIntegrator newIntegrator = new EffectLightColorIntegrator(this, colorMod);
+            lightColorIntegrators.Add(newIntegrator);
+          }
+          else if (!needsNewIntegrator && colorMod.colorName != "")
+          {
+            if (targetIntegrator != null)
+            {
+              targetIntegrator.AddModifier(colorMod);
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
+
     void RemoveFloatModifier(EffectModifier fxMod)
     {
       try
@@ -562,6 +689,48 @@ namespace Waterfall
       catch (InvalidCastException e) { }
     }
 
+    void RemoveLightFloatModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectLightFloatModifier floatMod = (EffectLightFloatModifier)fxMod;
+        if (floatMod != null)
+        {
+          foreach (EffectLightFloatIntegrator floatInt in lightFloatIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (floatInt.handledModifiers.Contains(floatMod))
+            {
+              floatInt.RemoveModifier(floatMod);
+              return;
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
+
+    void RemoveLightColorModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectLightColorModifier mod = (EffectLightColorModifier)fxMod;
+        if (mod != null)
+        {
+          foreach (EffectLightColorIntegrator integrator in lightColorIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (integrator.handledModifiers.Contains(mod))
+            {
+              integrator.RemoveModifier(mod);
+              return;
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
+
     public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
     {
       TemplatePositionOffset = position;
@@ -571,20 +740,20 @@ namespace Waterfall
       Utils.Log($"[WaterfallEffect] Applying template offsets from FN2 {position}, {rotation}, {scale}", LogType.Effects);
 
 
-      for (int i=0; i< effectTransforms.Count;  i++)
-      { 
+      for (int i = 0; i < effectTransforms.Count; i++)
+      {
 
 
 
 
         effectTransforms[i].localPosition = TemplatePositionOffset;
-      effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset); 
+        effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
 
         if (TemplateRotationOffset == Vector3.zero)
-        effectTransforms[i].localRotation = Quaternion.identity;
+          effectTransforms[i].localRotation = Quaternion.identity;
         else
         {
-        effectTransforms[i].localEulerAngles = TemplateRotationOffset;
+          effectTransforms[i].localEulerAngles = TemplateRotationOffset;
         }
       }
 
@@ -623,30 +792,70 @@ namespace Waterfall
           scaleIntegrators[i].Update();
         }
         for (int i = 0; i < rotationIntegrators.Count; i++)
-        {
+        { 
           rotationIntegrators[i].Update();
         }
+        for (int i = 0; i < lightFloatIntegrators.Count; i++)
+        {
+          lightFloatIntegrators[i].Update();
+        }
+        for (int i = 0; i < lightColorIntegrators.Count; i++)
+        {
+          lightColorIntegrators[i].Update();
+        }
+
+
+        int transparentQueueBase = 3000;
+        
+        int queueDepth = 750;
+        float sortedDepth = 1000f;
+        int distortQueue= transparentQueueBase + 2;
+
         Transform c = FlightCamera.fetch.cameras[0].transform;
         for (int i = 0; i < effectRendererMaterials.Count; i++)
         {
-          float camDist = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
-          int qDelta = 500-(int)Mathf.Clamp((camDist / 2000f)*500, 0, 500);
+          float camDistBounds = Vector3.Dot(effectRenderers[i].bounds.center - c.position, c.forward);
+          float camDistTransform = Vector3.Dot(effectRenderers[i].transform.position - c.position, c.forward);
+
+          int qDelta = queueDepth - (int)Mathf.Clamp((Mathf.Min(camDistBounds,camDistTransform) / sortedDepth) * queueDepth, 0, queueDepth);
+          if (effectRendererMaterials[i].HasProperty("_Strength"))
+            qDelta = distortQueue;
           if (effectRendererMaterials[i].HasProperty("_Intensity"))
-            qDelta += 2;
-          effectRendererMaterials[i].renderQueue = 3000 + qDelta;
+            qDelta += 1;
+          effectRendererMaterials[i].renderQueue = transparentQueueBase + qDelta;
         }
       }
     }
 
+    public void SetHDR(bool isHDR)
+    {
+      for (int i = 0; i < effectRendererMaterials.Count; i++)
+      {
+        if (effectRendererMaterials[i].HasProperty("_DestMode"))
+          if (isHDR)
+          {
+            effectRendererMaterials[i].SetFloat("_DestMode", 1f);
+            effectRendererMaterials[i].SetFloat("_ClipBrightness", 50f);
+          }
+          else
+          {
+            effectRendererMaterials[i].SetFloat("_DestMode", 6f);
+            effectRendererMaterials[i].SetFloat("_ClipBrightness", 1f);
+          }
+      }
 
+    }
     public void RemoveModifier(EffectModifier mod)
     {
       fxModifiers.Remove(mod);
+
       RemoveFloatModifier(mod);
       RemoveColorModifier(mod);
       RemovePositionModifier(mod);
       RemoveRotationModifier(mod);
       RemoveScaleModifier(mod);
+      RemoveLightFloatModifier(mod);
+      RemoveLightColorModifier(mod);
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -663,6 +872,8 @@ namespace Waterfall
       ParsePositionModifier(mod);
       ParseRotationModifier(mod);
       ParseScaleModifier(mod);
+      ParseLightFloatModifier(mod);
+      ParseLightColorModifier(mod);
     }
 
     public void MoveModifierUp(int index)
@@ -698,21 +909,6 @@ namespace Waterfall
 
     }
 
-    void MoveIntegratorModifierDown(EffectModifier fxMod)
-    {
-      try
-      {
-        EffectScaleModifier mod = (EffectScaleModifier)fxMod;
-        if (mod != null)
-          foreach (EffectScaleIntegrator integrator in scaleIntegrators)
-            if (integrator.handledModifiers.Contains(mod))
-            {
-              integrator.RemoveModifier(mod); return;
-            }
-        
-      }
-      catch (InvalidCastException e) { }
-    }
 
     public void SetEnabled(bool state)
     {
@@ -721,16 +917,17 @@ namespace Waterfall
         for (int i = 0; i < effectTransforms.Count; i++)
         {
           if (state)
-        {
-            
+          {
+
             effectTransforms[i].localScale = Vector3.Scale(baseScales[i], TemplateScaleOffset);
-        } else
-        {
-            effectTransforms[i].localScale = Vector3.one*0.00001f;
+          }
+          else
+          {
+            effectTransforms[i].localScale = Vector3.one * 0.00001f;
+          }
         }
-      }
       effectVisible = state;
-     
+
     }
   }
 

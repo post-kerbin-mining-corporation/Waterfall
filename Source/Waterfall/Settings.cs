@@ -38,8 +38,12 @@ namespace Waterfall
     public static bool DebugMode = true;
     public static bool DebugUIMode = true;
 
+
     public static float AtmosphereDensityExponent = 0.5128f;
     public static float MinimumEffectIntensity = 0.005f;
+    public static float MinimumLightIntensity = 0.05f;
+    public static bool EnableLights = true;
+    public static bool EnableDistortion = true;
 
     /// <summary>
     /// Load data from configuration
@@ -63,7 +67,9 @@ namespace Waterfall
         settingsNode.TryGetValue("DebugUIMode", ref DebugUIMode);
         settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
         settingsNode.TryGetValue("MinimumEffectIntensity", ref MinimumEffectIntensity);
-
+        settingsNode.TryGetValue("MinimumLightIntensity", ref MinimumLightIntensity);
+        settingsNode.TryGetValue("EnableLights", ref EnableLights);
+        settingsNode.TryGetValue("EnableDistortion", ref EnableDistortion);
       }
       else
       {

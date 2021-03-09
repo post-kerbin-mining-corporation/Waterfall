@@ -109,56 +109,60 @@ namespace Waterfall
     {
       materials = new List<Material>();
       skinnedMeshes = new List<WaterfallSkinnedMesh>();
-      if (baseTransformName != "")
+      if (shaderName != null)
       {
-        Transform[] candidates = parentTransform.GetComponentsInChildren<Transform>();
-        foreach (Transform t in candidates)
+        if (baseTransformName != "")
         {
-
-          Renderer r = t.GetComponent<Renderer>();
-          if (r != null && r.material != null)
+          Transform[] candidates = parentTransform.GetComponentsInChildren<Transform>();
+          foreach (Transform t in candidates)
           {
-            if (t.GetComponent<SkinnedMeshRenderer>() != null)
-            {
-              skinnedMeshes.Add(new WaterfallSkinnedMesh(
-                t.GetComponent<SkinnedMeshRenderer>(),
-                t.GetComponent<MeshFilter>()));
-            }
 
-            Utils.Log($"Added rendered material from {t.name}");
-            materials.Add(r.material);
+            Renderer r = t.GetComponent<Renderer>();
+            if (r != null && r.material != null)
+            {
+              if (t.GetComponent<SkinnedMeshRenderer>() != null)
+              {
+                skinnedMeshes.Add(new WaterfallSkinnedMesh(
+                  t.GetComponent<SkinnedMeshRenderer>(),
+                  t.GetComponent<MeshFilter>()));
+              }
+
+              Utils.Log($"Added rendered material from {t.name}", LogType.Effects);
+              materials.Add(r.material);
+            }
           }
         }
-      }
-      else
-      {
-        Transform materialTarget = parentTransform.FindDeepChild(transformName);
-        targetMeshRenderer = materialTarget.GetComponent<Renderer>();
-        if (materialTarget.GetComponent<SkinnedMeshRenderer>() != null)
+        else
         {
-          skinnedMeshes.Add(new WaterfallSkinnedMesh(
-            materialTarget.GetComponent<SkinnedMeshRenderer>(), 
-            materialTarget.GetComponent<MeshFilter>()));
+          Transform materialTarget = parentTransform.FindDeepChild(transformName);
+          targetMeshRenderer = materialTarget.GetComponent<Renderer>();
+          if (materialTarget.GetComponent<SkinnedMeshRenderer>() != null)
+          {
+            skinnedMeshes.Add(new WaterfallSkinnedMesh(
+              materialTarget.GetComponent<SkinnedMeshRenderer>(),
+              materialTarget.GetComponent<MeshFilter>()));
+          }
+
+          materials.Add(targetMeshRenderer.material);
         }
 
-        materials.Add(targetMeshRenderer.material);
-      }
 
-      foreach (Material mat in materials)
-      {
-        mat.shader = ShaderLoader.GetShader(shaderName);
-
-
-        foreach (WaterfallMaterialProperty p in matProperties)
+        foreach (Material mat in materials)
         {
-          p.Initialize(mat);
-        }
-        if (useAutoRandomization && mat.HasProperty("_Seed"))
-        {
-          mat.SetFloat("_Seed", UnityEngine.Random.Range(-10, 10));
-        }
+          mat.shader = ShaderLoader.GetShader(shaderName);
 
-        Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
+
+          foreach (WaterfallMaterialProperty p in matProperties)
+          {
+            p.Initialize(mat);
+          }
+          if (useAutoRandomization && mat.HasProperty("_Seed"))
+          {
+            mat.SetFloat("_Seed", UnityEngine.Random.Range(-10, 10));
+          }
+
+          Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
+        }
       }
     }
 

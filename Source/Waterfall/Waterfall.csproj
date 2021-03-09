@@ -86,7 +86,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Compile Include="AssetLibraries.cs" />
+    <Compile Include="AssetLibrary\AssetLibraries.cs" />
+    <Compile Include="AssetLibrary\WaterfallAsset.cs" />
     <Compile Include="EffectControllers\AtmosphereDepth.cs" />
     <Compile Include="EffectControllers\CustomController.cs" />
     <Compile Include="EffectControllers\EffectController.cs" />
@@ -98,11 +99,15 @@
     <Compile Include="EffectControllers\RCSController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />
     <Compile Include="EffectModifiers\EffectLightColorModifier.cs" />
+    <Compile Include="EffectModifiers\EffectLightFloatModifier.cs" />
+    <Compile Include="EffectModifiers\EffectColorFromLightModifier.cs" />
     <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectModifier.cs" />
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectScaleIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectPositionIntegrator.cs" />
@@ -111,21 +116,26 @@
     <Compile Include="Effects\WaterfallEffect.cs" />
     <Compile Include="EffectModifiers\EffectUVScrollModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorModifier.cs" />
-    <Compile Include="Effects\WaterfallEffectTemplate.cs" />
+    <Compile Include="AssetLibrary\WaterfallTemplate.cs" />
+    <Compile Include="Effects\WaterfallLight.cs" />
     <Compile Include="Effects\WaterfallMaterial.cs" />
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
+    <Compile Include="Effects\WaterfallEffectTemplate.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
     <Compile Include="UI\UIColorPickerWindow.cs" />
     <Compile Include="UI\UIControllerPopupWindow.cs" />
+    <Compile Include="UI\UILightEditWindow.cs" />
     <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIFloatModifierWindow.cs" />
-    <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIColorFromLightModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIPositionModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIRotationModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIScaleModifierWindow.cs" />
@@ -152,7 +162,7 @@
     <Compile Include="WaterfallConstants.cs" />
     <Compile Include="WaterfallParticles.cs" />
     <Compile Include="WaterfallShaders.cs" />
-    <Compile Include="WaterfallTemplates.cs" />
+    <Compile Include="AssetLibrary\WaterfallTemplates.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -26,6 +26,10 @@ namespace Waterfall.UI
     string[] modelRotationString;
     string[] modelScaleString;
 
+    int selectedModuleIndex = 0;
+    int selectedTemplateIndex = 0;
+
+    public WaterfallEffectTemplate selectedTemplate;
     #endregion
 
     #region GUI Widgets
@@ -35,6 +39,7 @@ namespace Waterfall.UI
     UIControllerPopupWindow controlAddWindow;
     UIModifierWindow currentModWinForCurve;
     UIMaterialEditWindow materialEditWindow;
+    UILightEditWindow lightEditWindow;
     UIColorPickerWindow colorPickWindow;
     UITexturePickerWindow texturePickWindow;
     UISmokeEditWindow smokeEditWindow;
@@ -104,6 +109,10 @@ namespace Waterfall.UI
       {
         materialEditWindow.Draw();
       }
+      if (lightEditWindow != null)
+      {
+        lightEditWindow.Draw();
+      }
       if (modifierPopupWindow != null)
       {
         modifierPopupWindow.Draw();
@@ -134,25 +143,32 @@ namespace Waterfall.UI
     protected override void DrawWindow(int windowId)
     {
       // Draw the header/tab controls
-      
-      DrawHeader();
-      GUILayout.BeginHorizontal();
-      DrawPartsList();
-      DrawExporters();
-      GUILayout.EndHorizontal();
-      //
-      GUILayout.BeginHorizontal();
-      DrawControllers();
-      DrawTemplateControl();
-      
-      GUILayout.EndHorizontal();
-      // Draw the parts list
-      
 
-      // Draw the effects list
+      if (selectedModule != null)
+      {
+        DrawHeader();
+        GUILayout.BeginHorizontal();
+        DrawPartsList();
+        DrawExporters();
+        GUILayout.EndHorizontal();
+        //
+        GUILayout.BeginHorizontal();
+        DrawControllers();
+        DrawTemplateControl();
+
+        GUILayout.EndHorizontal();
+        // Draw the parts list
 
 
-      DrawEffectsList();
+        // Draw the effects list
+
+
+        DrawEffectsList();
+      }
+      else
+      {
+        GUILayout.Label("Couldn't find any effects modules on this craft, add modules via config before using this editor..");
+      }
       GUI.DragWindow();
     }
 
@@ -177,14 +193,14 @@ namespace Waterfall.UI
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
 
-      
+
     }
 
     void DrawController(WaterfallController ctrl)
     {
       GUILayout.BeginHorizontal();
 
-      
+
       ctrl.overridden = GUILayout.Toggle(ctrl.overridden, "", GUILayout.Width(60));
 
       GUILayout.Label(ctrl.name, GUILayout.MaxWidth(120f));
@@ -255,30 +271,33 @@ namespace Waterfall.UI
     protected void DrawTemplateControl()
     {
       GUILayout.BeginVertical();
-      GUILayout.Label("<b>TEMPLATES</b>");
-      GUILayout.BeginVertical(GUI.skin.textArea);
-      //if (templatesOpen)
-      //{
-      //  if (GUILayout.Button("-", GUILayout.Width(30)))
-      //  {
-      //    templatesOpen = false;
-      //  }
-      //}
-      //else
-      //{
-      //  if (GUILayout.Button("+", GUILayout.Width(30)))
-      //  {
-      //    templatesOpen = true;
-      //  }
-      //}
-      templatesOpen = true;
-      
-      if (templatesOpen)
+      if (selectedModule.Templates != null && selectedModule.Templates.Count > 0)
       {
+        GUILayout.Label("<b>TEMPLATES</b>");
+        GUILayout.BeginVertical(GUI.skin.textArea);
+
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Name");
-        templateName = GUILayout.TextArea(templateName, GUILayout.MaxWidth(100f));
+
+        int selectedTemplateChanges = GUILayout.SelectionGrid(selectedTemplateIndex, templatesString, 4, GUIResources.GetStyle("radio_text_button"));
+
+        if (selectedTemplateChanges != selectedTemplateIndex)
+        {
+          selectedTemplateIndex = selectedTemplateChanges;
+          SelectTemplate(selectedModule.Templates[selectedTemplateIndex]);
+        }
+
+        if (GUILayout.Button("Copy offsets", GUILayout.Width(160f), GUILayout.Height(40)))
+        {
+          string copiedString = "";
+          copiedString += $"position = {selectedTemplate.position.x},{selectedTemplate.position.y},{selectedTemplate.position.z}\n";
+          copiedString += $"rotation = {selectedTemplate.rotation.x}, {selectedTemplate.rotation.y}, {selectedTemplate.rotation.z}\n";
+          copiedString += $"scale = {selectedTemplate.scale.x}, {selectedTemplate.scale.y}, {selectedTemplate.scale.z}";
+
+          GUIUtility.systemCopyBuffer = copiedString;
+        }
         GUILayout.EndHorizontal();
+
+        GUILayout.Label(selectedModule.Templates[selectedTemplateIndex].templateName);
         GUILayout.BeginHorizontal();
         GUILayout.Label("Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
@@ -291,8 +310,9 @@ namespace Waterfall.UI
         GUILayout.Label("Scale");
         modelScale = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), modelScale, modelScaleString, GUI.skin.label, GUI.skin.textArea);
         GUILayout.EndHorizontal();
+
+        GUILayout.EndVertical();
       }
-      GUILayout.EndVertical();
       GUILayout.EndVertical();
     }
     protected void DrawExporters()
@@ -315,7 +335,7 @@ namespace Waterfall.UI
       //  }
       //}
       exportsOpen = true;
-      
+
 
       if (exportsOpen)
       {
@@ -325,35 +345,38 @@ namespace Waterfall.UI
           GUIUtility.systemCopyBuffer = (selectedModule.ExportModule().ToString());
 
         }
-        if (GUILayout.Button("Copy selected EFFECTS\nto clipboard", GUILayout.Width(170f), GUILayout.Height(40)))
-        {
-          GUIUtility.systemCopyBuffer = (selectedModule.ExportEffects().ToString());
-
-        }
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Generate template from\n and copy to clipboard", GUILayout.Width(170f), GUILayout.Height(40)))
+
+
+        if (GUILayout.Button("Generate template from\n and copy to clipboard", GUILayout.Width(170f), GUILayout.Height(60)))
         {
           ConfigNode node = new ConfigNode(WaterfallConstants.TemplateLibraryNodeName);
-          node.AddValue("templateName", templateName);
-          foreach (WaterfallEffect fx in selectedModule.FX)
+          if (templatesString != null && templatesString.Length > 0)
           {
-            node.AddNode(fx.Save());
+
+            node.AddValue("templateName", templateName);
+            foreach (WaterfallEffect fx in selectedTemplate.allFX)
+            {
+              node.AddNode(fx.Save());
+            }
+          }
+          else
+          {
+            node.AddValue("templateName", templateName);
+            foreach (WaterfallEffect fx in selectedModule.FX)
+            {
+              node.AddNode(fx.Save());
+            }
           }
 
           GUIUtility.systemCopyBuffer = (node.ToString());
 
         }
-        if (GUILayout.Button("Copy template offset\nvalues to clipboard", GUILayout.Width(160f), GUILayout.Height(40)))
-        {
-          string copiedString = "";
-          copiedString += $"position = {modelOffset.x},{modelOffset.y},{modelOffset.z}\n";
-          copiedString += $"rotation = {modelRotation.x}, {modelRotation.y}, {modelRotation.z}\n";
-          copiedString += $"scale = {modelScale.x}, {modelScale.y}, {modelScale.z}";
-
-          GUIUtility.systemCopyBuffer = copiedString;
-
-        }
+        GUILayout.BeginVertical();
+        GUILayout.Label("Exported template name");
+        templateName = GUILayout.TextArea(templateName);
+        GUILayout.EndVertical();
         GUILayout.EndHorizontal();
       }
       GUILayout.EndVertical();
@@ -369,7 +392,7 @@ namespace Waterfall.UI
 
 
       int selectedModuleChanges = GUILayout.SelectionGrid(selectedModuleIndex, modulesString, Mathf.Min(modulesString.Length, 2), GUIResources.GetStyle("radio_text_button"));
-      
+
       if (selectedModuleChanges != selectedModuleIndex)
       {
         selectedModuleIndex = selectedModuleChanges;
@@ -407,17 +430,17 @@ namespace Waterfall.UI
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
     }
-    int selectedModuleIndex = 0;
     public void SelectFXModule(ModuleWaterfallFX fxMod)
     {
       selectedModule = fxMod;
       RefreshEffectList();
     }
 
-    public void RefreshEffectList()
+    public void SelectTemplate(WaterfallEffectTemplate template)
     {
+      selectedTemplate = template;
       effectUIWidgets.Clear();
-      foreach (WaterfallEffect fx in selectedModule.FX)
+      foreach (WaterfallEffect fx in selectedTemplate.allFX)
       {
         effectUIWidgets.Add(new UIEffectWidget(this, fx));
 
@@ -430,7 +453,42 @@ namespace Waterfall.UI
       }
     }
 
+    public void RefreshEffectList()
+    {
+      effectUIWidgets.Clear();
+      if (selectedModule.Templates.Count > 0)
+      {
+        selectedTemplateIndex = 0;
+
+        templatesString = new string[selectedModule.Templates.Count];
+        if (selectedModule.Templates.Count > 0)
+        {
+          for (int i = 0; i < selectedModule.Templates.Count; i++)
+          {
+            templatesString[i] = $"{i}";
+          }
+          SelectTemplate(selectedModule.Templates[0]);
+
+        }
+      }
+      else
+      {
+        foreach (WaterfallEffect fx in selectedModule.FX)
+        {
+          effectUIWidgets.Add(new UIEffectWidget(this, fx));
+
+          modelRotation = fx.TemplateRotationOffset;
+          modelScale = fx.TemplateScaleOffset;
+          modelOffset = fx.TemplatePositionOffset;
+          modelOffsetString = new string[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+          modelRotationString = new string[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
+          modelScaleString = new string[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
+        }
+      }
+    }
+
     string[] modulesString;
+    string[] templatesString;
     public void GetVesselData()
     {
       vessel = FlightGlobals.ActiveVessel;
@@ -448,7 +506,7 @@ namespace Waterfall.UI
         modulesString = new string[effectsModules.Count];
         if (effectsModules.Count > 0)
         {
-          for (int i=0; i < effectsModules.Count;i++) 
+          for (int i = 0; i < effectsModules.Count; i++)
           {
             modulesString[i] = $"{effectsModules[i].moduleID} ({effectsModules[i].FX.Count} Effects)";
           }
@@ -524,6 +582,27 @@ namespace Waterfall.UI
       }
       catch (InvalidCastException e) { }
 
+      try
+      {
+        EffectColorFromLightModifier colMod = (EffectColorFromLightModifier)fxMod;
+        if (colMod != null)
+        {
+          editWindows.Add(new UIColorFromLightModifierWindow(colMod, true));
+        }
+
+      }
+      catch (InvalidCastException e) { }
+
+      try
+      {
+        EffectLightFloatModifier colMod = (EffectLightFloatModifier)fxMod;
+        if (colMod != null)
+        {
+          editWindows.Add(new UILightFloatModifierWindow(colMod, true));
+        }
+
+      }
+      catch (InvalidCastException e) { }
       try
       {
         EffectLightColorModifier colMod = (EffectLightColorModifier)fxMod;
@@ -605,6 +684,19 @@ namespace Waterfall.UI
       }
       return materialEditWindow;
     }
+    public UILightEditWindow OpenLightEditWindow(WaterfallModel mdl)
+    {
+
+      if (lightEditWindow != null)
+      {
+        lightEditWindow.ChangeLight(mdl);
+      }
+      else
+      {
+        lightEditWindow = new UILightEditWindow(mdl, true);
+      }
+      return lightEditWindow;
+    }
     public UIColorPickerWindow OpenColorEditWindow(Color c)
     {
 
@@ -661,7 +753,7 @@ namespace Waterfall.UI
     }
     public void CopyEffect(WaterfallEffect toCopy)
     {
-      selectedModule.CopyEffect(toCopy);
+      selectedModule.CopyEffect(toCopy, selectedTemplate);
       RefreshEffectList();
     }
 
@@ -739,10 +831,10 @@ namespace Waterfall.UI
       // update the curve
       currentModWinForCurve.UpdateCurves(curve, currentCurveTag);
     }
-   
+
     public void Update()
     {
-      
+
       //}
       for (int i = 0; i < effectUIWidgets.Count; i++)
       {
@@ -762,6 +854,17 @@ namespace Waterfall.UI
       if (smokeEditWindow != null)
       {
         smokeEditWindow.Update();
+      }
+
+      if (selectedTemplate != null)
+      {
+        if (modelOffset != selectedTemplate.position || modelRotation != selectedTemplate.rotation || modelScale != selectedTemplate.scale)
+        {
+          selectedTemplate.position = modelOffset;
+          selectedTemplate.rotation = modelRotation;
+          selectedTemplate.scale = modelScale;
+
+        }
       }
     }
   }

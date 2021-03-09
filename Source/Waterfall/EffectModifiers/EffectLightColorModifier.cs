@@ -12,18 +12,23 @@ namespace Waterfall
   /// </summary>
   public class EffectLightColorModifier : EffectModifier
   {
-    public string colorName;
-    public string lightTransformName;
-    public float colorBlend;
-    public Light[] lights;
+    public string colorName = "_Main";
 
-    Material[] m;
+    public FloatCurve rCurve;
+    public FloatCurve gCurve;
+    public FloatCurve bCurve;
+    public FloatCurve aCurve;
+
+    Light[] l;
 
     public EffectLightColorModifier()
     {
+      rCurve = new FloatCurve();
+      gCurve = new FloatCurve();
+      bCurve = new FloatCurve();
+      aCurve = new FloatCurve();
 
-
-      modifierTypeName = "Material Light Color";
+      modifierTypeName = "Light Color";
     }
     public EffectLightColorModifier(ConfigNode node) { Load(node); }
 
@@ -32,59 +37,78 @@ namespace Waterfall
       base.Load(node);
 
       node.TryGetValue("colorName", ref colorName);
-      node.TryGetValue("lightTransformName", ref lightTransformName);
-      node.TryGetValue("colorBlend", ref colorBlend);
+      rCurve = new FloatCurve();
+      gCurve = new FloatCurve();
+      bCurve = new FloatCurve();
+      aCurve = new FloatCurve();
+      rCurve.Load(node.GetNode("rCurve"));
+      gCurve.Load(node.GetNode("gCurve"));
+      bCurve.Load(node.GetNode("bCurve"));
+      aCurve.Load(node.GetNode("aCurve"));
 
-      modifierTypeName = "Material Light Color";
+      modifierTypeName = "Light Color";
     }
     public override ConfigNode Save()
     {
       ConfigNode node = base.Save();
 
-      node.name = WaterfallConstants.LightColorNodeName;
+      node.name = WaterfallConstants.LightColorModifierNodeName;
       node.AddValue("colorName", colorName);
-      node.AddValue("lightTransformName", lightTransformName);
-      node.AddValue("colorBlend", colorBlend);
+
+      node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
+      node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
+      node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
+      node.AddNode(Utils.SerializeFloatCurve("aCurve", aCurve));
       return node;
     }
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      m = new Material[xforms.Count];
-      lights = new Light[xforms.Count];
-      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == parentEffect.parentName).ToArray();
+      l = new Light[xforms.Count];
       for (int i = 0; i < xforms.Count; i++)
       {
-        m[i] = xforms[i].GetComponent<Renderer>().material;
+        l[i] = xforms[i].GetComponent<Light>();
       }
+
     }
-    protected override void ApplyReplace(List<float> strengthList)
+    public List<Color> Get(List<float> strengthList)
     {
-
-
-      for (int i = 0; i < m.Length; i++)
+      List<Color> colorList = new List<Color>();
+      if (strengthList.Count > 1)
       {
-        if (lights != null && lights.Length > i)
-          m[i].SetColor(colorName, lights[i].color * colorBlend + Color.white * (1f - colorBlend));
-        else if (lights != null && lights.Length > 0)
-          m[i].SetColor(colorName, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
+        for (int i = 0; i < l.Length; i++)
+        {
+          colorList.Add(
+           new Color(
+             rCurve.Evaluate(strengthList[i]) + randomValue,
+           gCurve.Evaluate(strengthList[i]) + randomValue,
+           bCurve.Evaluate(strengthList[i]) + randomValue,
+           aCurve.Evaluate(strengthList[i]) + randomValue));
+        }
       }
+      else
+      {
+        for (int i = 0; i < l.Length; i++)
+        {
+          colorList.Add(
+            new Color(
+              rCurve.Evaluate(strengthList[0]) + randomValue,
+            gCurve.Evaluate(strengthList[0]) + randomValue,
+            bCurve.Evaluate(strengthList[0]) + randomValue,
+            aCurve.Evaluate(strengthList[0]) + randomValue));
+        }
+      }
+      return colorList;
+    }
 
-    }
-    public Material GetMaterial()
+    public Light GetLight()
     {
-      return m[0];
+      return l[0];
     }
-    public void ApplyColorName(string newColorName)
+    public void ApplyMaterialName(string newColorName)
     {
       colorName = newColorName;
-    }
-
-    public void ApplyLightName(string newLightName)
-    {
-      lightTransformName = newLightName;
-      lights = new Light[xforms.Count];
-      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == lightTransformName).ToArray();
+      parentEffect.ModifierParameterChange(this);
     }
   }
 

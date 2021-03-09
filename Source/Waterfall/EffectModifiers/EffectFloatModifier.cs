@@ -42,7 +42,6 @@ namespace Waterfall
 
       node.name = WaterfallConstants.FloatModifierNodeName;
       node.AddValue("floatName", floatName);
-
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }

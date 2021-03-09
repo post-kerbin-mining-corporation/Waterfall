@@ -15,18 +15,20 @@ namespace Waterfall
     [KSPField(isPersistant = false)]
     public string engineID = "";
 
-    [SerializeField]
-    protected SerializedData serializedData;
-
-    [SerializeField]
+    
+    
     protected Dictionary<string, WaterfallController> allControllers;
-    [SerializeField]
+    
     protected List<WaterfallEffect> allFX;
+    protected List<WaterfallEffectTemplate> allTemplates;
 
     protected bool initialized = false;
 
     public List<WaterfallEffect> FX
     { get { return allFX; } }
+
+    public List<WaterfallEffectTemplate> Templates
+    { get { return allTemplates; } }
 
     public List<WaterfallController> Controllers
     { get { return allControllers.Values.ToList(); } }
@@ -134,12 +136,17 @@ namespace Waterfall
       {
         allFX = new List<WaterfallEffect>();
       }
+      if (allTemplates == null)
+      {
+        allTemplates = new List<WaterfallEffectTemplate>();
+      }
       else
       {
         if (effectNodes.Length > 0 && allFX.Count > 0 || allFX.Count > 0 && templateNodes.Length > 0)
         {
           CleanupEffects();
           allFX.Clear();
+          allTemplates.Clear();
         }
       }
 
@@ -152,28 +159,36 @@ namespace Waterfall
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Template effects on moduleID {0}", moduleID), LogType.Modules);
       foreach (ConfigNode templateNode in templateNodes)
       {
-        string templateName = "";
-        string overrideTransformName = "";
-        Vector3 scaleOffset = Vector3.one;
-        Vector3 positionOffset = Vector3.zero;
-        Vector3 rotationOffset = Vector3.zero;
 
-
-        templateNode.TryGetValue("templateName", ref templateName);
-        templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
-        templateNode.TryParseVector3("scale", ref scaleOffset);
-        templateNode.TryParseVector3("rotation", ref rotationOffset);
-        templateNode.TryParseVector3("position", ref positionOffset);
-
-        WaterfallEffectTemplate template = WaterfallTemplates.GetTemplate(templateName);
-
+        WaterfallEffectTemplate template = new WaterfallEffectTemplate(templateNode);
+        allTemplates.Add(template);
         foreach (WaterfallEffect fx in template.allFX)
         {
-          allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
+          allFX.Add(fx);
         }
         Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template.templateName}", LogType.Modules);
-      }
+        //string templateName = "";
+        //string overrideTransformName = "";
+        //Vector3 scaleOffset = Vector3.one;
+        //Vector3 positionOffset = Vector3.zero;
+        //Vector3 rotationOffset = Vector3.zero;
 
+
+        //templateNode.TryGetValue("templateName", ref templateName);
+        //templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
+        //templateNode.TryParseVector3("scale", ref scaleOffset);
+        //templateNode.TryParseVector3("rotation", ref rotationOffset);
+        //templateNode.TryParseVector3("position", ref positionOffset);
+
+        //WaterfallTemplate template = WaterfallTemplates.GetTemplate(templateName);
+
+        //foreach (WaterfallEffect fx in template.allFX)
+        //{
+        //  allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
+        //}
+        //Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template.templateName}", LogType.Modules);
+      }
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allTemplates.Count} templates", LogType.Modules);
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
 
       if (initialized)
@@ -192,16 +207,27 @@ namespace Waterfall
     {
       ConfigNode newNode = new ConfigNode("MODULE");
       newNode.AddValue("name", "ModuleWaterfallFX");
-      newNode.AddValue("engineID", engineID);
+      newNode.AddValue("moduleID", moduleID);
+      //newNode.AddValue("engineID", engineID);
 
       string toRet = "";
       foreach (WaterfallController ctrl in Controllers)
       {
         newNode.AddNode(ctrl.Save());
       }
-      foreach (WaterfallEffect fx in allFX)
+      if (Templates.Count > 0)
       {
-        newNode.AddNode(fx.Save());
+        foreach (WaterfallEffectTemplate templ in Templates)
+        {
+          newNode.AddNode(templ.Save());
+        }
+      }
+      else
+      {
+        foreach (WaterfallEffect fx in allFX)
+        {
+          newNode.AddNode(fx.Save());
+        }
       }
       return newNode.ToString();
     }
@@ -262,6 +288,7 @@ namespace Waterfall
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
       if (allFX == null) allFX = new List<WaterfallEffect>();
+      if (allTemplates == null) allTemplates = new List<WaterfallEffectTemplate>();
       if (allFX.Count == 0)
       {
 
@@ -275,29 +302,20 @@ namespace Waterfall
         Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Template effects on moduleID {0}", moduleID), LogType.Modules);
         foreach (ConfigNode templateNode in templateNodes)
         {
-          string templateName = "";
-          string overrideTransformName = "";
-          Vector3 scaleOffset = Vector3.one;
-          Vector3 positionOffset = Vector3.zero;
-          Vector3 rotationOffset = Vector3.zero;
-
-
-          templateNode.TryGetValue("templateName", ref templateName);
-          templateNode.TryGetValue("overrideParentTransform", ref overrideTransformName);
-          templateNode.TryParseVector3("scale", ref scaleOffset);
-          templateNode.TryParseVector3("rotation", ref rotationOffset);
-          templateNode.TryParseVector3("position", ref positionOffset);
-
-          WaterfallEffectTemplate template = WaterfallTemplates.GetTemplate(templateName);
-
+          WaterfallEffectTemplate template = new WaterfallEffectTemplate(templateNode);
+          allTemplates.Add(template);
           foreach (WaterfallEffect fx in template.allFX)
           {
-            allFX.Add(new WaterfallEffect(fx, positionOffset, rotationOffset, scaleOffset, overrideTransformName));
+            allFX.Add(fx);
           }
           Utils.Log($"[ModuleWaterfallFX]: Loaded effect template {template.templateName}", LogType.Modules);
+
+        
+
+
         }
       }
-
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allTemplates.Count} templates", LogType.Modules);
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
     }
     void LoadControllers(ConfigNode node)
@@ -467,14 +485,39 @@ namespace Waterfall
     public void AddEffect(WaterfallEffect newEffect)
     {
       Utils.Log("[ModuleWaterfallFX]: Added new effect", LogType.Modules);
+
+      if (newEffect.parentTemplate != null && Templates != null)
+      {
+        foreach(WaterfallEffectTemplate t in Templates )
+        {
+          if (t == newEffect.parentTemplate)
+          {
+            t.allFX.Add(newEffect);
+          }
+        }
+      }
+
       allFX.Add(newEffect);
       newEffect.InitializeEffect(this, true);
     }
-    public void CopyEffect(WaterfallEffect toCopy)
+    public void CopyEffect(WaterfallEffect toCopy, WaterfallEffectTemplate template)
     {
       Utils.Log($"[ModuleWaterfallFX]: Copying effect {toCopy}", LogType.Modules);
 
       WaterfallEffect newEffect = new WaterfallEffect(toCopy);
+
+      if (Templates != null && template != null)
+      {
+        foreach (WaterfallEffectTemplate t in Templates)
+        {
+          if (t == template)
+          {
+            t.allFX.Add(newEffect);
+          }
+        }
+      }
+
+
       allFX.Add(newEffect);
       newEffect.InitializeEffect(this, false);
     }
@@ -484,6 +527,16 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Deleting effect", LogType.Modules);
 
       toRemove.CleanupEffect(this);
+      if (toRemove.parentTemplate != null && Templates != null)
+      {
+        foreach (WaterfallEffectTemplate t in Templates)
+        {
+          if (t == toRemove.parentTemplate)
+          {
+            t.allFX.Remove(toRemove);
+          }
+        }
+      }
       allFX.Remove(toRemove);
     }
     /// <summary>
@@ -539,14 +592,22 @@ namespace Waterfall
         allFX[i].CleanupEffect(this);
       }
     }
-
+    bool isHDR = false;
     protected void LateUpdate()
     {
       if (HighLogic.LoadedSceneIsFlight && allFX != null)
       {
+        bool changeHDR = false;
+        if (FlightCamera.fetch.cameras[0].allowHDR != isHDR)
+        {
+          changeHDR = true;
+          isHDR = FlightCamera.fetch.cameras[0].allowHDR;
+        }
         for (int i = 0; i < allFX.Count; i++)
         {
           allFX[i].Update();
+          if (changeHDR)
+            allFX[i].SetHDR(isHDR);
         }
       }
     }

@@ -14,6 +14,7 @@ namespace Waterfall
   public class ThrottleController : WaterfallController
   {
     public float currentThrottle = 1;
+    public string engineID = "";
     ModuleEngines engineController;
 
     public ThrottleController() { }
@@ -21,19 +22,32 @@ namespace Waterfall
     {
       name = "throttle";
       linkedTo = "throttle";
+      engineID = "";
       node.TryGetValue("name", ref name);
+      node.TryGetValue("engineID", ref engineID);
+
     }
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
       
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == host.engineID);
+      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
       if (engineController == null)
+      {
+        Utils.Log($"[ThrottleController] Could not find engine ID {engineID}, using first module");
         engineController = host.GetComponent<ModuleEngines>();
+      }
 
       if (engineController == null)
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
 
+    }
+    public override ConfigNode Save()
+    {
+      ConfigNode c = base.Save();
+
+      c.AddValue("engineID", engineID);
+      return c;
     }
     public override List<float> Get()
     {

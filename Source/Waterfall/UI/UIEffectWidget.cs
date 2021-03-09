@@ -17,6 +17,8 @@ namespace Waterfall.UI
     WaterfallEffect fx;
     WaterfallUI parent;
 
+    bool showMaterialEdit = false;
+    bool showLightEdit = false;
     bool showUI = false;
     bool enabled = true;
     string[] modelOffsetString;
@@ -34,6 +36,17 @@ namespace Waterfall.UI
       modelOffsetString = new string[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
       modelRotationString = new string[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
       modelScaleString = new string[] { effect.FXModel.modelScaleOffset.x.ToString(), effect.FXModel.modelScaleOffset.y.ToString(), effect.FXModel.modelScaleOffset.z.ToString() };
+    
+      foreach (Transform  t in fx.FXModel.modelTransforms)
+      {
+        if (t.GetComponentsInChildren<Light>().Length > 0)
+          showLightEdit = true;
+      }
+      foreach (Transform t in fx.FXModel.modelTransforms)
+      {
+        if (t.GetComponentsInChildren<Renderer>().Length > 0)
+          showMaterialEdit = true;
+      }
     }
     /// <summary>
     /// Do localization of UI strings
@@ -106,10 +119,16 @@ namespace Waterfall.UI
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (showMaterialEdit)
         if (GUILayout.Button("EDIT MATERIAL"))
         {
           parent.OpenMaterialEditWindow(fx.FXModel);
         }
+        if (showLightEdit)
+          if (GUILayout.Button("EDIT LIGHT"))
+          {
+            parent.OpenLightEditWindow(fx.FXModel);
+          }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
@@ -191,9 +210,13 @@ namespace Waterfall.UI
       {
         fx.FXModel.ApplyOffsets(modelOffset, modelRotation, modelScale);
       }
-      if (parent.modelOffset != fx.TemplatePositionOffset || parent.modelRotation != fx.TemplateRotationOffset || parent.modelScale != fx.TemplateScaleOffset)
+
+      if (fx.parentTemplate != null && parent.selectedTemplate == fx.parentTemplate)
       {
-        fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
+        if (parent.modelOffset != fx.TemplatePositionOffset || parent.modelRotation != fx.TemplateRotationOffset || parent.modelScale != fx.TemplateScaleOffset)
+        {
+          fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
+        }
       }
     }
   }

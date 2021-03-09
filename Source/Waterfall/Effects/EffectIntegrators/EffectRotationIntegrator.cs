@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Waterfall
 {
@@ -55,7 +56,9 @@ namespace Waterfall
     }
     public void Update()
     {
-      List<Vector3> applyValues = initialVectorValues;
+      if (handledModifiers.Count == 0)
+        return;
+      List<Vector3> applyValues = initialVectorValues.ToList();
       foreach (EffectRotationModifier mod in handledModifiers)
       {
         List<Vector3> modResult = mod.Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));

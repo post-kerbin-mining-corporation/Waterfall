@@ -14,6 +14,7 @@ namespace Waterfall
   public class RCSController : WaterfallController
   {
     public float currentThrottle = 1;
+    public string thrusterTransformName = "";
     ModuleRCSFX rcsController;
     public RCSController() { }
     public RCSController(ConfigNode node)
@@ -21,18 +22,28 @@ namespace Waterfall
       name = "rcs";
       linkedTo = "rcs";
       node.TryGetValue("name", ref name);
+      node.TryGetValue("thrusterTransformName", ref thrusterTransformName);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
 
-      rcsController = host.GetComponents<ModuleRCSFX>().ToList().First();
+
+      rcsController = host.GetComponents<ModuleRCSFX>().ToList().Find(x => x.thrusterTransformName == thrusterTransformName);
       if (rcsController == null)
         rcsController = host.GetComponent<ModuleRCSFX>();
 
       if (rcsController == null)
         Utils.LogError("[RCSController] Could not find ModuleRCSFX on Initialize");
 
+    }
+
+    public override ConfigNode Save()
+    {
+      ConfigNode c =  base.Save();
+
+      c.AddValue("thrusterTransformName", thrusterTransformName);
+      return c;
     }
     public override List<float> Get()
     {
