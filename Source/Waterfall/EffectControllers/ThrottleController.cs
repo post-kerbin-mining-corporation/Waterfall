@@ -33,7 +33,10 @@ namespace Waterfall
       
       engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
       if (engineController == null)
+      {
+        Utils.Log($"[ThrottleController] Could not find engine ID {engineID}, using first module");
         engineController = host.GetComponent<ModuleEngines>();
+      }
 
       if (engineController == null)
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
