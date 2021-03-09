@@ -30,7 +30,7 @@ namespace Waterfall
       node.TryGetValue("noiseType", ref noiseType);
       node.TryGetValue("range", ref range);
       node.TryGetValue("scale", ref scale);
-      node.TryGetValue("mininum", ref minimum);
+      node.TryGetValue("minimum", ref minimum);
       node.TryGetValue("speed", ref speed);
       // Randomize seed if not specified
       if (!node.TryGetValue("seed", ref seed))
