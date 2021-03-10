@@ -120,15 +120,19 @@ namespace Waterfall.UI
 
         GUILayout.BeginHorizontal();
         if (showMaterialEdit)
-        if (GUILayout.Button("EDIT MATERIAL"))
         {
-          parent.OpenMaterialEditWindow(fx.FXModel);
+          if (GUILayout.Button("EDIT MATERIAL"))
+          {
+            parent.OpenMaterialEditWindow(fx.FXModel);
+          }
         }
         if (showLightEdit)
+        {
           if (GUILayout.Button("EDIT LIGHT"))
           {
             parent.OpenLightEditWindow(fx.FXModel);
           }
+        }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
@@ -210,9 +214,13 @@ namespace Waterfall.UI
       {
         fx.FXModel.ApplyOffsets(modelOffset, modelRotation, modelScale);
       }
-      if (parent.modelOffset != fx.TemplatePositionOffset || parent.modelRotation != fx.TemplateRotationOffset || parent.modelScale != fx.TemplateScaleOffset)
+
+      if (fx.parentTemplate != null && parent.selectedTemplate == fx.parentTemplate)
       {
-        fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
+        if (parent.modelOffset != fx.TemplatePositionOffset || parent.modelRotation != fx.TemplateRotationOffset || parent.modelScale != fx.TemplateScaleOffset)
+        {
+          fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
+        }
       }
     }
   }

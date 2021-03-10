@@ -76,9 +76,14 @@ namespace Waterfall.UI
     {
       model = modelToEdit;
       Utils.Log($"[UILightEditWindow]: Started editing lights on {modelToEdit.ToString()}", LogType.UI);
-
+      
       light = modelToEdit.lights.First();
+      if (colorEdit)
+      {
+        WaterfallUI.Instance.OpenColorEditWindow(light.color);
+      }
       GetLightValues();
+
       showWindow = true;
 
 
@@ -152,16 +157,18 @@ namespace Waterfall.UI
           colorValue = c;
           delta = true;
         }
+        if (delta)
+        {
+          colorTexture = MaterialUtils.GenerateColorTexture(64, 32, colorValue);
+          model.SetLightColor(light, colorValue);
+        }
       }
+      
+
+      
       Rect tRect = GUILayoutUtility.GetLastRect();
       tRect = new Rect(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
       GUI.DrawTexture(tRect, colorTexture);
-
-      if (delta)
-      {
-        colorTexture = MaterialUtils.GenerateColorTexture(64, 32, colorValue);
-        model.SetLightColor(light, colorValue);
-      }
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();

@@ -33,11 +33,21 @@ namespace Waterfall
       
       engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
       if (engineController == null)
+      {
+        Utils.Log($"[ThrottleController] Could not find engine ID {engineID}, using first module");
         engineController = host.GetComponent<ModuleEngines>();
+      }
 
       if (engineController == null)
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
 
+    }
+    public override ConfigNode Save()
+    {
+      ConfigNode c = base.Save();
+
+      c.AddValue("engineID", engineID);
+      return c;
     }
     public override List<float> Get()
     {
@@ -50,7 +60,9 @@ namespace Waterfall
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
         return new List<float>() { 0f };
       }
-      return new List<float>() { engineController.currentThrottle };
+      float throttle = engineController.currentThrottle;
+      if (!engineController.isActiveAndEnabled) throttle = 0f;
+      return new List<float>() { throttle };
     }
   }
 

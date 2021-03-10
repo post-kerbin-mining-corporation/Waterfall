@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -43,7 +44,7 @@ namespace Waterfall
 
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
-        if (floatName == nm)
+        if (floatName == "Intensity")
           testIntensity = true;
       }
 
@@ -75,8 +76,10 @@ namespace Waterfall
     {
       if (Settings.EnableLights)
       {
+        float lightBaseScale = parentEffect.TemplateScaleOffset.x;
         if (handledModifiers.Count > 0)
         {
+
           List<float> applyValues = initialFloatValues;
           foreach (EffectLightFloatModifier floatMod in handledModifiers)
           {
@@ -98,9 +101,10 @@ namespace Waterfall
                 applyValues[i] = applyValues[i] - modResult[i];
 
           }
+
           for (int i = 0; i < l.Length; i++)
           {
-
+            applyValues[i] *= lightBaseScale;
             if (testIntensity)
             {
               if (l[i].enabled && applyValues[i] < Settings.MinimumLightIntensity)
@@ -112,36 +116,33 @@ namespace Waterfall
 
                 l[i].enabled = true;
 
-                if (floatName == "Intensity")
-                  l[i].intensity = applyValues[i];
-                if (floatName == "Range")
-                  l[i].range = applyValues[i];
-                if (floatName == "SpotAngle")
-                  l[i].spotAngle = applyValues[i];
+                UpdateFloats(l[i], applyValues[i]);
               }
               else if (l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
               {
-                if (floatName == "Intensity")
-                  l[i].intensity = applyValues[i];
-                if (floatName == "Range")
-                  l[i].range = applyValues[i];
-                if (floatName == "SpotAngle")
-                  l[i].spotAngle = applyValues[i];
+                UpdateFloats(l[i], applyValues[i]);
               }
-
             }
             else
             {
-              if (floatName == "Intensity")
-                l[i].intensity = applyValues[i];
-              if (floatName == "Range")
-                l[i].range = applyValues[i];
-              if (floatName == "SpotAngle")
-                l[i].spotAngle = applyValues[i];
+              UpdateFloats(l[i], applyValues[i]);
             }
           }
         }
       }
+    }
+
+    protected void UpdateFloats(Light l, float f)
+    {
+      if (floatName == "Intensity")
+        l.intensity = f;
+      if (floatName == "Range")
+      {
+        
+        l.range = f;
+      }
+      if (floatName == "SpotAngle")
+        l.spotAngle = f;
     }
   }
 
