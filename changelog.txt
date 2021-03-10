@@ -1,3 +1,8 @@
+v0.6.1
+------
+- Added new Additive Detail (Dynamic) shader
+
+
 v0.6.0
 ------
 - Moved 'engineID' field inside the Throttle controller
