@@ -1,3 +1,9 @@
+v0.6.1
+------
+- Fixed light editor in UI overwriting light settings with last light
+- Minor performance improvements
+- Fixed throttle being considered 'on' always with engines that have a minThrust specified
+
 v0.6.0
 ------
 - Moved 'engineID' field inside the Throttle controller

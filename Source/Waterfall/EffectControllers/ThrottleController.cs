@@ -60,7 +60,14 @@ namespace Waterfall
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
         return new List<float>() { 0f };
       }
-      return new List<float>() { engineController.currentThrottle };
+
+      
+      if (!engineController.isOperational) 
+        currentThrottle = 0f;
+      else
+        currentThrottle = engineController.currentThrottle;
+
+      return new List<float>() { currentThrottle };
     }
   }
 
