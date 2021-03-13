@@ -35,6 +35,11 @@ namespace Waterfall.UI
     int controllerFlag = 0;
     CurveUpdateFunction eventFun;
 
+    // throttle
+    string[] throttleStrings = new string[2];
+    float rampRateUp = 100f;
+    float rampRateDown = 100f;
+
     // Azis
     string[] axisTypes = new string[] { "x", "y", "z" };
     int axisFlag = 0;
@@ -96,7 +101,11 @@ namespace Waterfall.UI
           randomStrings[3] = r.minimum.ToString();
         }
         EngineEventController e = (EngineEventController)control;
+        ThrottleController t = (ThrottleController)control;
 
+          throttleStrings[0] = t.responseRateUp.ToString();
+          throttleStrings[1] = t.responseRateDown.ToString();
+        
         eventCurve = e.eventCurve;
         
       }
@@ -313,6 +322,9 @@ namespace Waterfall.UI
         ThrottleController newCtrl = new ThrottleController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
+
+        newCtrl.responseRateUp = rampRateUp;
+        newCtrl.responseRateDown = rampRateDown;
         return newCtrl;
       }
       else
@@ -470,7 +482,30 @@ namespace Waterfall.UI
       }
       else if (controllerTypes[controllerFlag] == "throttle")
       {
-        // no special config
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Ramp Rate Up", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        throttleStrings[0] = GUILayout.TextArea(throttleStrings[0], GUILayout.MaxWidth(60f));
+        float floatParsed;
+        if (float.TryParse(throttleStrings[0], out floatParsed))
+        {
+          if (rampRateUp != floatParsed)
+          {
+            rampRateUp = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Ramp Rate Down", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        throttleStrings[1] = GUILayout.TextArea(throttleStrings[1], GUILayout.MaxWidth(60f));
+        if (float.TryParse(throttleStrings[1], out floatParsed))
+        {
+          if (rampRateDown != floatParsed)
+          {
+            rampRateDown = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
       }
     }
     protected void GenerateCurveThumbs()
