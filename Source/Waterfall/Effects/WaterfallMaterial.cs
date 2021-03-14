@@ -94,6 +94,7 @@ namespace Waterfall
         node.AddValue("transform", transformName);
       node.AddValue("shader", shaderName);
       node.AddValue("randomizeSeed", useAutoRandomization);
+
       foreach (WaterfallMaterialProperty p in matProperties)
       {
         node.AddNode(p.Save());
@@ -158,9 +159,8 @@ namespace Waterfall
           }
           if (useAutoRandomization && mat.HasProperty("_Seed"))
           {
-            mat.SetFloat("_Seed", UnityEngine.Random.Range(-10, 10));
+            mat.SetFloat("_Seed", UnityEngine.Random.Range(-1, 1));
           }
-
           Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
         }
       }

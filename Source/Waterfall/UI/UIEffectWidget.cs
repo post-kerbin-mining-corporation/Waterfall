@@ -120,15 +120,19 @@ namespace Waterfall.UI
 
         GUILayout.BeginHorizontal();
         if (showMaterialEdit)
-        if (GUILayout.Button("EDIT MATERIAL"))
         {
-          parent.OpenMaterialEditWindow(fx.FXModel);
+          if (GUILayout.Button("EDIT MATERIAL"))
+          {
+            parent.OpenMaterialEditWindow(fx.FXModel);
+          }
         }
         if (showLightEdit)
+        {
           if (GUILayout.Button("EDIT LIGHT"))
           {
             parent.OpenLightEditWindow(fx.FXModel);
           }
+        }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);

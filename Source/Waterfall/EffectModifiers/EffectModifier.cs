@@ -102,8 +102,6 @@ namespace Waterfall
       if (useRandomness)
       {
         randomValue = parentEffect.parentModule.GetControllerValue(randomnessController)[0] * randomScale;
-
-        //Utils.Log($"{useRandomness} {parentEffect.parentModule.GetControllerValue(randomnessController)} {randomScale} {randomValue}");
       }
 
       switch (effectMode)

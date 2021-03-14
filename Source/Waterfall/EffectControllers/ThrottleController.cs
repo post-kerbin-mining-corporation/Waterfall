@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -13,7 +12,9 @@ namespace Waterfall
   [System.Serializable]
   public class ThrottleController : WaterfallController
   {
-    public float currentThrottle = 1;
+    public float currentThrottle = 1f;
+    public float responseRateUp = 100f;
+    public float responseRateDown = 100f;
     public string engineID = "";
     ModuleEngines engineController;
 
@@ -24,6 +25,8 @@ namespace Waterfall
       linkedTo = "throttle";
       engineID = "";
       node.TryGetValue("name", ref name);
+      node.TryGetValue("responseRateUp", ref responseRateUp);
+      node.TryGetValue("responseRateDown", ref responseRateDown);
       node.TryGetValue("engineID", ref engineID);
 
     }
@@ -47,6 +50,8 @@ namespace Waterfall
       ConfigNode c = base.Save();
 
       c.AddValue("engineID", engineID);
+      c.AddValue("responseRateUp", responseRateUp);
+      c.AddValue("responseRateDown", responseRateDown);
       return c;
     }
     public override List<float> Get()
@@ -60,7 +65,24 @@ namespace Waterfall
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
         return new List<float>() { 0f };
       }
-      return new List<float>() { engineController.currentThrottle };
+
+
+      if (!engineController.isOperational)
+        currentThrottle = 0f;
+      else
+      {
+        if (engineController.currentThrottle > currentThrottle)
+        {
+          currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateUp * TimeWarp.deltaTime );
+        }
+        else
+        {
+          currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
+        }
+        
+      }
+
+      return new List<float>() { currentThrottle };
     }
   }
 
