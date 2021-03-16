@@ -29,7 +29,7 @@ namespace Waterfall
     public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
     public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
 
-    public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity"};
+    public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity", "_Strength"};
 
     public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd= new Dictionary<string, MaterialData>
     {
