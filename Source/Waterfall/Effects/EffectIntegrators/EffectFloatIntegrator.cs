@@ -24,6 +24,7 @@ namespace Waterfall
     Material[] m;
     Renderer[] r;
     public string floatName;
+   
     List<float> initialFloatValues;
     public List<EffectFloatModifier> handledModifiers;
 

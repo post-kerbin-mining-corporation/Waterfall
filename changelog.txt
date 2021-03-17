@@ -1,3 +1,9 @@
+v0.6.2
+------
+- Fixed texture picker not showing texture names
+- Fixed black line in shaders when using antialiasing
+- Fixed distortion effects not being culled on low intensity 
+
 v0.6.1
 ------
 - Fixed light editor in UI overwriting light settings with last light's settings
