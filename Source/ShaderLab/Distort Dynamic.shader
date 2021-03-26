@@ -21,17 +21,17 @@
 		_FadeIn("Fade In", Range(0,1)) = 0
 		_FadeOut("Fade Out", Range(0,1)) = 0
 
-        [Space]
+		[Space]
 
 		_ExpandOffset("Offset", Range(-5, 5)) = 0
-        _ExpandLinear("Linear Expansion", Range(-10, 10)) = 0
-        _ExpandSquare("Quadratic Expansion", Range(-10, 10)) = 0
-        _ExpandBounded("Bounded Expansion", Range(-10, 10)) = 0
+		_ExpandLinear("Linear Expansion", Range(-10, 10)) = 0
+		_ExpandSquare("Quadratic Expansion", Range(-10, 10)) = 0
+		_ExpandBounded("Bounded Expansion", Range(-10, 10)) = 0
 
 		[Space]
 		_FalloffStart("Falloff Start", Range(0, 1)) = 0
 		
-					[Space]
+		[Space]
 		_SpeedX("Scroll Speed X", Float) = 0
 		_SpeedY("Scroll Speed Y", Float) = 1
 		[Space]
@@ -108,15 +108,15 @@
 		float arg = -dot(vertex, axis);
 		// vertex displacement along original normal
 		float value = _ExpandOffset
-					+ _ExpandLinear * lin(arg) 
-					+ _ExpandSquare * sqr(arg) 
-					+ _ExpandBounded * bounded(arg);
+		+ _ExpandLinear * lin(arg) 
+		+ _ExpandSquare * sqr(arg) 
+		+ _ExpandBounded * bounded(arg);
 		vertex.xyz += normal * value;
 
 		// new normal calculation
 		float deriv = _ExpandLinear * linDeriv(arg) 
-					+ _ExpandSquare * sqrDeriv(arg) 
-					+ _ExpandBounded * boundedDeriv(arg);
+		+ _ExpandSquare * sqrDeriv(arg) 
+		+ _ExpandBounded * boundedDeriv(arg);
 		normal = normalize(normal + deriv * axis);
 
 		return arg;
@@ -154,7 +154,7 @@
 		half viewdotAlt = abs(dot(i.worldNormal, i.viewDir));
 		
 		half rim = smoothstep(0, 1, saturate(viewdot)); // fresnel effect
-		half rim2 = smoothstep(1, 0, saturate(viewdotAlt)); // inverted fresnel effect
+		half rim2 = clamp(1-rim, 0.001, 10); // inverted fresnel effect
 
 		float g = min(1, (1 + _FalloffStart) * i.uv.g);
 		float fade = pow(g,_Falloff); // opacity gradient
@@ -164,7 +164,7 @@
 		fade *= max(0, saturate(viewdot) - max(0, (fOut + i.plumePos - 1) / fOut));
 				
 		// combine everything (similar to plume shader)
-		float strength = pow(rim, _Fresnel)* pow(rim2, _FresnelInvert) * fade * _Strength;
+		float strength = pow(rim, _Fresnel)* pow(rim2, clamp(_FresnelInvert,0.001,1)) * fade * _Strength;
 
 
 		// calculate refraction (I didn't put much thought into this, but it looks ok)
@@ -179,8 +179,10 @@
 		float radius = saturate(strength);
 		float sumWeights = 0.0;
 		float sigma = 0.5 / (_Blur + 0.0001);
-		for (int j = -2; j <= 2; j++) {
-			for (int k = -2; k <= 2; k++) {
+		for (int j = -2; j <= 2; j++) 
+		{
+			for (int k = -2; k <= 2; k++) 
+			{
 				float weight = exp(-(j*j + k*k)*sigma);
 				sumWeights += weight;
 
@@ -192,14 +194,14 @@
 
 		// Blend with highlight color
 		return (1.0 - _Highlight + _Highlight * (1.0 - strength)) * background 
-				+ _Highlight * strength * float4(1,0,0,1);
+		+ _Highlight * strength * float4(1,0,0,1);
 	}
 
 	ENDCG
 
 	SubShader
 	{
-		Tags{ "Queue" = "Transparent+2" }
+		Tags{ "Queue" = "Transparent+2" "IgnoreProjector" = "True" }
 
 		GrabPass
 		{
@@ -217,7 +219,6 @@
 
 			ENDCG
 		}
-
 		Pass
 		{
 			ZWrite Off
