@@ -772,9 +772,7 @@ namespace Waterfall
         for (int i = 0; i < fxModifiers.Count; i++)
         {
           fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
-
         }
-
         for (int i = 0; i < floatIntegrators.Count; i++)
         {
           floatIntegrators[i].Update();
