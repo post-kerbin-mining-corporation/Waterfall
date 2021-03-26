@@ -73,7 +73,14 @@ namespace Waterfall
       TemplateScaleOffset = Vector3.one;
       Load(node);
     }
-
+    public WaterfallEffect(ConfigNode node, WaterfallEffectTemplate templateOwner)
+    {
+      parentTemplate = templateOwner;
+      TemplatePositionOffset = Vector3.zero;
+      TemplateRotationOffset = Vector3.zero;
+      TemplateScaleOffset = Vector3.one;
+      Load(node);
+    }
     public WaterfallEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
     {
       TemplatePositionOffset = positionOffset;
@@ -106,6 +113,7 @@ namespace Waterfall
     }
     public WaterfallEffect(WaterfallEffect fx)
     {
+      parentTemplate = fx.parentTemplate;
       TemplatePositionOffset = fx.TemplatePositionOffset;
       TemplateRotationOffset = fx.TemplateRotationOffset;
       TemplateScaleOffset = fx.TemplateScaleOffset;
