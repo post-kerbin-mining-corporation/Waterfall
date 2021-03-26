@@ -1,6 +1,7 @@
 v0.6.3
 ------
-- Improved RS-68 template
+- Improved hydrolox-lower-3 (RS-68) template (Zorg)
+- New hydrolox-upper-2 and methalox-upper-2 templates (KnightOfStJohn)
 - Fix issue when deleting effects in the editor
 
 v0.6.2
