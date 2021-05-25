@@ -317,9 +317,16 @@ namespace Waterfall
             allControllers.Add(gCtrl.name, gCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
           }
+          if (ctrlType == "thrust")
+          {
+            ThrustController tcCtrl = new ThrustController(controllerDataNode);
+            allControllers.Add(tcCtrl.name, tcCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Thrust Curve Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
         }
       }
     }
+
     ConfigNode FetchConfig()
     {
       Utils.Log(String.Format("[ModuleWaterfallFX]: Finding config for {0}", moduleID), LogType.Modules);

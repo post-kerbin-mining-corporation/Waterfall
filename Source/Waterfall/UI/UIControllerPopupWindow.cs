@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +31,7 @@ namespace Waterfall.UI
     WaterfallController control;
     ModuleWaterfallFX fxMod;
     string newControllerName = "controller";
-    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle" };
+    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle", "thrust" };
     int controllerFlag = 0;
     CurveUpdateFunction eventFun;
 
@@ -327,6 +327,13 @@ namespace Waterfall.UI
         newCtrl.responseRateDown = rampRateDown;
         return newCtrl;
       }
+      else if (controllerTypes[controllerFlag] == "thrust")
+      {
+        ThrustController newCtrl = new ThrustController();
+        newCtrl.name = newControllerName;
+        newCtrl.linkedTo = controllerTypes[controllerFlag];
+        return newCtrl;
+      }
       else
       {
         return null;
@@ -506,6 +513,10 @@ namespace Waterfall.UI
           }
         }
         GUILayout.EndHorizontal();
+      }
+      else if (controllerTypes[controllerFlag] == "thrust")
+      {
+        // no special config
       }
     }
     protected void GenerateCurveThumbs()
