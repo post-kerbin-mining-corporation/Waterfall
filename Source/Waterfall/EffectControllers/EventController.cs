@@ -19,7 +19,7 @@ namespace Waterfall
     bool eventPlaying = false;
     bool eventReady = false;
     float eventTime = 0f;
-    float eventDuration = 1f;
+    public float eventDuration = 1f;
 
     public EngineEventController() { }
     public EngineEventController(ConfigNode node)
@@ -93,10 +93,10 @@ namespace Waterfall
 
     public float CheckStateChange()
     {
-      
+
       if (eventReady)
       {
-        /// Check if engine state flipped 
+        /// Check if engine state flipped
         if (engineController.EngineIgnited != enginePreState)
         {
           Utils.Log($"[EngineEventController] {eventName} fired ", LogType.Modifiers);

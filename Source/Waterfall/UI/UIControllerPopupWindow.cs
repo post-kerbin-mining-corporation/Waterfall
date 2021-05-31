@@ -54,6 +54,8 @@ namespace Waterfall.UI
     string[] eventTypes = new string[] { "ignition", "flameout" };
     int eventFlag = 0;
     FloatCurve eventCurve = new FloatCurve();
+    float eventDuration = 2f;
+    string eventDurationString = "";
 
     public UIControllerPopupWindow(bool show) : base(show)
     {
@@ -98,6 +100,8 @@ namespace Waterfall.UI
       else if (control is EngineEventController e)
       {
         eventCurve = e.eventCurve;
+        eventDuration = e.eventDuration;
+        eventDurationString = e.eventDuration.ToString();
       }
       else if (control is ThrottleController t)
       {
@@ -272,6 +276,7 @@ namespace Waterfall.UI
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         newCtrl.eventName = eventTypes[eventFlag];
         newCtrl.eventCurve = eventCurve;
+        newCtrl.eventDuration = eventDuration;
         return newCtrl;
       }
       else if (controllerTypes[controllerFlag] == "gimbal")
@@ -370,6 +375,18 @@ namespace Waterfall.UI
           EditCurve(eventCurve, eventFun);
         }
         GUI.DrawTexture(imageRect, miniCurve);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Event duration", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        eventDurationString = GUILayout.TextArea(eventDurationString, GUILayout.MaxWidth(60f));
+        float floatParsed;
+        if (float.TryParse(eventDurationString, out floatParsed))
+        {
+          if (eventDuration != floatParsed)
+          {
+            eventDuration = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
 
       }
       else if (controllerTypes[controllerFlag] == "gimbal")
