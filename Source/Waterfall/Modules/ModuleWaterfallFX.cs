@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -46,7 +46,6 @@ namespace Waterfall
 
       Utils.Log($"[ModuleWaterfallFX]: OnLoad called with contents \n{node.ToString()}", LogType.Modules);
 
-      ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
       ConfigNode[] effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       ConfigNode[] templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
 
@@ -56,79 +55,7 @@ namespace Waterfall
         CleanupEffects();
       }
 
-      if (allControllers == null || allControllers.Count == 0)
-      {
-        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Controllers on moduleID {0}", moduleID), LogType.Modules);
-        allControllers = new Dictionary<string, WaterfallController>();
-        foreach (ConfigNode controllerDataNode in controllerNodes)
-        {
-          string ctrlType = "throttle";
-          if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
-          {
-            Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
-          }
-          if (ctrlType == "throttle")
-          {
-            ThrottleController tCtrl = new ThrottleController(controllerDataNode);
-            allControllers.Add(tCtrl.name, tCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Throttle Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "atmosphere_density")
-          {
-            AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
-            allControllers.Add(aCtrl.name, aCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Atmosphere Density Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "custom")
-          {
-            CustomController cCtrl = new CustomController(controllerDataNode);
-            allControllers.Add(cCtrl.name, cCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Custom Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "rcs")
-          {
-            RCSController rcsCtrl = new RCSController(controllerDataNode);
-            allControllers.Add(rcsCtrl.name, rcsCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded RCS Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "random")
-          {
-            RandomnessController rCtrl = new RandomnessController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "light")
-          {
-            LightController rCtrl = new LightController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "engineEvent")
-          {
-            EngineEventController rCtrl = new EngineEventController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Engine Event Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "mach")
-          {
-            MachController rCtrl = new MachController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Mach Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == "gimbal")
-          {
-            GimbalController rCtrl = new GimbalController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-        }
-      }
+      LoadControllers(node);
 
       Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Effects on moduleID {0}", moduleID), LogType.Modules);
 
@@ -368,35 +295,38 @@ namespace Waterfall
           }
           if (ctrlType == "light")
           {
-            LightController rCtrl = new LightController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
+            LightController lCtrl = new LightController(controllerDataNode);
+            allControllers.Add(lCtrl.name, lCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Light Controller on moduleID {0}", moduleID), LogType.Modules);
           }
           if (ctrlType == "engineEvent")
           {
-            EngineEventController rCtrl = new EngineEventController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
+            EngineEventController eEvtCtrl = new EngineEventController(controllerDataNode);
+            allControllers.Add(eEvtCtrl.name, eEvtCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Engine Event Controller on moduleID {0}", moduleID), LogType.Modules);
           }
           if (ctrlType == "mach")
           {
-            MachController rCtrl = new MachController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
+            MachController mCtrl = new MachController(controllerDataNode);
+            allControllers.Add(mCtrl.name, mCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Mach Controller on moduleID {0}", moduleID), LogType.Modules);
           }
           if (ctrlType == "gimbal")
           {
-            GimbalController rCtrl = new GimbalController(controllerDataNode);
-
-            allControllers.Add(rCtrl.name, rCtrl);
+            GimbalController gCtrl = new GimbalController(controllerDataNode);
+            allControllers.Add(gCtrl.name, gCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
+          if (ctrlType == "thrust")
+          {
+            ThrustController tcCtrl = new ThrustController(controllerDataNode);
+            allControllers.Add(tcCtrl.name, tcCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Thrust Curve Controller on moduleID {0}", moduleID), LogType.Modules);
           }
         }
       }
     }
+
     ConfigNode FetchConfig()
     {
       Utils.Log(String.Format("[ModuleWaterfallFX]: Finding config for {0}", moduleID), LogType.Modules);
