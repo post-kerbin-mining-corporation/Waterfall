@@ -98,6 +98,7 @@
     <Compile Include="EffectControllers\RandomnessController.cs" />
     <Compile Include="EffectControllers\RCSController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />
+    <Compile Include="EffectControllers\ThrustController.cs" />
     <Compile Include="EffectModifiers\EffectLightColorModifier.cs" />
     <Compile Include="EffectModifiers\EffectLightFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorFromLightModifier.cs" />
