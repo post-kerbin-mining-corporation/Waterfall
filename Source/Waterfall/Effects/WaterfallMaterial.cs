@@ -20,11 +20,11 @@ namespace Waterfall
 
     public void Recalculate()
     {
-      SMR.BakeMesh(SkinedMesh);
-      if (SkinedMesh)
-      {
-        SkinedMesh.RecalculateNormals();
-      }
+      //SMR.BakeMesh(SkinedMesh);
+      //if (SkinedMesh)
+      //{
+      //  SkinedMesh.RecalculateNormals();
+      //}
     }
   }
   public class WaterfallMaterial

@@ -2,6 +2,7 @@ v0.6.4
 ------
 - Added a ThrustController controller which keys off engine normalized thrust
 - Added a more verbose exception when failing to load a template
+- Disabled SMR rebuilding as it wasn't doing much and was negatively impacting performance
 
 v0.6.3
 ------
