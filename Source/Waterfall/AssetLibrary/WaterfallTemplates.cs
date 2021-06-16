@@ -43,8 +43,15 @@ namespace Waterfall
       {
         if (!Library.ContainsKey(node.GetValue("templateName")))
         {
-          Library.Add(node.GetValue("templateName"), new WaterfallTemplate(node));
-          Utils.Log($"[Template Libary]: Added template {node.GetValue("templateName")}", LogType.Settings);
+          try
+          {
+            Library.Add(node.GetValue("templateName"), new WaterfallTemplate(node));
+            Utils.Log($"[Template Libary]: Added template {node.GetValue("templateName")}", LogType.Settings);
+          }
+          catch (Exception)
+          {
+            Utils.LogError($"[Template Libary]: Exception loading template {node.GetValue("templateName")}. This is likely a config error");
+          }
         }
       }
     }
