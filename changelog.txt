@@ -1,3 +1,7 @@
+v0.6.6
+------
+- Updated compatibility to KSP 1.12
+
 v0.6.5
 ------
 - Resolved an issue that would cause waterfall data items (templates, etc) to be unpatchable with Module Manager (thanks al2me6!)
