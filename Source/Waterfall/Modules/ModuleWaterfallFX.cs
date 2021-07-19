@@ -15,6 +15,8 @@ namespace Waterfall
     [KSPField(isPersistant = false)]
     public string engineID = "";
 
+    [KSPField(isPersistant = false)]
+    public bool useRelativeScaling = false;
     
     
     protected Dictionary<string, WaterfallController> allControllers;
@@ -498,7 +500,7 @@ namespace Waterfall
       }
 
       allFX.Add(newEffect);
-      newEffect.InitializeEffect(this, true);
+      newEffect.InitializeEffect(this, true, useRelativeScaling);
     }
     public void CopyEffect(WaterfallEffect toCopy, WaterfallEffectTemplate template)
     {
@@ -519,7 +521,7 @@ namespace Waterfall
 
 
       allFX.Add(newEffect);
-      newEffect.InitializeEffect(this, false);
+      newEffect.InitializeEffect(this, false, useRelativeScaling);
     }
 
     public void RemoveEffect(WaterfallEffect toRemove)
@@ -572,7 +574,7 @@ namespace Waterfall
       for (int i = 0; i < allFX.Count; i++)
       {
         Utils.Log($"[ModuleWaterfallFX]: Initializing effect {allFX[i].name}");
-        allFX[i].InitializeEffect(this, false);
+        allFX[i].InitializeEffect(this, false, useRelativeScaling);
       }
     }
     protected void ReinitializeEffects()
@@ -580,7 +582,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Reinitializing Effects", LogType.Modules);
       for (int i = 0; i < allFX.Count; i++)
       {
-        allFX[i].InitializeEffect(this, false);
+        allFX[i].InitializeEffect(this, false, useRelativeScaling);
       }
     }
 

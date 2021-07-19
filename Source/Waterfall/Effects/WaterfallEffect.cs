@@ -212,13 +212,12 @@ namespace Waterfall
       }
     }
 
-    public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing)
+    public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
     {
-
-
       parentModule = host;
       Transform[] parents = parentModule.part.FindModelTransforms(parentName);
-      Utils.Log(String.Format("[WaterfallEffect]: Initializing effect {0} at {1} [{2} instances]", name, parentName, parents.Length), LogType.Effects);
+      Utils.Log($"[WaterfallEffect]: Initializing effect {name} at {parentName} [{parents.Length} instances]; relative scaling: {useRelativeScaling}", LogType.Effects);
+
       effectTransforms = new List<Transform>();
       baseScales = new List<Vector3>();
 
@@ -235,10 +234,9 @@ namespace Waterfall
         effectTransform.SetParent(parents[i], true);
         effectTransform.localPosition = Vector3.zero;
         effectTransform.localEulerAngles = Vector3.zero;
+        if (useRelativeScaling) effectTransform.localScale = Vector3.one;
 
         model.Initialize(effectTransform, fromNothing);
-
-
 
         baseScales.Add(effectTransform.localScale);
         Utils.Log($"[WaterfallEffect] local Scale {baseScales[i]}, baseScale, {effectTransform.localScale}", LogType.Effects);
