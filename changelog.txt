@@ -1,3 +1,7 @@
+v0.6.7
+------
+- Added an option to allow non-uniform parent scaling in effects (al2me6). Don't use this if you don't know exactly what you are doing
+
 v0.6.6
 ------
 - Updated compatibility to KSP 1.12
