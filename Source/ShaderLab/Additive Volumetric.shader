@@ -1,4 +1,4 @@
-﻿Shader "Waterfall/Additive (Volumetric)"
+Shader "Waterfall/Additive (Volumetric)"
 {
     Properties
     {
@@ -14,36 +14,36 @@
         _Brightness("Brightness", Range(0,10)) = 1
         _LengthBrightness("Lengthwise Brightness", Range(0,10)) = 1
         _ClipBrightness("_ClipBrightness", Range(0,50)) = 50
-        
+
         [Space]
-        
+
         _Noise("Noise", Range(0,15)) = 0
         _NoiseFresnel("Noise Fresnel", Range(0,15)) = 0
         _FadeIn("Fade In", Range(0,1)) = 0
         _FadeOut("Fade Out", Range(0,1)) = 0
 
         [Space]
-        
+
         _ExpandLinear("Linear Expansion", Range(-10, 10)) = 0
         _ExpandSquare("Quadratic Expansion", Range(-10, 10)) = 0
 
         [Space]
-        
+
         _Seed("Time Offset", Range(-10,10)) = 1
         _SpeedX("Scroll Speed X", Float) = 0
         _SpeedY("Scroll Speed Y", Float) = 1
         _TileX("Tiling X", Float) = 1
         _TileY("Tiling Y", Float) = 1
     }
-    
+
     SubShader
     {
         Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" }
-        
+
         Blend one one
-        
+
         ZWrite Off
-        ZTest LEqual
+        ZTest Off
         Cull Front
 
         Pass
@@ -52,8 +52,9 @@
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 3.0
+            #include "unitycg.cginc"
 
-
+            sampler2D_float _CameraDepthTexture;
             sampler2D _MainTex;
             float _Fresnel;
             float _Noise;
@@ -71,7 +72,7 @@
             float _FadeIn;
             float _FadeOut;
             float _FadeOutSharpness;
-            
+
             float _ExpandLinear;
             float _ExpandSquare;
 
@@ -87,114 +88,100 @@
                 float4 color      : COLOR;
                 float2 uv_MainTex : TEXCOORD0;
             };
-            
+
             struct v2f
             {
                 float4 vertex                   : SV_POSITION;
+                float3 depth                    : COLOR0;    // (relative screen uv, exit depth)
                 float3 V                        : TEXCOORD0; // (Vx, Vy, Vz) * Sv
-                float3 uvy                      : TEXCOORD1; // (u, v, vertex y coordinate)
+                float3 uvy                      : TEXCOORD1; // (u, v, vertex y coordinate, )
                 float3 B                        : TEXCOORD2; // (Bm, B0, B1) * Sv
                 nointerpolation float3 a        : TEXCOORD3; // (am, a0, a1)
                 nointerpolation float3 C        : TEXCOORD4; // (Cm, C0, C1)
                 nointerpolation float4 Cam      : TEXCOORD5; // (ObjSpace_CameraPosition.xyz, vertex type) 
-                nointerpolation float4 data     : TEXCOORD6; // (y0.x, y0.y, y00, y01) 
+                nointerpolation float4 y0       : TEXCOORD6; // (y0.x, y0.y, y00, y01)
             };
-            
+
             // integral of smoothstep(0, 1, x) between x1 (x.x) and x2 (x.y)
             float ssint(float2 x) {
-                float2 X = clamp(x * x * x, 0, 1) * (max(x, 1) - 0.5 * min(x, 1));
-                return X.y-X.x;
+                x = clamp(x * x * x, 0, 1) * (max(x, 1) - 0.5 * min(x, 1));
+                return x.y-x.x;
             }
-            
-            // numerically integrated average Fade
-            float fade(float2 SRange, float yFadeout, float3 Raypar, float Vy, float Cy, float a, float b, out float Fadeout) {
-                float4 Ss = lerp(SRange.x, SRange.y, float4(0.069431844, 0.330009478, 0.669990522, 0.930568156));
-                float4 Weights = float4(0.3478548451, 0.6521451549, 0.6521451549, 0.3478548451);
-                float4 ys = mad(Ss, Vy, Cy);
-                
-                // falloff
-                float4 Samples = pow(min(1.0, (1.0 + _FalloffStart) * mad(0.5, ys, 1.0)), _Falloff);
-                
-                // intensity
-                float4 rr = rcp(mad(ys, mad(a, ys, b), 1.0));  
-                Samples *= sqrt(mad(4.0 * _LengthBrightness * _LengthBrightness * Vy, Vy, Raypar.x * rr));
-                
-                // Fadeout
-                Fadeout = 0;
-                if (ys.y < yFadeout) {
-                    rr *= mad(Ss, mad(Raypar.x, Ss, 2.0 * Raypar.y), Raypar.z);
-                    float4 fout = (_FadeOut + 0.001) * (1.0 - sqrt(1.0 - rr));
-                    fout = smoothstep(-1.001, -1.0 + _FadeOut, ys - fout);
-                    Fadeout = 0.5 * dot(fout, Weights);
-                    Samples *= fout;
-                }
-                
-                return 0.5 * dot(Samples, Weights);
-            }
-            
+
             v2f vert(vdata i) {
                 v2f o;
-                
+
                 // vertex type
                 o.Cam.w = 0.1 * round(i.color.a * 10.0); 
-                
+
                 // Camera position in object space
                 o.Cam.xyz = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos.xyz, 1.0)).xyz;
-                
+
                 // mesh ellipsoid parameters
                 o.a.x = mad(_ExpandLinear, _ExpandLinear, -10 * _ExpandSquare);
-                float3 b;
+                float4 b;
                 b.x = mad(-2.0, _ExpandLinear, -10 * _ExpandSquare);
-                                    
+
                 // vertex position
                 float3 vertex = i.vertex.xyz;
                 vertex.xz *= sqrt(mad(vertex.y, mad(o.a.x, vertex.y, b.x), 1.0));   // vertex xz-position
                 o.vertex = UnityObjectToClipPos(float4(vertex, 1));                 // vertex clip position
+                
+                // depth values
+                float3 screenUV = ComputeGrabScreenPos(o.vertex).xyw;
+                o.depth.xy = screenUV.xy/screenUV.z;
+                o.depth.z = LinearEyeDepth(o.vertex.z / o.vertex.w);
                 
                 // ray values
                 o.V = vertex - o.Cam.xyz;
                 o.uvy.z = vertex.y;
                 float CV = dot(o.Cam.xz, o.V.xz);
                 float CC = dot(o.Cam.xz, o.Cam.xz);
-                
+
                 // object space radius of a world space sphere at y=0
                 float R0sphere = length(mul((float3x3)unity_WorldToObject, length(unity_ObjectToWorld._11_21_31) * normalize(unity_ObjectToWorld._12_22_32))); 
-                
+
                 // bounding ellipsoid y-ranges
                 float2 yt = float2(0.0, -1.0);              // tangent y-values
                 float2 dRRdy = 2.0 * o.a.x * yt + b.x;      // derivative of the mesh R² at yt
                 float2 y0 = float2(2 * R0sphere, -4.0);     // zero y-values
+                
+                if (dRRdy.x < 0) { y0.x = min(y0.x, -0.9 * rcp(dRRdy.x)); }
+                if (dRRdy.y < 0) { y0.y = min(y0.y, 0.9 * (o.a.x - 1.0) / dRRdy.y); }
+                                
                 float2 Dy = yt - y0;
                 
                 // bounding ellipsoid parameters
                 o.a.yz = (o.a.x * yt * yt - 1.0 - y0 * dRRdy) / (Dy * Dy);
                 b.yz = dRRdy - 2.0 * o.a.yz * yt;
                 float3 c = float3(1.0, -y0 * (o.a.yz * y0 + b.yz));
-                
+
                 // Quadratic intersection equation
                 o.B = mad(o.V.y, mad(2.0 * o.a, o.Cam.y, b), -2.0 * CV);  // B * Sv
                 o.C = mad(o.Cam.y, mad(o.Cam.y, o.a, b), c - CC);         // C
-                
+
                 // check if bounding ellipsoids are longer than mesh ellipsoid
                 float D0 = mad(b.x, b.x, -4.0 * o.a.x * c.x);
-                o.data.xy = (-b.x + sign(o.a.x) * float2(-1.0, 1.0) * sqrt(D0)) / (2.0 * o.a.x);
-                if (o.data.y > 0.0 && o.data.y < y0.x) {
+                o.y0.xy = (-b.x + sign(o.a.x) * float2(-1.0, 1.0) * sqrt(D0)) / (2.0 * o.a.x);
+                if (o.y0.y > 0.0 && o.y0.y < y0.x) {
+                    y0.x = o.y0.y;
                     o.a.y = o.a.x;
                     b.y = b.x;
                     c.y = c.x;
                     o.B.y = o.B.x;
                     o.C.y = o.C.x;
                 }
-                if (o.data.x < -1.0 && o.data.x > y0.y) {
+                if (o.y0.x < -1.0 && o.y0.x > y0.y) {
+                    y0.y = o.y0.x;
                     o.a.z = o.a.x;
                     b.z = b.x;
                     c.z = c.x;
                     o.B.z = o.B.x;
                     o.C.z = o.C.x;
                 }
-                float2 D01 = mad(b.yz, b.yz, -4.0 * o.a.yz * c.yz);
-                o.data.zw = (-b.yz + sign(o.a.yz) * float2(1.0, -1.0) * sqrt(D01)) / (2.0 * o.a.yz); // y00, y01
-                
+                o.y0.zw = y0;    // y00, y01
+                o.y0.z *= 0.9;  // less noise in nozzle
+
                 // uv map
                 if (o.Cam.w < 0.15) {
                     float umir = _SpeedX * _Time.x;
@@ -210,10 +197,7 @@
 
 
             float4 frag(v2f i) : SV_Target
-            {
-                // world space view component in plume direction
-                float Vyw = dot(normalize(mul((float3x3)unity_ObjectToWorld, i.V)), normalize(unity_ObjectToWorld._12_22_32)); 
-                
+            {   
                 // construct camera view parameters and normalize
                 float Sv = length(i.V);                                 // distance to fragment
                 i.V /= Sv;                                              // normalize V ray vector
@@ -221,29 +205,29 @@
                 float VV = dot(i.V.xz, i.V.xz);
                 float CV = dot(i.Cam.xz, i.V.xz);
                 float CC = dot(i.Cam.xz, i.Cam.xz);
-                
+
                 // view ray y-direction is positive?
                 float VSgn = mad(2.0, step(0.0, i.V.y), -1.0);
-                bool Vdir = i.V.y >= 0;
-                
+
                 // intersection parameters
+                float b = mad(-2.0, _ExpandLinear, -10 * _ExpandSquare);
                 float3 A = mad(i.V.y, i.V.y * i.a, -VV);
                 float3 D = mad(i.B, i.B, - 4.0 * A * i.C); // Discriminant for the plume intersection
-                
+
                 // intersection points
                 float2 Si = (-i.B.x + float2(1.0, -1.0) * sqrt(D.x)) / (2 * A.x);               // (entry, exit) plume intersection points
                 float2 S01 = (float2(0.0, -1.0) - i.Cam.y) / i.V.y;                             // S-values for y = 0 & -1
                 float2 Stex = (-i.B.yz - float2(1.0, -1.0) * VSgn * sqrt(D.yz)) / (2 * A.yz);   // (bound at 0, bound at -1) bounding ellipsoid intersection points
                 
                 // change from (0,-1) to (entry , exit)
-                float2 boundDist = float2(i.data.z, 1.0 + i.data.w);
-                if (Vdir) {
+                float2 boundDist = float2(i.y0.z, 1.0 + i.y0.w);
+                if (i.V.y >= 0) {
                     Stex = Stex.yx;
                     S01 = S01.yx;
-                    i.data.zw = i.data.wz;
+                    i.y0.zw = i.y0.wz;
                     boundDist = boundDist.yx;
                 }
-                
+
                 // check for hyperbolic intersection
                 if (A.x >= 0) {
                     if (i.Cam.w < 0.15) { Si.x = Stex.x; }
@@ -264,9 +248,9 @@
                     if (Si.x < S01.x) { Si.x = Stex.x; }
                     if (Si.y > S01.y) { Si.y = Stex.y; }
                 }
-                
+
                 // texture at entry
-                float2 c;                                               // texture at (entry, exit)
+                float2 c;                             // texture at (entry, exit)
                 float Sentry = max(Si.x, 0.0);        // make sure entry is in front of camera
                 Si = max(0.0, Si);
                 Stex = Si;
@@ -278,7 +262,7 @@
                 u = 2.0 * abs(u - umir - floor(u - umir + 0.5)) + umir;
                 float2 uv = (float2(u, lerp(0.5, 1.0, 1.0 + Ptex.y)) + _Seed) * float2(_TileX, _TileY) + float2(-_SpeedX, _SpeedY * _TileY) * _Time.x;
                 c.x = length(tex2D(_MainTex, uv).rgb);
-                                    
+
                 // texture at exit
                 if (i.Cam.w < 0.15) {
                     uv = i.uvy.xy;
@@ -292,7 +276,7 @@
                     uv = (float2(u, lerp(0.5, 1.0, 1.0 + Ptex.y)) + _Seed) * float2(_TileX, _TileY) + float2(-_SpeedX, _SpeedY * _TileY) * _Time.x;
                 }
                 c.y = length(tex2D(_MainTex, uv.xy).rgb);
-                
+
                 // final Ray segment
                 Si = clamp(Si, S01.x, S01.y);
                 float2 yRange = mad(Si, i.V.y, i.Cam.y);
@@ -300,94 +284,93 @@
                 float ydelta = yRange.y - yRange.x;
                 float Raydepth = Si.y - Si.x;
                 
-                // deepest ray penetration radius: rrmin
-                float b = mad(-2.0, _ExpandLinear, -10 * _ExpandSquare);
-                float3 coef = float3(2.0 * i.a.x * i.V.y * i.V.y, i.V.y * mad(2 * i.a.x, i.Cam.y, b), -2.0 * mad(i.Cam.y, mad(i.a.x, i.Cam.y, b), 1.0));
-                float3 m = float3(dot(float2(CV, -VV), coef.xy), dot(float2(CC, VV), coef.xz), dot(float2(CC, CV), coef.yz));
-                float Dm = mad(m.y, m.y, -4.0 * m.x * m.z);
-                
-                float2 Sopt = (-m.y + float2(-1.0, 1.0) * sqrt(Dm)) / (2.0 * m.x);
-                float2 yopt = mad(Sopt, i.V.y, i.Cam.y);
-                
-                float rrmin;
-                if (abs(m.x) < 0.00001) {
-                    float Smin = clamp(-CV / VV, Si.x, Si.y);
-                    float ymin = mad(Smin, i.V.y, i.Cam.y);
-                    rrmin = mad(Smin, mad(VV, Smin, 2.0 * CV), CC) / mad(ymin, mad(i.a.x, ymin, b), 1.0);
-                }
-                else if (i.a.x < 0.0) {
-                    float Smin = (yopt.x > i.data.x && yopt.x < i.data.y) ? Sopt.x : Sopt.y;
-                    Smin = clamp(Smin, Si.x, Si.y);
-                    float ymin = mad(Smin, i.V.y, i.Cam.y);
-                    rrmin = mad(Smin, mad(VV, Smin, 2.0 * CV), CC) / mad(ymin, mad(i.a.x, ymin, b), 1.0);
-                }
-                else {
-                    float2 rrS = mad(Si, mad(VV, Si, 2.0 * CV), CC) / mad(yRange, mad(i.a.x, yRange, b), 1.0);
-                    int IdxMin = step(rrS.y, rrS.x);
-                    rrmin = rrS[IdxMin];
-                    Sopt = clamp(Sopt, Si.x, Si.y);
-                    yopt = mad(Sopt, i.V.y, i.Cam.y);
-                    rrS = mad(Sopt, mad(VV, Sopt, 2.0 * CV), CC) / mad(yopt, mad(i.a.x, yopt, b), 1.0);
-                    IdxMin = step(rrS.y, rrS.x);
-                    if (rrS[IdxMin] < rrmin) {
-                        rrmin = rrS[IdxMin];
-                    }
-                }
-                rrmin = max(0.0001, rrmin);
-                
-                // Gauss legendre quadrature sampling
-                float yFout = mad(2.0, _FadeOut, -1.0);
-                float SFout = (yFout - i.Cam.y) / i.V.y;
-                float Fade;
-                float Fadeout;
+                // read depth of solid object from _CameraDepthTexture
+                float opaqueDepth = tex2Dlod(_CameraDepthTexture, float4(i.depth.xy, 0.0, 0.0)).x;
+                // ray entry positions
+                float3 objectEntry = mad(Si.x, i.V, i.Cam);
+                // transform to clip space
+                float4 clipEntry = UnityObjectToClipPos(float4(objectEntry, 1));
+                // get linear depth of solid object and clip space position
+                float depthEntry = LinearEyeDepth(clipEntry.z / clipEntry.w);
+                float depthSolid = LinearEyeDepth(opaqueDepth);
 
-                if (SFout < Si.y && SFout > Si.x) {
-                    float F;
-                    // first segment
-                    Fade = fade(float2(Si.x, SFout), yFout, float3(VV, CV, CC), i.V.y, i.Cam.y, i.a.x, b, F) * (SFout - Si.x);      
-                    Fadeout = F * (SFout - Si.x);
-                    
-                    // second segment
-                    Fade += fade(float2(SFout, Si.y), yFout, float3(VV, CV, CC), i.V.y, i.Cam.y, i.a.x, b, F) * (Si.y - SFout);     
-                    Fadeout += F * (Si.y - SFout);
-                    
-                    // weighted average
-                    Fade /= Raydepth;
-                    Fadeout /= Raydepth;
+                // custom z-test
+                if (depthEntry > depthSolid) {
+                    // entry point is behind solid object -> nothing is visible
+                    discard;
+                } else if (i.depth.z > depthSolid) {
+                    // exit point is behind solid object -> some of the plume is visible
+                    Raydepth *= (depthSolid - depthEntry) / (i.depth.z - depthEntry);
                 }
-                else {
-                    Fade = fade(float2(Si.x, Si.y), yFout, float3(VV, CV, CC), i.V.y, i.Cam.y, i.a.x, b, Fadeout);
-                }
+
+                // Gauss legendre quadrature sampling
+                float4 Ss = lerp(Si.x, Si.y, float4(0.069431844, 0.330009478, 0.669990522, 0.930568156));
+                float4 Weights = 0.5 * float4(0.3478548451, 0.6521451549, 0.6521451549, 0.3478548451);
+                float4 ys = mad(Ss, i.V.y, i.Cam.y);
+                
+                // intensity
+                float4 rr = rcp(mad(ys, mad(i.a.x, ys, b), 1.0));
+                float4 Samples = sqrt(mad(4.0 * _LengthBrightness * _LengthBrightness * i.V.y, i.V.y, VV * rr));
+
+                // Fadeout
+                float Fadeout = _FadeOut + 0.001;
+                rr *= mad(Ss, mad(VV, Ss, 2.0 * CV), CC);
+                float4 f = Fadeout * (1.0 - sqrt(1.0 - rr)) - 1.0;
+                float3 yav = 0.5 * (ys.xyz + ys.yzw);
+                f = float4(ssint((float2(yRange.x, yav.x) - f.x) / Fadeout), 
+                           ssint((yav.xy - f.y) / Fadeout), 
+                           ssint((yav.yz - f.z) / Fadeout),
+                           ssint((float2(yav.z, yRange.y) - f.w) / Fadeout));
+                Samples *= f * Fadeout / (float4(yav, yRange.y) - float4(yRange.x, yav));
+                
+                // falloff
+                ys = min(0.0, (ys + _FalloffStart));
+                ys *= -ys;
+                
+                // Inverted Fresnel
+                f = rr - 1.0;
+                
+                // Fresnel
+                float Fresnel = _Fresnel + 0.01;
+                Fresnel *= Fresnel;
+                
+                // combine Falloff, Fresnel and Inverted Fresnel
+                Samples *= exp2(ys * 5.0 * _Falloff - (10 * _FresnelInvert) * f * f + Fresnel * rr / (rr - mad(0.15, Fresnel, 1.0)));
+                
+                //Fade
+                float Fade = dot(Samples, Weights);
+                
+                // Color Gradient
+                f = exp2(ys * (_TintFalloff * 5.0) - rr * rr * (_TintFresnel * 5.0)) * Samples;
+                float Gradient = dot(f, Weights) / dot(Samples, Weights);
+                float4 Color = lerp(_EndTint, _StartTint, Gradient);
                 
                 // Fadein
                 float Fadein = _FadeIn + 0.0001;
                 Fadein = -ssint(-yRange / Fadein) * Fadein / ydelta;
-                
-                // Fresnel
-                float Fresnel = 1.0 - pow(rrmin, rcp(mad(_Fresnel, mad(-0.002, Fade, 0.1), 0.01)));
-                
-                // Inverted Fresnel
-                float FresnelInvert = rrmin * (2.0 - rrmin);
-                float FrInvStrength = _FresnelInvert * mad(1.5, mad(-Vyw, Vyw, 1.0), 1.0);
-                FresnelInvert = pow(FresnelInvert, mad(0.8, FrInvStrength, 0.5));
-                FresnelInvert = lerp(FresnelInvert, 1.0, exp2(-FrInvStrength));
-                
-                // Noise
+
+                // Noise reference points on view ray
                 float Smid = dot(Stex, 0.5);
-                float2 ynoise = mad(i.V.y, 0.5 * (clamp(Smid, Si.x, Si.y) + Si), i.Cam.y);
-                float2 g = min(1.0, (1.0 + _FalloffStart) * mad(0.5, ynoise, 1.0));
-                float2 NoiseStrength = pow(g, _Falloff);
-                float2 NoiseFade = (i.data.zw - ytex) / boundDist;
-                NoiseFade = min(1.0, NoiseFade * NoiseFade);
-                float2 NoiseAmount = NoiseFade * mad(0.5, rrmin, 0.5) * (_Noise * mad(-2.0, Fadeout, 3.0) + _NoiseFresnel * (1.0 - Fresnel));
+                float ymid = mad(i.V.y, Smid, i.Cam.y);
+                float rrmid = mad(Smid, mad(VV, Smid, 2.0 * CV), CC) / mad(ymid, mad(i.a.x, ymid, b), 1.0);
+                ymid = clamp(ymid, -1.0, 0.0);
+                float2 ynoise = min(0.0, 0.5 * (ymid + yRange) + _FalloffStart);
+                
+                // Strength of the noise pattern depends on local Falloff & Fresnel
+                float2 NoiseStrength = exp2(-ynoise * ynoise * _Falloff + 0.1 * _NoiseFresnel * Fresnel * rrmid / (rrmid - mad(0.15, Fresnel, 1.0)));
+                
+                // fade out the noise at start and end of plume
+                float2 NoiseAmount = max(0.0, (i.y0.zw - ytex) / boundDist); 
+                NoiseAmount = min(1.0, NoiseAmount * NoiseAmount);
+                
+                // multiply noise amount factors together (less noise in the center of the plume)
+                NoiseAmount *= mad(0.7, rrmid, 0.3) * _Noise;
+                
+                // final noise texture contrast, weighted by entry/exit raydepth
                 float Noise = dot(max(0.0, lerp(lerp(1.0, c, NoiseAmount), 1.0, NoiseStrength)), float2(Smid - Stex.x, Stex.y - Smid) / (Stex.y - Stex.x));
-                
-                // Pixel color
-                float Gradient = pow(clamp(mad(0.5, mad(Smid, i.V.y, i.Cam.y), 1.0), 0.0, 1.0), _TintFalloff);
-                float4 Color = lerp(_EndTint, _StartTint, Gradient * pow(1.001 - rrmin, _TintFresnel));
-                
+
                 // final pixel value
-                return clamp(0.35 * _Brightness * Raydepth * Fade * Fresnel * FresnelInvert * Noise * Fadein * Color, 0.0, _ClipBrightness);
+                return clamp(0.5 * _Brightness * Raydepth * Fade * Noise * Fadein * Color, 0.0, _ClipBrightness);
             }
 
             ENDCG
@@ -395,4 +378,4 @@
     }
     Fallback "KSP/Particles/Additive"
 
-}
+} 
