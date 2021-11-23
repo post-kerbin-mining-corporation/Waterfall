@@ -70,7 +70,8 @@ namespace Waterfall.UI
       rainbow = MaterialUtils.GenerateRainbowGradient(120, 20);
       aTexture = MaterialUtils.GenerateGradientTexture(100, 20, Color.black, Color.white);
       colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f, 210, 100);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f, 210, 100);
     }
 
     protected override void InitUI()
@@ -108,8 +109,8 @@ namespace Waterfall.UI
       rainbow = MaterialUtils.GenerateRainbowGradient(120, 20);
       aTexture = MaterialUtils.GenerateGradientTexture(100, 20, Color.black, Color.white);
       colorField = MaterialUtils.GenerateColorField(colorFieldSize, colorFieldSize, currentHSVColor.ToColor());
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f,210, 100);
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
 
     protected override void DrawWindow(int windowId)

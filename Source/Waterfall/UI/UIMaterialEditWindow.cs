@@ -71,10 +71,9 @@ namespace Waterfall.UI
       }
       matl = modelToEdit.materials[materialID];
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
 
       InitializeShaderProperties(matl.materials[0]);
-
-      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
     }
 
     protected override void DrawWindow(int windowId)

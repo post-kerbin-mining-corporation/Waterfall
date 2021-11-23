@@ -43,7 +43,9 @@ namespace Waterfall.UI
       modifier = mod;
       effect = fx;
       windowMode = ModifierPopupMode.Delete;
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 200, 100);
+      GUI.BringWindowToFront(windowID);
+
+
     }
 
     public void SetAddMode(WaterfallEffect fx)
@@ -60,7 +62,8 @@ namespace Waterfall.UI
       {
         transformOptions[i] = xFormOptions[i].name;
       }
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 400);
+      GUI.BringWindowToFront(windowID);
+
     }
 
     protected override void InitUI()

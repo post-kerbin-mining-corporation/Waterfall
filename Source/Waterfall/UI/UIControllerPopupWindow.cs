@@ -59,7 +59,8 @@ namespace Waterfall.UI
 
     public UIControllerPopupWindow(bool show) : base(show)
     {
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
       eventFun = new CurveUpdateFunction(UpdateEventCurve);
     }
 
@@ -69,7 +70,7 @@ namespace Waterfall.UI
       control = ctrl;
       fxMod = mod;
       windowMode = ControllerPopupMode.Delete;
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 200, 100);
+      GUI.BringWindowToFront(windowID);
     }
     public void SetEditMode(WaterfallController ctrl, ModuleWaterfallFX mod)
     {
@@ -79,8 +80,8 @@ namespace Waterfall.UI
       newControllerName = ctrl.name;
       controllerFlag = controllerTypes.ToList().IndexOf(ctrl.linkedTo);
       windowMode = ControllerPopupMode.Modify;
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 400, 100);
       eventCurve = new FloatCurve();
+      GUI.BringWindowToFront(windowID);
 
       if (control is RandomnessController r)
       {
@@ -122,12 +123,12 @@ namespace Waterfall.UI
       fxMod = mod;
       windowMode = ControllerPopupMode.Add;
       controllerFlag = 0;
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
       eventCurve = new FloatCurve();
       eventCurve.Add(0f, 0f);
       eventCurve.Add(0.1f, 1f);
       eventCurve.Add(1f, 0f);
       GenerateCurveThumbs();
+      GUI.BringWindowToFront(windowID);
     }
 
     protected override void InitUI()
