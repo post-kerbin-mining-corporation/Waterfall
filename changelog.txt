@@ -1,3 +1,13 @@
+v0.7.0
+------
+- New shaders: Waterfall/Additive (Volumetric), Waterfall/Additive Cones (Volumetric),  Waterfall/Additive Echo (Dynamic) by KnightOfStJohn 
+- Added new workflow: volumetric for new shaders
+- Fixed randomness seed for different effects on different parts not working right
+
+v0.6.8
+------
+- Various popup UI windows will now be better at retaining their position if changed when opened (e.g when changing the color you are editing)
+
 v0.6.7
 ------
 - Added an option to allow non-uniform parent scaling in effects (al2me6). Don't use this if you don't know exactly what you are doing

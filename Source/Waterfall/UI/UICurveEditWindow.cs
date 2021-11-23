@@ -44,8 +44,10 @@ namespace Waterfall.UI
     public UICurveEditWindow(FloatCurve curveToEdit, bool show) : base(show)
     {
       Utils.Log($"Started editing curve {curveToEdit.ToString()}");
-      
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
+
+
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
       
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
@@ -56,7 +58,8 @@ namespace Waterfall.UI
       curveUpdateFun = curveFun;
       Utils.Log($"Started editing curve {curveToEdit.ToString()}");
 
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
 
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
@@ -68,7 +71,8 @@ namespace Waterfall.UI
       modifierTag = tag;
       Utils.Log($"Started editing curve {curveToEdit.ToString()}", LogType.UI);
 
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
 
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
@@ -83,6 +87,7 @@ namespace Waterfall.UI
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
     public void ChangeCurve(FloatCurve curveToEdit,CurveUpdateFunction curveFun)
     {
@@ -92,6 +97,7 @@ namespace Waterfall.UI
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
     public void ChangeCurve(FloatCurve curveToEdit, UIModifierWindow modWin, string tag)
     {
@@ -102,6 +108,7 @@ namespace Waterfall.UI
       points = GraphUtils.FloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
 
 
