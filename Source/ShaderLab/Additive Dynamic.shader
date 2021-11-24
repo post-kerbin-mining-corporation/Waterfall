@@ -41,8 +41,6 @@
     _TileY("Tiling Y", Float) = 1
     _SrcMode("SrcMode", Float) = 1
     _DestMode("DestMode", Float) = 6
-
-    _SoftEdges("Soft Edges", Range(0, 10)) = 4
   }
 
   SubShader {
@@ -95,12 +93,9 @@
     float _TileY;
     float _ClipBrightness;
 
-    float _SoftEdges;
-
     struct Input
     {
       float2 uv_MainTex;
-      float4 clipPos;
       float3 viewDir;
       float3 worldNormal;
       float3 worldPos;
@@ -136,8 +131,6 @@
       + _ExpandBounded * boundedDeriv(arg);
       v.normal = normalize(normal + deriv * axis);
       o.plumePos = arg;
-
-      o.clipPos = UnityObjectToClipPos(v.vertex);
     }
 
     void surf(Input IN, inout SurfaceOutput o)
@@ -184,25 +177,13 @@
       float pi = 3.1415926535;
       fade *= 1.0 - _SymmetryStrength + _SymmetryStrength * pow(cos(_Symmetry * pi * IN.uv_MainTex.x), 2);
 
-      // SOFT EDGES
-      float4 screenUV = ComputeGrabScreenPos(IN.clipPos);
-      float opaqueDepth = tex2Dproj(_CameraDepthTexture, screenUV).x;
-      float depth = IN.clipPos.z / IN.clipPos.w;
-      
-      // with non-linear depth, the depth difference would depend on the distance to the camera
-      opaqueDepth = LinearEyeDepth(opaqueDepth);
-      depth = LinearEyeDepth(depth);
-
-      float diff = abs(depth - opaqueDepth);
-      float softEdge = 1 - exp(-diff / (_SoftEdges + 0.001));
-      // cheaper to calculate but not continuously differentiable:
-      // float softEdge = saturate(diff / (_SoftEdges + 0.001));
-
       //combine all the things: Color gradient, fresnel, opacity gradient, texture, and additional _Brightness boost
       //Fresnel strength is being modified by the texture as well, and we increase this as we ramp up the texture strength to avoid hard edges
-      o.Emission = clamp(gradient * pow(rim, (1 - noise + 0.5 * _Noise) * _Fresnel) * pow(rim2, clamp((1.0 - noise + 0.5 * _Noise) * _FresnelInvert, 0.001, 10)) * fade * noise * _Brightness * IN.color.rgb, 0, _ClipBrightness) * softEdge;
+      o.Emission = clamp(gradient * pow(rim, (1 - noise + 0.5 * _Noise) * _Fresnel) * pow(rim2, clamp((1.0 - noise + 0.5 * _Noise) * _FresnelInvert, 0.001, 10)) * fade * noise * _Brightness * IN.color.rgb, 0, _ClipBrightness);
 
       o.Albedo = 0;
+
+
     }
 
     ENDCG
