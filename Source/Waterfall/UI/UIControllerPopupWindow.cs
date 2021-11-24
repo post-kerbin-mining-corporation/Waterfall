@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using UnityEngine;
-using Waterfall;
 
 namespace Waterfall.UI
 {
@@ -31,7 +26,7 @@ namespace Waterfall.UI
     WaterfallController control;
     ModuleWaterfallFX fxMod;
     string newControllerName = "controller";
-    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle" };
+    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle", "thrust" };
     int controllerFlag = 0;
     CurveUpdateFunction eventFun;
 
@@ -59,10 +54,13 @@ namespace Waterfall.UI
     string[] eventTypes = new string[] { "ignition", "flameout" };
     int eventFlag = 0;
     FloatCurve eventCurve = new FloatCurve();
+    float eventDuration = 2f;
+    string eventDurationString = "";
 
     public UIControllerPopupWindow(bool show) : base(show)
     {
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
       eventFun = new CurveUpdateFunction(UpdateEventCurve);
     }
 
@@ -72,7 +70,7 @@ namespace Waterfall.UI
       control = ctrl;
       fxMod = mod;
       windowMode = ControllerPopupMode.Delete;
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 200, 100);
+      GUI.BringWindowToFront(windowID);
     }
     public void SetEditMode(WaterfallController ctrl, ModuleWaterfallFX mod)
     {
@@ -82,11 +80,11 @@ namespace Waterfall.UI
       newControllerName = ctrl.name;
       controllerFlag = controllerTypes.ToList().IndexOf(ctrl.linkedTo);
       windowMode = ControllerPopupMode.Modify;
-      WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f - 50, 400, 100);
       eventCurve = new FloatCurve();
-      try
+      GUI.BringWindowToFront(windowID);
+
+      if (control is RandomnessController r)
       {
-        RandomnessController r = (RandomnessController)control;
         if (r.noiseType == "random")
         {
           randomStrings[0] = r.range.x.ToString();
@@ -94,23 +92,29 @@ namespace Waterfall.UI
         }
         if (r.noiseType == "perlin")
         {
-          
           randomStrings[0] = r.seed.ToString();
           randomStrings[1] = r.scale.ToString();
           randomStrings[2] = r.speed.ToString();
           randomStrings[3] = r.minimum.ToString();
         }
-        EngineEventController e = (EngineEventController)control;
-        ThrottleController t = (ThrottleController)control;
-
-          throttleStrings[0] = t.responseRateUp.ToString();
-          throttleStrings[1] = t.responseRateDown.ToString();
-        
-        eventCurve = e.eventCurve;
-        
       }
-      catch( Exception)
-      { }
+      else if (control is EngineEventController e)
+      {
+        eventCurve = e.eventCurve;
+        eventDuration = e.eventDuration;
+        eventDurationString = e.eventDuration.ToString();
+      }
+      else if (control is ThrottleController t)
+      {
+        throttleStrings[0] = t.responseRateUp.ToString();
+        throttleStrings[1] = t.responseRateDown.ToString();
+      }
+      else if (control is RCSController rcs)
+      {
+        throttleStrings[0] = rcs.responseRateUp.ToString();
+        throttleStrings[1] = rcs.responseRateDown.ToString();
+      }
+
       GenerateCurveThumbs();
     }
     public void SetAddMode(ModuleWaterfallFX mod)
@@ -119,12 +123,12 @@ namespace Waterfall.UI
       fxMod = mod;
       windowMode = ControllerPopupMode.Add;
       controllerFlag = 0;
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 400, 400);
       eventCurve = new FloatCurve();
-      eventCurve.Add(0f,0f);
+      eventCurve.Add(0f, 0f);
       eventCurve.Add(0.1f, 1f);
       eventCurve.Add(1f, 0f);
       GenerateCurveThumbs();
+      GUI.BringWindowToFront(windowID);
     }
 
     protected override void InitUI()
@@ -273,6 +277,7 @@ namespace Waterfall.UI
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         newCtrl.eventName = eventTypes[eventFlag];
         newCtrl.eventCurve = eventCurve;
+        newCtrl.eventDuration = eventDuration;
         return newCtrl;
       }
       else if (controllerTypes[controllerFlag] == "gimbal")
@@ -315,6 +320,8 @@ namespace Waterfall.UI
         RCSController newCtrl = new RCSController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
+        newCtrl.responseRateUp = rampRateUp;
+        newCtrl.responseRateDown = rampRateDown;
         return newCtrl;
       }
       else if (controllerTypes[controllerFlag] == "throttle")
@@ -325,6 +332,13 @@ namespace Waterfall.UI
 
         newCtrl.responseRateUp = rampRateUp;
         newCtrl.responseRateDown = rampRateDown;
+        return newCtrl;
+      }
+      else if (controllerTypes[controllerFlag] == "thrust")
+      {
+        ThrustController newCtrl = new ThrustController();
+        newCtrl.name = newControllerName;
+        newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
       else
@@ -362,6 +376,18 @@ namespace Waterfall.UI
           EditCurve(eventCurve, eventFun);
         }
         GUI.DrawTexture(imageRect, miniCurve);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Event duration", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        eventDurationString = GUILayout.TextArea(eventDurationString, GUILayout.MaxWidth(60f));
+        float floatParsed;
+        if (float.TryParse(eventDurationString, out floatParsed))
+        {
+          if (eventDuration != floatParsed)
+          {
+            eventDuration = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
 
       }
       else if (controllerTypes[controllerFlag] == "gimbal")
@@ -465,7 +491,7 @@ namespace Waterfall.UI
           GUILayout.BeginHorizontal();
           GUILayout.Label("Speed", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
           randomStrings[2] = GUILayout.TextArea(randomStrings[2], GUILayout.MaxWidth(60f));
-          
+
           if (float.TryParse(randomStrings[2], out floatParsed))
           {
             if (perlinSpeed != floatParsed)
@@ -478,7 +504,30 @@ namespace Waterfall.UI
       }
       else if (controllerTypes[controllerFlag] == "rcs")
       {
-        // no special config
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Ramp Rate Up", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        throttleStrings[0] = GUILayout.TextArea(throttleStrings[0], GUILayout.MaxWidth(60f));
+        float floatParsed;
+        if (float.TryParse(throttleStrings[0], out floatParsed))
+        {
+          if (rampRateUp != floatParsed)
+          {
+            rampRateUp = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Ramp Rate Down", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+        throttleStrings[1] = GUILayout.TextArea(throttleStrings[1], GUILayout.MaxWidth(60f));
+        if (float.TryParse(throttleStrings[1], out floatParsed))
+        {
+          if (rampRateDown != floatParsed)
+          {
+            rampRateDown = floatParsed;
+          }
+        }
+        GUILayout.EndHorizontal();
       }
       else if (controllerTypes[controllerFlag] == "throttle")
       {
@@ -506,6 +555,10 @@ namespace Waterfall.UI
           }
         }
         GUILayout.EndHorizontal();
+      }
+      else if (controllerTypes[controllerFlag] == "thrust")
+      {
+        // no special config
       }
     }
     protected void GenerateCurveThumbs()

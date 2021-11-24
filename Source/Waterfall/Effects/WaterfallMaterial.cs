@@ -20,11 +20,11 @@ namespace Waterfall
 
     public void Recalculate()
     {
-      SMR.BakeMesh(SkinedMesh);
-      if (SkinedMesh)
-      {
-        SkinedMesh.RecalculateNormals();
-      }
+      //SMR.BakeMesh(SkinedMesh);
+      //if (SkinedMesh)
+      //{
+      //  SkinedMesh.RecalculateNormals();
+      //}
     }
   }
   public class WaterfallMaterial
@@ -88,10 +88,13 @@ namespace Waterfall
     {
       ConfigNode node = new ConfigNode();
       node.name = WaterfallConstants.MaterialNodeName;
+      
       if (baseTransformName != "")
         node.AddValue("baseTransform", baseTransformName);
+      
       if (transformName != "")
         node.AddValue("transform", transformName);
+
       node.AddValue("shader", shaderName);
       node.AddValue("randomizeSeed", useAutoRandomization);
 
@@ -159,7 +162,7 @@ namespace Waterfall
           }
           if (useAutoRandomization && mat.HasProperty("_Seed"))
           {
-            mat.SetFloat("_Seed", UnityEngine.Random.Range(-1, 1));
+            mat.SetFloat("_Seed", UnityEngine.Random.Range(-1f, 1f));
           }
           Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);
         }

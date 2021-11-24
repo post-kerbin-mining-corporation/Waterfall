@@ -37,7 +37,8 @@ namespace Waterfall.UI
 
       light = modelToEdit.lights.First();
       GetLightValues();
-      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
     }
 
     protected override void InitUI()
@@ -84,10 +85,9 @@ namespace Waterfall.UI
       }
       GetLightValues();
 
+      
       showWindow = true;
-
-
-      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
+      GUI.BringWindowToFront(windowID);
     }
 
     protected override void DrawWindow(int windowId)

@@ -1,3 +1,31 @@
+v0.7.0
+------
+- New shaders: Waterfall/Additive (Volumetric), Waterfall/Additive Cones (Volumetric),  Waterfall/Additive Echo (Dynamic) by KnightOfStJohn 
+- Added new workflow: volumetric for new shaders
+- Fixed randomness seed for different effects on different parts not working right
+
+v0.6.8
+------
+- Various popup UI windows will now be better at retaining their position if changed when opened (e.g when changing the color you are editing)
+
+v0.6.7
+------
+- Added an option to allow non-uniform parent scaling in effects (al2me6). Don't use this if you don't know exactly what you are doing
+
+v0.6.6
+------
+- Updated compatibility to KSP 1.12
+
+v0.6.5
+------
+- Resolved an issue that would cause waterfall data items (templates, etc) to be unpatchable with Module Manager (thanks al2me6!)
+
+v0.6.4
+------
+- Added a ThrustController controller which keys off engine normalized thrust
+- Added a more verbose exception when failing to load a template
+- Disabled SMR rebuilding as it wasn't doing much and was negatively impacting performance
+
 v0.6.3
 ------
 - Improved hydrolox-lower-3 (RS-68) template (Zorg)

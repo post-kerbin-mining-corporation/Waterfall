@@ -20,7 +20,9 @@ namespace Waterfall.UI
     {
       currentTexturePath = currentTexture;
       GenerateTextures();
-      WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
+
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
     }
 
     protected override void InitUI()
@@ -34,9 +36,10 @@ namespace Waterfall.UI
     {
       currentTexturePath = currentTexture;
       GenerateTextures();
-      WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f,350, 100);
+
       
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
 
     public string GetTexturePath()
