@@ -110,7 +110,7 @@ Shader "Waterfall/Additive (Volumetric)"
 
             v2f vert(vdata i) {
                 v2f o;
-
+                                
                 // vertex type
                 o.Cam.w = 0.1 * round(i.color.a * 10.0); 
 
@@ -145,8 +145,8 @@ Shader "Waterfall/Additive (Volumetric)"
                 float2 yt = float2(0.0, -1.0);              // tangent y-values
                 float2 dRRdy = 2.0 * o.a.x * yt + b.x;      // derivative of the mesh R² at yt
                 float2 y0 = float2(2 * R0sphere, -4.0);     // zero y-values
-                
-                if (dRRdy.x < 0) { y0.x = min(y0.x, -0.9 * rcp(dRRdy.x)); }
+                                
+                if (dRRdy.x < 0) { y0.x = min(y0.x, -0.9 / dRRdy.x); }
                 if (dRRdy.y < 0) { y0.y = min(y0.y, 0.9 * (o.a.x - 1.0) / dRRdy.y); }
                                 
                 float2 Dy = yt - y0;
@@ -163,7 +163,7 @@ Shader "Waterfall/Additive (Volumetric)"
                 // check if bounding ellipsoids are longer than mesh ellipsoid
                 float D0 = mad(b.x, b.x, -4.0 * o.a.x * c.x);
                 o.y0.xy = (-b.x + sign(o.a.x) * float2(-1.0, 1.0) * sqrt(D0)) / (2.0 * o.a.x);
-                if (o.y0.y > 0.0 && o.y0.y < y0.x) {
+                if ((o.y0.y > 0.0 && o.y0.y < y0.x) || y0.x < 0.0001) {
                     y0.x = o.y0.y;
                     o.a.y = o.a.x;
                     b.y = b.x;
