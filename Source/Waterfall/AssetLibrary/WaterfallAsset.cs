@@ -12,6 +12,7 @@ namespace Waterfall
     Deforming,
     Billboards,
     Light,
+    Volumetric,
     Other
   }
   public class WaterfallAsset

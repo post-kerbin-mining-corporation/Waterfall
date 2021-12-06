@@ -11,16 +11,19 @@ namespace Waterfall.UI
 {
   public class UITexturePickerWindow : UIPopupWindow
   {
-    
+
     protected string windowTitle = "";
     protected string currentTexturePath = "";
     protected Dictionary<string, Texture> texThumbs;
+    protected Vector2 scrollPos = new Vector2();
 
     public UITexturePickerWindow(string texToEdit, string currentTexture, bool show) : base(show)
     {
       currentTexturePath = currentTexture;
       GenerateTextures();
-      WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
+
+      if (!showWindow)
+        WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
     }
 
     protected override void InitUI()
@@ -34,14 +37,15 @@ namespace Waterfall.UI
     {
       currentTexturePath = currentTexture;
       GenerateTextures();
-      WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f,350, 100);
-      
+
+
       showWindow = true;
+      GUI.BringWindowToFront(windowID);
     }
 
     public string GetTexturePath()
     {
-      
+
 
       return currentTexturePath;
     }
@@ -76,18 +80,21 @@ namespace Waterfall.UI
     {
       GUILayout.BeginHorizontal();
       GUILayout.Label("<b>Selected Texture</b>");
-      
       Rect bRect = GUILayoutUtility.GetRect(64f,64f);
       if (texThumbs != null && currentTexturePath != null)
         GUI.DrawTexture(bRect, texThumbs[currentTexturePath]);
       GUILayout.Label(currentTexturePath);
+      GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();
+
       GUILayout.BeginVertical();
       GUILayout.Label("<b>Available Textures</b>");
+      scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(600));
       foreach (WaterfallAsset asset in WaterfallAssets.Textures)
       {
         DrawTextureButton(asset);
       }
+      GUILayout.EndScrollView();
       GUILayout.EndVertical();
     }
     protected void DrawTextureButton(WaterfallAsset texture)
@@ -103,10 +110,10 @@ namespace Waterfall.UI
       GUILayout.Label(texture.Name);
       GUILayout.EndHorizontal();
     }
-   
+
     public void Update()
     {
-     
+
     }
 
     public void GenerateTextures()
@@ -119,4 +126,3 @@ namespace Waterfall.UI
     }
   }
 }
-
