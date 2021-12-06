@@ -41,7 +41,7 @@ namespace Waterfall.UI
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {
-        materialList[i] = $"{model.materials[i].transformName} ({model.materials[i].materials[0].name.Split('(').First()})";
+        materialList[i] = $"{model.materials[i].transformName}";// ({model.materials[i].materials[0].name.Split('(').First()})";
       }
       matl = modelToEdit.materials[materialID];
 
@@ -67,7 +67,7 @@ namespace Waterfall.UI
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {
-        materialList[i] = model.materials[i].materials[0].name;
+        materialList[i] = $"{model.materials[i].transformName}";// ({model.materials[i].materials[0].name.Split('(').First()})";
       }
       matl = modelToEdit.materials[materialID];
       showWindow = true;
@@ -108,7 +108,7 @@ namespace Waterfall.UI
     protected void DrawMaterials()
     {
       GUILayout.BeginHorizontal();
-      materialID = GUILayout.SelectionGrid(materialID, materialList, 2, GUIResources.GetStyle("radio_text_button"));
+      materialID = GUILayout.SelectionGrid(materialID, materialList, 1, GUIResources.GetStyle("radio_text_button"));
       if (materialID != savedID)
       {
         savedID = materialID;

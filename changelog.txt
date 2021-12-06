@@ -3,6 +3,7 @@ v0.7.0
 - New shaders: Waterfall/Additive (Volumetric), Waterfall/Additive Cones (Volumetric),  Waterfall/Additive Echo (Dynamic) by KnightOfStJohn 
 - Added new workflow: volumetric for new shaders
 - Fixed randomness seed for different effects on different parts not working right
+- Made material labels a little clearer in the Material Editor
 
 v0.6.8
 ------
