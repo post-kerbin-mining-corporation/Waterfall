@@ -150,6 +150,8 @@ namespace Waterfall
       ConfigNode[] lightFloatNodes = node.GetNodes(WaterfallConstants.LightFloatModifierNodeName);
       ConfigNode[] lightColorNodes = node.GetNodes(WaterfallConstants.LightColorModifierNodeName);
 
+      ConfigNode[] particleParamNodes = node.GetNodes(WaterfallConstants.ParticleSystemModifierNodeName);
+
       foreach (ConfigNode subNode in positionNodes)
       {
         fxModifiers.Add(new EffectPositionModifier(subNode));
@@ -185,6 +187,10 @@ namespace Waterfall
       foreach (ConfigNode subNode in lightColorNodes)
       {
         fxModifiers.Add(new EffectLightColorModifier(subNode));
+      }
+      foreach (ConfigNode subNode in particleParamNodes)
+      {
+        fxModifiers.Add(new EffectParticleSystemModifier(subNode));
       }
     }
 
@@ -272,6 +278,8 @@ namespace Waterfall
       }
       InitializeIntegrators();
     }
+
+
     List<Material> effectRendererMaterials;
     List<Transform> effectRendererTransforms;
     List<Renderer> effectRenderers;
@@ -282,6 +290,7 @@ namespace Waterfall
     public List<EffectRotationIntegrator> rotationIntegrators;
     public List<EffectScaleIntegrator> scaleIntegrators;
     public List<EffectColorIntegrator> colorIntegrators;
+    public List<EffectParticleParameterIntegrator> particleIntegrators;
 
     public void InitializeIntegrators()
     {
@@ -292,6 +301,7 @@ namespace Waterfall
       scaleIntegrators = new List<EffectScaleIntegrator>();
       lightFloatIntegrators = new List<EffectLightFloatIntegrator>();
       lightColorIntegrators = new List<EffectLightColorIntegrator>();
+      particleIntegrators = new List<EffectParticleParameterIntegrator>();
 
       foreach (EffectModifier fxMod in fxModifiers)
       {
@@ -302,6 +312,7 @@ namespace Waterfall
         ParseScaleModifier(fxMod);
         ParseLightFloatModifier(fxMod);
         ParseLightColorModifier(fxMod);
+        ParseParticleParameterModifier(fxMod);
       }
     }
 
@@ -508,7 +519,6 @@ namespace Waterfall
       }
       catch (InvalidCastException e) { }
     }
-
     void ParseLightFloatModifier(EffectModifier fxMod)
     {
       try
@@ -549,7 +559,6 @@ namespace Waterfall
       }
       catch (InvalidCastException e) { }
     }
-
     void ParseLightColorModifier(EffectModifier fxMod)
     {
       try
@@ -584,6 +593,46 @@ namespace Waterfall
             if (targetIntegrator != null)
             {
               targetIntegrator.AddModifier(colorMod);
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
+    void ParseParticleParameterModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectParticleSystemModifier particleMod = (EffectParticleSystemModifier)fxMod;
+        if (particleMod != null)
+        {
+          bool needsNewIntegrator = true;
+          EffectParticleParameterIntegrator targetIntegrator = null;
+
+          foreach (EffectParticleParameterIntegrator integrator in particleIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (integrator.handledModifiers.Contains(particleMod))
+              return;
+
+            // if there's already an integrator that has the transform name and float name, don't need to add
+            if (integrator.paramName == particleMod.paramName && integrator.transformName == particleMod.transformName)
+            {
+              targetIntegrator = integrator;
+              needsNewIntegrator = false;
+            }
+
+          }
+          if (needsNewIntegrator && particleMod.paramName != "")
+          {
+            EffectParticleParameterIntegrator newIntegrator = new EffectParticleParameterIntegrator(this, particleMod);
+            particleIntegrators.Add(newIntegrator);
+          }
+          else if (!needsNewIntegrator && particleMod.paramName != "")
+          {
+            if (targetIntegrator != null)
+            {
+              targetIntegrator.AddModifier(particleMod);
             }
           }
         }
@@ -736,7 +785,26 @@ namespace Waterfall
       }
       catch (InvalidCastException e) { }
     }
-
+    void RemoveParticleParameterModifier(EffectModifier fxMod)
+    {
+      try
+      {
+        EffectParticleSystemModifier mod = (EffectParticleSystemModifier)fxMod;
+        if (mod != null)
+        {
+          foreach (EffectParticleParameterIntegrator integrator in particleIntegrators)
+          {
+            // If already exists as a handled modifier, don't touch me
+            if (integrator.handledModifiers.Contains(mod))
+            {
+              integrator.RemoveModifier(mod);
+              return;
+            }
+          }
+        }
+      }
+      catch (InvalidCastException e) { }
+    }
     public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
     {
       TemplatePositionOffset = position;
@@ -807,7 +875,10 @@ namespace Waterfall
         {
           lightColorIntegrators[i].Update();
         }
-
+        for (int i = 0; i < particleIntegrators.Count; i++)
+        {
+          particleIntegrators[i].Update();
+        }
 
         int transparentQueueBase = 3000;
         
@@ -860,6 +931,7 @@ namespace Waterfall
       RemoveScaleModifier(mod);
       RemoveLightFloatModifier(mod);
       RemoveLightColorModifier(mod);
+      RemoveParticleParameterModifier(mod);
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -878,6 +950,7 @@ namespace Waterfall
       ParseScaleModifier(mod);
       ParseLightFloatModifier(mod);
       ParseLightColorModifier(mod);
+      ParseParticleParameterModifier(mod);
     }
 
     public void MoveModifierUp(int index)

@@ -44,6 +44,7 @@ namespace Waterfall
     public static float MinimumLightIntensity = 0.05f;
     public static bool EnableLights = true;
     public static bool EnableDistortion = true;
+    //public static bool EnableDistortion = true;
 
     /// <summary>
     /// Load data from configuration

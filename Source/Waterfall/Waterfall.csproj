@@ -100,6 +100,7 @@
     <Compile Include="EffectControllers\ThrottleController.cs" />
     <Compile Include="EffectControllers\ThrustController.cs" />
     <Compile Include="EffectModifiers\EffectLightColorModifier.cs" />
+    <Compile Include="EffectModifiers\EffectParticleSystemModifier.cs" />
     <Compile Include="EffectModifiers\EffectLightFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorFromLightModifier.cs" />
     <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectParticleParameterIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
@@ -125,11 +127,13 @@
     <Compile Include="Effects\WaterfallEffectTemplate.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
-    <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
+    <Compile Include="Effects\WaterfallParticle.cs" />
+    <Compile Include="ParticleUtils.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleSystemModifierWindow.cs" />
     <Compile Include="UI\UIColorPickerWindow.cs" />
     <Compile Include="UI\UIControllerPopupWindow.cs" />
     <Compile Include="UI\UILightEditWindow.cs" />
@@ -152,7 +156,6 @@
     <Compile Include="UI\UIModelEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
-    <Compile Include="UI\UISmokeEditWindow.cs" />
     <Compile Include="UI\UITexturePickerWindow.cs" />
     <Compile Include="UI\UIUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIUVScrollModifierWindow.cs" />

@@ -17,6 +17,7 @@ namespace Waterfall
     public static List<WaterfallAsset> Models;
     public static List<WaterfallAsset> Textures;
     public static List<WaterfallAsset> Shaders;
+
     /// <summary>
     /// Load data from configuration
     /// </summary>
@@ -76,6 +77,15 @@ namespace Waterfall
     public static List<WaterfallAsset> GetShaders(AssetWorkflow flow)
     {
       return Shaders.FindAll(x => x.Workflow == flow);
+    }
+
+    public static WaterfallAsset GetModel(string name)
+    {
+      if (Models.Find(x => x.Name== name) != null)
+      {
+        return Models.Find(x => x.Name == name);
+      }
+      return null;
     }
   }
 }

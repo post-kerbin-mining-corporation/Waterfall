@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Waterfall.Modules;
 
 namespace Waterfall.UI
 {
@@ -42,7 +41,6 @@ namespace Waterfall.UI
     UILightEditWindow lightEditWindow;
     UIColorPickerWindow colorPickWindow;
     UITexturePickerWindow texturePickWindow;
-    UISmokeEditWindow smokeEditWindow;
     string currentCurveTag;
     #endregion
 
@@ -96,10 +94,6 @@ namespace Waterfall.UI
       foreach (UIModifierWindow modWin in editWindows)
       {
         modWin.Draw();
-      }
-      if (smokeEditWindow != null)
-      {
-        smokeEditWindow.Draw();
       }
       if (curveEditWindow != null)
       {
@@ -613,6 +607,15 @@ namespace Waterfall.UI
 
       }
       catch (InvalidCastException e) { }
+      try
+      {
+        EffectParticleSystemModifier psMod = (EffectParticleSystemModifier)fxMod;
+        if (psMod != null)
+        {
+          editWindows.Add(new UIParticleSystemModifierWindow(psMod, true));
+        }
+      }
+      catch (InvalidCastException e) { }
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)
@@ -656,20 +659,7 @@ namespace Waterfall.UI
       }
       return curveEditWindow;
     }
-    public UISmokeEditWindow OpenSmokeEditor(ModuleWaterfallSmoke toEdit)
-    {
-
-
-      if (smokeEditWindow != null)
-      {
-
-      }
-      else
-      {
-        smokeEditWindow = new UISmokeEditWindow(toEdit, true);
-      }
-      return smokeEditWindow;
-    }
+    
 
     public UIMaterialEditWindow OpenMaterialEditWindow(WaterfallModel mdl)
     {
@@ -849,11 +839,6 @@ namespace Waterfall.UI
       if (texturePickWindow != null)
       {
         texturePickWindow.Update();
-      }
-
-      if (smokeEditWindow != null)
-      {
-        smokeEditWindow.Update();
       }
 
       if (selectedTemplate != null)

@@ -13,12 +13,15 @@ namespace Waterfall
     Billboards,
     Light,
     Volumetric,
+    Particles,
+    Smoke,
     Other
   }
   public class WaterfallAsset
   {
     public string Name = "default";
     public string Description = "default description";
+    public string Asset = "";
     public AssetWorkflow Workflow;
     public string Path;
 
@@ -33,6 +36,7 @@ namespace Waterfall
       node.TryGetValue("description", ref Description);
       node.TryGetValue("name", ref Name);
       node.TryGetValue("path", ref Path);
+      node.TryGetValue("asset", ref Asset);
     }
   }
 

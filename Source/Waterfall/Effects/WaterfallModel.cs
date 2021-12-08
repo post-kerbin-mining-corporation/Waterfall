@@ -7,14 +7,17 @@ namespace Waterfall
 
   public class WaterfallModel
   {
+
     public string path;
+    public string asset;
     public string positionOffsetString;
     public string rotationOffestString;
     public string scaleOffsetString;
 
-    public string overrideShader= "";
+    public string overrideShader = "";
     public List<WaterfallMaterial> materials;
     public List<WaterfallLight> lights;
+    public List<WaterfallParticle> particles;
 
 
     public List<Transform> modelTransforms;
@@ -41,6 +44,7 @@ namespace Waterfall
     {
       modelTransforms = new List<Transform>();
       path = modelAsset.Path;
+      asset = modelAsset.Asset;
       if (shaderAsset == null)
         overrideShader = null;
       else
@@ -71,6 +75,12 @@ namespace Waterfall
       {
         lights.Add(new WaterfallLight(lightNode));
       }
+
+      particles = new List<WaterfallParticle>();
+      foreach (ConfigNode pNode in node.GetNodes(WaterfallConstants.ParticleNodeName))
+      {
+        particles.Add(new WaterfallParticle(pNode));
+      }
     }
     public ConfigNode Save()
     {
@@ -88,6 +98,10 @@ namespace Waterfall
       {
         node.AddNode(l.Save());
       }
+      foreach (WaterfallParticle p in particles)
+      {
+        node.AddNode(p.Save());
+      }
       return node;
     }
 
@@ -97,22 +111,16 @@ namespace Waterfall
       Utils.Log(String.Format("[WaterfallModel]: Instantiating model from {0} ", path), LogType.Effects);
       if (!GameDatabase.Instance.ExistsModel(path))
         Utils.LogError(String.Format("[WaterfallModel]: Unabled to find model {0} in GameDatabase", path));
+
       GameObject inst = GameObject.Instantiate(GameDatabase.Instance.GetModelPrefab(path), parent.position, parent.rotation);
       inst.SetLayerRecursive(1);
       inst.SetActive(true);
 
       Transform modelTransform = inst.GetComponent<Transform>();
-      
+
       modelTransform.SetParent(parent, true);
 
-      //modelTransform.localScale = modelScaleOffset;
-      //modelTransform.localPosition = modelPositionOffset;
-
-      //if (modelRotationOffset == Vector3.zero)
-      //  modelTransform.localRotation = Quaternion.identity;
-      //else
-      //  modelTransform.localEulerAngles = modelRotationOffset;
-      //Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
+      // Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
 
@@ -123,8 +131,9 @@ namespace Waterfall
       {
         materials = new List<WaterfallMaterial>();
         lights = new List<WaterfallLight>();
+        particles = new List<WaterfallParticle>();
 
-        if (lightObjs.Length >0)
+        if (lightObjs.Length > 0)
         {
           WaterfallLight l = new WaterfallLight();
           l.lights = new List<Light>();
@@ -142,6 +151,15 @@ namespace Waterfall
           m.transformName = r.transform.name;
           materials.Add(m);
         }
+
+        if (asset != null && asset != "")
+        {
+                    WaterfallParticle p = new WaterfallParticle();
+          p.transformName = modelTransform.name;
+          p.assetName = asset;
+
+          particles.Add(p);
+        }
       }
 
       foreach (WaterfallMaterial m in materials)
@@ -151,8 +169,12 @@ namespace Waterfall
       }
       foreach (WaterfallLight l in lights)
       {
-        
+
         l.Initialize(modelTransform);
+      }
+      foreach (WaterfallParticle p in particles)
+      {
+        p.Initialize(modelTransform);
       }
       ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
     }
@@ -199,7 +221,7 @@ namespace Waterfall
           renderer.enabled = state;
         }
         Renderer[] renderers = modelTransform.GetComponentsInChildren<Renderer>();
-       
+
       }
     }
 
@@ -214,7 +236,7 @@ namespace Waterfall
           {
             foreach (Transform t in modelTransforms)
             {
-              foreach(Renderer r in t.GetComponentsInChildren<Renderer>())
+              foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
               {
                 if (r.name == m.transformName)
                 {
@@ -243,7 +265,7 @@ namespace Waterfall
                 {
                   if (propertyName == "_Seed" && m.useAutoRandomization) { }
                   else
-                  r.material.SetFloat(propertyName,value);
+                    r.material.SetFloat(propertyName, value);
                 }
               }
             }

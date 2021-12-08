@@ -12,6 +12,7 @@ namespace Waterfall
     public static string ModelNodeName = "MODEL";
     public static string MaterialNodeName = "MATERIAL";
     public static string LightNodeName = "LIGHT";
+    public static string ParticleNodeName = "PARTICLE";
     public static string FloatNodeName = "FLOAT";
     public static string ColorNodeName = "COLOR";
     public static string Vector4NodeName = "VECTOR4";
@@ -28,6 +29,8 @@ namespace Waterfall
     public static string ColorFromLightNodeName = "COLORLIGHTMODIFIER";
     public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
     public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
+
+    public static string ParticleSystemModifierNodeName = "PARTICLESYSTEMMODIFIER";
 
     public static string[] ShaderPropertyHideFloatNames = new string[] { "_Brightness", "_Intensity", "_Strength"};
 
@@ -75,6 +78,13 @@ namespace Waterfall
 
     };
 
+    public static Dictionary<string, ParticleParameterData> ParticleParameterMap = new Dictionary<string, ParticleParameterData>
+    {
+      ["StartSize"] = new ParticleParameterData("StartSize", ParticleParameterType.Range),
+      ["StartLifetime"] = new ParticleParameterData("StartLifetime", ParticleParameterType.Range),
+      ["StartSpeed"] = new ParticleParameterData("StartSpeed", ParticleParameterType.Range),
+      ["Rate"] = new ParticleParameterData("Rate", ParticleParameterType.Range),
+    };
 
 
 

@@ -22,7 +22,11 @@ namespace Waterfall.UI
     WaterfallEffect effect;
 
     string newModifierName = "newModifier";
-    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color" };
+    string[] modifierTypes = new string[] {
+      "Position", "Rotation", "Scale",
+      "Material Color", "Material Float", "Light Material Color",
+      "Light Float", "Light Color",
+      "Particle Parameter"};
     int modifierFlag = 0;
 
     string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float" };
@@ -145,11 +149,21 @@ namespace Waterfall.UI
           {
             transformOptions[i] = xFormOptions[i].gameObject.name;
           }
-          
+
         }
         else if (modifierTypes[modifierFlag].Contains("Light"))
         {
           List<Light> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Light>().ToList();
+
+          transformOptions = new string[xFormOptions.Count];
+          for (int i = 0; i < xFormOptions.Count; i++)
+          {
+            transformOptions[i] = xFormOptions[i].gameObject.name;
+          }
+        }
+        else if (modifierTypes[modifierFlag].Contains("Particle"))
+        {
+          List<WaterfallParticleEmitter> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<WaterfallParticleEmitter>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)
@@ -256,6 +270,14 @@ namespace Waterfall.UI
       else if (modifierTypes[modifierFlag] == "Light Color")
       {
         EffectLightColorModifier newMod = new EffectLightColorModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      else if (modifierTypes[modifierFlag] == "Particle Parameter")
+      {
+        EffectParticleSystemModifier newMod = new EffectParticleSystemModifier();
         newMod.fxName = newModifierName;
         newMod.transformName = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];

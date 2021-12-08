@@ -219,6 +219,10 @@ namespace Waterfall.UI
     WaterfallEffect CreateNewEffect()
     {
       WaterfallModel model;
+      WaterfallAsset assetModel;
+
+      
+
       if (shaders.Count == 0)
       {
 

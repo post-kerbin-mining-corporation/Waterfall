@@ -25,7 +25,7 @@ namespace Waterfall
     /// <returns></returns>
     public static GameObject GetParticles(String particleName)
     {
-      Utils.Log("[WaterfallParticleLoader]: Getting shader " + particleName);
+      Utils.Log("[WaterfallParticleLoader]: Getting particle " + particleName);
       return ParticleDictionary.ContainsKey(particleName) ? ParticleDictionary[particleName] : null;
     }
 
