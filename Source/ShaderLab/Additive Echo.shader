@@ -50,7 +50,7 @@
     Tags { "Queue" = "Transparent" "IgnoreProjector" = "True"  }
 
 
-    Blend[_SrcMode][_DestMode]
+    Blend one one
 
     ZWrite Off
     ZTest LEqual
