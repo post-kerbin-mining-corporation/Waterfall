@@ -44,6 +44,7 @@ namespace Waterfall
     public static float MinimumLightIntensity = 0.05f;
     public static bool EnableLights = true;
     public static bool EnableDistortion = true;
+    public static bool EnableLegacyBlendModes = true;
 
     /// <summary>
     /// Load data from configuration
@@ -70,6 +71,7 @@ namespace Waterfall
         settingsNode.TryGetValue("MinimumLightIntensity", ref MinimumLightIntensity);
         settingsNode.TryGetValue("EnableLights", ref EnableLights);
         settingsNode.TryGetValue("EnableDistortion", ref EnableDistortion);
+        settingsNode.TryGetValue("EnableLegacyBlendModes", ref EnableLegacyBlendModes);
       }
       else
       {
