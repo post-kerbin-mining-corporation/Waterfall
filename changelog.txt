@@ -1,3 +1,10 @@
+v0.7.1
+------
+- Changed the default blend mode of all additive-type effects to One One, this is controlled by a new Settings item called EnableLegacyBlendModes
+- Fixed the Thrust controller which was not working right (al2me6)
+- Fixed material picker texture name throwing an error (al2me6)
+
+
 v0.7.0
 ------
 - New shaders: Waterfall/Additive (Volumetric), Waterfall/Additive Cones (Volumetric),  Waterfall/Additive Echo (Dynamic) by KnightOfStJohn 
