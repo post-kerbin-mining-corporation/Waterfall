@@ -201,14 +201,8 @@ namespace Waterfall.UI
       //GUILayout.Label(ctrl.linkedTo, GUILayout.MaxWidth(130f));
 
 
-      float sliderMax = 1f;
-      float sliderMin = 0f;
-      if (ctrl.linkedTo == "mach")
-        sliderMax = 15f;
-      if (ctrl.linkedTo == "gimbal")
-      {
-        sliderMin = -1f;
-      }
+      float sliderMax = ctrl.overrideMax;
+      float sliderMin = ctrl.overrideMin;
 
       if (ctrl.overridden)
       {

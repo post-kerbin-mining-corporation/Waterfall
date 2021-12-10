@@ -94,6 +94,7 @@
     <Compile Include="EffectControllers\EventController.cs" />
     <Compile Include="EffectControllers\GimbalController.cs" />
     <Compile Include="EffectControllers\LightController.cs" />
+    <Compile Include="EffectControllers\VelocityController.cs" />
     <Compile Include="EffectControllers\MachController.cs" />
     <Compile Include="EffectControllers\RandomnessController.cs" />
     <Compile Include="EffectControllers\RCSController.cs" />

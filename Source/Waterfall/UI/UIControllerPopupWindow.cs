@@ -26,7 +26,7 @@ namespace Waterfall.UI
     WaterfallController control;
     ModuleWaterfallFX fxMod;
     string newControllerName = "controller";
-    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle", "thrust" };
+    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle", "thrust", "velocity" };
     int controllerFlag = 0;
     CurveUpdateFunction eventFun;
 
@@ -337,6 +337,13 @@ namespace Waterfall.UI
       else if (controllerTypes[controllerFlag] == "thrust")
       {
         ThrustController newCtrl = new ThrustController();
+        newCtrl.name = newControllerName;
+        newCtrl.linkedTo = controllerTypes[controllerFlag];
+        return newCtrl;
+      }
+      else if (controllerTypes[controllerFlag] == "velocity")
+      {
+        VelocityController newCtrl = new VelocityController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;

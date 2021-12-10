@@ -83,7 +83,11 @@ namespace Waterfall
       ["StartSize"] = new ParticleParameterData("StartSize", ParticleParameterType.Range),
       ["StartLifetime"] = new ParticleParameterData("StartLifetime", ParticleParameterType.Range),
       ["StartSpeed"] = new ParticleParameterData("StartSpeed", ParticleParameterType.Range),
-      ["Rate"] = new ParticleParameterData("Rate", ParticleParameterType.Range),
+      ["EmissionRate"] = new ParticleParameterData("EmissionRate", ParticleParameterType.Range),
+      ["EmissionVolumeLength"] = new ParticleParameterData("EmissionVolumeLength", ParticleParameterType.Value),
+      ["EmissionVolumeRadius"] = new ParticleParameterData("EmissionVolumeRadius", ParticleParameterType.Value),
+      ["MaxParticles"] = new ParticleParameterData("MaxParticles", ParticleParameterType.Value),
+      
     };
 
 

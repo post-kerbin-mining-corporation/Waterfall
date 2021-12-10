@@ -62,14 +62,20 @@ namespace Waterfall
 
       if (noiseType == "perlin")
       {
+        overrideMin = range.x;
+        overrideMax = range.y;
         noiseFunc = new NoiseFunction(PerlinNoise);
       }
       else if (noiseType == "random")
       {
+        overrideMin = range.x;
+        overrideMax = range.y;
         noiseFunc = new NoiseFunction(RandomNoise);
       }
       else
       {
+        overrideMin = minimum;
+        overrideMax = scale-minimum;
         noiseFunc = new NoiseFunction(RandomNoise);
       }
 

@@ -73,7 +73,8 @@ namespace Waterfall.UI
         paramMod.ApplyParameterName(paramName);
       }
       GUILayout.EndHorizontal();
-
+      //if (WaterfallConstants.ParticleParameterMap.ContainsKey(paramNames[paramIndex]))
+      //{
       GUILayout.BeginHorizontal();
       GUILayout.Label("Start Curve", GUILayout.Width(hdrWidth));
       Rect buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y);
@@ -93,7 +94,8 @@ namespace Waterfall.UI
         PasteCurve(paramMod.curve1, out paramMod.curve1);
       }
       GUILayout.EndHorizontal();
-
+      //if (WaterfallConstants.ParticleParameterMap[paramName].ParamType == ParticleParameterType.Range)
+      //{
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("End Curve", GUILayout.Width(hdrWidth));
@@ -104,7 +106,7 @@ namespace Waterfall.UI
         EditCurve(paramMod.curve2, curve2Function);
         selectionFlag = 2;
       }
-      GUI.DrawTexture(imageRect, miniCurve1);
+      GUI.DrawTexture(imageRect, miniCurve2);
       if (GUILayout.Button("Copy", GUILayout.Width(copyWidth)))
       {
         CopyCurve(paramMod.curve2);
@@ -114,6 +116,13 @@ namespace Waterfall.UI
         PasteCurve(paramMod.curve2, out paramMod.curve2);
       }
       GUILayout.EndHorizontal();
+      //  }
+      //}
+      //else
+      //{
+
+      //  GUILayout.Label("Choose a parameter");
+      //}
     }
     public override void UpdateCurves(FloatCurve newCurve, string tag)
     {
@@ -133,7 +142,7 @@ namespace Waterfall.UI
     protected void GenerateCurveThumbs(EffectParticleSystemModifier floatMod)
     {
       miniCurve1 = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve1, Color.red);
-      miniCurve2 = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve2,  Color.green);
+      miniCurve2 = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve2, Color.green);
     }
 
 

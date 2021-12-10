@@ -29,7 +29,8 @@ namespace Waterfall
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-
+      overrideMin = -1f;
+      overrideMax = 1f;
       gimbalController = host.GetComponents<ModuleGimbal>().ToList().First();
       
       if (gimbalController == null)

@@ -48,10 +48,10 @@ namespace Waterfall
 
       GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(assetName),
             Vector3.zero, Quaternion.identity) as GameObject;
-          go.transform.SetParent(parentTransform);
-          go.transform.localPosition = Vector3.zero;
-          go.transform.localScale = Vector3.one;
-          go.transform.localRotation = Quaternion.identity;
+      go.transform.SetParent(parentTransform);
+      go.transform.localPosition = Vector3.zero;
+      go.transform.localScale = Vector3.one;
+      go.transform.localRotation = Quaternion.identity;
 
       systems.Add(go.AddComponent<WaterfallParticleEmitter>());
 
@@ -98,6 +98,7 @@ namespace Waterfall
 
     private ParticleSystem.MainModule main;
     private ParticleSystem.EmissionModule emit;
+    private ParticleSystem.ShapeModule shape;
     private static ParticleSystem.Particle[] particles;
 
     public void Start()
@@ -108,30 +109,57 @@ namespace Waterfall
       emitter = self.GetComponent<ParticleSystem>();
       renderer = self.GetComponent<ParticleSystemRenderer>();
 
+
       if (emitter)
       {
         main = emitter.main;
         emit = emitter.emission;
+        shape = emitter.shape;
       }
-      FloatingOrigin.RegisterParticleSystem(emitter);
+
+      // FloatingOrigin.RegisterParticleSystem(emitter);
     }
+
+    Vector3d trueVelocity;
+
+    ParticleSystem.Particle[] particleBuffer;
 
     public void Update()
     {
-      if (particles == null || emitter.main.maxParticles > particles.Length)
-        particles = new ParticleSystem.Particle[emitter.main.maxParticles];
-
-      int numParticlesAlive = emitter.GetParticles(particles);
-
-      for (int j = 0; j < numParticlesAlive; j++)
+      if (emitter != null)
       {
-        //particles[j].v Krakensbane.GetFrameVelocity
+        if (FlightGlobals.ActiveVessel != null && (Krakensbane.GetFrameVelocity().magnitude > 0f))
+        {
+          Vector3d frameVel = Krakensbane.GetFrameVelocity();
+
+
+          particleBuffer = new ParticleSystem.Particle[emitter.particleCount];
+
+          int particleCount = emitter.GetParticles(particleBuffer);
+          int pc = particleCount;
+
+          float distancePerFrame = (float)frameVel.magnitude * TimeWarp.deltaTime;
+          Vector3 nrmVelocity = (-frameVel.normalized);
+          //Utils.Log($"D/frame: {distancePerFrame}, |v|: {frameVel.magnitude}");
+          while (particleCount > 0)
+          {
+            particleBuffer[particleCount - 1].position =
+              particleBuffer[particleCount - 1].position + (-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity;
+            //particleBuffer[particleCount - 1].velocity = -frameVel + UnityEngine.Random.insideUnitSphere*0.4f;
+            particleCount--;
+
+          }
+          emitter.SetParticles(particleBuffer, pc);
+        }
+        ///Utils.Log($"Krakensbane vel {Krakensbane.GetFrameVelocity()}, thresh {FloatingOrigin.fetch.threshold} ({FlightGlobals.ActiveVessel.obt_velocity.magnitude})");
       }
+
+
     }
 
     public Vector2 Get(string paramName)
     {
-      
+
       switch (paramName)
       {
         case "StartSpeed":
@@ -142,6 +170,12 @@ namespace Waterfall
           return new Vector2(main.startLifetime.constantMin, main.startLifetime.constantMax);
         case "EmissionRate":
           return new Vector2(emit.rateOverTime.constantMin, emit.rateOverTime.constantMax);
+        case "MaxParticles":
+          return new Vector2(main.maxParticles, main.maxParticles);
+        case "EmissionVolumeLength":
+          return new Vector2(shape.length, shape.length);
+        case "EmissionVolumeRadius":
+          return new Vector2(shape.radius, shape.radius);
       }
       return Vector2.zero;
     }
@@ -162,6 +196,18 @@ namespace Waterfall
         case "EmissionRate":
           emit.rateOverTime = newCurve;
           break;
+        case "MaxParticles":
+          main.maxParticles = (int)paramValue.x;
+          break;
+        case "EmissionVolumeLength":
+          shape.length = paramValue.x;
+          break;
+        case "EmissionVolumeRadius":
+          shape.radius = paramValue.x;
+          break;
+        default:
+          break;
+
       }
     }
 

@@ -19,7 +19,8 @@ namespace Waterfall
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-
+      overrideMin = 0f;
+      overrideMax = 15f;
     }
     public override List<float> Get()
     {

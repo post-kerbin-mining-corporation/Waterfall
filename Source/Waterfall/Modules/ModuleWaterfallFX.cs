@@ -325,6 +325,12 @@ namespace Waterfall
             allControllers.Add(tcCtrl.name, tcCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Thrust Curve Controller on moduleID {0}", moduleID), LogType.Modules);
           }
+          if (ctrlType == "velocity")
+          {
+            VelocityController vCtrl = new VelocityController(controllerDataNode);
+            allControllers.Add(vCtrl.name, vCtrl);
+            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Velocity Controller on moduleID {0}", moduleID), LogType.Modules);
+          }
         }
       }
     }

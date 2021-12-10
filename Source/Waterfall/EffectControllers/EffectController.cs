@@ -16,6 +16,9 @@ namespace Waterfall
     public string linkedTo = "unnamedController";
     public bool overridden = false;
     public float overrideValue = 0.0f;
+    public float overrideMin = 0.0f;
+    public float overrideMax = 1f;
+
     protected float value = 0.0f;
     protected ModuleWaterfallFX parentModule;
 
