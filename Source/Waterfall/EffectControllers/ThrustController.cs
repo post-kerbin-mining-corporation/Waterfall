@@ -64,7 +64,7 @@ namespace Waterfall
       {
         // Thanks to NathanKell for the formula.
         currentThrustFraction = engineController.fuelFlowGui
-          / (engineController.maxFuelFlow * 1000f)
+          / engineController.maxFuelFlow
           / (float)engineController.ratioSum
           * engineController.mixtureDensity
           * engineController.multIsp;

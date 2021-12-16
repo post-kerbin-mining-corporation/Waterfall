@@ -833,6 +833,10 @@ namespace Waterfall
 
     public void SetHDR(bool isHDR)
     {
+      float destMode = 1f;
+      if (Settings.EnableLegacyBlendModes)
+        destMode = 6f;
+
       for (int i = 0; i < effectRendererMaterials.Count; i++)
       {
         if (effectRendererMaterials[i].HasProperty("_DestMode"))
@@ -843,7 +847,7 @@ namespace Waterfall
           }
           else
           {
-            effectRendererMaterials[i].SetFloat("_DestMode", 6f);
+            effectRendererMaterials[i].SetFloat("_DestMode", destMode);
             effectRendererMaterials[i].SetFloat("_ClipBrightness", 1f);
           }
       }
