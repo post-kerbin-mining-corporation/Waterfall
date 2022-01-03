@@ -53,9 +53,7 @@ namespace Waterfall.UI.EffectControllersUI
       fxMod = mod;
       newControllerName = ctrl.name;
 
-      Utils.Log($"SET EDIT {ctrl.linkedTo}, {selectedControllerIndex}", LogType.UI);
       selectedControllerIndex = controllerTypes.IndexOf(ctrl.linkedTo);
-      Utils.Log($"SET EDIT DONE {ctrl.linkedTo}, {selectedControllerIndex}", LogType.UI);
       GUI.BringWindowToFront(windowID);
 
       controllerOptions[selectedControllerIndex].LoadOptions(ctrl);
@@ -192,12 +190,7 @@ namespace Waterfall.UI.EffectControllersUI
 
     private void UpdateControllerSelection()
     {
-      var newIndex = GUILayout.SelectionGrid(selectedControllerIndex, controllersGridValues, Mathf.Min(controllersGridValues.Length, 4), GUIResources.GetStyle("radio_text_button"));
-      if (selectedControllerIndex != newIndex)
-      {
-        Utils.Log($"Index changed from {selectedControllerIndex} to {newIndex}", LogType.UI);
-        selectedControllerIndex = newIndex;
-      }
+      selectedControllerIndex = GUILayout.SelectionGrid(selectedControllerIndex, controllersGridValues, Mathf.Min(controllersGridValues.Length, 4), GUIResources.GetStyle("radio_text_button"));
     }
 
     private WaterfallController CreateNewController()
