@@ -10,6 +10,8 @@ namespace Waterfall
   [System.Serializable]
   public class LightController : WaterfallController
   {
+    public const string Name = "light";
+
     public float currentThrottle = 1;
     public string lightName = "";
     Light lightController;
@@ -18,16 +20,16 @@ namespace Waterfall
     public LightController() { }
     public LightController(ConfigNode node)
     {
-      name = "light";
-      linkedTo = "light";
-      node.TryGetValue("lightName", ref lightName);
-      node.TryGetValue("light", ref name);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(lightName), ref lightName);
+      node.TryGetValue(nameof(name), ref name);
     }
 
     public override ConfigNode Save()
     {
       ConfigNode c = base.Save();
-      c.AddValue("lightName", lightName);
+      c.AddValue(nameof(lightName), lightName);
       return c;
     }
     public override void Initialize(ModuleWaterfallFX host)

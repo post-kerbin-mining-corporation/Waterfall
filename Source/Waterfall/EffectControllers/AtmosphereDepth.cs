@@ -8,14 +8,16 @@ namespace Waterfall
   /// </summary>
   public class AtmosphereDensityController : WaterfallController
   {
+    public const string Name = "atmosphere_density";
+
     public float atmosphereDepth = 1;
 
     public AtmosphereDensityController() { }
     public AtmosphereDensityController(ConfigNode node)
     {
-      name = "atmosphereDensity";
-      linkedTo = "atmosphere_density";
-      node.TryGetValue("name", ref name);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(name), ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {

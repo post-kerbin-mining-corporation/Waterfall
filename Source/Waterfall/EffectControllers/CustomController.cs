@@ -9,12 +9,14 @@ namespace Waterfall
   [System.Serializable]
   public class CustomController : WaterfallController
   {
+    public const string Name = "custom";
+    
     public CustomController() { }
     public CustomController(ConfigNode node)
     {
-      name = "throttle";
-      linkedTo = "custom";
-      node.TryGetValue("name", ref name);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(name), ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {

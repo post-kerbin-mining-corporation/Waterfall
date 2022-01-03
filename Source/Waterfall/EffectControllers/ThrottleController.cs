@@ -12,6 +12,8 @@ namespace Waterfall
   [System.Serializable]
   public class ThrottleController : WaterfallController
   {
+    public const string Name = "throttle";
+    
     public float currentThrottle = 1f;
     public float responseRateUp = 100f;
     public float responseRateDown = 100f;
@@ -21,13 +23,13 @@ namespace Waterfall
     public ThrottleController() { }
     public ThrottleController(ConfigNode node)
     {
-      name = "throttle";
-      linkedTo = "throttle";
-      engineID = "";
-      node.TryGetValue("name", ref name);
-      node.TryGetValue("responseRateUp", ref responseRateUp);
-      node.TryGetValue("responseRateDown", ref responseRateDown);
-      node.TryGetValue("engineID", ref engineID);
+      name = Name;
+      linkedTo = Name;
+      engineID = string.Empty;
+      node.TryGetValue(nameof(name), ref name);
+      node.TryGetValue(nameof(responseRateUp), ref responseRateUp);
+      node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
+      node.TryGetValue(nameof(engineID), ref engineID);
 
     }
     public override void Initialize(ModuleWaterfallFX host)
@@ -49,9 +51,9 @@ namespace Waterfall
     {
       ConfigNode c = base.Save();
 
-      c.AddValue("engineID", engineID);
-      c.AddValue("responseRateUp", responseRateUp);
-      c.AddValue("responseRateDown", responseRateDown);
+      c.AddValue(nameof(engineID), engineID);
+      c.AddValue(nameof(responseRateUp), responseRateUp);
+      c.AddValue(nameof(responseRateDown), responseRateDown);
       return c;
     }
     public override List<float> Get()

@@ -12,8 +12,13 @@ namespace Waterfall
   [System.Serializable]
   public class RandomnessController : WaterfallController
   {
+    public const string Name = "random";
+
+    private const string PerlinNoiseName = "perlin";
+    private const string RandomNoiseName = "random";
+    
     public Vector2 range = new Vector2();
-    public string noiseType = "random";
+    public string noiseType = RandomNoiseName;
     public delegate float NoiseFunction();
     public int seed = 0;
     public float scale = 1f;
@@ -24,16 +29,16 @@ namespace Waterfall
     public RandomnessController() { }
     public RandomnessController(ConfigNode node)
     {
-      name = "random";
-      linkedTo = "random";
-      node.TryGetValue("name", ref name);
-      node.TryGetValue("noiseType", ref noiseType);
-      node.TryGetValue("range", ref range);
-      node.TryGetValue("scale", ref scale);
-      node.TryGetValue("minimum", ref minimum);
-      node.TryGetValue("speed", ref speed);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(name), ref name);
+      node.TryGetValue(nameof(noiseType), ref noiseType);
+      node.TryGetValue(nameof(range), ref range);
+      node.TryGetValue(nameof(scale), ref scale);
+      node.TryGetValue(nameof(minimum), ref minimum);
+      node.TryGetValue(nameof(speed), ref speed);
       // Randomize seed if not specified
-      if (!node.TryGetValue("seed", ref seed))
+      if (!node.TryGetValue(nameof(seed), ref seed))
       {
         seed = UnityEngine.Random.Range(0, 10000);
       }
@@ -42,16 +47,17 @@ namespace Waterfall
     {
 
       ConfigNode c = base.Save();
-      c.AddValue("noiseType", noiseType);
-      if (noiseType == "random")
-        c.AddValue("range", range);
+      c.AddValue(nameof(noiseType), noiseType);
 
-      if (noiseType == "perlin")
+      if (noiseType == RandomNoiseName)
+        c.AddValue(nameof(range), range);
+
+      if (noiseType == PerlinNoiseName)
       {
-        c.AddValue("scale", scale);
-        c.AddValue("minimum", minimum);
-        c.AddValue("speed", speed);
-        c.AddValue("seed", seed);
+        c.AddValue(nameof(scale), scale);
+        c.AddValue(nameof(minimum), minimum);
+        c.AddValue(nameof(speed), speed);
+        c.AddValue(nameof(seed), seed);
       }
       
       return c;
@@ -60,11 +66,11 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      if (noiseType == "perlin")
+      if (noiseType == PerlinNoiseName)
       {
         noiseFunc = new NoiseFunction(PerlinNoise);
       }
-      else if (noiseType == "random")
+      else if (noiseType == RandomNoiseName)
       {
         noiseFunc = new NoiseFunction(RandomNoise);
       }

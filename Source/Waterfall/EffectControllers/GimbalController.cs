@@ -3,11 +3,10 @@ using System.Linq;
 
 namespace Waterfall
 {
-  /// <summary>
-  /// A controller that pulls from atmosphere density
-  /// </summary>
   public class GimbalController : WaterfallController
   {
+    public const string Name = "engine_gimbal";
+
     public float atmosphereDepth = 1;
     public string axis = "x";
     ModuleGimbal gimbalController;
@@ -15,15 +14,15 @@ namespace Waterfall
     public GimbalController() { }
     public GimbalController(ConfigNode node)
     {
-      name = "gimbal";
-      linkedTo = "engine_gimbal";
-      node.TryGetValue("axis", ref axis);
-      node.TryGetValue("name", ref name);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(axis), ref axis);
+      node.TryGetValue(nameof(name), ref name);
     }
     public override ConfigNode Save()
     {
       ConfigNode c = base.Save();
-      c.AddValue("axis", axis);
+      c.AddValue(nameof(axis), axis);
       return c;
     }
     public override void Initialize(ModuleWaterfallFX host)

@@ -11,6 +11,8 @@ namespace Waterfall
   [System.Serializable]
   public class ThrustController : WaterfallController
   {
+    public const string Name = "thrust";
+
     public string engineID = "";
     public float currentThrustFraction;
     ModuleEngines engineController;
@@ -18,11 +20,11 @@ namespace Waterfall
     public ThrustController() { }
     public ThrustController(ConfigNode node)
     {
-      name = "thrust";
-      linkedTo = "thrust";
-      engineID = "";
-      node.TryGetValue("name", ref name);
-      node.TryGetValue("engineID", ref engineID);
+      name = Name;
+      linkedTo = Name;
+      engineID = string.Empty;
+      node.TryGetValue(nameof(name), ref name);
+      node.TryGetValue(nameof(engineID), ref engineID);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -43,7 +45,7 @@ namespace Waterfall
     {
       ConfigNode c = base.Save();
 
-      c.AddValue("engineID", engineID);
+      c.AddValue(nameof(engineID), engineID);
       return c;
     }
     public override List<float> Get()

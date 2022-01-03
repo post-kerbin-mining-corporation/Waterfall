@@ -8,13 +8,15 @@ namespace Waterfall
   /// </summary>
   public class MachController : WaterfallController
   {
+    public const string Name = "mach";
+    
     public float mach = 0;
     public MachController() { }
     public MachController(ConfigNode node)
     {
-      name = "mach";
-      linkedTo = "mach";
-      node.TryGetValue("name", ref name);
+      name = Name;
+      linkedTo = Name;
+      node.TryGetValue(nameof(name), ref name);
     }
     public override void Initialize(ModuleWaterfallFX host)
     {

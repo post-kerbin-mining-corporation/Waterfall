@@ -26,7 +26,7 @@ namespace Waterfall.UI
     WaterfallController control;
     ModuleWaterfallFX fxMod;
     string newControllerName = "controller";
-    string[] controllerTypes = new string[] { "atmosphere_density", "custom", "engineEvent", "gimbal", "light", "mach", "random", "rcs", "throttle", "thrust" };
+    string[] controllerTypes = { AtmosphereDensityController.Name, CustomController.Name, EngineEventController.Name, GimbalController.Name, LightController.Name, MachController.Name, RandomnessController.Name, RCSController.Name, ThrottleController.Name, ThrustController.Name };
     int controllerFlag = 0;
     CurveUpdateFunction eventFun;
 
@@ -256,21 +256,21 @@ namespace Waterfall.UI
     }
     WaterfallController CreateNewController()
     {
-      if (controllerTypes[controllerFlag] == "atmosphere_density")
+      if (controllerTypes[controllerFlag] == AtmosphereDensityController.Name)
       {
         AtmosphereDensityController newCtrl = new AtmosphereDensityController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "custom")
+      else if (controllerTypes[controllerFlag] == CustomController.Name)
       {
         CustomController newCtrl = new CustomController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "engineEvent")
+      else if (controllerTypes[controllerFlag] == EngineEventController.Name)
       {
         EngineEventController newCtrl = new EngineEventController();
         newCtrl.name = newControllerName;
@@ -280,7 +280,7 @@ namespace Waterfall.UI
         newCtrl.eventDuration = eventDuration;
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "gimbal")
+      else if (controllerTypes[controllerFlag] == GimbalController.Name)
       {
         GimbalController newCtrl = new GimbalController();
         newCtrl.name = newControllerName;
@@ -288,21 +288,21 @@ namespace Waterfall.UI
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "light")
+      else if (controllerTypes[controllerFlag] == LightController.Name)
       {
         LightController newCtrl = new LightController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "mach")
+      else if (controllerTypes[controllerFlag] == MachController.Name)
       {
         MachController newCtrl = new MachController();
         newCtrl.name = newControllerName;
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "random")
+      else if (controllerTypes[controllerFlag] == RandomnessController.Name)
       {
         RandomnessController newCtrl = new RandomnessController();
         newCtrl.name = newControllerName;
@@ -315,7 +315,7 @@ namespace Waterfall.UI
         newCtrl.linkedTo = controllerTypes[controllerFlag];
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "rcs")
+      else if (controllerTypes[controllerFlag] == RCSController.Name)
       {
         RCSController newCtrl = new RCSController();
         newCtrl.name = newControllerName;
@@ -324,7 +324,7 @@ namespace Waterfall.UI
         newCtrl.responseRateDown = rampRateDown;
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "throttle")
+      else if (controllerTypes[controllerFlag] == ThrottleController.Name)
       {
         ThrottleController newCtrl = new ThrottleController();
         newCtrl.name = newControllerName;
@@ -334,7 +334,7 @@ namespace Waterfall.UI
         newCtrl.responseRateDown = rampRateDown;
         return newCtrl;
       }
-      else if (controllerTypes[controllerFlag] == "thrust")
+      else if (controllerTypes[controllerFlag] == ThrustController.Name)
       {
         ThrustController newCtrl = new ThrustController();
         newCtrl.name = newControllerName;
@@ -349,15 +349,15 @@ namespace Waterfall.UI
 
     public void DrawControllerOptions()
     {
-      if (controllerTypes[controllerFlag] == "atmosphere_density")
+      if (controllerTypes[controllerFlag] == AtmosphereDensityController.Name)
       {
         // no special config
       }
-      else if (controllerTypes[controllerFlag] == "custom")
+      else if (controllerTypes[controllerFlag] == CustomController.Name)
       {
         // no special config
       }
-      else if (controllerTypes[controllerFlag] == "engineEvent")
+      else if (controllerTypes[controllerFlag] == EngineEventController.Name)
       {
 
         GUILayout.Label("Event name");
@@ -390,7 +390,7 @@ namespace Waterfall.UI
         GUILayout.EndHorizontal();
 
       }
-      else if (controllerTypes[controllerFlag] == "gimbal")
+      else if (controllerTypes[controllerFlag] == GimbalController.Name)
       {
         GUILayout.Label("Gimbal axis");
         int axisFlagChanged = GUILayout.SelectionGrid(axisFlag, axisTypes, Mathf.Min(axisTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
@@ -401,15 +401,15 @@ namespace Waterfall.UI
 
         }
       }
-      else if (controllerTypes[controllerFlag] == "light")
+      else if (controllerTypes[controllerFlag] == LightController.Name)
       {
 
       }
-      else if (controllerTypes[controllerFlag] == "mach")
+      else if (controllerTypes[controllerFlag] == MachController.Name)
       {
         // no special config
       }
-      else if (controllerTypes[controllerFlag] == "random")
+      else if (controllerTypes[controllerFlag] == RandomnessController.Name)
       {
         GUILayout.Label("Random type");
         int randFlagChanged = GUILayout.SelectionGrid(randFlag, randTypes, Mathf.Min(randTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
@@ -502,7 +502,7 @@ namespace Waterfall.UI
           GUILayout.EndHorizontal();
         }
       }
-      else if (controllerTypes[controllerFlag] == "rcs")
+      else if (controllerTypes[controllerFlag] == RCSController.Name)
       {
         GUILayout.BeginHorizontal();
         GUILayout.Label("Ramp Rate Up", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
@@ -529,7 +529,7 @@ namespace Waterfall.UI
         }
         GUILayout.EndHorizontal();
       }
-      else if (controllerTypes[controllerFlag] == "throttle")
+      else if (controllerTypes[controllerFlag] == ThrottleController.Name)
       {
         GUILayout.BeginHorizontal();
         GUILayout.Label("Ramp Rate Up", GUIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
@@ -556,7 +556,7 @@ namespace Waterfall.UI
         }
         GUILayout.EndHorizontal();
       }
-      else if (controllerTypes[controllerFlag] == "thrust")
+      else if (controllerTypes[controllerFlag] == ThrustController.Name)
       {
         // no special config
       }

@@ -258,36 +258,36 @@ namespace Waterfall
         allControllers = new Dictionary<string, WaterfallController>();
         foreach (ConfigNode controllerDataNode in controllerNodes)
         {
-          string ctrlType = "throttle";
+          string ctrlType = ThrottleController.Name;
           if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
           {
             Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
           }
-          if (ctrlType == "throttle")
+          if (ctrlType == ThrottleController.Name)
           {
             ThrottleController tCtrl = new ThrottleController(controllerDataNode);
             allControllers.Add(tCtrl.name, tCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Throttle Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "atmosphere_density")
+          if (ctrlType == AtmosphereDensityController.Name)
           {
             AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
             allControllers.Add(aCtrl.name, aCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Atmosphere Density Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "custom")
+          if (ctrlType == CustomController.Name)
           {
             CustomController cCtrl = new CustomController(controllerDataNode);
             allControllers.Add(cCtrl.name, cCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Custom Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "rcs")
+          if (ctrlType == RCSController.Name)
           {
             RCSController rcsCtrl = new RCSController(controllerDataNode);
             allControllers.Add(rcsCtrl.name, rcsCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded RCS Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "random")
+          if (ctrlType == RandomnessController.Name)
           {
             RandomnessController rCtrl = new RandomnessController(controllerDataNode);
 
@@ -295,31 +295,31 @@ namespace Waterfall
 
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "light")
+          if (ctrlType == LightController.Name)
           {
             LightController lCtrl = new LightController(controllerDataNode);
             allControllers.Add(lCtrl.name, lCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Light Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "engineEvent")
+          if (ctrlType == EngineEventController.Name)
           {
             EngineEventController eEvtCtrl = new EngineEventController(controllerDataNode);
             allControllers.Add(eEvtCtrl.name, eEvtCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Engine Event Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "mach")
+          if (ctrlType == MachController.Name)
           {
             MachController mCtrl = new MachController(controllerDataNode);
             allControllers.Add(mCtrl.name, mCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Mach Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "gimbal")
+          if (ctrlType == GimbalController.Name)
           {
             GimbalController gCtrl = new GimbalController(controllerDataNode);
             allControllers.Add(gCtrl.name, gCtrl);
             Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
           }
-          if (ctrlType == "thrust")
+          if (ctrlType == GimbalController.Name)
           {
             ThrustController tcCtrl = new ThrustController(controllerDataNode);
             allControllers.Add(tcCtrl.name, tcCtrl);

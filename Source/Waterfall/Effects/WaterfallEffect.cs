@@ -127,9 +127,9 @@ namespace Waterfall
     public void Load(ConfigNode node)
     {
       savedNode = node;
-      node.TryGetValue("name", ref name);
+      node.TryGetValue(nameof(name), ref name);
 
-      if (!node.TryGetValue("parentName", ref parentName))
+      if (!node.TryGetValue(nameof(parentName), ref parentName))
       {
         Utils.LogError(String.Format("[WaterfallEffect]: EFFECT with name {0} does not define parentName, which is required", name));
         return;
