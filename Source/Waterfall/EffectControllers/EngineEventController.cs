@@ -23,13 +23,15 @@ namespace Waterfall
     float eventTime = 0f;
     public float eventDuration = 1f;
 
-    public EngineEventController() { }
-
-    public EngineEventController(ConfigNode node)
+    public EngineEventController()
     {
       name = Name;
-      node.TryGetValue(nameof(name), ref name);
       linkedTo = Name;
+    }
+
+    public EngineEventController(ConfigNode node) : this()
+    {
+      node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(eventName), ref eventName);
       node.TryGetValue(nameof(eventDuration), ref eventDuration);
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 namespace Waterfall
 {
-
   /// <summary>
   /// A controller that pulls from throttle settings
   /// </summary>
@@ -17,11 +17,14 @@ namespace Waterfall
     Light lightController;
 
 
-    public LightController() { }
-    public LightController(ConfigNode node)
+    public LightController()
     {
       name = Name;
       linkedTo = Name;
+    }
+
+    public LightController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(lightName), ref lightName);
       node.TryGetValue(nameof(name), ref name);
     }
@@ -32,6 +35,7 @@ namespace Waterfall
       c.AddValue(nameof(lightName), lightName);
       return c;
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
@@ -42,14 +46,12 @@ namespace Waterfall
 
       if (lightController == null)
         Utils.LogError("[LightController] Could not find any lights on Initialize");
-
     }
 
     public override string DisplayName => "Light";
 
     public override List<float> Get()
     {
-
       if (overridden)
         return new List<float>() { overrideValue };
 
@@ -58,9 +60,8 @@ namespace Waterfall
         Utils.LogWarning("[lightController] Light controller not assigned");
         return new List<float>() { 0f };
       }
+
       return new List<float>() { lightController.intensity };
     }
   }
-
 }
-

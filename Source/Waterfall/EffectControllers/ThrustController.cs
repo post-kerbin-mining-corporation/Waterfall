@@ -3,7 +3,6 @@ using System.Linq;
 
 namespace Waterfall
 {
-
   /// <summary>
   /// A controller that pulls from the current engine's thrust. Returns a fractional thrust value
   /// normalized to [0, 1] where 1 corresponds to the max thrust possible under current conditions.
@@ -17,15 +16,19 @@ namespace Waterfall
     public float currentThrustFraction;
     ModuleEngines engineController;
 
-    public ThrustController() { }
-    public ThrustController(ConfigNode node)
+    public ThrustController()
     {
       name = Name;
       linkedTo = Name;
       engineID = string.Empty;
+    }
+
+    public ThrustController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(engineID), ref engineID);
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
@@ -39,8 +42,8 @@ namespace Waterfall
 
       if (engineController == null)
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
-
     }
+
     public override ConfigNode Save()
     {
       ConfigNode c = base.Save();
@@ -53,7 +56,6 @@ namespace Waterfall
 
     public override List<float> Get()
     {
-
       if (overridden)
         return new List<float>() { overrideValue };
 
@@ -69,10 +71,10 @@ namespace Waterfall
       {
         // Thanks to NathanKell for the formula.
         currentThrustFraction = engineController.fuelFlowGui
-          / engineController.maxFuelFlow
-          / (float)engineController.ratioSum
-          * engineController.mixtureDensity
-          * engineController.multIsp;
+                                / engineController.maxFuelFlow
+                                / (float)engineController.ratioSum
+                                * engineController.mixtureDensity
+                                * engineController.multIsp;
       }
 
       return new List<float>() { currentThrustFraction };

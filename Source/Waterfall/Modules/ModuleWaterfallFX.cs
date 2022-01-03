@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Waterfall.UI.EffectControllersUI;
 
 namespace Waterfall
 {
@@ -267,7 +268,7 @@ namespace Waterfall
       }
 
       var info = EffectControllersInfo.EffectControllers[controllerType];
-      var controller = info.CreateController(configNode);
+      var controller = info.CreateFromConfig(configNode);
       Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.DisplayName} Controller on moduleID {moduleID}", LogType.Modules);
 
       return controller;

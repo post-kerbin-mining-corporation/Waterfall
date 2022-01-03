@@ -9,19 +9,23 @@ namespace Waterfall
   public class MachController : WaterfallController
   {
     public const string Name = "mach";
-    
+
     public float mach = 0;
-    public MachController() { }
-    public MachController(ConfigNode node)
+
+    public MachController()
     {
       name = Name;
       linkedTo = Name;
+    }
+
+    public MachController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(name), ref name);
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-
     }
 
     public override string DisplayName => "Mach";

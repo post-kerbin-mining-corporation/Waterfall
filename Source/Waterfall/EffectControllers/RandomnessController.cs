@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Waterfall
 {
-
   /// <summary>
   /// A controller that generates randomness
   /// </summary>
@@ -13,24 +12,28 @@ namespace Waterfall
   public class RandomnessController : WaterfallController
   {
     public const string Name = "random";
+    public const string PerlinNoiseName = "perlin";
+    public const string RandomNoiseName = "random";
 
-    private const string PerlinNoiseName = "perlin";
-    private const string RandomNoiseName = "random";
-    
     public Vector2 range = new Vector2();
     public string noiseType = RandomNoiseName;
+
     public delegate float NoiseFunction();
+
     public int seed = 0;
     public float scale = 1f;
     public float minimum = 0f;
     public float speed = 1f;
     NoiseFunction noiseFunc;
 
-    public RandomnessController() { }
-    public RandomnessController(ConfigNode node)
+    public RandomnessController()
     {
       name = Name;
       linkedTo = Name;
+    }
+
+    public RandomnessController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(noiseType), ref noiseType);
       node.TryGetValue(nameof(range), ref range);
@@ -43,9 +46,9 @@ namespace Waterfall
         seed = UnityEngine.Random.Range(0, 10000);
       }
     }
+
     public override ConfigNode Save()
     {
-
       ConfigNode c = base.Save();
       c.AddValue(nameof(noiseType), noiseType);
 
@@ -59,9 +62,10 @@ namespace Waterfall
         c.AddValue(nameof(speed), speed);
         c.AddValue(nameof(seed), seed);
       }
-      
+
       return c;
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
@@ -78,17 +82,16 @@ namespace Waterfall
       {
         noiseFunc = new NoiseFunction(RandomNoise);
       }
-
     }
 
     public float RandomNoise()
     {
       return UnityEngine.Random.Range(range.x, range.y);
     }
+
     public float PerlinNoise()
     {
-      
-      return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *(scale-minimum)+minimum;
+      return Mathf.PerlinNoise(seed + Time.time * speed, seed + Time.time * speed) * (scale - minimum) + minimum;
     }
 
     public override string DisplayName => "Randomness";
@@ -102,5 +105,4 @@ namespace Waterfall
       return new List<float>() { noiseFunc() };
     }
   }
-
 }

@@ -11,26 +11,31 @@ namespace Waterfall
     public string axis = "x";
     ModuleGimbal gimbalController;
 
-    public GimbalController() { }
-    public GimbalController(ConfigNode node)
+    public GimbalController()
     {
       name = Name;
       linkedTo = Name;
+    }
+
+    public GimbalController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(axis), ref axis);
       node.TryGetValue(nameof(name), ref name);
     }
+
     public override ConfigNode Save()
     {
       ConfigNode c = base.Save();
       c.AddValue(nameof(axis), axis);
       return c;
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
 
       gimbalController = host.GetComponents<ModuleGimbal>().ToList().First();
-      
+
       if (gimbalController == null)
         Utils.LogError("[GimbalController] Could not find gimbal controller on Initialize");
     }
@@ -47,12 +52,13 @@ namespace Waterfall
         Utils.LogWarning("[GimbalController] Gimbal controller not assigned");
         return new List<float>() { 0f };
       }
+
       if (axis == "x")
-        return new List<float>() { gimbalController.actuationLocal.x/gimbalController.gimbalRangeXP };
+        return new List<float>() { gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP };
       if (axis == "y")
         return new List<float>() { gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP };
       if (axis == "z")
-        return new List<float>() { gimbalController.actuationLocal.z};
+        return new List<float>() { gimbalController.actuationLocal.z };
 
       return new List<float>() { 0f };
     }

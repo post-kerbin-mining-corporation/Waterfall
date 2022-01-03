@@ -20,9 +20,7 @@ namespace Waterfall.UI
     protected bool initUI = false;
 
     // Assets
-    protected UIResources resources;
-
-   
+    protected UIResources resources = new UIResources();
 
     public Rect WindowPosition { get { return windowPos; } set { windowPos = value; } }
     public UIResources GUIResources { get { return resources; } }
@@ -50,7 +48,6 @@ namespace Waterfall.UI
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Initializing");
 
-      resources = new UIResources();
       initUI = true;
     }
     

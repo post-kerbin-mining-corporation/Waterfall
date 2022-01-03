@@ -12,22 +12,27 @@ namespace Waterfall
   public class RCSController : WaterfallController
   {
     public const string Name = "rcs";
-    
+
     public List<float> currentThrottle;
     public float responseRateUp = 100f;
     public float responseRateDown = 100f;
     public string thrusterTransformName = string.Empty;
     ModuleRCSFX rcsController;
-    public RCSController() { }
-    public RCSController(ConfigNode node)
+
+    public RCSController()
     {
       name = Name;
       linkedTo = Name;
+    }
+
+    public RCSController(ConfigNode node) : this()
+    {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(responseRateUp), ref responseRateUp);
       node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
       node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
@@ -76,6 +81,7 @@ namespace Waterfall
         {
           overrideValues.Add(overrideValue);
         }
+
         return overrideValues;
       }
 

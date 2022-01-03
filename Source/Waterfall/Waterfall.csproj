@@ -13,6 +13,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,14 +85,12 @@
       <HintPath>..\..\..\..\..\..\..\Games\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="AssetLibrary\AssetLibraries.cs" />
     <Compile Include="AssetLibrary\WaterfallAsset.cs" />
     <Compile Include="EffectControllers\AtmosphereDensityController.cs" />
     <Compile Include="EffectControllers\CustomController.cs" />
     <Compile Include="EffectControllers\WaterfallController.cs" />
-    <Compile Include="EffectControllers\EffectControllersInfo.cs" />
     <Compile Include="EffectControllers\EngineEventController.cs" />
     <Compile Include="EffectControllers\GimbalController.cs" />
     <Compile Include="EffectControllers\LightController.cs" />
@@ -129,10 +128,22 @@
     <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\EffectControllersUI\EffectControllersInfo.cs" />
+    <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\CustomControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\EngineEventControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\GimbalControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\LightControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\MachControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\RandomnessControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\RCSControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\ThrottleControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\ThrustControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\UIControllerPopupWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
     <Compile Include="UI\UIColorPickerWindow.cs" />
-    <Compile Include="UI\UIControllerPopupWindow.cs" />
     <Compile Include="UI\UILightEditWindow.cs" />
     <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />
