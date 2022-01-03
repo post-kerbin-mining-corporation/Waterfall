@@ -23,6 +23,9 @@ namespace Waterfall
       base.Initialize(host);
 
     }
+
+    public override string DisplayName => "Mach";
+
     public override List<float> Get()
     {
       if (overridden)

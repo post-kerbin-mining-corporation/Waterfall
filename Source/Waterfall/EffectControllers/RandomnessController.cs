@@ -90,6 +90,9 @@ namespace Waterfall
       
       return Mathf.PerlinNoise(seed+Time.time*speed, seed + Time.time * speed) *(scale-minimum)+minimum;
     }
+
+    public override string DisplayName => "Randomness";
+
     public override List<float> Get()
     {
       if (overridden)

@@ -88,10 +88,11 @@
   <ItemGroup>
     <Compile Include="AssetLibrary\AssetLibraries.cs" />
     <Compile Include="AssetLibrary\WaterfallAsset.cs" />
-    <Compile Include="EffectControllers\AtmosphereDepth.cs" />
+    <Compile Include="EffectControllers\AtmosphereDensityController.cs" />
     <Compile Include="EffectControllers\CustomController.cs" />
-    <Compile Include="EffectControllers\EffectController.cs" />
-    <Compile Include="EffectControllers\EventController.cs" />
+    <Compile Include="EffectControllers\WaterfallController.cs" />
+    <Compile Include="EffectControllers\EffectControllersInfo.cs" />
+    <Compile Include="EffectControllers\EngineEventController.cs" />
     <Compile Include="EffectControllers\GimbalController.cs" />
     <Compile Include="EffectControllers\LightController.cs" />
     <Compile Include="EffectControllers\MachController.cs" />

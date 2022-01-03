@@ -73,6 +73,8 @@ namespace Waterfall
       }
     }
 
+    public override string DisplayName => "Engine Event";
+
     public override List<float> Get()
     {
       if (overridden)

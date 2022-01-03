@@ -247,86 +247,46 @@ namespace Waterfall
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allTemplates.Count} templates", LogType.Modules);
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
     }
+
+    /// <summary>
+    ///     Load controller corresponding to <see cref="WaterfallController.linkedTo"/> value.
+    ///     If linkedTo value is missing or incorrect, default to <see cref="ThrottleController"/> type.
+    /// </summary>
+    WaterfallController LoadController(ConfigNode configNode)
+    {
+      string controllerType = ThrottleController.Name;
+      if (!configNode.TryGetValue("linkedTo", ref controllerType))
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define linkedTo, setting throttle as default");
+      }
+
+      if (!EffectControllersInfo.EffectControllers.ContainsKey(controllerType))
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Unknown controller of type {controllerType} on moduleID {moduleID}, setting throttle as default");
+        controllerType = ThrottleController.Name;
+      }
+
+      var info = EffectControllersInfo.EffectControllers[controllerType];
+      var controller = info.CreateController(configNode);
+      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.DisplayName} Controller on moduleID {moduleID}", LogType.Modules);
+
+      return controller;
+    }
+    
     void LoadControllers(ConfigNode node)
     {
-
       ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
 
-      if (allControllers == null || allControllers.Count == 0)
-      {
-        Utils.Log(String.Format("[ModuleWaterfallFX]: Loading Controllers on moduleID {0}", moduleID), LogType.Modules);
-        allControllers = new Dictionary<string, WaterfallController>();
-        foreach (ConfigNode controllerDataNode in controllerNodes)
-        {
-          string ctrlType = ThrottleController.Name;
-          if (!controllerDataNode.TryGetValue("linkedTo", ref ctrlType))
-          {
-            Utils.LogWarning(String.Format("[ModuleWaterfallFX]: Controller on moduleID {0} does not define linkedTo, setting throttle as default ", moduleID));
-          }
-          if (ctrlType == ThrottleController.Name)
-          {
-            ThrottleController tCtrl = new ThrottleController(controllerDataNode);
-            allControllers.Add(tCtrl.name, tCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Throttle Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == AtmosphereDensityController.Name)
-          {
-            AtmosphereDensityController aCtrl = new AtmosphereDensityController(controllerDataNode);
-            allControllers.Add(aCtrl.name, aCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Atmosphere Density Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == CustomController.Name)
-          {
-            CustomController cCtrl = new CustomController(controllerDataNode);
-            allControllers.Add(cCtrl.name, cCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Custom Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == RCSController.Name)
-          {
-            RCSController rcsCtrl = new RCSController(controllerDataNode);
-            allControllers.Add(rcsCtrl.name, rcsCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded RCS Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == RandomnessController.Name)
-          {
-            RandomnessController rCtrl = new RandomnessController(controllerDataNode);
+      if (allControllers != null && allControllers.Count != 0)
+        return;
 
-            allControllers.Add(rCtrl.name, rCtrl);
+      Utils.Log($"[ModuleWaterfallFX]: Loading effect controllers on moduleID {moduleID}", LogType.Modules);
 
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Randomness Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == LightController.Name)
-          {
-            LightController lCtrl = new LightController(controllerDataNode);
-            allControllers.Add(lCtrl.name, lCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Light Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == EngineEventController.Name)
-          {
-            EngineEventController eEvtCtrl = new EngineEventController(controllerDataNode);
-            allControllers.Add(eEvtCtrl.name, eEvtCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Engine Event Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == MachController.Name)
-          {
-            MachController mCtrl = new MachController(controllerDataNode);
-            allControllers.Add(mCtrl.name, mCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Mach Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == GimbalController.Name)
-          {
-            GimbalController gCtrl = new GimbalController(controllerDataNode);
-            allControllers.Add(gCtrl.name, gCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Gimbal Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-          if (ctrlType == GimbalController.Name)
-          {
-            ThrustController tcCtrl = new ThrustController(controllerDataNode);
-            allControllers.Add(tcCtrl.name, tcCtrl);
-            Utils.Log(String.Format("[ModuleWaterfallFX]: Loaded Thrust Curve Controller on moduleID {0}", moduleID), LogType.Modules);
-          }
-        }
-      }
+      allControllers = controllerNodes
+        .Select(LoadController)
+        .ToDictionary(c => c.name);
+
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading effect controllers on moduleID {moduleID}", LogType.Modules);
     }
 
     ConfigNode FetchConfig()

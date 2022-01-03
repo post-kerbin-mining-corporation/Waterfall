@@ -19,6 +19,11 @@ namespace Waterfall
     protected ModuleWaterfallFX parentModule;
 
     /// <summary>
+    ///     Display name (for UI and logs) of the controller.
+    /// </summary>
+    public abstract string DisplayName { get; }
+
+    /// <summary>
     /// Get the value of the controller. 
     /// </summary>
     /// <returns></returns>

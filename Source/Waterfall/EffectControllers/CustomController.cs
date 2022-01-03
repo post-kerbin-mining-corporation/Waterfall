@@ -22,6 +22,9 @@ namespace Waterfall
     {
       base.Initialize(host);
     }
+
+    public override string DisplayName => "Custom";
+
     public override List<float> Get()
     {
 

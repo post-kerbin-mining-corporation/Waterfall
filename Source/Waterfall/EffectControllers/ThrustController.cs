@@ -48,6 +48,9 @@ namespace Waterfall
       c.AddValue(nameof(engineID), engineID);
       return c;
     }
+
+    public override string DisplayName => "Thrust";
+
     public override List<float> Get()
     {
 

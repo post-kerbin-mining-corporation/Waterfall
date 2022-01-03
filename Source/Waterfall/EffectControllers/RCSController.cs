@@ -58,6 +58,9 @@ namespace Waterfall
       c.AddValue(nameof(thrusterTransformName), thrusterTransformName);
       return c;
     }
+
+    public override string DisplayName => "RCS";
+
     public override List<float> Get()
     {
       if (rcsController == null)

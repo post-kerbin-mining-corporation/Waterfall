@@ -44,6 +44,9 @@ namespace Waterfall
         Utils.LogError("[LightController] Could not find any lights on Initialize");
 
     }
+
+    public override string DisplayName => "Light";
+
     public override List<float> Get()
     {
 

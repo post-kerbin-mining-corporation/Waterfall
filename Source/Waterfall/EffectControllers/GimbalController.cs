@@ -34,6 +34,9 @@ namespace Waterfall
       if (gimbalController == null)
         Utils.LogError("[GimbalController] Could not find gimbal controller on Initialize");
     }
+
+    public override string DisplayName => "Gimbal";
+
     public override List<float> Get()
     {
       if (overridden)

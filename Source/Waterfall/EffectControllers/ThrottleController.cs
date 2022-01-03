@@ -56,6 +56,9 @@ namespace Waterfall
       c.AddValue(nameof(responseRateDown), responseRateDown);
       return c;
     }
+
+    public override string DisplayName => "Throttle";
+
     public override List<float> Get()
     {
 
