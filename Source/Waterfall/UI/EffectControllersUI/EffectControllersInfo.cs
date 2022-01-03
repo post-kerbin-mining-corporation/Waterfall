@@ -13,13 +13,32 @@ namespace Waterfall.UI.EffectControllersUI
   /// </remarks>
   public static class EffectControllersInfo
   {
+    /// <summary>
+    ///   Pairs of controller type and it's Name constant value.
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, ControllerInfo> EffectControllers;
+
+    static EffectControllersInfo()
+    {
+      var waterfallAssembly = typeof(EffectControllersInfo).Assembly;
+      var baseType = typeof(WaterfallController);
+      var controllerTypes = waterfallAssembly
+        .GetTypes()
+        .Where(t => t != baseType && baseType.IsAssignableFrom(t))
+        .ToArray();
+
+      EffectControllers = controllerTypes
+        .Select(type => new ControllerInfo(type))
+        .ToDictionary(type => type.Name);
+    }
+
     public class ControllerInfo
     {
-      public readonly string Name;
-      public readonly string DisplayName;
+      private readonly ConstructorInfo configNodeConstructor;
 
       private readonly Type controllerType;
-      private readonly ConstructorInfo configNodeConstructor;
+      public readonly string DisplayName;
+      public readonly string Name;
       private readonly ConstructorInfo parameterlessConstructor;
 
       public ControllerInfo(Type controllerType)
@@ -52,8 +71,8 @@ namespace Waterfall.UI.EffectControllersUI
       }
 
       /// <summary>
-      ///     Find corresponding type implementing <see cref="IEffectControllerUIOptions"/> and create new instance.
-      ///     Inject UIResources dependency if necessary.
+      ///   Find corresponding type implementing <see cref="IEffectControllerUIOptions" /> and create new instance.
+      ///   Inject UIResources dependency if necessary.
       /// </summary>
       public IEffectControllerUIOptions CreateUIOptions(UIResources guiResources)
       {
@@ -74,25 +93,6 @@ namespace Waterfall.UI.EffectControllersUI
 
         return (IEffectControllerUIOptions)options;
       }
-    }
-
-    /// <summary>
-    ///    Pairs of controller type and it's Name constant value.
-    /// </summary>
-    public static readonly IReadOnlyDictionary<string, ControllerInfo> EffectControllers;
-
-    static EffectControllersInfo()
-    {
-      var waterfallAssembly = typeof(EffectControllersInfo).Assembly;
-      var baseType = typeof(WaterfallController);
-      var controllerTypes = waterfallAssembly
-        .GetTypes()
-        .Where(t => t != baseType && baseType.IsAssignableFrom(t))
-        .ToArray();
-
-      EffectControllers = controllerTypes
-        .Select(type => new ControllerInfo(type))
-        .ToDictionary(type => type.Name);
     }
   }
 }
