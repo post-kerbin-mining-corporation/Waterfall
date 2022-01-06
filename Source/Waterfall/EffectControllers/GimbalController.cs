@@ -5,7 +5,7 @@ namespace Waterfall
 {
   public class GimbalController : WaterfallController
   {
-    public const string Name = "engine_gimbal";
+    public const string Name = "gimbal";
 
     public float atmosphereDepth = 1;
     public string axis = "x";
