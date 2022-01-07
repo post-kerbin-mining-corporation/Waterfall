@@ -11,16 +11,16 @@ namespace Waterfall.UI.EffectControllersUI
   /// <remarks>
   ///   Unfortunately had to use a little reflection magic to piece together controller name, controller type and ui options type.
   /// </remarks>
-  public static class EffectControllersInfo
+  public static class EffectControllersMetadata
   {
     /// <summary>
     ///   Pairs of controller type and it's Name constant value.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, ControllerInfo> EffectControllers;
 
-    static EffectControllersInfo()
+    static EffectControllersMetadata()
     {
-      var waterfallAssembly = typeof(EffectControllersInfo).Assembly;
+      var waterfallAssembly = typeof(EffectControllersMetadata).Assembly;
       var baseType = typeof(WaterfallController);
       var controllerTypes = waterfallAssembly
         .GetTypes()
@@ -29,44 +29,34 @@ namespace Waterfall.UI.EffectControllersUI
 
       EffectControllers = controllerTypes
         .Select(type => new ControllerInfo(type))
-        .ToDictionary(type => type.Name);
+        .ToDictionary(type => type.ControllerTypeId);
     }
 
     public class ControllerInfo
     {
-      private readonly ConstructorInfo configNodeConstructor;
-
       private readonly Type controllerType;
+      private readonly ConstructorInfo deserializeConstructor;
+
       public readonly string DisplayName;
-      public readonly string Name;
-      private readonly ConstructorInfo parameterlessConstructor;
+      public readonly string ControllerTypeId;
 
       public ControllerInfo(Type controllerType)
       {
         this.controllerType = controllerType;
-        Name = controllerType.GetField("Name").GetValue(null).ToString();
+        ControllerTypeId = controllerType.GetField(nameof(ThrottleController.ControllerTypeId)).GetValue(null).ToString();
+        DisplayName = controllerType.GetField(nameof(ThrottleController.DisplayName)).GetValue(null).ToString();
 
-        configNodeConstructor = controllerType.GetConstructor(new[] { typeof(ConfigNode) });
-        parameterlessConstructor = controllerType.GetConstructor(Type.EmptyTypes);
+        deserializeConstructor = controllerType.GetConstructor(new[] { typeof(ConfigNode) });
 
-        if (configNodeConstructor == null)
+        if (deserializeConstructor == null)
           throw new InvalidOperationException($"Unable to get ConfigNode constructor for controller of type {controllerType}");
 
-        if (parameterlessConstructor == null)
-          throw new InvalidOperationException($"Unable to get parameterless constructor for controller of type {controllerType}");
-
-        DisplayName = CreateNew().DisplayName; // Create dummy controller and save display name which is expected to be constant
+        Utils.Log($"[{nameof(EffectControllersMetadata)}]: Registered controller type {ControllerTypeId}", LogType.Modules);
       }
 
       public WaterfallController CreateFromConfig(ConfigNode node)
       {
-        var controller = (WaterfallController)configNodeConstructor.Invoke(new object[] { node });
-        return controller;
-      }
-
-      public WaterfallController CreateNew()
-      {
-        var controller = (WaterfallController)parameterlessConstructor.Invoke(new object[] { });
+        var controller = (WaterfallController)deserializeConstructor.Invoke(new object[] { node });
         return controller;
       }
 
@@ -76,7 +66,7 @@ namespace Waterfall.UI.EffectControllersUI
       /// </summary>
       public IEffectControllerUIOptions CreateUIOptions(UIResources guiResources)
       {
-        var waterfallAssembly = typeof(EffectControllersInfo).Assembly;
+        var waterfallAssembly = typeof(EffectControllersMetadata).Assembly;
         var baseType = typeof(DefaultEffectControllerUIOptions<>);
 
         var optionsType = waterfallAssembly

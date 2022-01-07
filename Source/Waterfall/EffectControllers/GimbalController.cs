@@ -5,7 +5,8 @@ namespace Waterfall
 {
   public class GimbalController : WaterfallController
   {
-    public const string Name = "gimbal";
+    public const string ControllerTypeId = "gimbal";
+    public const string DisplayName = "Gimbal";
 
     public float atmosphereDepth = 1;
     public string axis = "x";
@@ -13,8 +14,8 @@ namespace Waterfall
 
     public GimbalController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
     }
 
     public GimbalController(ConfigNode node) : this()
@@ -39,8 +40,6 @@ namespace Waterfall
       if (gimbalController == null)
         Utils.LogError("[GimbalController] Could not find gimbal controller on Initialize");
     }
-
-    public override string DisplayName => "Gimbal";
 
     public override List<float> Get()
     {

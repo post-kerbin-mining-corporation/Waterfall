@@ -11,7 +11,8 @@ namespace Waterfall
   [Serializable]
   public class RCSController : WaterfallController
   {
-    public const string Name = "rcs";
+    public const string ControllerTypeId = "rcs";
+    public const string DisplayName = "RCS";
 
     public List<float> currentThrottle;
     public float responseRateUp = 100f;
@@ -21,8 +22,8 @@ namespace Waterfall
 
     public RCSController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
     }
 
     public RCSController(ConfigNode node) : this()
@@ -63,8 +64,6 @@ namespace Waterfall
       c.AddValue(nameof(thrusterTransformName), thrusterTransformName);
       return c;
     }
-
-    public override string DisplayName => "RCS";
 
     public override List<float> Get()
     {

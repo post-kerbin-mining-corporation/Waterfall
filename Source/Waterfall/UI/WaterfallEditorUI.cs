@@ -210,9 +210,9 @@ namespace Waterfall.UI
 
       float sliderMax = 1f;
       float sliderMin = 0f;
-      if (ctrl.linkedTo == MachController.Name)
+      if (ctrl.linkedTo == MachController.ControllerTypeId)
         sliderMax = 15f;
-      if (ctrl.linkedTo == GimbalController.Name)
+      if (ctrl.linkedTo == GimbalController.ControllerTypeId)
       {
         sliderMin = -1f;
       }

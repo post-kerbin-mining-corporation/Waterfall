@@ -255,21 +255,21 @@ namespace Waterfall
     /// </summary>
     WaterfallController LoadController(ConfigNode configNode)
     {
-      string controllerType = ThrottleController.Name;
+      string controllerType = ThrottleController.ControllerTypeId;
       if (!configNode.TryGetValue("linkedTo", ref controllerType))
       {
         Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define linkedTo, setting throttle as default");
       }
 
-      if (!EffectControllersInfo.EffectControllers.ContainsKey(controllerType))
+      if (!EffectControllersMetadata.EffectControllers.ContainsKey(controllerType))
       {
         Utils.LogWarning($"[ModuleWaterfallFX]: Unknown controller of type {controllerType} on moduleID {moduleID}, setting throttle as default");
-        controllerType = ThrottleController.Name;
+        controllerType = ThrottleController.ControllerTypeId;
       }
 
-      var info = EffectControllersInfo.EffectControllers[controllerType];
+      var info = EffectControllersMetadata.EffectControllers[controllerType];
       var controller = info.CreateFromConfig(configNode);
-      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.DisplayName} Controller on moduleID {moduleID}", LogType.Modules);
+      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.linkedTo}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
 
       return controller;
     }

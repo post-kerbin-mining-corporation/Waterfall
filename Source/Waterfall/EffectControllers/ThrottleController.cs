@@ -11,7 +11,8 @@ namespace Waterfall
   [System.Serializable]
   public class ThrottleController : WaterfallController
   {
-    public const string Name = "throttle";
+    public const string ControllerTypeId = "throttle";
+    public const string DisplayName = "Throttle";
 
     public float currentThrottle = 1f;
     public float responseRateUp = 100f;
@@ -21,8 +22,8 @@ namespace Waterfall
 
     public ThrottleController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
       engineID = string.Empty;
     }
 
@@ -58,8 +59,6 @@ namespace Waterfall
       c.AddValue(nameof(responseRateDown), responseRateDown);
       return c;
     }
-
-    public override string DisplayName => "Throttle";
 
     public override List<float> Get()
     {

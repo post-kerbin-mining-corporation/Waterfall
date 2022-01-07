@@ -11,7 +11,8 @@ namespace Waterfall
   [System.Serializable]
   public class RandomnessController : WaterfallController
   {
-    public const string Name = "random";
+    public const string ControllerTypeId = "random";
+    public const string DisplayName = "Randomness";
     public const string PerlinNoiseName = "perlin";
     public const string RandomNoiseName = "random";
 
@@ -28,8 +29,8 @@ namespace Waterfall
 
     public RandomnessController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
     }
 
     public RandomnessController(ConfigNode node) : this()
@@ -93,8 +94,6 @@ namespace Waterfall
     {
       return Mathf.PerlinNoise(seed + Time.time * speed, seed + Time.time * speed) * (scale - minimum) + minimum;
     }
-
-    public override string DisplayName => "Randomness";
 
     public override List<float> Get()
     {

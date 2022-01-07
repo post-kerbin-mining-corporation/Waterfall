@@ -8,14 +8,15 @@ namespace Waterfall
   /// </summary>
   public class MachController : WaterfallController
   {
-    public const string Name = "mach";
+    public const string ControllerTypeId = "mach";
+    public const string DisplayName = "Mach";
 
     public float mach = 0;
 
     public MachController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
     }
 
     public MachController(ConfigNode node) : this()
@@ -27,8 +28,6 @@ namespace Waterfall
     {
       base.Initialize(host);
     }
-
-    public override string DisplayName => "Mach";
 
     public override List<float> Get()
     {

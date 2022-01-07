@@ -10,7 +10,8 @@ namespace Waterfall
   [System.Serializable]
   public class LightController : WaterfallController
   {
-    public const string Name = "light";
+    public const string ControllerTypeId = "light";
+    public const string DisplayName = "Light";
 
     public float currentThrottle = 1;
     public string lightName = "";
@@ -19,8 +20,7 @@ namespace Waterfall
 
     public LightController()
     {
-      name = Name;
-      linkedTo = Name;
+      linkedTo = ControllerTypeId;
     }
 
     public LightController(ConfigNode node) : this()
@@ -47,8 +47,6 @@ namespace Waterfall
       if (lightController == null)
         Utils.LogError("[LightController] Could not find any lights on Initialize");
     }
-
-    public override string DisplayName => "Light";
 
     public override List<float> Get()
     {

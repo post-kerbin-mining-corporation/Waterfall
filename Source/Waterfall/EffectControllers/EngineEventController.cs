@@ -8,7 +8,8 @@ namespace Waterfall
   /// </summary>
   public class EngineEventController : WaterfallController
   {
-    public const string Name = "engineEvent";
+    public const string ControllerTypeId = "engineEvent";
+    public const string DisplayName = "Engine Event";
 
     public float currentThrottle = 1;
     ModuleEngines engineController;
@@ -25,8 +26,8 @@ namespace Waterfall
 
     public EngineEventController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
     }
 
     public EngineEventController(ConfigNode node) : this()
@@ -74,8 +75,6 @@ namespace Waterfall
         }
       }
     }
-
-    public override string DisplayName => "Engine Event";
 
     public override List<float> Get()
     {

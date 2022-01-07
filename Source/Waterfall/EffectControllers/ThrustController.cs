@@ -10,7 +10,8 @@ namespace Waterfall
   [System.Serializable]
   public class ThrustController : WaterfallController
   {
-    public const string Name = "thrust";
+    public const string ControllerTypeId = "thrust";
+    public const string DisplayName = "Thrust";
 
     public string engineID = "";
     public float currentThrustFraction;
@@ -18,8 +19,8 @@ namespace Waterfall
 
     public ThrustController()
     {
-      name = Name;
-      linkedTo = Name;
+      name = ControllerTypeId;
+      linkedTo = ControllerTypeId;
       engineID = string.Empty;
     }
 
@@ -51,8 +52,6 @@ namespace Waterfall
       c.AddValue(nameof(engineID), engineID);
       return c;
     }
-
-    public override string DisplayName => "Thrust";
 
     public override List<float> Get()
     {
