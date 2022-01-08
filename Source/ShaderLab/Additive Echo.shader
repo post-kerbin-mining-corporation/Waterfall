@@ -35,8 +35,6 @@
 
     _TileX("Tiling X", Float) = 1
     _TileY("Tiling Y", Float) = 1
-    _SrcMode("SrcMode", Float) = 1
-    _DestMode("DestMode", Float) = 6
     
     [Space]
 
@@ -51,7 +49,7 @@
     Tags { "Queue" = "Transparent" "IgnoreProjector" = "True"  }
 
 
-    Blend[_SrcMode][_DestMode]
+    Blend One One
 
     ZWrite Off
     ZTest LEqual

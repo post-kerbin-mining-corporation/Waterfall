@@ -333,13 +333,13 @@ Shader "Waterfall/Additive (Volumetric)"
                 float4 f = min(0.0, (ys + _FalloffStart));
                 f *= -f;
                 
-                // Color Gradient
-                float Gradient = dot(exp2((f * (_TintFalloff * 5.0) - rr * rr * (_TintFresnel * 5.0))), Weights);
-                float4 Color = lerp(_EndTint, _StartTint, Gradient);
-                
                 // Falloff
                 float4 N = exp2(f * 5.0 * _Falloff);
                 Samples *= N;
+                
+                // Color Gradient
+                float Gradient = dot(exp2((f * (_TintFalloff * 5.0) - rr * rr * (_TintFresnel * 5.0))) * Samples, Weights) / dot(Samples, Weights);
+                float4 Color = lerp(_EndTint, _StartTint, Gradient);
                 
                 // Inverted Fresnel
                 f = rr - 1.0;
