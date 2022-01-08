@@ -250,26 +250,32 @@ namespace Waterfall
     }
 
     /// <summary>
-    ///     Load controller corresponding to <see cref="WaterfallController.TypeId"/> value.
-    ///     If <see cref="WaterfallController.ControllerTypeNodeName"/> value is missing or incorrect, default to <see cref="ThrottleController"/> type.
+    ///     Load controller from config node.
+    ///     If value of config node entry named <see cref="WaterfallController.ControllerTypeNodeName"/> is missing or incorrect, default to <see cref="ThrottleController"/> type.
     /// </summary>
     WaterfallController LoadController(ConfigNode configNode)
     {
-      string controllerType = ThrottleController.ControllerTypeId;
-      if (!configNode.TryGetValue(WaterfallController.ControllerTypeNodeName, ref controllerType))
+      string controllerType = nameof(ThrottleController);
+      if (configNode.TryGetValue(WaterfallController.ControllerTypeNodeName, ref controllerType))
       {
         Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define {WaterfallController.ControllerTypeNodeName} field, setting throttle as default");
+      }
+
+      if (EffectControllersMetadata.LegacyControllerTypeIds.TryGetValue(controllerType, out string legacyControllerType))
+      {
+        // If loading effect templates made before jan 2022, match old "linkedTo" identifiers with effect controllers type names
+        controllerType = legacyControllerType;
       }
 
       if (!EffectControllersMetadata.EffectControllers.ContainsKey(controllerType))
       {
         Utils.LogWarning($"[ModuleWaterfallFX]: Unknown controller of type {controllerType} on moduleID {moduleID}, setting throttle as default");
-        controllerType = ThrottleController.ControllerTypeId;
+        controllerType = nameof(ThrottleController);
       }
 
       var info = EffectControllersMetadata.EffectControllers[controllerType];
       var controller = info.CreateFromConfig(configNode);
-      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.TypeId}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
+      Utils.Log($"[ModuleWaterfallFX]: Loaded {controllerType}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
 
       return controller;
     }

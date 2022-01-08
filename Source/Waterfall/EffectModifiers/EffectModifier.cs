@@ -27,7 +27,7 @@ namespace Waterfall
     public string modifierTypeName = "";
 
     public bool useRandomness = false;
-    public string randomnessController = RandomnessController.ControllerTypeId;
+    public string randomnessController = nameof(RandomnessController);
     public float randomScale = 1f;
     // The Transform that holds the thing the effect should modify
     protected List<Transform> xforms;

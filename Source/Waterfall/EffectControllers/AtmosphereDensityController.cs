@@ -8,7 +8,6 @@ namespace Waterfall
   /// </summary>
   public class AtmosphereDensityController : WaterfallController
   {
-    public const string ControllerTypeId = "atmosphere_density";
     public const string DisplayName = "Atmosphere Density";
 
     public float atmosphereDepth = 1;
@@ -26,8 +25,6 @@ namespace Waterfall
     {
       base.Initialize(host);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override List<float> Get()
     {

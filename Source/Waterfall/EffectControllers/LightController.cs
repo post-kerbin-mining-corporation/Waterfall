@@ -10,7 +10,6 @@ namespace Waterfall
   [System.Serializable]
   public class LightController : WaterfallController
   {
-    public const string ControllerTypeId = "light";
     public const string DisplayName = "Light";
 
     public float currentThrottle = 1;
@@ -27,8 +26,6 @@ namespace Waterfall
       node.TryGetValue(nameof(lightName), ref lightName);
       node.TryGetValue(nameof(name), ref name);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

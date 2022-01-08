@@ -10,7 +10,6 @@ namespace Waterfall
   [System.Serializable]
   public class CustomController : WaterfallController
   {
-    public const string ControllerTypeId = "custom";
     public const string DisplayName = "Custom";
 
     public CustomController()
@@ -26,8 +25,6 @@ namespace Waterfall
     {
       base.Initialize(host);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override List<float> Get()
     {

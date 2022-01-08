@@ -8,7 +8,6 @@ namespace Waterfall
   /// </summary>
   public class MachController : WaterfallController
   {
-    public const string ControllerTypeId = "mach";
     public const string DisplayName = "Mach";
 
     public float mach = 0;
@@ -21,8 +20,6 @@ namespace Waterfall
     {
       node.TryGetValue(nameof(name), ref name);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {

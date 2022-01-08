@@ -8,7 +8,6 @@ namespace Waterfall
   /// </summary>
   public class EngineEventController : WaterfallController
   {
-    public const string ControllerTypeId = "engineEvent";
     public const string DisplayName = "Engine Event";
 
     public float currentThrottle = 1;
@@ -36,8 +35,6 @@ namespace Waterfall
 
       eventCurve.Load(node.GetNode(nameof(eventCurve)));
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

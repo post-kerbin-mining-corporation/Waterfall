@@ -5,7 +5,6 @@ namespace Waterfall
 {
   public class GimbalController : WaterfallController
   {
-    public const string ControllerTypeId = "gimbal";
     public const string DisplayName = "Gimbal";
 
     public float atmosphereDepth = 1;
@@ -21,8 +20,6 @@ namespace Waterfall
       node.TryGetValue(nameof(axis), ref axis);
       node.TryGetValue(nameof(name), ref name);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

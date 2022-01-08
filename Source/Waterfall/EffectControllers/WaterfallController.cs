@@ -18,17 +18,9 @@ namespace Waterfall
     protected ModuleWaterfallFX parentModule;
 
     /// <summary>
-    ///    Name of the config node which will store value of <see cref="TypeId"/>.
+    ///    Name of the config node which will store controller type name.
     /// </summary>
     public const string ControllerTypeNodeName = "linkedTo";
-
-    /// <summary>
-    ///   Identifies which kind of effect controller this is.
-    /// </summary>
-    /// <remarks>
-    ///   Every controller type is also expected to have constant member similar to <see cref="ThrottleController.ControllerTypeId"/> which is used to automatically bind controller types to UI and serialization logic.
-    /// </remarks>
-    public abstract string TypeId { get; }
 
     /// <summary>
     /// Get the value of the controller. 
@@ -50,7 +42,7 @@ namespace Waterfall
     {
       ConfigNode c = new ConfigNode(WaterfallConstants.ControllerNodeName);
       c.AddValue(nameof(name), name);
-      c.AddValue(ControllerTypeNodeName, TypeId);
+      c.AddValue(ControllerTypeNodeName, GetType().Name);
       return c;
     }
 

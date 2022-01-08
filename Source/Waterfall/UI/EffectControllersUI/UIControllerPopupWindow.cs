@@ -19,7 +19,7 @@ namespace Waterfall.UI.EffectControllersUI
     private ModuleWaterfallFX fxMod;
     private string newControllerName = "controller";
 
-    private readonly string[] controllerTypes;
+    private readonly Type[] controllerTypes;
     private readonly string[] controllersGridValues;
     private readonly IEffectControllerUIOptions[] controllerOptions;
 
@@ -31,7 +31,7 @@ namespace Waterfall.UI.EffectControllersUI
       if (!showWindow)
         WindowPosition = new Rect(Screen.width / 2f, Screen.height / 2f, 400, 400);
 
-      controllerTypes = EffectControllersMetadata.EffectControllers.Values.Select(c => c.ControllerTypeId).ToArray();
+      controllerTypes = EffectControllersMetadata.EffectControllers.Values.Select(c => c.ControllerType).ToArray();
       controllersGridValues = EffectControllersMetadata.EffectControllers.Values.Select(c => c.DisplayName).ToArray();
       controllerOptions = EffectControllersMetadata.EffectControllers.Values.Select(c => c.CreateUIOptions(GUIResources)).ToArray();
     }
@@ -53,7 +53,7 @@ namespace Waterfall.UI.EffectControllersUI
       fxMod = mod;
       newControllerName = ctrl.name;
 
-      selectedControllerIndex = controllerTypes.IndexOf(ctrl.TypeId);
+      selectedControllerIndex = controllerTypes.IndexOf(ctrl.GetType());
       GUI.BringWindowToFront(windowID);
 
       controllerOptions[selectedControllerIndex].LoadOptions(ctrl);

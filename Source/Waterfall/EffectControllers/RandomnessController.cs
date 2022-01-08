@@ -11,7 +11,6 @@ namespace Waterfall
   [System.Serializable]
   public class RandomnessController : WaterfallController
   {
-    public const string ControllerTypeId = "random";
     public const string DisplayName = "Randomness";
     public const string PerlinNoiseName = "perlin";
     public const string RandomNoiseName = "random";
@@ -45,8 +44,6 @@ namespace Waterfall
         seed = UnityEngine.Random.Range(0, 10000);
       }
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

@@ -10,7 +10,6 @@ namespace Waterfall
   [System.Serializable]
   public class ThrustController : WaterfallController
   {
-    public const string ControllerTypeId = "thrust";
     public const string DisplayName = "Thrust";
 
     public string engineID = string.Empty;
@@ -26,8 +25,6 @@ namespace Waterfall
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(engineID), ref engineID);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {

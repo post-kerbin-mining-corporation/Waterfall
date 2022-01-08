@@ -11,7 +11,6 @@ namespace Waterfall
   [Serializable]
   public class RCSController : WaterfallController
   {
-    public const string ControllerTypeId = "rcs";
     public const string DisplayName = "RCS";
 
     public List<float> currentThrottle;
@@ -31,8 +30,6 @@ namespace Waterfall
       node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
       node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
     }
-
-    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {
