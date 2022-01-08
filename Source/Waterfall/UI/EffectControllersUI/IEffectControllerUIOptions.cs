@@ -46,15 +46,21 @@ namespace Waterfall.UI.EffectControllersUI
       }
     }
 
-    protected virtual void LoadOptions(TController controller)
-    {
-    }
-
     public WaterfallController CreateController()
     {
       return CreateControllerInternal();
     }
 
+    /// <summary>
+    ///    Must be overridden if controller type have UI options that have to be copied from controller instance.
+    /// </summary>
+    protected virtual void LoadOptions(TController controller)
+    {
+    }
+
+    /// <summary>
+    ///    Must be overridden if controller type have UI options that have to be copied into newly created controller instance.
+    /// </summary>
     protected virtual TController CreateControllerInternal()
     {
       return new TController();
