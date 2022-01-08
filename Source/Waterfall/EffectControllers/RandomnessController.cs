@@ -29,10 +29,9 @@ namespace Waterfall
 
     public RandomnessController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public RandomnessController(ConfigNode node) : this()
+    public RandomnessController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(noiseType), ref noiseType);
@@ -46,6 +45,8 @@ namespace Waterfall
         seed = UnityEngine.Random.Range(0, 10000);
       }
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

@@ -17,16 +17,17 @@ namespace Waterfall
     public float currentThrottle = 1f;
     public float responseRateUp = 100f;
     public float responseRateDown = 100f;
-    public string engineID = "";
+    public string engineID = string.Empty;
+
     ModuleEngines engineController;
+
+    public override string TypeId => ControllerTypeId;
 
     public ThrottleController()
     {
-      linkedTo = ControllerTypeId;
-      engineID = string.Empty;
     }
 
-    public ThrottleController(ConfigNode node) : this()
+    public ThrottleController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(responseRateUp), ref responseRateUp);

@@ -15,13 +15,14 @@ namespace Waterfall
 
     public MachController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public MachController(ConfigNode node) : this()
+    public MachController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {

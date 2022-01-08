@@ -250,15 +250,15 @@ namespace Waterfall
     }
 
     /// <summary>
-    ///     Load controller corresponding to <see cref="WaterfallController.linkedTo"/> value.
-    ///     If linkedTo value is missing or incorrect, default to <see cref="ThrottleController"/> type.
+    ///     Load controller corresponding to <see cref="WaterfallController.TypeId"/> value.
+    ///     If <see cref="WaterfallController.ControllerTypeNodeName"/> value is missing or incorrect, default to <see cref="ThrottleController"/> type.
     /// </summary>
     WaterfallController LoadController(ConfigNode configNode)
     {
       string controllerType = ThrottleController.ControllerTypeId;
-      if (!configNode.TryGetValue("linkedTo", ref controllerType))
+      if (!configNode.TryGetValue(WaterfallController.ControllerTypeNodeName, ref controllerType))
       {
-        Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define linkedTo, setting throttle as default");
+        Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define {WaterfallController.ControllerTypeNodeName} field, setting throttle as default");
       }
 
       if (!EffectControllersMetadata.EffectControllers.ContainsKey(controllerType))
@@ -269,7 +269,7 @@ namespace Waterfall
 
       var info = EffectControllersMetadata.EffectControllers[controllerType];
       var controller = info.CreateFromConfig(configNode);
-      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.linkedTo}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
+      Utils.Log($"[ModuleWaterfallFX]: Loaded {controller.TypeId}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
 
       return controller;
     }

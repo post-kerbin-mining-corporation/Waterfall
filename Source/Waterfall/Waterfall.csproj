@@ -128,7 +128,7 @@
     <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="UI\EffectControllersUI\EffectControllersInfo.cs" />
+    <Compile Include="UI\EffectControllersUI\EffectControllersMetadata.cs" />
     <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\CustomControllerUIOptions.cs" />

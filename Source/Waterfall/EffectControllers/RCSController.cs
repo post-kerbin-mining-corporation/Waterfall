@@ -22,16 +22,17 @@ namespace Waterfall
 
     public RCSController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public RCSController(ConfigNode node) : this()
+    public RCSController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(responseRateUp), ref responseRateUp);
       node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
       node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {

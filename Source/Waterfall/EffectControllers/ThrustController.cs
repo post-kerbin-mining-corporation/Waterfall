@@ -13,21 +13,21 @@ namespace Waterfall
     public const string ControllerTypeId = "thrust";
     public const string DisplayName = "Thrust";
 
-    public string engineID = "";
+    public string engineID = string.Empty;
     public float currentThrustFraction;
     ModuleEngines engineController;
 
     public ThrustController()
     {
-      linkedTo = ControllerTypeId;
-      engineID = string.Empty;
     }
 
-    public ThrustController(ConfigNode node) : this()
+    public ThrustController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(engineID), ref engineID);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override void Initialize(ModuleWaterfallFX host)
     {

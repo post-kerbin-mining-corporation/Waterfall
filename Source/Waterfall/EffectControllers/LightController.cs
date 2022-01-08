@@ -15,19 +15,20 @@ namespace Waterfall
 
     public float currentThrottle = 1;
     public string lightName = "";
-    Light lightController;
+    private Light lightController;
 
 
     public LightController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public LightController(ConfigNode node) : this()
+    public LightController(ConfigNode node)
     {
       node.TryGetValue(nameof(lightName), ref lightName);
       node.TryGetValue(nameof(name), ref name);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

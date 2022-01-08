@@ -14,14 +14,15 @@ namespace Waterfall
 
     public GimbalController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public GimbalController(ConfigNode node) : this()
+    public GimbalController(ConfigNode node)
     {
       node.TryGetValue(nameof(axis), ref axis);
       node.TryGetValue(nameof(name), ref name);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

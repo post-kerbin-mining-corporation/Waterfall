@@ -205,17 +205,16 @@ namespace Waterfall.UI
       ctrl.overridden = GUILayout.Toggle(ctrl.overridden, "", GUILayout.Width(60));
 
       GUILayout.Label(ctrl.name, GUILayout.MaxWidth(120f));
-      //GUILayout.Label(ctrl.linkedTo, GUILayout.MaxWidth(130f));
+      // GUILayout.Label(ctrl.TypeId, GUILayout.MaxWidth(130f));
 
 
       float sliderMax = 1f;
-      float sliderMin = 0f;
-      if (ctrl.linkedTo == MachController.ControllerTypeId)
+      if (ctrl is MachController)
         sliderMax = 15f;
-      if (ctrl.linkedTo == GimbalController.ControllerTypeId)
-      {
+
+      float sliderMin = 0f;
+      if (ctrl is GimbalController)
         sliderMin = -1f;
-      }
 
       if (ctrl.overridden)
       {

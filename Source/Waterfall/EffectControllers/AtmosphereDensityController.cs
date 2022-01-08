@@ -15,10 +15,9 @@ namespace Waterfall
 
     public AtmosphereDensityController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public AtmosphereDensityController(ConfigNode node) : this()
+    public AtmosphereDensityController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
     }
@@ -27,6 +26,8 @@ namespace Waterfall
     {
       base.Initialize(host);
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override List<float> Get()
     {

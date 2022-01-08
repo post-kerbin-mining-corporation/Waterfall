@@ -12,11 +12,23 @@ namespace Waterfall
   public abstract class WaterfallController
   {
     public string name = "unnamedController";
-    public string linkedTo = "unnamedController";
     public bool overridden = false;
     public float overrideValue = 0.0f;
     protected float value = 0.0f;
     protected ModuleWaterfallFX parentModule;
+
+    /// <summary>
+    ///    Name of the config node which will store value of <see cref="TypeId"/>.
+    /// </summary>
+    public const string ControllerTypeNodeName = "linkedTo";
+
+    /// <summary>
+    ///   Identifies which kind of effect controller this is.
+    /// </summary>
+    /// <remarks>
+    ///   Every controller type is also expected to have constant member similar to <see cref="ThrottleController.ControllerTypeId"/> which is used to automatically bind controller types to UI and serialization logic.
+    /// </remarks>
+    public abstract string TypeId { get; }
 
     /// <summary>
     /// Get the value of the controller. 
@@ -38,7 +50,7 @@ namespace Waterfall
     {
       ConfigNode c = new ConfigNode(WaterfallConstants.ControllerNodeName);
       c.AddValue(nameof(name), name);
-      c.AddValue(nameof(linkedTo), linkedTo);
+      c.AddValue(ControllerTypeNodeName, TypeId);
       return c;
     }
 

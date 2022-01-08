@@ -26,10 +26,9 @@ namespace Waterfall
 
     public EngineEventController()
     {
-      linkedTo = ControllerTypeId;
     }
 
-    public EngineEventController(ConfigNode node) : this()
+    public EngineEventController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
       node.TryGetValue(nameof(eventName), ref eventName);
@@ -37,6 +36,8 @@ namespace Waterfall
 
       eventCurve.Load(node.GetNode(nameof(eventCurve)));
     }
+
+    public override string TypeId => ControllerTypeId;
 
     public override ConfigNode Save()
     {

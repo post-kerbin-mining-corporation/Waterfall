@@ -53,7 +53,7 @@ namespace Waterfall.UI.EffectControllersUI
       fxMod = mod;
       newControllerName = ctrl.name;
 
-      selectedControllerIndex = controllerTypes.IndexOf(ctrl.linkedTo);
+      selectedControllerIndex = controllerTypes.IndexOf(ctrl.TypeId);
       GUI.BringWindowToFront(windowID);
 
       controllerOptions[selectedControllerIndex].LoadOptions(ctrl);
