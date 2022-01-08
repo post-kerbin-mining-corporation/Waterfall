@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -37,7 +38,7 @@ namespace Waterfall.UI.EffectControllersUI
     static EffectControllersMetadata()
     {
       var waterfallAssembly = typeof(EffectControllersMetadata).Assembly;
-      var baseType = typeof(WaterfallController);
+      var baseType          = typeof(WaterfallController);
       var controllerTypes = waterfallAssembly
         .GetTypes()
         .Where(t => t != baseType && baseType.IsAssignableFrom(t))
@@ -52,13 +53,13 @@ namespace Waterfall.UI.EffectControllersUI
     {
       private readonly ConstructorInfo deserializeConstructor;
 
-      public readonly Type ControllerType;
+      public readonly Type   ControllerType;
       public readonly string DisplayName;
 
       public ControllerInfo(Type controllerType)
       {
-        this.ControllerType = controllerType;
-        DisplayName         = controllerType.GetField(nameof(ThrottleController.DisplayName)).GetValue(null).ToString();
+        ControllerType = controllerType;
+        DisplayName    = controllerType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? ControllerType.Name;
 
         deserializeConstructor = controllerType.GetConstructor(new[] { typeof(ConfigNode) });
 
@@ -81,12 +82,12 @@ namespace Waterfall.UI.EffectControllersUI
       public IEffectControllerUIOptions CreateUIOptions(UIResources guiResources)
       {
         var waterfallAssembly = typeof(EffectControllersMetadata).Assembly;
-        var baseType = typeof(DefaultEffectControllerUIOptions<>);
+        var baseType          = typeof(DefaultEffectControllerUIOptions<>);
 
         var optionsType = waterfallAssembly
           .GetTypes()
           .First(t => t.BaseType is { IsConstructedGenericType: true }
-                      && t.BaseType.GetGenericTypeDefinition() == baseType
+                      && t.BaseType.GetGenericTypeDefinition()            == baseType
                       && t.BaseType.GenericTypeArguments.FirstOrDefault() == ControllerType);
 
         object options = optionsType.GetConstructor(Type.EmptyTypes)?.Invoke(new object[0])

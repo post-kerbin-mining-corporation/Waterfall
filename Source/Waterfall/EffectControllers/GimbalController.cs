@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Waterfall
 {
+  [DisplayName("Gimbal")]
   public class GimbalController : WaterfallController
   {
-    public const string DisplayName = "Gimbal";
-
     public float atmosphereDepth = 1;
     public string axis = "x";
     ModuleGimbal gimbalController;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Waterfall
@@ -8,10 +9,9 @@ namespace Waterfall
   /// normalized to [0, 1] where 1 corresponds to the max thrust possible under current conditions.
   /// </summary>
   [System.Serializable]
+  [DisplayName("Thrust")]
   public class ThrustController : WaterfallController
   {
-    public const string DisplayName = "Thrust";
-
     public string engineID = string.Empty;
     public float currentThrustFraction;
     ModuleEngines engineController;

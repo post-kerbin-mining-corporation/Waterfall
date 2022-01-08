@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -9,9 +10,9 @@ namespace Waterfall
   /// A controller that generates randomness
   /// </summary>
   [System.Serializable]
+  [DisplayName("Randomness")]
   public class RandomnessController : WaterfallController
   {
-    public const string DisplayName = "Randomness";
     public const string PerlinNoiseName = "perlin";
     public const string RandomNoiseName = "random";
 

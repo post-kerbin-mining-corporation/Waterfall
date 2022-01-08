@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 
 namespace Waterfall
@@ -6,10 +7,9 @@ namespace Waterfall
   /// <summary>
   /// A controller that pulls from atmosphere density
   /// </summary>
+  [DisplayName("Mach")]
   public class MachController : WaterfallController
   {
-    public const string DisplayName = "Mach";
-
     public float mach = 0;
 
     public MachController()

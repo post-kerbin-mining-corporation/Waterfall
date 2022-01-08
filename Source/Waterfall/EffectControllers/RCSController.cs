@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -9,10 +10,9 @@ namespace Waterfall
   /// A controller that pulls from RCS throttle
   /// </summary>
   [Serializable]
+  [DisplayName("RCS")]
   public class RCSController : WaterfallController
   {
-    public const string DisplayName = "RCS";
-
     public List<float> currentThrottle;
     public float responseRateUp = 100f;
     public float responseRateDown = 100f;

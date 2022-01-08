@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,10 +9,9 @@ using UnityEngine;
 namespace Waterfall
 {
   [System.Serializable]
+  [DisplayName("Custom")]
   public class CustomController : WaterfallController
   {
-    public const string DisplayName = "Custom";
-
     public CustomController()
     {
     }

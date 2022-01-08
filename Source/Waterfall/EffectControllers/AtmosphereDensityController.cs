@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 namespace Waterfall
@@ -6,10 +7,9 @@ namespace Waterfall
   /// <summary>
   /// A controller that pulls from atmosphere density
   /// </summary>
+  [DisplayName("Atmosphere Density")]
   public class AtmosphereDensityController : WaterfallController
   {
-    public const string DisplayName = "Atmosphere Density";
-
     public float atmosphereDepth = 1;
 
     public AtmosphereDensityController()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -9,10 +10,9 @@ namespace Waterfall
   /// A controller that pulls from throttle settings
   /// </summary>
   [System.Serializable]
+  [DisplayName("Throttle")]
   public class ThrottleController : WaterfallController
   {
-    public const string DisplayName = "Throttle";
-
     public float currentThrottle = 1f;
     public float responseRateUp = 100f;
     public float responseRateDown = 100f;

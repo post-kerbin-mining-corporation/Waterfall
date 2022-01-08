@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Waterfall
 {
   /// <summary>
   /// </summary>
+  [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
-    public const string DisplayName = "Engine Event";
-
     public float currentThrottle = 1;
     ModuleEngines engineController;
     public string eventName;
