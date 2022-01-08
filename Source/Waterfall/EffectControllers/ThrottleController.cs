@@ -22,7 +22,6 @@ namespace Waterfall
 
     public ThrottleController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
       engineID = string.Empty;
     }

@@ -22,7 +22,6 @@ namespace Waterfall
 
     public RCSController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

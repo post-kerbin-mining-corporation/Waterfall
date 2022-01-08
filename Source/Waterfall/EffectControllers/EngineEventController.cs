@@ -26,7 +26,6 @@ namespace Waterfall
 
     public EngineEventController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

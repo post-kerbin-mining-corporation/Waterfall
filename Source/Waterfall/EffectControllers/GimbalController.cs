@@ -14,7 +14,6 @@ namespace Waterfall
 
     public GimbalController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

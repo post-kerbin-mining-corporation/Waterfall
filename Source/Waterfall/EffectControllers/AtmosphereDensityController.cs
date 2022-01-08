@@ -15,7 +15,6 @@ namespace Waterfall
 
     public AtmosphereDensityController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

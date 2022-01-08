@@ -19,7 +19,6 @@ namespace Waterfall
 
     public ThrustController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
       engineID = string.Empty;
     }

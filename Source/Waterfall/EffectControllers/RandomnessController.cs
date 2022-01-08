@@ -29,7 +29,6 @@ namespace Waterfall
 
     public RandomnessController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

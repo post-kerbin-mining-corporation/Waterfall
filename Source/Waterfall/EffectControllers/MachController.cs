@@ -15,7 +15,6 @@ namespace Waterfall
 
     public MachController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 

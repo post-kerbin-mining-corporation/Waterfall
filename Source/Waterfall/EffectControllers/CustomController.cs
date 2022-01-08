@@ -15,7 +15,6 @@ namespace Waterfall
 
     public CustomController()
     {
-      name = ControllerTypeId;
       linkedTo = ControllerTypeId;
     }
 
