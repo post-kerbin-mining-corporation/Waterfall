@@ -31,9 +31,10 @@ namespace Waterfall.UI.EffectControllersUI
       if (!showWindow)
         WindowPosition = new Rect(Screen.width / 2f, Screen.height / 2f, 400, 400);
 
-      controllerTypes = EffectControllersMetadata.EffectControllers.Values.Select(c => c.ControllerType).ToArray();
-      controllersGridValues = EffectControllersMetadata.EffectControllers.Values.Select(c => c.DisplayName).ToArray();
-      controllerOptions = EffectControllersMetadata.EffectControllers.Values.Select(c => c.CreateUIOptions(GUIResources)).ToArray();
+      var metadata = EffectControllersMetadata.EffectControllers.Values.OrderBy(v => v.DisplayName).ToArray();
+      controllerTypes       = metadata.Select(c => c.ControllerType).ToArray();
+      controllersGridValues = metadata.Select(c => c.DisplayName).ToArray();
+      controllerOptions     = metadata.Select(c => c.CreateUIOptions(GUIResources)).ToArray();
     }
 
     public void SetDeleteMode(WaterfallController ctrl, ModuleWaterfallFX mod)
