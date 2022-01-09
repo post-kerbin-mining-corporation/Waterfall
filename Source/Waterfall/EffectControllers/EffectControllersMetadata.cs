@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Waterfall.UI;
+using Waterfall.UI.EffectControllersUI;
 
-namespace Waterfall.UI.EffectControllersUI
+namespace Waterfall.EffectControllers
 {
   /// <summary>
   ///   Provides list of all effect controllers currently implemented in Waterfall as well as method to create them.
