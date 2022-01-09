@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Waterfall.UI.EffectControllersUI;
 
 namespace Waterfall
 {
@@ -20,7 +21,7 @@ namespace Waterfall
     /// <summary>
     ///    Name of the config node which will store controller type name.
     /// </summary>
-    public const string ControllerTypeNodeName = "linkedTo";
+    public const string LegacyControllerTypeNodeName = "linkedTo";
 
     /// <summary>
     /// Get the value of the controller. 
@@ -40,9 +41,8 @@ namespace Waterfall
     /// <param name="host"></param>
     public virtual ConfigNode Save()
     {
-      ConfigNode c = new ConfigNode(WaterfallConstants.ControllerNodeName);
+      var c = new ConfigNode(EffectControllersMetadata.GetConfigNodeName(GetType()));
       c.AddValue(nameof(name), name);
-      c.AddValue(ControllerTypeNodeName, GetType().Name);
       return c;
     }
 

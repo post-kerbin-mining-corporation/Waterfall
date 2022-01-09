@@ -250,48 +250,74 @@ namespace Waterfall
     }
 
     /// <summary>
-    ///     Load controller from config node.
-    ///     If value of config node entry named <see cref="WaterfallController.ControllerTypeNodeName"/> is missing or incorrect, default to <see cref="ThrottleController"/> type.
+    ///     Determine controller type from config node in the old format (config node named <see cref="WaterfallConstants.LegacyControllerNodeName"/> with <see cref="WaterfallController.LegacyControllerTypeNodeName"/> property).
+    ///     If value of config node entry named <see cref="WaterfallController.LegacyControllerTypeNodeName"/> is missing or incorrect, default to <see cref="ThrottleController"/> type.
     /// </summary>
-    WaterfallController LoadController(ConfigNode configNode)
+    /// <remarks>
+    ///     <see href="https://github.com/post-kerbin-mining-corporation/Waterfall/pull/95"/> for info regarding change to new format.
+    /// </remarks>
+    EffectControllerInfo DetermineControllerTypeFromLegacyConfigNode(ConfigNode configNode)
     {
-      string controllerType = nameof(ThrottleController);
-      if (configNode.TryGetValue(WaterfallController.ControllerTypeNodeName, ref controllerType))
+      EffectControllerInfo controllerType = EffectControllersMetadata.ControllersByType[typeof(ThrottleController)];
+
+      string linkedToValue = null;
+      if (configNode.TryGetValue(WaterfallController.LegacyControllerTypeNodeName, ref linkedToValue))
       {
-        Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define {WaterfallController.ControllerTypeNodeName} field, setting throttle as default");
+        if (EffectControllersMetadata.ControllersByLegacyControllerTypeIds.TryGetValue(linkedToValue, out var legacyControllerType))
+        {
+          controllerType = legacyControllerType;
+        }
+        else
+        {
+          Utils.LogWarning($"[ModuleWaterfallFX]: Unknown {WaterfallController.LegacyControllerTypeNodeName} value {linkedToValue} on moduleID {moduleID}, setting throttle as default");
+        }
+      }
+      else
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Controller on moduleID {moduleID} does not define {WaterfallController.LegacyControllerTypeNodeName} field, setting throttle as default");
       }
 
-      if (EffectControllersMetadata.LegacyControllerTypeIds.TryGetValue(controllerType, out string legacyControllerType))
-      {
-        // If loading effect templates made before jan 2022, match old "linkedTo" identifiers with effect controllers type names
-        controllerType = legacyControllerType;
-      }
-
-      if (!EffectControllersMetadata.EffectControllers.ContainsKey(controllerType))
-      {
-        Utils.LogWarning($"[ModuleWaterfallFX]: Unknown controller of type {controllerType} on moduleID {moduleID}, setting throttle as default");
-        controllerType = nameof(ThrottleController);
-      }
-
-      var info = EffectControllersMetadata.EffectControllers[controllerType];
-      var controller = info.CreateFromConfig(configNode);
-      Utils.Log($"[ModuleWaterfallFX]: Loaded {controllerType}:{controller.name} Controller on moduleID {moduleID}", LogType.Modules);
-
-      return controller;
+      return controllerType;
     }
-    
+
     void LoadControllers(ConfigNode node)
     {
-      ConfigNode[] controllerNodes = node.GetNodes(WaterfallConstants.ControllerNodeName);
-
       if (allControllers != null && allControllers.Count != 0)
         return;
 
       Utils.Log($"[ModuleWaterfallFX]: Loading effect controllers on moduleID {moduleID}", LogType.Modules);
 
-      allControllers = controllerNodes
-        .Select(LoadController)
-        .ToDictionary(c => c.name);
+      allControllers = new();
+      foreach (var childNode in node.GetNodes())
+      {
+        EffectControllerInfo controllerType;
+
+        // Check if node is either called CONTROLLER (old format) or something like THROTTLECONTROLLER (new format)
+        if (childNode.name == WaterfallConstants.LegacyControllerNodeName)
+        {
+          controllerType = DetermineControllerTypeFromLegacyConfigNode(childNode);
+        }
+        else if (EffectControllersMetadata.ControllersByConfigNodeName.TryGetValue(childNode.name, out var info))
+        {
+          controllerType = info;
+        }
+        else
+        {
+          continue;
+        }
+
+        var controller = controllerType.CreateFromConfig(childNode);
+        Utils.Log($"[ModuleWaterfallFX]: Loaded effect controller of type {controller} named {controller.name} on moduleID {moduleID}, adding to loaded controllers dictionary", LogType.Modules);
+
+        try
+        {
+          allControllers.Add(controller.name, controller);
+        }
+        catch (Exception ex)
+        {
+          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: {ex.Message}");
+        }
+      }
 
       Utils.Log($"[ModuleWaterfallFX]: Finished loading effect controllers on moduleID {moduleID}", LogType.Modules);
     }

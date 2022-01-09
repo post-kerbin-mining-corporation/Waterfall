@@ -31,7 +31,7 @@ namespace Waterfall.UI.EffectControllersUI
       if (!showWindow)
         WindowPosition = new Rect(Screen.width / 2f, Screen.height / 2f, 400, 400);
 
-      var metadata = EffectControllersMetadata.EffectControllers.Values.OrderBy(v => v.DisplayName).ToArray();
+      var metadata = EffectControllersMetadata.Controllers.OrderBy(v => v.DisplayName).ToArray();
       controllerTypes       = metadata.Select(c => c.ControllerType).ToArray();
       controllersGridValues = metadata.Select(c => c.DisplayName).ToArray();
       controllerOptions     = metadata.Select(c => c.CreateUIOptions(GUIResources)).ToArray();
