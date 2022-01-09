@@ -29,7 +29,7 @@ namespace Waterfall.EffectControllers
     public static readonly IReadOnlyDictionary<string, EffectControllerInfo> ControllersByConfigNodeName;
 
     /// <summary>
-    ///     Maps old "linkedTo" values to corresponding controllers metadata. These were used before field "linkedTo" was replaced by using controller type names for serialization.
+    ///   Maps old "linkedTo" values to corresponding controllers metadata. These were used before field "linkedTo" was replaced by using controller type names for serialization.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, EffectControllerInfo> ControllersByLegacyControllerTypeIds;
 
@@ -59,23 +59,19 @@ namespace Waterfall.EffectControllers
         ["random"]             = ControllersByType[typeof(RandomnessController)],
         ["rcs"]                = ControllersByType[typeof(RCSController)],
         ["throttle"]           = ControllersByType[typeof(ThrottleController)],
-        ["thrust"]             = ControllersByType[typeof(ThrustController)],
+        ["thrust"]             = ControllersByType[typeof(ThrustController)]
       };
     }
 
-    public static string GetConfigNodeName(Type controllerType)
-    {
-      return controllerType.Name.ToUpperInvariant();
-    }
+    public static string GetConfigNodeName(Type controllerType) => controllerType.Name.ToUpperInvariant();
   }
 
   public class EffectControllerInfo
   {
+    public readonly  Type            ControllerType;
+    public readonly  string          DisplayName;
+    public readonly  string          ConfigNodeName;
     private readonly ConstructorInfo deserializeConstructor;
-
-    public readonly Type   ControllerType;
-    public readonly string DisplayName;
-    public readonly string ConfigNodeName;
 
     public EffectControllerInfo(Type controllerType)
     {
@@ -110,11 +106,11 @@ namespace Waterfall.EffectControllers
       var optionsType = waterfallAssembly
         .GetTypes()
         .First(t => t.BaseType is { IsConstructedGenericType: true }
-                    && t.BaseType.GetGenericTypeDefinition()            == baseType
-                    && t.BaseType.GenericTypeArguments.FirstOrDefault() == ControllerType);
+                 && t.BaseType.GetGenericTypeDefinition()            == baseType
+                 && t.BaseType.GenericTypeArguments.FirstOrDefault() == ControllerType);
 
       object options = optionsType.GetConstructor(Type.EmptyTypes)?.Invoke(new object[0])
-                       ?? optionsType.GetConstructor(new[] { typeof(UIResources) })?.Invoke(new object[] { guiResources });
+                    ?? optionsType.GetConstructor(new[] { typeof(UIResources) })?.Invoke(new object[] { guiResources });
 
       if (options == null)
         throw new InvalidOperationException($"Unable to construct UI options for type {ControllerType}");

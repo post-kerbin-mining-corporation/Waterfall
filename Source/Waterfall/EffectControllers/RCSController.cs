@@ -7,27 +7,25 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  /// A controller that pulls from RCS throttle
+  ///   A controller that pulls from RCS throttle
   /// </summary>
   [Serializable]
   [DisplayName("RCS")]
   public class RCSController : WaterfallController
   {
-    public List<float> currentThrottle;
-    public float responseRateUp = 100f;
-    public float responseRateDown = 100f;
-    public string thrusterTransformName = string.Empty;
-    ModuleRCSFX rcsController;
+    public  List<float> currentThrottle;
+    public  float       responseRateUp        = 100f;
+    public  float       responseRateDown      = 100f;
+    public  string      thrusterTransformName = String.Empty;
+    private ModuleRCSFX rcsController;
 
-    public RCSController()
-    {
-    }
+    public RCSController() { }
 
     public RCSController(ConfigNode node)
     {
-      node.TryGetValue(nameof(name), ref name);
-      node.TryGetValue(nameof(responseRateUp), ref responseRateUp);
-      node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
+      node.TryGetValue(nameof(name),                  ref name);
+      node.TryGetValue(nameof(responseRateUp),        ref responseRateUp);
+      node.TryGetValue(nameof(responseRateDown),      ref responseRateDown);
       node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
     }
 
@@ -45,7 +43,7 @@ namespace Waterfall
         return;
       }
 
-      currentThrottle = new List<float>(rcsController.thrusterTransforms.Count);
+      currentThrottle = new(rcsController.thrusterTransforms.Count);
       for (int i = 0; i < rcsController.thrusterTransforms.Count; i++)
       {
         currentThrottle.Add(0f);
@@ -54,10 +52,10 @@ namespace Waterfall
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
+      var c = base.Save();
 
-      c.AddValue(nameof(responseRateUp), responseRateUp);
-      c.AddValue(nameof(responseRateDown), responseRateDown);
+      c.AddValue(nameof(responseRateUp),        responseRateUp);
+      c.AddValue(nameof(responseRateDown),      responseRateDown);
       c.AddValue(nameof(thrusterTransformName), thrusterTransformName);
       return c;
     }
@@ -67,7 +65,7 @@ namespace Waterfall
       if (rcsController == null)
       {
         Utils.LogWarning("[RCSController] RCS controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
 
       if (overridden)
@@ -83,12 +81,12 @@ namespace Waterfall
 
       for (int i = 0; i < currentThrottle.Count; i++)
       {
-        var newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
-        var responseRate = newThrottle > currentThrottle[i] ? responseRateUp : responseRateDown;
+        float newThrottle  = rcsController.thrustForces[i] / rcsController.thrusterPower;
+        float responseRate = newThrottle > currentThrottle[i] ? responseRateUp : responseRateDown;
         currentThrottle[i] = Mathf.MoveTowards(currentThrottle[i], newThrottle, responseRate * TimeWarp.deltaTime);
       }
 
-      return new List<float>(currentThrottle);
+      return new(currentThrottle);
     }
   }
 }

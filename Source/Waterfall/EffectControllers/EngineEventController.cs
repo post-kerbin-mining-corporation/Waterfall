@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -10,27 +9,25 @@ namespace Waterfall
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
-    public float currentThrottle = 1;
-    ModuleEngines engineController;
+    public float  currentThrottle = 1;
     public string eventName;
 
 
-    public FloatCurve eventCurve = new FloatCurve();
+    public  FloatCurve    eventCurve    = new();
+    public  float         eventDuration = 1f;
+    private ModuleEngines engineController;
 
-    bool enginePreState = false;
-    bool eventPlaying = false;
-    bool eventReady = false;
-    float eventTime = 0f;
-    public float eventDuration = 1f;
+    private bool  enginePreState;
+    private bool  eventPlaying;
+    private bool  eventReady;
+    private float eventTime;
 
-    public EngineEventController()
-    {
-    }
+    public EngineEventController() { }
 
     public EngineEventController(ConfigNode node)
     {
-      node.TryGetValue(nameof(name), ref name);
-      node.TryGetValue(nameof(eventName), ref eventName);
+      node.TryGetValue(nameof(name),          ref name);
+      node.TryGetValue(nameof(eventName),     ref eventName);
       node.TryGetValue(nameof(eventDuration), ref eventDuration);
 
       eventCurve.Load(node.GetNode(nameof(eventCurve)));
@@ -38,9 +35,9 @@ namespace Waterfall
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
+      var c = base.Save();
       c.AddValue(nameof(eventDuration), eventDuration);
-      c.AddValue(nameof(eventName), eventName);
+      c.AddValue(nameof(eventName),     eventName);
       c.AddNode(Utils.SerializeFloatCurve(nameof(eventCurve), eventCurve));
       return c;
     }
@@ -76,26 +73,26 @@ namespace Waterfall
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
+        return new() { overrideValue };
 
       if (engineController == null)
       {
         Utils.LogWarning("[EngineEventController] Engine controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
 
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
       if (eventName == "flameout")
       {
-        return new List<float>() { eventCurve.Evaluate(CheckStateChange()) };
+        return new() { eventCurve.Evaluate(CheckStateChange()) };
       }
 
       if (eventName == "ignition")
       {
-        return new List<float>() { eventCurve.Evaluate(CheckStateChange()) };
+        return new() { eventCurve.Evaluate(CheckStateChange()) };
       }
 
-      return new List<float>() { 0f };
+      return new() { 0f };
     }
 
     public float CheckStateChange()
@@ -106,9 +103,9 @@ namespace Waterfall
         if (engineController.EngineIgnited != enginePreState)
         {
           Utils.Log($"[EngineEventController] {eventName} fired ", LogType.Modifiers);
-          eventReady = false;
+          eventReady   = false;
           eventPlaying = true;
-          eventTime = 0f;
+          eventTime    = 0f;
         }
       }
       else if (eventPlaying)

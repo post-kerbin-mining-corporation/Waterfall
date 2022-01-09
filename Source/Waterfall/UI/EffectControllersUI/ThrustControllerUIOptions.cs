@@ -1,6 +1,4 @@
 ﻿namespace Waterfall.UI.EffectControllersUI
 {
-  public class ThrustControllerUIOptions : DefaultEffectControllerUIOptions<ThrustController>
-  {
-  }
+  public class ThrustControllerUIOptions : DefaultEffectControllerUIOptions<ThrustController> { }
 }

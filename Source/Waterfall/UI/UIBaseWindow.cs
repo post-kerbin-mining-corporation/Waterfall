@@ -1,53 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using KSP.UI.Screens;
-using KSP.Localization;
+﻿using UnityEngine;
+using Random = System.Random;
 
 namespace Waterfall.UI
 {
-
   public class UIBaseWindow : MonoBehaviour
   {
     // Control Vars
-    protected static bool showWindow = false;
-    protected int windowID = new System.Random(13123).Next();
-    public Rect windowPos = new Rect(200f, 200f, 1000f, 400f);
-    private Vector2 scrollPosition = Vector2.zero;
-    private float scrollHeight = 0f;
-    protected bool initUI = false;
+    protected static bool showWindow;
+    public           Rect windowPos = new(200f, 200f, 1000f, 400f);
+    protected        bool initUI;
 
     // Assets
     protected UIResources resources;
+    private   float       scrollHeight   = 0f;
+    private   Vector2     scrollPosition = Vector2.zero;
+    protected int         windowID       = new Random(13123).Next();
 
-   
 
-    public Rect WindowPosition { get { return windowPos; } set { windowPos = value; } }
-    public UIResources GUIResources { get { return resources; } }
-
-    /// <summary>
-    /// Turn the window on or off
-    /// </summary>
-    public static void ToggleWindow()
+    public Rect WindowPosition
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Toggle Window");
-      showWindow = !showWindow;
+      get => windowPos;
+      set => windowPos = value;
     }
 
-    /// <summary>
-    /// Initialize the UI comoponents, do localization, set up styles
-    /// </summary>
-    protected virtual void InitUI()
-    {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Initializing");
-
-      resources = new UIResources();
-      initUI = true;
-    }
+    public UIResources GUIResources => resources;
 
     protected virtual void Awake()
     {
@@ -59,17 +35,39 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Start fired");
-      
     }
 
     protected virtual void OnGUI()
     {
       if (Event.current.type == EventType.Repaint || Event.current.isMouse) { }
+
       Draw();
     }
 
     /// <summary>
-    /// Draw the UI
+    ///   Turn the window on or off
+    /// </summary>
+    public static void ToggleWindow()
+    {
+      if (Settings.DebugUIMode)
+        Utils.Log("[UI]: Toggle Window");
+      showWindow = !showWindow;
+    }
+
+    /// <summary>
+    ///   Initialize the UI comoponents, do localization, set up styles
+    /// </summary>
+    protected virtual void InitUI()
+    {
+      if (Settings.DebugUIMode)
+        Utils.Log("[UI]: Initializing");
+
+      resources = new();
+      initUI    = true;
+    }
+
+    /// <summary>
+    ///   Draw the UI
     /// </summary>
     protected virtual void Draw()
     {
@@ -85,15 +83,9 @@ namespace Waterfall.UI
     }
 
     /// <summary>
-    /// Draw the window
+    ///   Draw the window
     /// </summary>
     /// <param name="windowId">window ID</param>
-    protected virtual void DrawWindow(int windowId)
-    { }
-
-   
-
+    protected virtual void DrawWindow(int windowId) { }
   }
-
-
 }

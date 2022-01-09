@@ -5,17 +5,16 @@ namespace Waterfall.UI.EffectControllersUI
 {
   public class RandomnessControllerUIOptions : DefaultEffectControllerUIOptions<RandomnessController>
   {
-    string[] randTypes = { RandomnessController.RandomNoiseName, RandomnessController.PerlinNoiseName };
-    int randFlag = 0;
-
-    string[] randomStrings = new string[4];
-    Vector2 randomRange;
-    int perlinSeed = 0;
-    float perlinMin = 0f;
-    float perlinScale = 1f;
-    float perlinSpeed = 1f;
-
     private readonly UIResources guiResources;
+    private readonly string[]    randTypes = { RandomnessController.RandomNoiseName, RandomnessController.PerlinNoiseName };
+
+    private readonly string[] randomStrings = new string[4];
+    private          int      randFlag;
+    private          Vector2  randomRange;
+    private          int      perlinSeed;
+    private          float    perlinMin;
+    private          float    perlinScale = 1f;
+    private          float    perlinSpeed = 1f;
 
     public RandomnessControllerUIOptions(UIResources guiResources)
     {
@@ -35,20 +34,20 @@ namespace Waterfall.UI.EffectControllersUI
         randomStrings[0] = GUILayout.TextArea(randomStrings[0], GUILayout.MaxWidth(60f));
         randomStrings[1] = GUILayout.TextArea(randomStrings[1], GUILayout.MaxWidth(60f));
 
-        Vector2 newRand = new Vector2(randomRange.x, randomRange.y);
-        if (float.TryParse(randomStrings[0], out float xParsed))
+        var newRand = new Vector2(randomRange.x, randomRange.y);
+        if (Single.TryParse(randomStrings[0], out float xParsed))
         {
           newRand.x = xParsed;
         }
 
-        if (float.TryParse(randomStrings[1], out float yParsed))
+        if (Single.TryParse(randomStrings[1], out float yParsed))
         {
           newRand.y = yParsed;
         }
 
         if (newRand.x != randomRange.x || newRand.y != randomRange.y)
         {
-          randomRange = new Vector2(xParsed, yParsed);
+          randomRange = new(xParsed, yParsed);
         }
 
         GUILayout.EndHorizontal();
@@ -59,7 +58,7 @@ namespace Waterfall.UI.EffectControllersUI
         GUILayout.BeginHorizontal();
         GUILayout.Label("Seed", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
         randomStrings[0] = GUILayout.TextArea(randomStrings[0], GUILayout.MaxWidth(60f));
-        if (int.TryParse(randomStrings[0], out int intParsed))
+        if (Int32.TryParse(randomStrings[0], out int intParsed))
         {
           perlinSeed = intParsed;
         }
@@ -68,7 +67,7 @@ namespace Waterfall.UI.EffectControllersUI
         GUILayout.BeginHorizontal();
         GUILayout.Label("Minimum", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
         randomStrings[3] = GUILayout.TextArea(randomStrings[3], GUILayout.MaxWidth(60f));
-        if (float.TryParse(randomStrings[3], out float floatParsed))
+        if (Single.TryParse(randomStrings[3], out float floatParsed))
         {
           perlinMin = floatParsed;
         }
@@ -78,7 +77,7 @@ namespace Waterfall.UI.EffectControllersUI
         GUILayout.BeginHorizontal();
         GUILayout.Label("Maximum", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
         randomStrings[1] = GUILayout.TextArea(randomStrings[1], GUILayout.MaxWidth(60f));
-        if (float.TryParse(randomStrings[1], out floatParsed))
+        if (Single.TryParse(randomStrings[1], out floatParsed))
         {
           perlinScale = floatParsed;
         }
@@ -88,7 +87,7 @@ namespace Waterfall.UI.EffectControllersUI
         GUILayout.Label("Speed", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
         randomStrings[2] = GUILayout.TextArea(randomStrings[2], GUILayout.MaxWidth(60f));
 
-        if (float.TryParse(randomStrings[2], out floatParsed))
+        if (Single.TryParse(randomStrings[2], out floatParsed))
         {
           perlinSpeed = floatParsed;
         }
@@ -114,17 +113,15 @@ namespace Waterfall.UI.EffectControllersUI
       }
     }
 
-    protected override RandomnessController CreateControllerInternal()
-    {
-      return new RandomnessController
+    protected override RandomnessController CreateControllerInternal() =>
+      new()
       {
-        range = randomRange,
-        scale = perlinScale,
-        minimum = perlinMin,
-        seed = perlinSeed,
-        speed = perlinSpeed,
-        noiseType = randTypes[randFlag],
+        range     = randomRange,
+        scale     = perlinScale,
+        minimum   = perlinMin,
+        seed      = perlinSeed,
+        speed     = perlinSpeed,
+        noiseType = randTypes[randFlag]
       };
-    }
   }
 }

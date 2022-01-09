@@ -7,29 +7,27 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  /// A controller that pulls from throttle settings
+  ///   A controller that pulls from throttle settings
   /// </summary>
-  [System.Serializable]
+  [Serializable]
   [DisplayName("Throttle")]
   public class ThrottleController : WaterfallController
   {
-    public float currentThrottle = 1f;
-    public float responseRateUp = 100f;
-    public float responseRateDown = 100f;
-    public string engineID = string.Empty;
+    public float  currentThrottle  = 1f;
+    public float  responseRateUp   = 100f;
+    public float  responseRateDown = 100f;
+    public string engineID         = String.Empty;
 
-    ModuleEngines engineController;
+    private ModuleEngines engineController;
 
-    public ThrottleController()
-    {
-    }
+    public ThrottleController() { }
 
     public ThrottleController(ConfigNode node)
     {
-      node.TryGetValue(nameof(name), ref name);
-      node.TryGetValue(nameof(responseRateUp), ref responseRateUp);
+      node.TryGetValue(nameof(name),             ref name);
+      node.TryGetValue(nameof(responseRateUp),   ref responseRateUp);
       node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
-      node.TryGetValue(nameof(engineID), ref engineID);
+      node.TryGetValue(nameof(engineID),         ref engineID);
     }
 
     public override void Initialize(ModuleWaterfallFX host)
@@ -49,10 +47,10 @@ namespace Waterfall
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
+      var c = base.Save();
 
-      c.AddValue(nameof(engineID), engineID);
-      c.AddValue(nameof(responseRateUp), responseRateUp);
+      c.AddValue(nameof(engineID),         engineID);
+      c.AddValue(nameof(responseRateUp),   responseRateUp);
       c.AddValue(nameof(responseRateDown), responseRateDown);
       return c;
     }
@@ -60,17 +58,19 @@ namespace Waterfall
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
+        return new() { overrideValue };
 
       if (engineController == null)
       {
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
 
 
       if (!engineController.isOperational)
+      {
         currentThrottle = 0f;
+      }
       else
       {
         if (engineController.currentThrottle > currentThrottle)
@@ -83,7 +83,7 @@ namespace Waterfall
         }
       }
 
-      return new List<float>() { currentThrottle };
+      return new() { currentThrottle };
     }
   }
 }

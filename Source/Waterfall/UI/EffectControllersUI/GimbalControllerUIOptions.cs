@@ -6,9 +6,9 @@ namespace Waterfall.UI.EffectControllersUI
   public class GimbalControllerUIOptions : DefaultEffectControllerUIOptions<GimbalController>
   {
     private readonly string[] axisTypes = { "x", "y", "z" };
-    private int axisFlag;
 
     private readonly UIResources guiResources;
+    private          int         axisFlag;
 
     public GimbalControllerUIOptions(UIResources guiResources)
     {
@@ -31,12 +31,10 @@ namespace Waterfall.UI.EffectControllersUI
       }
     }
 
-    protected override GimbalController CreateControllerInternal()
-    {
-      return new GimbalController
+    protected override GimbalController CreateControllerInternal() =>
+      new()
       {
-        axis = axisTypes[axisFlag],
+        axis = axisTypes[axisFlag]
       };
-    }
   }
 }

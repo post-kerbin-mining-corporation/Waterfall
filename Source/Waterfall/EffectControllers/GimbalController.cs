@@ -7,13 +7,11 @@ namespace Waterfall
   [DisplayName("Gimbal")]
   public class GimbalController : WaterfallController
   {
-    public float atmosphereDepth = 1;
-    public string axis = "x";
-    ModuleGimbal gimbalController;
+    public  float        atmosphereDepth = 1;
+    public  string       axis            = "x";
+    private ModuleGimbal gimbalController;
 
-    public GimbalController()
-    {
-    }
+    public GimbalController() { }
 
     public GimbalController(ConfigNode node)
     {
@@ -23,7 +21,7 @@ namespace Waterfall
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
+      var c = base.Save();
       c.AddValue(nameof(axis), axis);
       return c;
     }
@@ -41,22 +39,22 @@ namespace Waterfall
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
+        return new() { overrideValue };
 
       if (gimbalController == null)
       {
         Utils.LogWarning("[GimbalController] Gimbal controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
 
       if (axis == "x")
-        return new List<float>() { gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP };
+        return new() { gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP };
       if (axis == "y")
-        return new List<float>() { gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP };
+        return new() { gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP };
       if (axis == "z")
-        return new List<float>() { gimbalController.actuationLocal.z };
+        return new() { gimbalController.actuationLocal.z };
 
-      return new List<float>() { 0f };
+      return new() { 0f };
     }
   }
 }

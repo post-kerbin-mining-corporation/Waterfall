@@ -14,23 +14,22 @@ namespace Waterfall.UI.EffectControllersUI
 
   public class UIControllerPopupWindow : UIPopupWindow
   {
-    private string windowTitle = string.Empty;
-    private ControllerPopupMode windowMode;
-    private WaterfallController control;
-    private ModuleWaterfallFX fxMod;
-    private string newControllerName = "controller";
-
-    private readonly Type[] controllerTypes;
-    private readonly string[] controllersGridValues;
+    private readonly Type[]                       controllerTypes;
+    private readonly string[]                     controllersGridValues;
     private readonly IEffectControllerUIOptions[] controllerOptions;
+    private          string                       windowTitle = String.Empty;
+    private          ControllerPopupMode          windowMode;
+    private          WaterfallController          control;
+    private          ModuleWaterfallFX            fxMod;
+    private          string                       newControllerName = "controller";
 
-    private int selectedControllerIndex = 0;
+    private int selectedControllerIndex;
 
 
     public UIControllerPopupWindow(bool show) : base(show)
     {
       if (!showWindow)
-        WindowPosition = new Rect(Screen.width / 2f, Screen.height / 2f, 400, 400);
+        WindowPosition = new(Screen.width / 2f, Screen.height / 2f, 400, 400);
 
       var metadata = EffectControllersMetadata.Controllers.OrderBy(v => v.DisplayName).ToArray();
       controllerTypes       = metadata.Select(c => c.ControllerType).ToArray();
@@ -41,18 +40,18 @@ namespace Waterfall.UI.EffectControllersUI
     public void SetDeleteMode(WaterfallController ctrl, ModuleWaterfallFX mod)
     {
       showWindow = true;
-      control = ctrl;
-      fxMod = mod;
+      control    = ctrl;
+      fxMod      = mod;
       windowMode = ControllerPopupMode.Delete;
       GUI.BringWindowToFront(windowID);
     }
 
     public void SetEditMode(WaterfallController ctrl, ModuleWaterfallFX mod)
     {
-      windowMode = ControllerPopupMode.Modify;
-      showWindow = true;
-      control = ctrl;
-      fxMod = mod;
+      windowMode        = ControllerPopupMode.Modify;
+      showWindow        = true;
+      control           = ctrl;
+      fxMod             = mod;
       newControllerName = ctrl.name;
 
       selectedControllerIndex = controllerTypes.IndexOf(ctrl.GetType());
@@ -63,9 +62,9 @@ namespace Waterfall.UI.EffectControllersUI
 
     public void SetAddMode(ModuleWaterfallFX mod)
     {
-      showWindow = true;
-      fxMod = mod;
-      windowMode = ControllerPopupMode.Add;
+      showWindow              = true;
+      fxMod                   = mod;
+      windowMode              = ControllerPopupMode.Add;
       selectedControllerIndex = 0;
 
       GUI.BringWindowToFront(windowID);
@@ -75,10 +74,10 @@ namespace Waterfall.UI.EffectControllersUI
     {
       windowTitle = windowMode switch
       {
-        ControllerPopupMode.Add => "Add new Controller",
+        ControllerPopupMode.Add    => "Add new Controller",
         ControllerPopupMode.Delete => "Confirm Delete",
         ControllerPopupMode.Modify => "Edit Controller",
-        _ => windowTitle
+        _                          => windowTitle
       };
 
       base.InitUI();
@@ -113,7 +112,7 @@ namespace Waterfall.UI.EffectControllersUI
 
       GUILayout.FlexibleSpace();
 
-      Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
+      var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = resources.GetColor("cancel_color");
       if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
       {
@@ -197,7 +196,7 @@ namespace Waterfall.UI.EffectControllersUI
 
     private WaterfallController CreateNewController()
     {
-      var options = controllerOptions[selectedControllerIndex];
+      var options    = controllerOptions[selectedControllerIndex];
       var controller = options.CreateController();
       controller.name = newControllerName;
 

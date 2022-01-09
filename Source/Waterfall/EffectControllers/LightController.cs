@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
@@ -6,30 +7,28 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  /// A controller that pulls from throttle settings
+  ///   A controller that pulls from throttle settings
   /// </summary>
-  [System.Serializable]
+  [Serializable]
   [DisplayName("Light")]
   public class LightController : WaterfallController
   {
-    public float currentThrottle = 1;
-    public string lightName = "";
-    private Light lightController;
+    public  float  currentThrottle = 1;
+    public  string lightName       = "";
+    private Light  lightController;
 
 
-    public LightController()
-    {
-    }
+    public LightController() { }
 
     public LightController(ConfigNode node)
     {
       node.TryGetValue(nameof(lightName), ref lightName);
-      node.TryGetValue(nameof(name), ref name);
+      node.TryGetValue(nameof(name),      ref name);
     }
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
+      var c = base.Save();
       c.AddValue(nameof(lightName), lightName);
       return c;
     }
@@ -49,15 +48,15 @@ namespace Waterfall
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
+        return new() { overrideValue };
 
       if (lightController == null)
       {
         Utils.LogWarning("[lightController] Light controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
 
-      return new List<float>() { lightController.intensity };
+      return new() { lightController.intensity };
     }
   }
 }

@@ -1,73 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-
 using UnityEngine;
 
-using System.IO;
 namespace Waterfall
 {
   /// <summary>
-  /// Class for loading and retrieving shaders
+  ///   Class for loading and retrieving shaders
   /// </summary>
   public static class WaterfallParticleLoader
   {
     /// <summary>
-    /// A collection of all shaders loaded by Waterfall
+    ///   A collection of all shaders loaded by Waterfall
     /// </summary>
-    private static readonly Dictionary<String, GameObject> ParticleDictionary = new Dictionary<String, GameObject>();
+    private static readonly Dictionary<string, GameObject> ParticleDictionary = new();
 
     /// <summary>
-    /// Requests a shader by name
+    ///   Requests a shader by name
     /// </summary>
     /// <param name="shaderName"></param>
     /// <returns></returns>
-    public static GameObject GetParticles(String particleName)
+    public static GameObject GetParticles(string particleName)
     {
       Utils.Log("[WaterfallParticleLoader]: Getting shader " + particleName);
       return ParticleDictionary.ContainsKey(particleName) ? ParticleDictionary[particleName] : null;
     }
 
     /// <summary>
-    /// Requests a shader by name
+    ///   Requests a shader by name
     /// </summary>
     /// <returns></returns>
-    public static List<string> GetAllShadersNames()
-    {
-      return ParticleDictionary.Keys.ToList();
-    }
+    public static List<string> GetAllShadersNames() => ParticleDictionary.Keys.ToList();
 
     /// <summary>
-    /// Loads all shaders in the plugin's data directory
+    ///   Loads all shaders in the plugin's data directory
     /// </summary>
     public static void LoadParticles()
     {
       Utils.Log("[WaterfallParticleLoader]: Loading shaders");
-      String path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Particles/");
-      String pathSpec;
-      
+      string path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Particles/");
+      string pathSpec;
+
       pathSpec = "*.particle"; // fixes OpenGL on windows
-      
 
-      String[] bundlePaths = Directory.GetFiles(path, pathSpec);
 
-      foreach (String bundle in bundlePaths)
+      string[] bundlePaths = Directory.GetFiles(path, pathSpec);
+
+      foreach (string bundle in bundlePaths)
       {
-        WaterfallParticleLoader.LoadAssetBundleAtPath(bundle);
+        LoadAssetBundleAtPath(bundle);
       }
     }
+
     /// <summary>
-    /// Manually load Shader Asset bundles by path
+    ///   Manually load Shader Asset bundles by path
     /// </summary>
-    public static void LoadAssetBundleAtPath(String bundlePath)
+    public static void LoadAssetBundleAtPath(string bundlePath)
     {
-
       Utils.Log($"[WaterfallParticleLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
-      AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
-      GameObject[] systems = bundle.LoadAllAssets<GameObject>();
+      var bundle  = AssetBundle.LoadFromFile(bundlePath);
+      var systems = bundle.LoadAllAssets<GameObject>();
 
-      foreach (GameObject sys in systems)
+      foreach (var sys in systems)
       {
         Utils.Log($"[WaterfallParticleLoader]: Adding {sys.name}");
         if (!ParticleDictionary.ContainsKey(sys.name))

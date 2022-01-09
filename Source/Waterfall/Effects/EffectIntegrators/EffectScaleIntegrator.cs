@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 namespace Waterfall
 {
- 
-
-  public class EffectPositionIntegrator: EffectIntegrator
+  public class EffectPositionIntegrator : EffectIntegrator
   {
-    
-    List<Vector3> initialVectorValues;
     public List<EffectPositionModifier> handledModifiers;
-    
+
+    private readonly List<Vector3> initialVectorValues;
+
     public EffectPositionIntegrator(WaterfallEffect effect, EffectPositionModifier posMod)
     {
       Utils.Log(String.Format("[EffectPositionIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, posMod.fxName), LogType.Modifiers);
-      xforms = new List<Transform>();
+      xforms        = new();
       transformName = posMod.transformName;
-      parentEffect = effect;
-      List<Transform> roots = parentEffect.GetModelTransforms();
-      foreach (Transform t in roots)
+      parentEffect  = effect;
+      var roots = parentEffect.GetModelTransforms();
+      foreach (var t in roots)
       {
-        Transform t1 = t.FindDeepChild(transformName);
+        var t1 = t.FindDeepChild(transformName);
         if (t1 == null)
         {
           Utils.LogError(String.Format("[EffectPositionIntegrator]: Unable to find transform {0} on modifier {1}", transformName, posMod.fxName));
@@ -34,22 +32,22 @@ namespace Waterfall
       }
 
 
-     
-      handledModifiers = new List<EffectPositionModifier>();
+      handledModifiers = new();
       handledModifiers.Add(posMod);
 
 
-      initialVectorValues = new List<Vector3>();
+      initialVectorValues = new();
       for (int i = 0; i < xforms.Count; i++)
       {
-
         initialVectorValues.Add(xforms[i].localPosition);
       }
     }
+
     public void AddModifier(EffectPositionModifier newMod)
     {
       handledModifiers.Add(newMod);
     }
+
     public void RemoveModifier(EffectPositionModifier newMod)
     {
       handledModifiers.Remove(newMod);
@@ -59,16 +57,16 @@ namespace Waterfall
     {
       if (handledModifiers.Count == 0)
         return;
-      List<Vector3> applyValues = initialVectorValues.ToList(); 
-      foreach (EffectPositionModifier posMod in handledModifiers)
+      var applyValues = initialVectorValues.ToList();
+      foreach (var posMod in handledModifiers)
       {
-        List<Vector3> modResult = posMod.Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));
+        var modResult = posMod.Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));
 
         if (posMod.effectMode == EffectModifierMode.REPLACE)
           applyValues = modResult;
 
         if (posMod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count;i++)
+          for (int i = 0; i < applyValues.Count; i++)
             applyValues[i] = Vector3.Scale(applyValues[i], modResult[i]);
 
         if (posMod.effectMode == EffectModifierMode.ADD)
@@ -78,16 +76,12 @@ namespace Waterfall
         if (posMod.effectMode == EffectModifierMode.SUBTRACT)
           for (int i = 0; i < applyValues.Count; i++)
             applyValues[i] = applyValues[i] - modResult[i];
-
       }
+
       for (int i = 0; i < xforms.Count; i++)
       {
         xforms[i].localPosition = applyValues[i];
       }
-
     }
   }
-
- 
-  
 }

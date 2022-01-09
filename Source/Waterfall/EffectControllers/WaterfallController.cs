@@ -1,42 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using Waterfall.EffectControllers;
 
 namespace Waterfall
 {
   /// <summary>
-  /// A generic effect controller
+  ///   A generic effect controller
   /// </summary>
   public abstract class WaterfallController
   {
-    public string name = "unnamedController";
-    public bool overridden = false;
-    public float overrideValue = 0.0f;
-    protected float value = 0.0f;
-    protected ModuleWaterfallFX parentModule;
-
     /// <summary>
-    ///    Name of the config node which will store controller type name.
+    ///   Name of the config node which will store controller type name.
     /// </summary>
     public const string LegacyControllerTypeNodeName = "linkedTo";
 
-    /// <summary>
-    /// Get the value of the controller. 
-    /// </summary>
-    /// <returns></returns>
-    public virtual List<float> Get()
-    {
-      if (overridden)
-        return new List<float>() {overrideValue};
-      else
-        return new List<float>() {0f};
-    }
+    public    string            name = "unnamedController";
+    public    bool              overridden;
+    public    float             overrideValue;
+    protected float             value;
+    protected ModuleWaterfallFX parentModule;
 
     /// <summary>
-    ///  Saves the controller
+    ///   Get the value of the controller.
+    /// </summary>
+    /// <returns></returns>
+    public virtual List<float> Get() =>
+      overridden
+        ? new() { overrideValue }
+        : new() { 0f };
+
+    /// <summary>
+    ///   Saves the controller
     /// </summary>
     /// <param name="host"></param>
     public virtual ConfigNode Save()
@@ -47,7 +40,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    ///  Initializes the controller
+    ///   Initializes the controller
     /// </summary>
     /// <param name="host"></param>
     public virtual void Initialize(ModuleWaterfallFX host)
@@ -56,7 +49,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Sets the value of the controller
+    ///   Sets the value of the controller
     /// </summary>
     /// <param name="mode"></param>
     public virtual void Set(float newValue)
@@ -65,7 +58,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Sets whether this controller is overridden, likely controlled by the UI
+    ///   Sets whether this controller is overridden, likely controlled by the UI
     /// </summary>
     /// <param name="mode"></param>
     public virtual void SetOverride(bool mode)
@@ -74,7 +67,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Sets the override value, not controlled by the game, likely an editor UI
+    ///   Sets the override value, not controlled by the game, likely an editor UI
     /// </summary>
     /// <param name="value"></param>
     public virtual void SetOverrideValue(float value)

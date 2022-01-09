@@ -1,6 +1,4 @@
 ﻿namespace Waterfall.UI.EffectControllersUI
 {
-  public class AtmosphereDensityControllerUIOptions : DefaultEffectControllerUIOptions<AtmosphereDensityController>
-  {
-  }
+  public class AtmosphereDensityControllerUIOptions : DefaultEffectControllerUIOptions<AtmosphereDensityController> { }
 }

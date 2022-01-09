@@ -5,16 +5,14 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  /// A controller that pulls from atmosphere density
+  ///   A controller that pulls from atmosphere density
   /// </summary>
   [DisplayName("Atmosphere Density")]
   public class AtmosphereDensityController : WaterfallController
   {
     public float atmosphereDepth = 1;
 
-    public AtmosphereDensityController()
-    {
-    }
+    public AtmosphereDensityController() { }
 
     public AtmosphereDensityController(ConfigNode node)
     {
@@ -29,8 +27,8 @@ namespace Waterfall
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
-      return new List<float>()
+        return new() { overrideValue };
+      return new()
       {
         Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent)
 

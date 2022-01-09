@@ -7,27 +7,27 @@ namespace Waterfall.UI.EffectControllersUI
   {
     private readonly UIResources guiResources;
 
-    private string[] eventTypes = { "ignition", "flameout" };
-    private int eventFlag = 0;
-    private FloatCurve eventCurve;
-    private float eventDuration = 2f;
-    private string eventDurationString;
-    private Texture2D miniCurve;
-    private Vector2 curveButtonDims = new Vector2(100f, 50f);
-    private UICurveEditWindow curveEditor;
+    private readonly string[] eventTypes      = { "ignition", "flameout" };
+    private readonly Vector2  curveButtonDims = new(100f, 50f);
 
-    int texWidth = 80;
-    int texHeight = 30;
+    private readonly int               texWidth  = 80;
+    private readonly int               texHeight = 30;
+    private          int               eventFlag;
+    private          FloatCurve        eventCurve;
+    private          float             eventDuration = 2f;
+    private          string            eventDurationString;
+    private          Texture2D         miniCurve;
+    private          UICurveEditWindow curveEditor;
 
     public EngineEventControllerUIOptions(UIResources guiResources)
     {
       this.guiResources = guiResources ?? throw new ArgumentNullException(nameof(guiResources));
 
       eventDurationString = eventDuration.ToString();
-      eventCurve = new FloatCurve();
-      eventCurve.Add(0f, 0f);
+      eventCurve          = new();
+      eventCurve.Add(0f,   0f);
       eventCurve.Add(0.1f, 1f);
-      eventCurve.Add(1f, 0f);
+      eventCurve.Add(1f,   0f);
       GenerateCurveThumbs();
     }
 
@@ -38,8 +38,8 @@ namespace Waterfall.UI.EffectControllersUI
 
       eventFlag = eventFlagChanged;
 
-      Rect buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y);
-      Rect imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
+      var buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y);
+      var imageRect  = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
       if (GUI.Button(buttonRect, ""))
       {
         EditCurve(eventCurve, UpdateEventCurve);
@@ -49,7 +49,7 @@ namespace Waterfall.UI.EffectControllersUI
       GUILayout.BeginHorizontal();
       GUILayout.Label("Event duration", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       eventDurationString = GUILayout.TextArea(eventDurationString, GUILayout.MaxWidth(60f));
-      if (float.TryParse(eventDurationString, out float floatParsed))
+      if (Single.TryParse(eventDurationString, out float floatParsed))
       {
         eventDuration = floatParsed;
       }
@@ -59,26 +59,24 @@ namespace Waterfall.UI.EffectControllersUI
 
     protected override void LoadOptions(EngineEventController controller)
     {
-      eventCurve = controller.eventCurve;
-      eventDuration = controller.eventDuration;
+      eventCurve          = controller.eventCurve;
+      eventDuration       = controller.eventDuration;
       eventDurationString = controller.eventDuration.ToString();
 
       GenerateCurveThumbs();
     }
 
-    protected override EngineEventController CreateControllerInternal()
-    {
-      return new EngineEventController
+    protected override EngineEventController CreateControllerInternal() =>
+      new()
       {
-        eventName = eventTypes[eventFlag],
-        eventCurve = eventCurve,
+        eventName     = eventTypes[eventFlag],
+        eventCurve    = eventCurve,
         eventDuration = eventDuration
       };
-    }
 
     private void EditCurve(FloatCurve toEdit, CurveUpdateFunction function)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve.ToString()}", LogType.UI);
+      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
       curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
     }
 

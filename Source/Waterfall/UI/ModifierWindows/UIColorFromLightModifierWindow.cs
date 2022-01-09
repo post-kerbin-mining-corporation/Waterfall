@@ -1,41 +1,13 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using UnityEngine;
-using KSP.UI.Screens;
-using KSP.Localization;
 
 namespace Waterfall.UI
 {
-
   public class UIColorFromLightModifierWindow : UIModifierWindow
   {
-    #region GUI Variables
-    Vector2 curveButtonDims = new Vector2(100f, 50f);
-
-    Texture2D miniCurve;
-
-    #endregion
-
-    #region GUI Widgets
-    #endregion
-
-    #region  Data
-    string lightName = "Spot";
-    int lightIndex;
-    string[] lightNames;
-
-    string colorName = "_TintColor";
-    int colorIndex = 0;
-    string[] colorNames;
-    public EffectColorFromLightModifier colorMod;
-    #endregion
-
-    public UIColorFromLightModifierWindow(EffectColorFromLightModifier mod, bool show) : base((EffectModifier)mod, show)
+    public UIColorFromLightModifierWindow(EffectColorFromLightModifier mod, bool show) : base(mod, show)
     {
-      colorMod = mod;
+      colorMod   = mod;
       colorNames = MaterialUtils.FindValidShaderProperties(colorMod.GetMaterial(), WaterfallMaterialPropertyType.Color).ToArray();
       colorIndex = colorNames.ToList().FindIndex(x => x == colorMod.colorName);
 
@@ -43,29 +15,32 @@ namespace Waterfall.UI
       lightIndex = lightNames.ToList().FindIndex(x => x == colorMod.lightTransformName);
     }
 
+    public override void UpdateCurves(FloatCurve newCurve, string tag) { }
+
     /// <summary>
-    /// Initialize the UI widgets, do localization, set up styles
+    ///   Initialize the UI widgets, do localization, set up styles
     /// </summary>
     protected override void InitUI()
     {
       base.InitUI();
       windowTitle = "Modifier Editor - Light Color Match";
     }
+
     /// <summary>
-    /// Draws the modifier content
+    ///   Draws the modifier content
     /// </summary>
     protected override void DrawModifierPanel()
     {
-
       GUILayout.BeginHorizontal();
       GUILayout.Label("Light Transform Name");
       int selectedIndex = GUILayout.SelectionGrid(lightIndex, lightNames, 4);
       if (selectedIndex != colorIndex)
       {
         lightIndex = selectedIndex;
-        lightName = lightNames[lightIndex];
+        lightName  = lightNames[lightIndex];
         colorMod.ApplyLightName(lightName);
       }
+
       GUILayout.EndHorizontal();
 
 
@@ -75,9 +50,10 @@ namespace Waterfall.UI
       if (selectedIndex != colorIndex)
       {
         colorIndex = selectedIndex;
-        colorName = colorNames[colorIndex];
+        colorName  = colorNames[colorIndex];
         colorMod.ApplyColorName(colorName);
       }
+
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
@@ -87,24 +63,39 @@ namespace Waterfall.UI
       if (sliderVal != colorMod.colorBlend)
       {
         colorMod.colorBlend = sliderVal;
-        
       }
-        GUILayout.EndHorizontal();
-    }
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
-    {
-     
+
+      GUILayout.EndHorizontal();
     }
 
     /// <summary>
-    /// Draws the modifier content
+    ///   Draws the modifier content
     /// </summary>
-    protected override void UpdateModifierPanel()
-    {
-    }
-   
+    protected override void UpdateModifierPanel() { }
 
+    #region GUI Variables
 
+    private Vector2 curveButtonDims = new(100f, 50f);
+
+    private Texture2D miniCurve;
+
+    #endregion
+
+    #region GUI Widgets
+
+    #endregion
+
+    #region Data
+
+    private          string   lightName = "Spot";
+    private          int      lightIndex;
+    private readonly string[] lightNames;
+
+    private          string                       colorName = "_TintColor";
+    private          int                          colorIndex;
+    private readonly string[]                     colorNames;
+    public           EffectColorFromLightModifier colorMod;
+
+    #endregion
   }
-
 }

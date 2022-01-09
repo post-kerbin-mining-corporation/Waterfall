@@ -1,67 +1,57 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using Waterfall.Modules;
 
 namespace Waterfall.UI
 {
   public class UISmokeEditWindow : UIPopupWindow
   {
+    protected        string   windowTitle = "";
+    private readonly string[] startSizeRangeString;
+    private readonly string[] lifetimeRangeString;
+    private readonly string[] emissionRateRangeString;
+    private readonly string[] emissionSpeedRangeString;
 
+    private readonly ModuleWaterfallSmoke smokeModule;
 
-    protected string windowTitle = "";
-
-    Vector2 startSizeRange;
-    string[] startSizeRangeString;
-    Vector2 lifetimeRange;
-    string[] lifetimeRangeString;
-    Vector2 emissionRateRange;
-    string[] emissionRateRangeString;
-    Vector2 emissionSpeedRange;
-    string[] emissionSpeedRangeString;
-
-    ModuleWaterfallSmoke smokeModule;
+    private Vector2 startSizeRange;
+    private Vector2 lifetimeRange;
+    private Vector2 emissionRateRange;
+    private Vector2 emissionSpeedRange;
 
     public UISmokeEditWindow(ModuleWaterfallSmoke smoke, bool show) : base(show)
     {
       smokeModule = smoke;
       Utils.Log($"[UISmokeEditWindoww]: Started editing smoke on {true.ToString()}", LogType.UI);
 
-      startSizeRange = smoke.startSizeRange;
-      emissionRateRange = smoke.emissionRateRange;
+      startSizeRange     = smoke.startSizeRange;
+      emissionRateRange  = smoke.emissionRateRange;
       emissionSpeedRange = smoke.emissionSpeedRange;
-      lifetimeRange = smoke.lifetimeRange;
+      lifetimeRange      = smoke.lifetimeRange;
 
-      startSizeRangeString = new string[] {startSizeRange.x.ToString(), startSizeRange.y.ToString() };
-      emissionRateRangeString = new string[] { emissionRateRange.x.ToString(), emissionRateRange.y.ToString() };
-      emissionSpeedRangeString = new string[] { emissionSpeedRange.x.ToString(), emissionSpeedRange.y.ToString() };
-      lifetimeRangeString = new string[] { lifetimeRange.x.ToString(), lifetimeRange.y.ToString() };
+      startSizeRangeString     = new[] { startSizeRange.x.ToString(), startSizeRange.y.ToString() };
+      emissionRateRangeString  = new[] { emissionRateRange.x.ToString(), emissionRateRange.y.ToString() };
+      emissionSpeedRangeString = new[] { emissionSpeedRange.x.ToString(), emissionSpeedRange.y.ToString() };
+      lifetimeRangeString      = new[] { lifetimeRange.x.ToString(), lifetimeRange.y.ToString() };
 
-      WindowPosition = new Rect(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
+      WindowPosition = new(Screen.width / 2 - 200, Screen.height / 2f, 400, 100);
+    }
+
+    public void Update()
+    {
+      if (smokeModule)
+      {
+        if (smokeModule.startSizeRange != startSizeRange || smokeModule.emissionRateRange != emissionRateRange || smokeModule.emissionSpeedRange != emissionSpeedRange || smokeModule.lifetimeRange != lifetimeRange)
+        {
+          // Utils.Log(string.Format("{0} {1} {2} {3}", emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange));
+          smokeModule.SetRanges(emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange);
+        }
+      }
     }
 
     protected override void InitUI()
     {
       windowTitle = "Smoke Editor";
       base.InitUI();
-
-
-    }
-    public void Update()
-    { 
-    
-      if (smokeModule)
-      {
-        if (smokeModule.startSizeRange != startSizeRange ||
-          smokeModule.emissionRateRange != emissionRateRange ||
-          smokeModule.emissionSpeedRange != emissionSpeedRange ||
-          smokeModule.lifetimeRange != lifetimeRange)
-        {
-         // Utils.Log(string.Format("{0} {1} {2} {3}", emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange));
-          smokeModule.SetRanges(
-             emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange);
-        }
-      }
     }
 
     protected override void DrawWindow(int windowId)
@@ -79,7 +69,7 @@ namespace Waterfall.UI
 
       GUILayout.FlexibleSpace();
 
-      Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
+      var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = resources.GetColor("cancel_color");
       if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
       {
@@ -93,7 +83,6 @@ namespace Waterfall.UI
 
     protected void DrawEditor()
     {
-
       bool delta = false;
 
       GUILayout.BeginVertical(GUILayout.MaxWidth(400f));
@@ -115,11 +104,6 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();
-
-
-
     }
-
-
   }
 }

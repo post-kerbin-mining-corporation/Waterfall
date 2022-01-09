@@ -1,45 +1,39 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
 {
   public class EffectIntegrator
   {
-    public string transformName;
+    public    string          transformName;
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms;
-    
-    public EffectIntegrator()
-    {
-
-    }
-
   }
 
-  public class EffectFloatIntegrator: EffectIntegrator
+  public class EffectFloatIntegrator : EffectIntegrator
   {
-
-    Material[] m;
-    Renderer[] r;
-    public string floatName;
-   
-    List<float> initialFloatValues;
+    public string                    floatName;
     public List<EffectFloatModifier> handledModifiers;
 
-    bool testIntensity = false;
-    
+    private readonly Material[] m;
+    private readonly Renderer[] r;
+
+    private readonly List<float> initialFloatValues;
+
+    private readonly bool testIntensity;
+
     public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod)
     {
       Utils.Log(String.Format("[EffectFloatIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);
-      xforms = new List<Transform>();
+      xforms        = new();
       transformName = floatMod.transformName;
-      parentEffect = effect;
-      List<Transform> roots = parentEffect.GetModelTransforms();
-      foreach (Transform t in roots)
+      parentEffect  = effect;
+      var roots = parentEffect.GetModelTransforms();
+      foreach (var t in roots)
       {
-        Transform t1 = t.FindDeepChild(transformName);
+        var t1 = t.FindDeepChild(transformName);
         if (t1 == null)
         {
           Utils.LogError(String.Format("[EffectFloatIntegrator]: Unable to find transform {0} on modifier {1}", transformName, floatMod.fxName));
@@ -52,20 +46,20 @@ namespace Waterfall
 
 
       // float specific
-      floatName = floatMod.floatName;
-      handledModifiers = new List<EffectFloatModifier>();
+      floatName        = floatMod.floatName;
+      handledModifiers = new();
       handledModifiers.Add(floatMod);
 
-     
+
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
         if (floatName == nm)
           testIntensity = true;
       }
 
-      initialFloatValues = new List<float>();
-      m = new Material[xforms.Count];
-      r = new Renderer[xforms.Count];
+      initialFloatValues = new();
+      m                  = new Material[xforms.Count];
+      r                  = new Renderer[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -74,29 +68,32 @@ namespace Waterfall
         initialFloatValues.Add(m[i].GetFloat(floatName));
       }
     }
+
     public void AddModifier(EffectFloatModifier newMod)
     {
       handledModifiers.Add(newMod);
     }
+
     public void RemoveModifier(EffectFloatModifier newMod)
     {
       handledModifiers.Remove(newMod);
     }
+
     public void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      List<float> applyValues = initialFloatValues.ToList();
+      var applyValues = initialFloatValues.ToList();
 
-      foreach (EffectFloatModifier floatMod in handledModifiers)
+      foreach (var floatMod in handledModifiers)
       {
-        List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
+        var modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
 
         if (floatMod.effectMode == EffectModifierMode.REPLACE)
           applyValues = modResult;
 
         if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count;i++)
+          for (int i = 0; i < applyValues.Count; i++)
             applyValues[i] = applyValues[i] * modResult[i];
 
         if (floatMod.effectMode == EffectModifierMode.ADD)
@@ -106,12 +103,10 @@ namespace Waterfall
         if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
           for (int i = 0; i < applyValues.Count; i++)
             applyValues[i] = applyValues[i] - modResult[i];
-
       }
 
       for (int i = 0; i < m.Length; i++)
       {
-
         if (testIntensity)
         {
           if (r[i].enabled && applyValues[i] < Settings.MinimumEffectIntensity)
@@ -120,7 +115,6 @@ namespace Waterfall
           }
           else if (!r[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
           {
-
             r[i].enabled = true;
             m[i].SetFloat(floatName, applyValues[i]);
           }
@@ -128,15 +122,12 @@ namespace Waterfall
           {
             m[i].SetFloat(floatName, applyValues[i]);
           }
-
         }
         else
+        {
           m[i].SetFloat(floatName, applyValues[i]);
+        }
       }
-
     }
   }
-
- 
-  
 }

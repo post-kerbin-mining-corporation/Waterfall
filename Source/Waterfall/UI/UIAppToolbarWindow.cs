@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using KSP.UI.Screens;
+﻿using KSP.UI.Screens;
 
 namespace Waterfall.UI
 {
-  public class UIAppToolbarWindow: UIBaseWindow
+  public class UIAppToolbarWindow : UIBaseWindow
   {
     // Stock toolbar button
-    protected static ApplicationLauncherButton stockToolbarButton = null;
+    protected static ApplicationLauncherButton stockToolbarButton;
 
     protected override void Awake()
     {
@@ -48,7 +42,7 @@ namespace Waterfall.UI
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Toolbar Button Toggled");
       ToggleWindow();
-      stockToolbarButton.SetTexture((Texture)GameDatabase.Instance.GetTexture(showWindow ? UIConstants.UIApplicationButton_On : UIConstants.UIApplicationButton_Off, false));
+      stockToolbarButton.SetTexture(GameDatabase.Instance.GetTexture(showWindow ? UIConstants.UIApplicationButton_On : UIConstants.UIApplicationButton_Off, false));
     }
 
 
@@ -56,18 +50,17 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: App Launcher Ready");
-      
-        if (ApplicationLauncher.Ready && stockToolbarButton == null)
+
+      if (ApplicationLauncher.Ready && stockToolbarButton == null)
       {
-        stockToolbarButton = ApplicationLauncher.Instance.AddModApplication(
-            OnToolbarButtonToggle,
-            OnToolbarButtonToggle,
-            DummyVoid,
-            DummyVoid,
-            DummyVoid,
-            DummyVoid,
-            ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.FLIGHT,
-            (Texture)GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
+        stockToolbarButton = ApplicationLauncher.Instance.AddModApplication(OnToolbarButtonToggle,
+                                                                            OnToolbarButtonToggle,
+                                                                            DummyVoid,
+                                                                            DummyVoid,
+                                                                            DummyVoid,
+                                                                            DummyVoid,
+                                                                            ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.FLIGHT,
+                                                                            GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
       }
     }
 
@@ -86,7 +79,7 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: App Launcher Toggle Off");
-        stockToolbarButton.SetTexture((Texture)GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
+      stockToolbarButton.SetTexture(GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
     }
 
     protected void DummyVoid() { }
