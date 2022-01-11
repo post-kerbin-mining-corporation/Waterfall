@@ -52,7 +52,7 @@ namespace Waterfall.EffectControllers
       ControllersByLegacyControllerTypeIds = new Dictionary<string, EffectControllerInfo>
       {
         ["atmosphere_density"] = ControllersByType[typeof(AtmosphereDensityController)],
-        ["custom"]             = ControllersByType[typeof(CustomController)],
+        ["custom"]             = ControllersByType[typeof(CustomPushController)],
         ["gimbal"]             = ControllersByType[typeof(GimbalController)],
         ["light"]              = ControllersByType[typeof(LightController)],
         ["mach"]               = ControllersByType[typeof(MachController)],

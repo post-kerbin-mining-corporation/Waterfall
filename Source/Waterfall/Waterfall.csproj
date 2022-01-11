@@ -89,7 +89,7 @@
         <Compile Include="AssetLibrary\AssetLibraries.cs"/>
         <Compile Include="AssetLibrary\WaterfallAsset.cs"/>
         <Compile Include="EffectControllers\AtmosphereDensityController.cs"/>
-        <Compile Include="EffectControllers\CustomController.cs"/>
+        <Compile Include="EffectControllers\CustomPushController.cs"/>
         <Compile Include="EffectControllers\EffectControllersMetadata.cs"/>
         <Compile Include="EffectControllers\WaterfallController.cs"/>
         <Compile Include="EffectControllers\EngineEventController.cs"/>
@@ -131,7 +131,7 @@
         <Compile Include="Settings.cs"/>
         <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs"/>
-        <Compile Include="UI\EffectControllersUI\CustomControllerUIOptions.cs"/>
+        <Compile Include="UI\EffectControllersUI\CustomPushControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\EngineEventControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\GimbalControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\LightControllerUIOptions.cs"/>

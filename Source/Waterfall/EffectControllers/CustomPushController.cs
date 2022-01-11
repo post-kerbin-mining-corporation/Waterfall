@@ -4,13 +4,17 @@ using System.ComponentModel;
 
 namespace Waterfall
 {
+  /// <summary>
+  ///    Custom push-based controller.
+  ///    Other mods can access it and use <see cref="WaterfallController.SetOverride"/> to provide value to this controller.
+  /// </summary>
   [Serializable]
   [DisplayName("Custom")]
-  public class CustomController : WaterfallController
+  public class CustomPushController : WaterfallController
   {
-    public CustomController() { }
+    public CustomPushController() { }
 
-    public CustomController(ConfigNode node)
+    public CustomPushController(ConfigNode node)
     {
       node.TryGetValue(nameof(name), ref name);
     }
