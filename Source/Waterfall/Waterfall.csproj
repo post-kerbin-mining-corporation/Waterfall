@@ -89,6 +89,7 @@
         <Compile Include="AssetLibrary\AssetLibraries.cs"/>
         <Compile Include="AssetLibrary\WaterfallAsset.cs"/>
         <Compile Include="EffectControllers\AtmosphereDensityController.cs"/>
+        <Compile Include="EffectControllers\CustomPullController.cs"/>
         <Compile Include="EffectControllers\CustomPushController.cs"/>
         <Compile Include="EffectControllers\EffectControllersMetadata.cs"/>
         <Compile Include="EffectControllers\WaterfallController.cs"/>
@@ -129,6 +130,7 @@
         <Compile Include="Modules\ModuleWaterfallSmoke.cs"/>
         <Compile Include="Serializer\SerializedData.cs"/>
         <Compile Include="Settings.cs"/>
+        <Compile Include="UI\EffectControllersUI\CustomPullControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs"/>
         <Compile Include="UI\EffectControllersUI\CustomPushControllerUIOptions.cs"/>

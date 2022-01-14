@@ -5,11 +5,11 @@ using System.ComponentModel;
 namespace Waterfall
 {
   /// <summary>
-  ///    Custom push-based controller.
-  ///    Other mods can access it and use <see cref="WaterfallController.SetOverride"/> to provide value to this controller.
+  ///   Custom push-based controller.
+  ///   Other mods can access it and use <see cref="WaterfallController.SetOverride" /> to provide value to this controller.
   /// </summary>
   [Serializable]
-  [DisplayName("Custom")]
+  [DisplayName("Custom (Push)")]
   public class CustomPushController : WaterfallController
   {
     public CustomPushController() { }

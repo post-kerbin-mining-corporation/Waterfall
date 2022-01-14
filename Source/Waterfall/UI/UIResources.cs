@@ -225,6 +225,19 @@ namespace Waterfall.UI
       draftStyle.padding.left = 5;
       styleList.Add("data_header", new(draftStyle));
 
+      // Comment below data_header line 
+      styleList.Add("data_comment",
+                    new(new(HighLogic.Skin.label)
+                    {
+                      fontSize  = 14,
+                      fontStyle = FontStyle.Normal,
+                      alignment = TextAnchor.MiddleLeft,
+                      padding =
+                      {
+                        left = 5
+                      }
+                    }));
+
       // Data table field right
       draftStyle               = new(HighLogic.Skin.label);
       draftStyle.fontSize      = 14;
