@@ -7,35 +7,35 @@ namespace Waterfall.UI
 {
   public class UIMaterialEditWindow : UIPopupWindow
   {
-    protected string            windowTitle = "";
-    private   WaterfallMaterial matl;
-    private   WaterfallModel    model;
-    private   string[]          materialList;
-    private   int               materialID;
-    private   int               savedID = -1;
+    protected string windowTitle = "";
+    private WaterfallMaterial matl;
+    private WaterfallModel model;
+    private string[] materialList;
+    private int materialID;
+    private int savedID = -1;
 
 
-    private Dictionary<string, Vector4>   vec4Values          = new();
-    private Dictionary<string, Color>     colorValues         = new();
-    private Dictionary<string, float>     floatValues         = new();
-    private Dictionary<string, string>    textureValues       = new();
-    private Dictionary<string, Vector2>   textureScaleValues  = new();
-    private Dictionary<string, Vector2>   textureOffsetValues = new();
-    private Dictionary<string, Texture2D> colorTextures       = new();
-    private Dictionary<string, bool>      colorEdits          = new();
-    private Dictionary<string, bool>      textureEdits        = new();
+    private Dictionary<string, Vector4> vec4Values = new();
+    private Dictionary<string, Color> colorValues = new();
+    private Dictionary<string, float> floatValues = new();
+    private Dictionary<string, string> textureValues = new();
+    private Dictionary<string, Vector2> textureScaleValues = new();
+    private Dictionary<string, Vector2> textureOffsetValues = new();
+    private Dictionary<string, Texture2D> colorTextures = new();
+    private Dictionary<string, bool> colorEdits = new();
+    private Dictionary<string, bool> textureEdits = new();
 
-    private Dictionary<string, string[]> colorStrings         = new();
-    private Dictionary<string, string[]> vec4Strings          = new();
-    private Dictionary<string, string>   floatStrings         = new();
+    private Dictionary<string, string[]> colorStrings = new();
+    private Dictionary<string, string[]> vec4Strings = new();
+    private Dictionary<string, string> floatStrings = new();
     private Dictionary<string, string[]> textureOffsetStrings = new();
-    private Dictionary<string, string[]> textureScaleStrings  = new();
+    private Dictionary<string, string[]> textureScaleStrings = new();
 
 
     public UIMaterialEditWindow(WaterfallModel modelToEdit, bool show) : base(show)
     {
       materialID = 0;
-      model      = modelToEdit;
+      model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit}", LogType.UI);
 
       materialList = new string[model.materials.Count];
@@ -56,14 +56,14 @@ namespace Waterfall.UI
     {
       model = modelToEdit;
       Utils.Log($"[UIMaterialEditWindow]: Started editing materials on {modelToEdit}", LogType.UI);
-      materialID   = 0;
+      materialID = 0;
       materialList = new string[model.materials.Count];
       for (int i = 0; i < model.materials.Count; i++)
       {
         materialList[i] = $"{model.materials[i].transformName}"; // ({model.materials[i].materials[0].name.Split('(').First()})";
       }
 
-      matl       = modelToEdit.materials[materialID];
+      matl = modelToEdit.materials[materialID];
       showWindow = true;
       GUI.BringWindowToFront(windowID);
 
@@ -111,7 +111,7 @@ namespace Waterfall.UI
       if (materialID != savedID)
       {
         savedID = materialID;
-        matl    = model.materials[savedID];
+        matl = model.materials[savedID];
         InitializeShaderProperties(model.materials[savedID].materials[0]);
       }
 
@@ -121,7 +121,7 @@ namespace Waterfall.UI
     protected void DrawMaterialEdit()
     {
       float headerWidth = 120f;
-      bool  delta       = false;
+      bool delta = false;
       GUILayout.Label("<b>Textures</b>");
       foreach (var kvp in textureValues.ToList())
       {
@@ -220,7 +220,7 @@ namespace Waterfall.UI
           if (!c.IsEqualTo(colorValues[kvp.Key]))
           {
             colorValues[kvp.Key] = c;
-            delta                = true;
+            delta = true;
           }
         }
 
@@ -228,12 +228,9 @@ namespace Waterfall.UI
         tRect = new(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
         GUI.DrawTexture(tRect, colorTextures[kvp.Key]);
 
-
-        //GUILayout.Space(10);
-        //colorValues[kvp.Key] = UIUtils.ColorInputField(GUILayoutUtility.GetRect(200f, 30f), colorValues[kvp.Key], colorStrings[kvp.Key], GUI.skin.label, GUI.skin.textArea, out delta);
         if (delta)
         {
-          colorTextures[kvp.Key] = MaterialUtils.GenerateColorTexture(64, 32, colorValues[kvp.Key]);
+          colorTextures[kvp.Key] = TextureUtils.GenerateColorTexture(64, 32, colorValues[kvp.Key]);
           model.SetColor(matl, kvp.Key, colorValues[kvp.Key]);
         }
 
@@ -242,7 +239,7 @@ namespace Waterfall.UI
 
       foreach (var kvp in floatValues.ToList())
       {
-        float  sliderVal;
+        float sliderVal;
         string textVal;
         GUILayout.BeginHorizontal();
         GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
@@ -252,7 +249,7 @@ namespace Waterfall.UI
 
         if (sliderVal != floatValues[kvp.Key])
         {
-          floatValues[kvp.Key]  = sliderVal;
+          floatValues[kvp.Key] = sliderVal;
           floatStrings[kvp.Key] = sliderVal.ToString();
 
           model.SetFloat(matl, kvp.Key, floatValues[kvp.Key]);
@@ -291,7 +288,7 @@ namespace Waterfall.UI
       foreach (var kvp in vec4Values.ToList())
       {
         Vector3 vecVal;
-        string  textVal;
+        string textVal;
         GUILayout.BeginHorizontal();
         GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
         vecVal = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(200f, 30f), kvp.Value, vec4Strings[kvp.Key], GUI.skin.label, GUI.skin.textArea);
@@ -315,21 +312,21 @@ namespace Waterfall.UI
     protected void InitializeShaderProperties(Material m)
     {
       Utils.Log($"[MaterialEditor] Generating shader property map for {m}", LogType.UI);
-      colorValues         = new();
-      floatValues         = new();
-      textureValues       = new();
-      textureEdits        = new();
-      textureScaleValues  = new();
+      colorValues = new();
+      floatValues = new();
+      textureValues = new();
+      textureEdits = new();
+      textureScaleValues = new();
       textureOffsetValues = new();
-      vec4Values          = new();
+      vec4Values = new();
 
-      colorStrings         = new();
-      colorEdits           = new();
-      floatStrings         = new();
+      colorStrings = new();
+      colorEdits = new();
+      floatStrings = new();
       textureOffsetStrings = new();
-      textureScaleStrings  = new();
-      vec4Strings          = new();
-      colorTextures        = new();
+      textureScaleStrings = new();
+      vec4Strings = new();
+      colorTextures = new();
 
       foreach (var mProp in ShaderLoader.GetShaderPropertyMap())
       {
@@ -340,7 +337,7 @@ namespace Waterfall.UI
             colorValues.Add(mProp.Key, m.GetColor(mProp.Key));
             colorEdits.Add(mProp.Key, false);
             colorStrings.Add(mProp.Key, MaterialUtils.ColorToStringArray(m.GetColor(mProp.Key)));
-            colorTextures.Add(mProp.Key, MaterialUtils.GenerateColorTexture(32, 32, m.GetColor(mProp.Key)));
+            colorTextures.Add(mProp.Key, TextureUtils.GenerateColorTexture(32, 32, m.GetColor(mProp.Key)));
           }
 
           if (mProp.Value.type == WaterfallMaterialPropertyType.Float)

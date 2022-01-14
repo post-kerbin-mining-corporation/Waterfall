@@ -154,13 +154,13 @@ namespace Waterfall.UI
 
     protected void CopyCurve(FloatCurve toCopy)
     {
-      UIUtils.CopyFloatCurve(toCopy);
+      UICopy.CopyFloatCurve(toCopy);
     }
 
     protected void PasteCurve(FloatCurve value, out FloatCurve target)
     {
-      if (UIUtils.CurveCopyBuffer != null)
-        target = UIUtils.CurveCopyBuffer;
+      if (UICopy.CurveCopyBuffer != null)
+        target = UICopy.CurveCopyBuffer;
       else
         target = value;
       UpdateModifierPanel();

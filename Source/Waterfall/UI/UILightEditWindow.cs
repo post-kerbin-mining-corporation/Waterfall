@@ -131,7 +131,7 @@ namespace Waterfall.UI
 
         if (delta)
         {
-          colorTexture = MaterialUtils.GenerateColorTexture(64, 32, colorValue);
+          colorTexture = TextureUtils.GenerateColorTexture(64, 32, colorValue);
           model.SetLightColor(light, colorValue);
         }
       }
@@ -251,7 +251,7 @@ namespace Waterfall.UI
 
       colorValue   = light.color;
       colorString  = MaterialUtils.ColorToStringArray(colorValue);
-      colorTexture = MaterialUtils.GenerateColorTexture(32, 32, colorValue);
+      colorTexture = TextureUtils.GenerateColorTexture(32, 32, colorValue);
 
       if (light.lightType == LightType.Point)
       {

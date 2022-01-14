@@ -714,7 +714,7 @@ namespace Waterfall.UI
       if (colorPickWindow != null)
       {
         Utils.Log("[WaterfallUI] Changing Color Picker target", LogType.UI);
-        colorPickWindow.ChangeColor(c);
+        colorPickWindow.ChangeColor(c, true);
       }
       else
       {

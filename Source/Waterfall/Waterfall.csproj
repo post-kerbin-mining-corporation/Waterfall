@@ -130,6 +130,7 @@
     <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\ColorHSV.cs" />
     <Compile Include="UI\EffectControllersUI\CustomPullControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs" />
@@ -145,7 +146,9 @@
     <Compile Include="UI\EffectControllersUI\UIControllerPopupWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\TextureUtils.cs" />
     <Compile Include="UI\UIColorPickerWindow.cs" />
+    <Compile Include="UI\UICopy.cs" />
     <Compile Include="UI\UILightEditWindow.cs" />
     <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />

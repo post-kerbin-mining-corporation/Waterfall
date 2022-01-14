@@ -5,12 +5,6 @@ namespace Waterfall.UI
 {
   public static class UIUtils
   {
-    public static FloatCurve CurveCopyBuffer;
-
-    public static void CopyFloatCurve(FloatCurve curve)
-    {
-      CurveCopyBuffer = curve;
-    }
 
     public static void IconDataField(Rect uiRect, AtlasIcon icon, string value, GUIStyle dataStyle)
     {
@@ -133,6 +127,18 @@ namespace Waterfall.UI
       if (!Equals(newColor, vec))
         changed = true;
       return newColor;
+    }
+
+    public static bool IconButton(Rect buttonRect, string buttonIconName, string buttonStyleName)
+    {
+      bool state = false;
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle(buttonStyleName)))
+      {
+        state = true;
+      }
+      if (UIResources.GetIcon(buttonIconName).iconAtlas != null)
+        GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon(buttonIconName).iconAtlas, UIResources.GetIcon(buttonIconName).iconRect);
+      return state;
     }
   }
 }
