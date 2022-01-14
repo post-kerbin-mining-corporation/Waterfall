@@ -25,14 +25,14 @@ namespace Waterfall
   public static class Settings
   {
     /// Settings go here
-    public static bool ShowEffectEditor = true;
+    public static bool ShowEffectEditor = false;
 
-    public static bool DebugModules   = true;
-    public static bool DebugSettings  = true;
-    public static bool DebugEffects   = true;
-    public static bool DebugModifiers = true;
-    public static bool DebugMode      = true;
-    public static bool DebugUIMode    = true;
+    public static bool DebugModules   = false;
+    public static bool DebugSettings  = false;
+    public static bool DebugEffects   = false;
+    public static bool DebugModifiers = false;
+    public static bool DebugMode      = false;
+    public static bool DebugUIMode    = false;
 
 
     public static float AtmosphereDensityExponent = 0.5128f;
@@ -40,7 +40,7 @@ namespace Waterfall
     public static float MinimumLightIntensity     = 0.05f;
     public static bool  EnableLights              = true;
     public static bool  EnableDistortion          = true;
-    public static bool  EnableLegacyBlendModes    = true;
+    public static bool  EnableLegacyBlendModes    = false;
 
     /// <summary>
     ///   Load data from configuration
