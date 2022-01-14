@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using UnityEngine;
-using Waterfall;
 
 namespace Waterfall.UI
 {
@@ -13,57 +8,54 @@ namespace Waterfall.UI
     Add,
     Delete
   }
+
   public class UIModifierPopupWindow : UIPopupWindow
   {
+    protected        string            windowTitle   = "";
+    private readonly string[]          modifierTypes = { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color" };
+    private          ModifierPopupMode windowMode;
+    private          EffectModifier    modifier;
+    private          WaterfallEffect   effect;
 
-    protected string windowTitle = "";
-    ModifierPopupMode windowMode;
-    EffectModifier modifier;
-    WaterfallEffect effect;
+    private string newModifierName = "newModifier";
+    private int    modifierFlag;
 
-    string newModifierName = "newModifier";
-    string[] modifierTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color" };
-    int modifierFlag = 0;
+    private string[] controllerTypes = { "Position", "Rotation", "Scale", "Material Color", "Material Float" };
+    private int      controllerFlag;
 
-    string[] controllerTypes = new string[] { "Position", "Rotation", "Scale", "Material Color", "Material Float" };
-    int controllerFlag = 0;
-
-    int transformFlag = 0;
-    string[] transformOptions;
+    private int      transformFlag;
+    private string[] transformOptions;
 
     public UIModifierPopupWindow(bool show) : base(show)
     {
-      WindowPosition = new Rect(Screen.width / 2, Screen.height / 2f, 750, 400);
-
+      WindowPosition = new(Screen.width / 2, Screen.height / 2f, 750, 400);
     }
 
     public void SetDeleteMode(WaterfallEffect fx, EffectModifier mod)
     {
       showWindow = true;
-      modifier = mod;
-      effect = fx;
+      modifier   = mod;
+      effect     = fx;
       windowMode = ModifierPopupMode.Delete;
       GUI.BringWindowToFront(windowID);
-
-
     }
 
     public void SetAddMode(WaterfallEffect fx)
     {
-      showWindow = true;
-      effect = fx;
-      windowMode = ModifierPopupMode.Add;
+      showWindow      = true;
+      effect          = fx;
+      windowMode      = ModifierPopupMode.Add;
       controllerTypes = fx.parentModule.GetControllerNames().ToArray();
 
-      List<Transform> xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
-      modifierFlag = 0;
+      var xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
+      modifierFlag     = 0;
       transformOptions = new string[xFormOptions.Count];
       for (int i = 0; i < xFormOptions.Count; i++)
       {
         transformOptions[i] = xFormOptions[i].name;
       }
-      GUI.BringWindowToFront(windowID);
 
+      GUI.BringWindowToFront(windowID);
     }
 
     protected override void InitUI()
@@ -73,8 +65,6 @@ namespace Waterfall.UI
       if (windowMode == ModifierPopupMode.Delete)
         windowTitle = "Confirm Delete";
       base.InitUI();
-
-
     }
 
 
@@ -87,7 +77,6 @@ namespace Waterfall.UI
       if (windowMode == ModifierPopupMode.Delete)
         DrawDelete();
       GUI.DragWindow();
-
     }
 
     protected void DrawTitle()
@@ -97,7 +86,7 @@ namespace Waterfall.UI
 
       GUILayout.FlexibleSpace();
 
-      Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
+      var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = resources.GetColor("cancel_color");
       if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
       {
@@ -118,12 +107,15 @@ namespace Waterfall.UI
         effect.RemoveModifier(modifier);
         showWindow = false;
       }
+
       if (GUILayout.Button("No"))
       {
         showWindow = false;
       }
+
       GUILayout.EndHorizontal();
     }
+
     protected void DrawAdd()
     {
       GUILayout.BeginHorizontal();
@@ -138,18 +130,17 @@ namespace Waterfall.UI
         modifierFlag = modiferFlagChanged;
         if (modifierTypes[modifierFlag].Contains("Material"))
         {
-          List<Renderer> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
+          var xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Renderer>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)
           {
             transformOptions[i] = xFormOptions[i].gameObject.name;
           }
-          
         }
         else if (modifierTypes[modifierFlag].Contains("Light"))
         {
-          List<Light> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Light>().ToList();
+          var xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Light>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)
@@ -159,7 +150,7 @@ namespace Waterfall.UI
         }
         else
         {
-          List<Transform> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
+          var xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)
@@ -167,8 +158,10 @@ namespace Waterfall.UI
             transformOptions[i] = xFormOptions[i].name;
           }
         }
+
         transformFlag = 0;
       }
+
       GUILayout.Label("Target transform name");
       transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length, 3), GUIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
@@ -177,94 +170,100 @@ namespace Waterfall.UI
       GUILayout.EndHorizontal();
       if (GUILayout.Button("Add"))
       {
-
         effect.AddModifier(CreateNewModifier());
         showWindow = false;
       }
+
       if (GUILayout.Button("Cancel"))
       {
         showWindow = false;
       }
     }
 
-    EffectModifier CreateNewModifier()
+    private EffectModifier CreateNewModifier()
     {
       if (modifierTypes[modifierFlag] == "Position")
       {
-        EffectPositionModifier newMod = new EffectPositionModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectPositionModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Rotation")
+
+      if (modifierTypes[modifierFlag] == "Rotation")
       {
-        EffectRotationModifier newMod = new EffectRotationModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectRotationModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Scale")
+
+      if (modifierTypes[modifierFlag] == "Scale")
       {
-        EffectScaleModifier newMod = new EffectScaleModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectScaleModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "UV Scroll")
+
+      if (modifierTypes[modifierFlag] == "UV Scroll")
       {
-        EffectUVScrollModifier newMod = new EffectUVScrollModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectUVScrollModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Material Color")
+
+      if (modifierTypes[modifierFlag] == "Material Color")
       {
-        EffectColorModifier newMod = new EffectColorModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectColorModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Material Float")
+
+      if (modifierTypes[modifierFlag] == "Material Float")
       {
-        EffectFloatModifier newMod = new EffectFloatModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectFloatModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Light Material Color")
+
+      if (modifierTypes[modifierFlag] == "Light Material Color")
       {
-        EffectLightColorModifier newMod = new EffectLightColorModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectLightColorModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Light Float")
+
+      if (modifierTypes[modifierFlag] == "Light Float")
       {
-        EffectLightFloatModifier newMod = new EffectLightFloatModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectLightFloatModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else if (modifierTypes[modifierFlag] == "Light Color")
+
+      if (modifierTypes[modifierFlag] == "Light Color")
       {
-        EffectLightColorModifier newMod = new EffectLightColorModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
+        var newMod = new EffectLightColorModifier();
+        newMod.fxName         = newModifierName;
+        newMod.transformName  = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      else
-      {
-        return null;
-      }
+
+      return null;
     }
   }
 }

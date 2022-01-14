@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Waterfall;
-
 
 namespace Waterfall.UI
 {
   public class UITexturePickerWindow : UIPopupWindow
   {
-
-    protected string windowTitle = "";
-    protected string currentTexturePath = "";
+    protected string                      windowTitle        = "";
+    protected string                      currentTexturePath = "";
     protected Dictionary<string, Texture> texThumbs;
-    protected Vector2 scrollPos = new Vector2();
+    protected Vector2                     scrollPos;
 
     public UITexturePickerWindow(string texToEdit, string currentTexture, bool show) : base(show)
     {
@@ -23,13 +16,7 @@ namespace Waterfall.UI
       GenerateTextures();
 
       if (!showWindow)
-        WindowPosition = new Rect(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
-    }
-
-    protected override void InitUI()
-    {
-      windowTitle = "Texture Picker";
-      base.InitUI();
+        WindowPosition = new(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
     }
 
 
@@ -43,19 +30,31 @@ namespace Waterfall.UI
       GUI.BringWindowToFront(windowID);
     }
 
-    public string GetTexturePath()
+    public string GetTexturePath() => currentTexturePath;
+
+    public void Update() { }
+
+    public void GenerateTextures()
     {
-
-
-      return currentTexturePath;
+      texThumbs = new();
+      foreach (var asset in WaterfallAssets.Textures)
+      {
+        texThumbs.Add(asset.Path, GameDatabase.Instance.GetTexture(asset.Path, false));
+      }
     }
+
+    protected override void InitUI()
+    {
+      windowTitle = "Texture Picker";
+      base.InitUI();
+    }
+
     protected override void DrawWindow(int windowId)
     {
       // Draw the header/tab controls
       DrawTitle();
       DrawTextures();
       GUI.DragWindow();
-
     }
 
     protected void DrawTitle()
@@ -65,7 +64,7 @@ namespace Waterfall.UI
 
       GUILayout.FlexibleSpace();
 
-      Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
+      var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = resources.GetColor("cancel_color");
       if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
       {
@@ -76,11 +75,12 @@ namespace Waterfall.UI
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }
+
     protected void DrawTextures()
     {
       GUILayout.BeginHorizontal();
       GUILayout.Label("<b>Selected Texture</b>");
-      Rect bRect = GUILayoutUtility.GetRect(64f,64f);
+      var bRect = GUILayoutUtility.GetRect(64f, 64f);
       if (texThumbs != null && currentTexturePath != null)
         GUI.DrawTexture(bRect, texThumbs[currentTexturePath]);
       GUILayout.Label(currentTexturePath);
@@ -90,13 +90,15 @@ namespace Waterfall.UI
       GUILayout.BeginVertical();
       GUILayout.Label("<b>Available Textures</b>");
       scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(600));
-      foreach (WaterfallAsset asset in WaterfallAssets.Textures)
+      foreach (var asset in WaterfallAssets.Textures)
       {
         DrawTextureButton(asset);
       }
+
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
     }
+
     protected void DrawTextureButton(WaterfallAsset texture)
     {
       GUILayout.BeginHorizontal();
@@ -104,25 +106,12 @@ namespace Waterfall.UI
       {
         currentTexturePath = texture.Path;
       }
-      Rect bRect = GUILayoutUtility.GetLastRect();
+
+      var bRect = GUILayoutUtility.GetLastRect();
       if (texThumbs != null)
         GUI.DrawTexture(bRect, texThumbs[texture.Path]);
       GUILayout.Label(texture.Name);
       GUILayout.EndHorizontal();
-    }
-
-    public void Update()
-    {
-
-    }
-
-    public void GenerateTextures()
-    {
-      texThumbs = new Dictionary<string, Texture>();
-      foreach (WaterfallAsset asset in WaterfallAssets.Textures)
-      {
-        texThumbs.Add(asset.Path, GameDatabase.Instance.GetTexture(asset.Path, false));
-      }
     }
   }
 }

@@ -1,35 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
+
 namespace Waterfall
 {
-
   /// <summary>
-  /// A controller that pulls from throttle settings
+  ///   A controller that pulls from throttle settings
   /// </summary>
-  [System.Serializable]
+  [Serializable]
+  [DisplayName("Light")]
   public class LightController : WaterfallController
   {
-    public float currentThrottle = 1;
-    public string lightName = "";
-    Light lightController;
+    public  float  currentThrottle = 1;
+    public  string lightName       = "";
+    private Light  lightController;
 
 
     public LightController() { }
+
     public LightController(ConfigNode node)
     {
-      name = "light";
-      linkedTo = "light";
-      node.TryGetValue("lightName", ref lightName);
-      node.TryGetValue("light", ref name);
+      node.TryGetValue(nameof(lightName), ref lightName);
+      node.TryGetValue(nameof(name),      ref name);
     }
 
     public override ConfigNode Save()
     {
-      ConfigNode c = base.Save();
-      c.AddValue("lightName", lightName);
+      var c = base.Save();
+      c.AddValue(nameof(lightName), lightName);
       return c;
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
@@ -40,22 +43,20 @@ namespace Waterfall
 
       if (lightController == null)
         Utils.LogError("[LightController] Could not find any lights on Initialize");
-
     }
+
     public override List<float> Get()
     {
-
       if (overridden)
-        return new List<float>() { overrideValue };
+        return new() { overrideValue };
 
       if (lightController == null)
       {
         Utils.LogWarning("[lightController] Light controller not assigned");
-        return new List<float>() { 0f };
+        return new() { 0f };
       }
-      return new List<float>() { lightController.intensity };
+
+      return new() { lightController.intensity };
     }
   }
-
 }
-

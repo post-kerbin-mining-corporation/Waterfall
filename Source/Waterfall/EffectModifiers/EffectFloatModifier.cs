@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
-
   /// <summary>
-  /// Material color modifier
+  ///   Material color modifier
   /// </summary>
   public class EffectFloatModifier : EffectModifier
   {
@@ -16,35 +12,41 @@ namespace Waterfall
 
     public FloatCurve curve;
 
-    Material[] m;
+    private Material[] m;
 
     public EffectFloatModifier()
     {
-      curve = new FloatCurve();
+      curve = new();
 
       modifierTypeName = "Material Float";
     }
-    public EffectFloatModifier(ConfigNode node) { Load(node); }
+
+    public EffectFloatModifier(ConfigNode node)
+    {
+      Load(node);
+    }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
       node.TryGetValue("floatName", ref floatName);
-      curve = new FloatCurve();
+      curve = new();
       curve.Load(node.GetNode("floatCurve"));
 
       modifierTypeName = "Material Float";
     }
+
     public override ConfigNode Save()
     {
-      ConfigNode node = base.Save();
+      var node = base.Save();
 
       node.name = WaterfallConstants.FloatModifierNodeName;
       node.AddValue("floatName", floatName);
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }
+
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -53,11 +55,11 @@ namespace Waterfall
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
       }
-
     }
+
     public List<float> Get(List<float> strengthList)
     {
-      List<float> floatList = new List<float>();
+      var floatList = new List<float>();
 
       if (strengthList.Count > 1)
       {
@@ -73,19 +75,16 @@ namespace Waterfall
           floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
         }
       }
+
       return floatList;
     }
 
-    public Material GetMaterial()
-    {
-      return m[0];
-    }
+    public Material GetMaterial() => m[0];
+
     public void ApplyFloatName(string newFloatName)
     {
-      
       floatName = newFloatName;
       parentEffect.ModifierParameterChange(this);
     }
   }
-
 }
