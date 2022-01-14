@@ -48,7 +48,6 @@ namespace Waterfall
     public static void Load()
     {
       var settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WATERFALL_SETTINGS");
-      ;
 
       Utils.Log("[Settings]: Started loading", LogType.Settings);
       if (settingsNode != null)

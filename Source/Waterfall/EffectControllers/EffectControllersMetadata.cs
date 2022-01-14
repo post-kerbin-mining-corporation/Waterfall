@@ -98,7 +98,7 @@ namespace Waterfall.EffectControllers
     ///   Find corresponding type implementing <see cref="IEffectControllerUIOptions" /> and create new instance.
     ///   Inject UIResources dependency if necessary.
     /// </summary>
-    public IEffectControllerUIOptions CreateUIOptions(UIResources guiResources)
+    public IEffectControllerUIOptions CreateUIOptions()
     {
       var waterfallAssembly = typeof(EffectControllersMetadata).Assembly;
       var baseType          = typeof(DefaultEffectControllerUIOptions<>);
@@ -109,8 +109,7 @@ namespace Waterfall.EffectControllers
                  && t.BaseType.GetGenericTypeDefinition()            == baseType
                  && t.BaseType.GenericTypeArguments.FirstOrDefault() == ControllerType);
 
-      object options = optionsType.GetConstructor(Type.EmptyTypes)?.Invoke(new object[0])
-                    ?? optionsType.GetConstructor(new[] { typeof(UIResources) })?.Invoke(new object[] { guiResources });
+      object options = optionsType.GetConstructor(Type.EmptyTypes)?.Invoke(new object[0]);
 
       if (options == null)
         throw new InvalidOperationException($"Unable to construct UI options for type {ControllerType}");

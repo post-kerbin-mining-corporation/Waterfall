@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Waterfall.UI;
 
 namespace Waterfall
 {
@@ -22,6 +23,7 @@ namespace Waterfall
       ShaderLoader.LoadShaders();
       ShaderLoader.LoadShaderProperties();
       WaterfallTemplates.LoadTemplates();
+      UIResources.InitalizeUIResources();
     }
   }
 }

@@ -11,7 +11,6 @@ namespace Waterfall.UI
     protected        bool initUI;
 
     // Assets
-    protected UIResources resources;
     private   float       scrollHeight   = 0f;
     private   Vector2     scrollPosition = Vector2.zero;
     protected int         windowID       = new Random(13123).Next();
@@ -22,8 +21,6 @@ namespace Waterfall.UI
       get => windowPos;
       set => windowPos = value;
     }
-
-    public UIResources GUIResources => resources;
 
     protected virtual void Awake()
     {
@@ -61,8 +58,6 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Initializing");
-
-      resources = new();
       initUI    = true;
     }
 
@@ -78,7 +73,8 @@ namespace Waterfall.UI
       {
         GUI.skin = HighLogic.Skin;
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
-        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), GUIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));
+        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), 
+          UIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));
       }
     }
 

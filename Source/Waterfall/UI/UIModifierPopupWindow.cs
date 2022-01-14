@@ -82,18 +82,18 @@ namespace Waterfall.UI
     protected void DrawTitle()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
+      GUILayout.Label(windowTitle, UIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
 
       GUILayout.FlexibleSpace();
 
       var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
-      GUI.color = resources.GetColor("cancel_color");
-      if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
+      GUI.color = UIResources.GetColor("cancel_color");
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle("button_cancel")))
       {
         ToggleWindow();
       }
 
-      GUI.DrawTextureWithTexCoords(buttonRect, GUIResources.GetIcon("cancel").iconAtlas, GUIResources.GetIcon("cancel").iconRect);
+      GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }
@@ -123,7 +123,7 @@ namespace Waterfall.UI
       newModifierName = GUILayout.TextArea(newModifierName);
       GUILayout.EndHorizontal();
       GUILayout.Label("Modifier type");
-      int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
+      int modiferFlagChanged = GUILayout.SelectionGrid(modifierFlag, modifierTypes, Mathf.Min(modifierTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
 
       if (modiferFlagChanged != modifierFlag)
       {
@@ -163,10 +163,10 @@ namespace Waterfall.UI
       }
 
       GUILayout.Label("Target transform name");
-      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length, 3), GUIResources.GetStyle("radio_text_button"));
+      transformFlag = GUILayout.SelectionGrid(transformFlag, transformOptions, Mathf.Min(transformOptions.Length, 3), UIResources.GetStyle("radio_text_button"));
       GUILayout.BeginHorizontal();
       GUILayout.Label("Controller name");
-      controllerFlag = GUILayout.SelectionGrid(controllerFlag, controllerTypes, Mathf.Min(controllerTypes.Length, 4), GUIResources.GetStyle("radio_text_button"));
+      controllerFlag = GUILayout.SelectionGrid(controllerFlag, controllerTypes, Mathf.Min(controllerTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
       if (GUILayout.Button("Add"))
       {

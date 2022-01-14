@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using UnityEngine;
 
@@ -6,8 +6,6 @@ namespace Waterfall.UI.EffectControllersUI
 {
   public sealed class CustomPullControllerUIOptions : DefaultEffectControllerUIOptions<CustomPullController>
   {
-    private readonly UIResources guiResources;
-
     private string memberName;
 
     private string minInputValueString;
@@ -16,9 +14,8 @@ namespace Waterfall.UI.EffectControllersUI
     private string responseRateUpString;
     private string responseRateDownString;
 
-    public CustomPullControllerUIOptions(UIResources guiResources)
+    public CustomPullControllerUIOptions()
     {
-      this.guiResources = guiResources ?? throw new ArgumentNullException(nameof(guiResources));
       LoadOptions(new()); // Initialize default values from dummy model instance
     }
 
@@ -37,31 +34,31 @@ namespace Waterfall.UI.EffectControllersUI
       GUILayout.BeginVertical();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Member", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(100));
+      GUILayout.Label("Member", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(100));
       memberName = GUILayout.TextArea(memberName, GUILayout.MaxWidth(300));
       GUILayout.EndHorizontal();
 
-      GUILayout.Label("Specified member should be public instance parameterless method, property or field on ModuleEngines component returning numeric value", guiResources.GetStyle("data_comment"), GUILayout.MaxWidth(600));
+      GUILayout.Label("Specified member should be public instance parameterless method, property or field on ModuleEngines component returning numeric value", UIResources.GetStyle("data_comment"), GUILayout.MaxWidth(600));
 
       GUILayout.EndVertical();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Min Expected Value", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      GUILayout.Label("Min Expected Value", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       minInputValueString = GUILayout.TextArea(minInputValueString, GUILayout.MaxWidth(60f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Max Expected Value", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      GUILayout.Label("Max Expected Value", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       maxInputValueString = GUILayout.TextArea(maxInputValueString, GUILayout.MaxWidth(60f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Response Rate Up", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      GUILayout.Label("Response Rate Up", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       responseRateUpString = GUILayout.TextArea(responseRateUpString, GUILayout.MaxWidth(60f));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Response Rate Down", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      GUILayout.Label("Response Rate Down", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       responseRateDownString = GUILayout.TextArea(responseRateDownString, GUILayout.MaxWidth(60f));
       GUILayout.EndHorizontal();
     }

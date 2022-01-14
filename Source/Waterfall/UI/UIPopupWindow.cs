@@ -13,7 +13,6 @@ namespace Waterfall.UI
     protected bool initUI;
 
     // Assets
-    protected UIResources resources      = new();
     private   Vector2     scrollPosition = Vector2.zero;
     private   float       scrollHeight   = 0f;
 
@@ -32,8 +31,6 @@ namespace Waterfall.UI
       set => windowPos = value;
     }
 
-    public UIResources GUIResources => resources;
-
     /// <summary>
     ///   Draw the UI
     /// </summary>
@@ -45,7 +42,7 @@ namespace Waterfall.UI
       if (showWindow)
       {
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
-        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), GUIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));
+        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), UIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));
       }
     }
 

@@ -186,18 +186,18 @@ namespace Waterfall.UI
       GUILayout.BeginHorizontal();
 
       GUILayout.FlexibleSpace();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
+      GUILayout.Label(windowTitle, UIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
 
       GUILayout.FlexibleSpace();
 
       var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
-      GUI.color = resources.GetColor("cancel_color");
-      if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
+      GUI.color = UIResources.GetColor("cancel_color");
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle("button_cancel")))
       {
         ToggleWindow();
       }
 
-      GUI.DrawTextureWithTexCoords(buttonRect, GUIResources.GetIcon("cancel").iconAtlas, GUIResources.GetIcon("cancel").iconRect);
+      GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }
@@ -285,7 +285,7 @@ namespace Waterfall.UI
 
         GUILayout.BeginHorizontal();
 
-        int selectedTemplateChanges = GUILayout.SelectionGrid(selectedTemplateIndex, templatesString, 4, GUIResources.GetStyle("radio_text_button"));
+        int selectedTemplateChanges = GUILayout.SelectionGrid(selectedTemplateIndex, templatesString, 4, UIResources.GetStyle("radio_text_button"));
 
         if (selectedTemplateChanges != selectedTemplateIndex)
         {
@@ -401,7 +401,7 @@ namespace Waterfall.UI
       partsScrollListPosition = GUILayout.BeginScrollView(partsScrollListPosition, GUILayout.Width(340f));
 
 
-      int selectedModuleChanges = GUILayout.SelectionGrid(selectedModuleIndex, modulesString, Mathf.Min(modulesString.Length, 2), GUIResources.GetStyle("radio_text_button"));
+      int selectedModuleChanges = GUILayout.SelectionGrid(selectedModuleIndex, modulesString, Mathf.Min(modulesString.Length, 2), UIResources.GetStyle("radio_text_button"));
 
       if (selectedModuleChanges != selectedModuleIndex)
       {

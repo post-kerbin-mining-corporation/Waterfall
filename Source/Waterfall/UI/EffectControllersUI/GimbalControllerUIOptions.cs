@@ -7,18 +7,14 @@ namespace Waterfall.UI.EffectControllersUI
   {
     private readonly string[] axisTypes = { "x", "y", "z" };
 
-    private readonly UIResources guiResources;
     private          int         axisFlag;
 
-    public GimbalControllerUIOptions(UIResources guiResources)
-    {
-      this.guiResources = guiResources ?? throw new ArgumentNullException(nameof(guiResources));
-    }
+    public GimbalControllerUIOptions() { }
 
     public override void DrawOptions()
     {
       GUILayout.Label("Gimbal axis");
-      int axisFlagChanged = GUILayout.SelectionGrid(axisFlag, axisTypes, Mathf.Min(axisTypes.Length, 4), guiResources.GetStyle("radio_text_button"));
+      int axisFlagChanged = GUILayout.SelectionGrid(axisFlag, axisTypes, Mathf.Min(axisTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
       axisFlag = axisFlagChanged;
     }
 

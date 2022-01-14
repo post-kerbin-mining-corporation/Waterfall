@@ -94,18 +94,18 @@ namespace Waterfall.UI
     protected void DrawTitle()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
+      GUILayout.Label(windowTitle, UIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
 
       GUILayout.FlexibleSpace();
 
       var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
-      GUI.color = resources.GetColor("cancel_color");
-      if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
+      GUI.color = UIResources.GetColor("cancel_color");
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle("button_cancel")))
       {
         ToggleWindow();
       }
 
-      GUI.DrawTextureWithTexCoords(buttonRect, GUIResources.GetIcon("cancel").iconAtlas, GUIResources.GetIcon("cancel").iconRect);
+      GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }
@@ -146,7 +146,7 @@ namespace Waterfall.UI
       int newFlag = GUILayout.SelectionGrid(workflowFlag,
                                             workflowOptions,
                                             Mathf.Min(workflowOptions.Length, 4),
-                                            GUIResources.GetStyle("radio_text_button"));
+                                            UIResources.GetStyle("radio_text_button"));
 
 
       if (newFlag != workflowFlag)
@@ -182,7 +182,7 @@ namespace Waterfall.UI
       modelFlag = GUILayout.SelectionGrid(modelFlag,
                                           modelOptions,
                                           Mathf.Min(modelOptions.Length, 2),
-                                          GUIResources.GetStyle("radio_text_button"));
+                                          UIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
@@ -190,7 +190,7 @@ namespace Waterfall.UI
       shaderFlag = GUILayout.SelectionGrid(shaderFlag,
                                            shaderOptions,
                                            Mathf.Min(shaderOptions.Length, 2),
-                                           GUIResources.GetStyle("radio_text_button"));
+                                           UIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
 
       GUILayout.EndVertical();

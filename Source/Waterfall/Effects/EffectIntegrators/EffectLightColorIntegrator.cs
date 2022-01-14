@@ -13,8 +13,6 @@ namespace Waterfall
     private readonly Light[]     l;
     private readonly List<Color> initialColorValues;
 
-    private bool testIntensity = false;
-
     public EffectLightColorIntegrator(WaterfallEffect effect, EffectLightColorModifier floatMod)
     {
       Utils.Log(String.Format("[EffectLightColorIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);

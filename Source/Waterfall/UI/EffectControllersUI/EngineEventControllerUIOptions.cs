@@ -5,7 +5,6 @@ namespace Waterfall.UI.EffectControllersUI
 {
   public class EngineEventControllerUIOptions : DefaultEffectControllerUIOptions<EngineEventController>
   {
-    private readonly UIResources guiResources;
 
     private readonly string[] eventTypes      = { "ignition", "flameout" };
     private readonly Vector2  curveButtonDims = new(100f, 50f);
@@ -19,10 +18,8 @@ namespace Waterfall.UI.EffectControllersUI
     private          Texture2D         miniCurve;
     private          UICurveEditWindow curveEditor;
 
-    public EngineEventControllerUIOptions(UIResources guiResources)
+    public EngineEventControllerUIOptions()
     {
-      this.guiResources = guiResources ?? throw new ArgumentNullException(nameof(guiResources));
-
       eventDurationString = eventDuration.ToString();
       eventCurve          = new();
       eventCurve.Add(0f,   0f);
@@ -34,7 +31,7 @@ namespace Waterfall.UI.EffectControllersUI
     public override void DrawOptions()
     {
       GUILayout.Label("Event name");
-      int eventFlagChanged = GUILayout.SelectionGrid(eventFlag, eventTypes, Mathf.Min(eventTypes.Length, 4), guiResources.GetStyle("radio_text_button"));
+      int eventFlagChanged = GUILayout.SelectionGrid(eventFlag, eventTypes, Mathf.Min(eventTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
 
       eventFlag = eventFlagChanged;
 
@@ -47,7 +44,7 @@ namespace Waterfall.UI.EffectControllersUI
 
       GUI.DrawTexture(imageRect, miniCurve);
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Event duration", guiResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      GUILayout.Label("Event duration", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
       eventDurationString = GUILayout.TextArea(eventDurationString, GUILayout.MaxWidth(60f));
       if (Single.TryParse(eventDurationString, out float floatParsed))
       {

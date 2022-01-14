@@ -39,17 +39,17 @@ namespace Waterfall.UI
     protected virtual void DrawTitle()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
+      GUILayout.Label(windowTitle, UIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f), GUILayout.MinWidth(350f));
       GUILayout.FlexibleSpace();
 
       var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
-      GUI.color = resources.GetColor("cancel_color");
-      if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
+      GUI.color = UIResources.GetColor("cancel_color");
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle("button_cancel")))
       {
         ToggleWindow();
       }
 
-      GUI.DrawTextureWithTexCoords(buttonRect, GUIResources.GetIcon("cancel").iconAtlas, GUIResources.GetIcon("cancel").iconRect);
+      GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }
@@ -72,13 +72,13 @@ namespace Waterfall.UI
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Controller");
-      controllerFlag          = GUILayout.SelectionGrid(controllerFlag, controllerNames, controllerNames.Length, GUIResources.GetStyle("radio_text_button"));
+      controllerFlag          = GUILayout.SelectionGrid(controllerFlag, controllerNames, controllerNames.Length, UIResources.GetStyle("radio_text_button"));
       modifier.controllerName = controllerNames[controllerFlag];
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
       GUILayout.Label("Combine Mode");
-      combineModeFlag     = GUILayout.SelectionGrid(combineModeFlag, combineModes, combineModes.Length, GUIResources.GetStyle("radio_text_button"));
+      combineModeFlag     = GUILayout.SelectionGrid(combineModeFlag, combineModes, combineModes.Length, UIResources.GetStyle("radio_text_button"));
       modifier.effectMode = (EffectModifierMode)combineModeFlag;
       GUILayout.EndHorizontal();
 

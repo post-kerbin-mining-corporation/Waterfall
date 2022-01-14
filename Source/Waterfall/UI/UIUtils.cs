@@ -36,10 +36,6 @@ namespace Waterfall.UI
 
     public static Vector3 Vector3InputField(Rect uiRect, Vector3 vec, string[] textFields, GUIStyle labelStyle, GUIStyle textAreaStyle)
     {
-      //string xText = vec.x.ToString();
-      //string yText = vec.y.ToString();
-      //string zText = vec.z.ToString();
-
       float width = uiRect.width / 6f;
       GUI.BeginGroup(uiRect);
       var xRect      = new Rect(0,            0, width,        uiRect.height);

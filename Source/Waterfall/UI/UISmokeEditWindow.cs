@@ -42,7 +42,6 @@ namespace Waterfall.UI
       {
         if (smokeModule.startSizeRange != startSizeRange || smokeModule.emissionRateRange != emissionRateRange || smokeModule.emissionSpeedRange != emissionSpeedRange || smokeModule.lifetimeRange != lifetimeRange)
         {
-          // Utils.Log(string.Format("{0} {1} {2} {3}", emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange));
           smokeModule.SetRanges(emissionRateRange, emissionSpeedRange, startSizeRange, lifetimeRange);
         }
       }
@@ -65,18 +64,18 @@ namespace Waterfall.UI
     protected void DrawTitle()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(windowTitle, GUIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f));
+      GUILayout.Label(windowTitle, UIResources.GetStyle("window_header"), GUILayout.MaxHeight(26f), GUILayout.MinHeight(26f));
 
       GUILayout.FlexibleSpace();
 
       var buttonRect = GUILayoutUtility.GetRect(22f, 22f);
-      GUI.color = resources.GetColor("cancel_color");
-      if (GUI.Button(buttonRect, "", GUIResources.GetStyle("button_cancel")))
+      GUI.color = UIResources.GetColor("cancel_color");
+      if (GUI.Button(buttonRect, "", UIResources.GetStyle("button_cancel")))
       {
         ToggleWindow();
       }
 
-      GUI.DrawTextureWithTexCoords(buttonRect, GUIResources.GetIcon("cancel").iconAtlas, GUIResources.GetIcon("cancel").iconRect);
+      GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
     }

@@ -25,8 +25,8 @@ namespace Waterfall
     /// <returns></returns>
     public virtual List<float> Get() =>
       overridden
-        ? new() { overrideValue }
-        : new() { 0f };
+        ? new List<float>() { overrideValue }
+        : new List<float>() { 0f };
 
     /// <summary>
     ///   Saves the controller
