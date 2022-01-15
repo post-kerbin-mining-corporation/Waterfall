@@ -1,71 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Waterfall.UI
 {
-
   public class UIEffectWidget : UIWidget
   {
-    Vector3 modelRotation;
-    Vector3 modelOffset;
-    Vector3 modelScale = Vector3.one;
-    Vector2 modifierListPosition = Vector2.zero;
-    WaterfallEffect fx;
-    WaterfallUI parent;
+    private readonly WaterfallEffect fx;
+    private readonly WaterfallUI     parent;
 
-    bool showMaterialEdit = false;
-    bool showLightEdit = false;
-    bool showUI = false;
-    bool enabled = true;
-    string[] modelOffsetString;
-    string[] modelRotationString;
-    string[] modelScaleString;
+    private readonly bool     showMaterialEdit;
+    private readonly bool     showLightEdit;
+    private readonly string[] modelOffsetString;
+    private readonly string[] modelRotationString;
+    private readonly string[] modelScaleString;
+    private          Vector3  modelRotation;
+    private          Vector3  modelOffset;
+    private          Vector3  modelScale           = Vector3.one;
+    private          Vector2  modifierListPosition = Vector2.zero;
+    private          bool     showUI;
+    private          bool     enabled = true;
 
     public UIEffectWidget(WaterfallUI uiHost, WaterfallEffect effect) : base(uiHost)
     {
-      parent = uiHost;
-      fx = effect;
+      parent        = uiHost;
+      fx            = effect;
       modelRotation = effect.FXModel.modelRotationOffset;
-      modelScale = effect.FXModel.modelScaleOffset;
-      modelOffset = effect.FXModel.modelPositionOffset ;
+      modelScale    = effect.FXModel.modelScaleOffset;
+      modelOffset   = effect.FXModel.modelPositionOffset;
 
-      modelOffsetString = new string[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
-      modelRotationString = new string[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
-      modelScaleString = new string[] { effect.FXModel.modelScaleOffset.x.ToString(), effect.FXModel.modelScaleOffset.y.ToString(), effect.FXModel.modelScaleOffset.z.ToString() };
-    
-      foreach (Transform  t in fx.FXModel.modelTransforms)
+      modelOffsetString   = new[] { effect.FXModel.modelPositionOffset.x.ToString(), effect.FXModel.modelPositionOffset.y.ToString(), effect.FXModel.modelPositionOffset.z.ToString() };
+      modelRotationString = new[] { effect.FXModel.modelRotationOffset.x.ToString(), effect.FXModel.modelRotationOffset.y.ToString(), effect.FXModel.modelRotationOffset.z.ToString() };
+      modelScaleString    = new[] { effect.FXModel.modelScaleOffset.x.ToString(), effect.FXModel.modelScaleOffset.y.ToString(), effect.FXModel.modelScaleOffset.z.ToString() };
+
+      foreach (var t in fx.FXModel.modelTransforms)
       {
         if (t.GetComponentsInChildren<Light>().Length > 0)
           showLightEdit = true;
       }
-      foreach (Transform t in fx.FXModel.modelTransforms)
+
+      foreach (var t in fx.FXModel.modelTransforms)
       {
         if (t.GetComponentsInChildren<Renderer>().Length > 0)
           showMaterialEdit = true;
       }
     }
-    /// <summary>
-    /// Do localization of UI strings
-    /// </summary>
-    protected override void Localize()
-    {
-      base.Localize();
-
-    }
 
     /// <summary>
-    /// Draw method
+    ///   Draw method
     /// </summary>
     public void Draw()
     {
-
       GUILayout.BeginHorizontal(GUI.skin.textArea);
 
-      
+
       if (!showUI)
       {
         if (GUILayout.Button("[+]", GUILayout.ExpandHeight(false)))
@@ -79,11 +65,11 @@ namespace Waterfall.UI
         bool toggle = GUILayout.Toggle(enabled, "");
         if (toggle != enabled)
         {
-
           enabled = toggle;
           Utils.Log($"[EffectWidget] Set state of {fx.name} to {enabled}", LogType.UI);
           fx.SetEnabled(enabled);
         }
+
         //fx.SetEnabled(enabled);
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
@@ -91,13 +77,13 @@ namespace Waterfall.UI
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Copy"))
         {
-          parent.CopyEffect(this.fx);
+          parent.CopyEffect(fx);
         }
+
         if (GUILayout.Button("Delete"))
         {
           parent.OpenEffectDeleteWindow(fx);
         }
-        
       }
       else
       {
@@ -111,11 +97,11 @@ namespace Waterfall.UI
         bool toggle = GUILayout.Toggle(enabled, "");
         if (toggle != enabled)
         {
-
           enabled = toggle;
           Utils.Log($"[EffectWidget] Set state of {fx.name} to {enabled}", LogType.UI);
           fx.SetEnabled(enabled);
         }
+
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -126,6 +112,7 @@ namespace Waterfall.UI
             parent.OpenMaterialEditWindow(fx.FXModel);
           }
         }
+
         if (showLightEdit)
         {
           if (GUILayout.Button("EDIT LIGHT"))
@@ -133,6 +120,7 @@ namespace Waterfall.UI
             parent.OpenLightEditWindow(fx.FXModel);
           }
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);
@@ -154,13 +142,14 @@ namespace Waterfall.UI
         {
           parent.OpenEffectModifierAddWindow(fx);
         }
+
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("    <b>Modifier Name</b>");
         GUILayout.FlexibleSpace();
-        GUILayout.Label("<b>Type</b>", GUILayout.Width(120));
+        GUILayout.Label("<b>Type</b>",       GUILayout.Width(120));
         GUILayout.Label("<b>Controller</b>", GUILayout.Width(120));
-        GUILayout.Label("<b>Mode</b>", GUILayout.Width(80));
+        GUILayout.Label("<b>Mode</b>",       GUILayout.Width(80));
         GUILayout.Space(80);
         GUILayout.EndHorizontal();
         for (int i = 0; i < fx.FXModifiers.Count; i++)
@@ -168,46 +157,47 @@ namespace Waterfall.UI
           GUILayout.BeginHorizontal(GUI.skin.textArea);
           GUILayout.Label(fx.FXModifiers[i].fxName);
           GUILayout.FlexibleSpace();
-          GUILayout.Label(fx.FXModifiers[i].modifierTypeName, GUILayout.Width(120));
-          GUILayout.Label(fx.FXModifiers[i].controllerName, GUILayout.Width(120));
+          GUILayout.Label(fx.FXModifiers[i].modifierTypeName,      GUILayout.Width(120));
+          GUILayout.Label(fx.FXModifiers[i].controllerName,        GUILayout.Width(120));
           GUILayout.Label(fx.FXModifiers[i].effectMode.ToString(), GUILayout.Width(80));
 
           if (GUILayout.Button("▲"))
           {
             fx.MoveModifierUp(i);
-            
+
             return;
           }
+
           if (GUILayout.Button("▼"))
           {
             fx.MoveModifierDown(i);
-            
+
             return;
           }
+
           if (GUILayout.Button("Edit"))
           {
             parent.OpenModifierEditWindow(fx.FXModifiers[i]);
           }
+
           if (GUILayout.Button("x"))
           {
             parent.OpenEffectModifierDeleteWindow(fx, fx.FXModifiers[i]);
           }
+
           GUILayout.EndHorizontal();
         }
+
         GUILayout.EndVertical();
       }
+
       GUILayout.EndHorizontal();
-      
-    }
-    public void MoveModifierUp()
-    {
-
     }
 
-    public void MoveModifierDown()
-    {
+    public void MoveModifierUp() { }
 
-    }
+    public void MoveModifierDown() { }
+
     public void Update()
     {
       if (fx.FXModel.modelPositionOffset != modelOffset || fx.FXModel.modelRotationOffset != modelRotation || fx.FXModel.modelScaleOffset != modelScale)
@@ -222,6 +212,14 @@ namespace Waterfall.UI
           fx.ApplyTemplateOffsets(parent.modelOffset, parent.modelRotation, parent.modelScale);
         }
       }
+    }
+
+    /// <summary>
+    ///   Do localization of UI strings
+    /// </summary>
+    protected override void Localize()
+    {
+      base.Localize();
     }
   }
 }
