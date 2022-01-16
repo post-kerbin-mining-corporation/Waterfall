@@ -137,35 +137,44 @@ Shader "Waterfall/Additive (Volumetric)"
                 float CV = dot(o.Cam.xz, o.V.xz);
                 float CC = dot(o.Cam.xz, o.Cam.xz);
 
-                // object space radius of a world space sphere at y=0
+                // object space radius in y-direction of a world space sphere at y=0
                 float R0sphere = length(mul((float3x3)unity_WorldToObject, length(unity_ObjectToWorld._11_21_31) * normalize(unity_ObjectToWorld._12_22_32))); 
 
-                // bounding ellipsoid y-ranges
+                // bounding ellipsoid parameters
                 float2 yt = float2(0.0, -1.0);                                  // tangent y-values
-                float2 dRRdy = 2.0 * a.x * yt + b.x;                            // derivative of the mesh R² at yt
+                float2 RRt = mad(yt, mad(a.x, yt, b.x), 1.0);                   // Rm² at yt
+                float2 dRRt = 2.0 * a.x * yt + b.x;                             // derivative of Rm² at yt
                 float2 y0 = float2(2 * R0sphere, -1.5);                         // zero y-values
-                o.y0.z = (a.x - 1.0) / dRRdy.y;  // y0 of the texture tail
-                                
-                if (dRRdy.x < 0) { y0.x = min(y0.x, -0.9 / dRRdy.x); }
-                if (dRRdy.y > 0) { y0.y = max(y0.y, 0.9 * o.y0.z); }
-                                
                 float2 Dy = yt - y0;
                 
-                // bounding ellipsoid parameters
-                a.yz = (a.x * yt * yt - 1.0 - y0 * dRRdy) / (Dy * Dy);
-                a.w = 0;
-                b.yz = dRRdy - 2.0 * a.yz * yt;
-                b.w = -2.0 * a.x + b.x;
-                float4 c = float4(1.0, -y0 * (a.yz * y0 + b.yz), 1.0 - a.x);
-
+                // avoid hyperbolic ellipsoids
+                bool2 hyp = mad(dRRt, (yt - y0), -RRt) > 0.0;
+                
+                // construct bounding ellipsoids
+                float4 c;
+                c.x = 1.0;
+                a.yz = hyp ? 0.0                 : mad(dRRt, Dy, -RRt) / (Dy * Dy);
+                b.yz = hyp ? dRRt                : dRRt - 2.0 * a.yz * yt;
+                c.yz = hyp ? mad(-yt, dRRt, RRt) : -y0 * mad(a.yz, y0, b.yz);
+                
+                // texture tail ellipsoid
+                a.w = 0.0;
+                b.w = dRRt.y;
+                c.w = 1.0 - a.x;
+                
                 // Quadratic intersection equation
                 o.B = mad(o.V.y, mad(2.0 * a, o.Cam.y, b), -2.0 * CV);  // B * Sv
                 o.C = mad(o.Cam.y, mad(o.Cam.y, a, b), c - CC);         // C
-
+                
+                // recalculate y0's
+                o.y0.z = (a.x - 1.0) / dRRt.y;               // texture tail
+                if (o.y0.z >= -1.0) { o.y0.z = -1000000.0; } // if tail expands, set fake y0 far away
+                y0 = hyp ? yt - RRt / dRRt : y0;             // bounding ellipsoids
+                
                 // check if bounding ellipsoids are longer than mesh ellipsoid
                 float D0 = mad(b.x, b.x, -4.0 * a.x * c.x);
-                float2 y0m = (-b.x + sign(a.x) * float2(1.0, -1.0) * sqrt(D0)) / (2.0 * a.x); // y0's for the mesh
-                if ((y0m.x > 0.0 && y0m.x < y0.x) || y0.x < 0.0001) {
+                float2 y0m = (-b.x + sign(a.x) * float2(1.0, -1.0) * sqrt(D0)) / (2.0 * a.x);   // y0's for the mesh
+                if (y0m.x > 0.0 && (y0m.x < y0.x || (y0.x < 0.0001 && y0.x > 0.0))) {
                     y0.x = y0m.x;
                     a.y = a.x;
                     b.y = b.x;
@@ -173,7 +182,7 @@ Shader "Waterfall/Additive (Volumetric)"
                     o.B.y = o.B.x;
                     o.C.y = o.C.x;
                 }
-                if (y0m.y < -1.0 && y0m.y > y0.y) {
+                if (y0m.y < -1.0 && (y0m.y > y0.y || (y0.y > -1.0001 && y0.y < -1.0))) {
                     y0.y = y0m.y;
                     a.z = a.x;
                     b.z = b.x;
@@ -181,11 +190,9 @@ Shader "Waterfall/Additive (Volumetric)"
                     o.B.z = o.B.x;
                     o.C.z = o.C.x;
                 }
-                o.y0.xy = y0;    // y0s of the bounding ellipsoids
-                o.y0.x *= 0.9;   // less noise in nozzle
-                if(o.y0.z > -1.0) { o.y0.z = 1000000.0; }
                 
-                o.a = a.xyz; 
+                o.y0.xy = y0;   // y0s of the bounding ellipsoids
+                o.a = a.xyz;    // final a-values
                 
                 // uv map
                 if (o.Cam.w < 0.15) {
@@ -360,7 +367,7 @@ Shader "Waterfall/Additive (Volumetric)"
                 
                 //Fade
                 float Fade = dot(Samples, Weights);
-
+                
                 // Fadein
                 float Fadein = _FadeIn + 0.0001;
                 Fadein = -ssint(-yRange / Fadein) * Fadein / ydelta;
