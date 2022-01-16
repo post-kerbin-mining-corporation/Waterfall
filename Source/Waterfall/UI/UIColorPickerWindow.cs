@@ -12,6 +12,7 @@ namespace Waterfall.UI
     internal const float bitScale = 255f;
 
     protected string windowTitle = "";
+    internal bool    dragSliders = false;
 
     internal Texture   swatch;
     internal Texture   rainbow;
@@ -105,8 +106,23 @@ namespace Waterfall.UI
 
       DrawColorField();
       DrawSliders();
-      GUI.DragWindow();
+      
       HandleClicks();
+      HandleDrag();
+    }
+
+
+
+    protected void HandleDrag()
+    {
+      if (dragSliders && Input.GetMouseButtonUp(0))
+      {
+        dragSliders = false;
+      }
+      if (!dragSliders)
+      {
+        GUI.DragWindow();
+      }
     }
 
     protected void DrawTitle()
@@ -119,7 +135,10 @@ namespace Waterfall.UI
       Rect buttonRect = GUILayoutUtility.GetRect(22f, 22f);
       GUI.color = UIResources.GetColor("cancel_color");
 
-      UIUtils.IconButton(buttonRect, "cancel", "button_cancel");
+      if (UIUtils.IconButton(buttonRect, "cancel", "button_cancel"))
+      {
+        ToggleWindow();
+      }
 
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
@@ -475,7 +494,7 @@ namespace Waterfall.UI
       result = Vector2.zero;
       if (screenRect.Contains(mPos))
       {
-
+        dragSliders = true;
         result = new Vector2(Mathf.Clamp(mPos.x - screenRect.xMin, 0, screenRect.width),
          (int)screenRect.width - (int)Mathf.Clamp(mPos.y - screenRect.yMin, 0, screenRect.width));
         return true;

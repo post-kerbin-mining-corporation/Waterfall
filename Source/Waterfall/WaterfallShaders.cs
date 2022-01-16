@@ -45,8 +45,12 @@ namespace Waterfall
     /// </summary>
     public static void LoadShaders()
     {
-      Utils.Log("[ShaderLoader]: Loading shaders");
-      string path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Shaders/");
+      
+      
+      string path = Path.Combine(KSPUtil.ApplicationRootPath);
+
+      Utils.Log($"[ShaderLoader]: Loading Shaders");
+
       string pathSpec;
       if (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
       {
@@ -65,9 +69,10 @@ namespace Waterfall
         pathSpec = "*-macos.waterfall";
       }
 
-      string[] bundlePaths = Directory.GetFiles(path, pathSpec);
+      List<string> bundlePaths = Directory.GetFiles(path, pathSpec,SearchOption.AllDirectories).ToList();
+      List<string> orderedBundles = bundlePaths.OrderByAlphaNumeric(x => Path.GetFileNameWithoutExtension(x));
 
-      foreach (string bundle in bundlePaths)
+      foreach (string bundle in orderedBundles)
       {
         LoadAssetBundleAtPath(bundle);
       }
@@ -78,17 +83,21 @@ namespace Waterfall
     /// </summary>
     public static void LoadAssetBundleAtPath(string bundlePath)
     {
-      Utils.Log($"[ShaderLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
+      Utils.Log($"[ShaderLoader]: Loading shaders from {Path.GetFileNameWithoutExtension(bundlePath)}");
       var bundle  = AssetBundle.LoadFromFile(bundlePath);
       var shaders = bundle.LoadAllAssets<Shader>();
-
       foreach (var shader in shaders)
       {
-        Utils.Log($"[ShaderLoader]: Adding {shader.name}");
+        Utils.Log($"[ShaderLoader]: Adding {shader.name} ({Path.GetFileNameWithoutExtension(bundlePath)})");
         if (!ShaderDictionary.ContainsKey(shader.name))
+        {
           ShaderDictionary.Add(shader.name, shader);
+        }
         else
-          Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists");
+        {
+          ShaderDictionary[shader.name] = shader;
+          Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists, replacing with new version");
+        }
       }
 
       bundle.Unload(false); // unload the raw asset bundle
