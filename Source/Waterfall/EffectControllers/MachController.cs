@@ -1,31 +1,33 @@
 ﻿using System.Collections.Generic;
-
+using System.ComponentModel;
 
 namespace Waterfall
 {
   /// <summary>
-  /// A controller that pulls from atmosphere density
+  ///   A controller that pulls from atmosphere density
   /// </summary>
+  [DisplayName("Mach")]
   public class MachController : WaterfallController
   {
     public float mach = 0;
+
     public MachController() { }
+
     public MachController(ConfigNode node)
     {
-      name = "mach";
-      linkedTo = "mach";
-      node.TryGetValue("name", ref name);
+      node.TryGetValue(nameof(name), ref name);
     }
+
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-
     }
+
     public override List<float> Get()
     {
       if (overridden)
-        return new List<float>() { overrideValue };
-      return new List<float>() { (float)parentModule.vessel.mach };
+        return new() { overrideValue };
+      return new() { (float)parentModule.vessel.mach };
     }
   }
 }

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
-
   /// <summary>
-  /// Material color modifier
+  ///   Material color modifier
   /// </summary>
   public class EffectLightFloatModifier : EffectModifier
   {
@@ -16,29 +12,34 @@ namespace Waterfall
 
     public FloatCurve curve;
 
-    Light[] l;
+    private Light[] l;
 
     public EffectLightFloatModifier()
     {
-      curve = new FloatCurve();
+      curve = new();
 
       modifierTypeName = "Light Float";
     }
-    public EffectLightFloatModifier(ConfigNode node) { Load(node); }
+
+    public EffectLightFloatModifier(ConfigNode node)
+    {
+      Load(node);
+    }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
       node.TryGetValue("floatName", ref floatName);
-      curve = new FloatCurve();
+      curve = new();
       curve.Load(node.GetNode("floatCurve"));
 
       modifierTypeName = "Light Float";
     }
+
     public override ConfigNode Save()
     {
-      ConfigNode node = base.Save();
+      var node = base.Save();
 
       node.name = WaterfallConstants.LightFloatModifierNodeName;
       node.AddValue("floatName", floatName);
@@ -46,6 +47,7 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }
+
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -54,11 +56,11 @@ namespace Waterfall
       {
         l[i] = xforms[i].GetComponent<Light>();
       }
-
     }
+
     public List<float> Get(List<float> strengthList)
     {
-      List<float> floatList = new List<float>();
+      var floatList = new List<float>();
       if (strengthList.Count > 1)
       {
         for (int i = 0; i < l.Length; i++)
@@ -73,19 +75,16 @@ namespace Waterfall
           floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
         }
       }
+
       return floatList;
     }
 
-    public Light GetLight()
-    {
-      return l[0];
-    }
+    public Light GetLight() => l[0];
+
     public void ApplyFloatName(string newFloatName)
     {
-      
       floatName = newFloatName;
       parentEffect.ModifierParameterChange(this);
     }
   }
-
 }
