@@ -14,6 +14,7 @@ namespace Waterfall.UI
 
     private string parentName    = "";
     private string newEffectName = "newEffect";
+    private string parentErrorString = "";
 
     private int      workflowFlag;
     private string[] workflowOptions;
@@ -44,9 +45,10 @@ namespace Waterfall.UI
 
     public void SetAddMode(ModuleWaterfallFX fxModule)
     {
-      showWindow = true;
-      module     = fxModule;
-      windowMode = ModifierPopupMode.Add;
+      showWindow          = true;
+      module              = fxModule;
+      windowMode          = ModifierPopupMode.Add;
+      parentErrorString   = "";
 
       workflowOptions = Enum.GetNames(typeof(AssetWorkflow)).ToArray();
       workflowFlag    = 0;
@@ -132,14 +134,24 @@ namespace Waterfall.UI
     protected void DrawAdd()
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Effect Name", GUILayout.Width(120f));
-      newEffectName = GUILayout.TextArea(newEffectName);
+      GUILayout.Label("Effect Name", GUILayout.Width(160f));
+      newEffectName = GUILayout.TextArea(newEffectName, GUILayout.Width(200f));
+      GUILayout.Space(250f);
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
-      GUILayout.Label("Effect Parent", GUILayout.Width(120f));
-      parentName = GUILayout.TextArea(parentName);
+      GUILayout.Label("Effect Parent [required]", GUILayout.Width(160f));
+      parentName = GUILayout.TextArea(parentName, GUILayout.Width(200f));
+      if (parentErrorString != "")
+      {
+        GUILayout.Label($"<color=#FF0000>{parentErrorString}</color>", GUILayout.Width(250f));
+      }
+      else
+      {
+        GUILayout.Space(250f);
+      }
       GUILayout.EndHorizontal();
+      
 
 
       GUILayout.Label("<b>SELECT WORKFLOW</b>", GUILayout.Width(120f));
@@ -203,13 +215,21 @@ namespace Waterfall.UI
       if (GUILayout.Button("Add"))
       {
         var modelXforms = module.GetComponentsInChildren<Transform>();
-
-        if (modelXforms.ToList().FindAll(x => x.name == parentName).Any())
+        if (parentName =="")
+        {
+          parentErrorString = "Please specify a valid Transform name";
+        }
+        else if (modelXforms.ToList().FindAll(x => x.name == parentName).Any())
         {
           module.AddEffect(CreateNewEffect());
           WaterfallUI.Instance.RefreshEffectList();
           showWindow = false;
         }
+        else
+        {
+          parentErrorString = $"{parentName} is not a valid Transform on this part";
+        }
+
       }
 
       if (GUILayout.Button("Cancel"))
