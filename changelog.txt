@@ -1,3 +1,24 @@
+v0.8.0
+------
+- Significant rewrite of controller and controller UI code. This resulted in a change to how generated configs look, but existing configs should work fine (thanks ArXen42 for all the hard work for this)
+- Improvements to UX for controller selection and configuration
+- Added an error notification when you try to add an effect with an invalid effect parent
+- Some refactoring of UI code in various areas
+- Redid color picker for significantly better UX
+- Added the ability to save (within a game session) color swatches to copy/paste between effects and materials
+- Shader bundles can now be loaded from anywhere in gamedata (anything with a .waterfallshaders extension)
+- Shader bundles are loaded alphabetically and replace existing shaders in the order loaded. e.g if xyz.waterfallshaders contains a shader with the same name as abc.waterfallshaders, the one from xyz.waterfallshaders will be used
+- Shader improvements
+ - Additive (Volumetric) shader:
+  - fixed excessive noise bug
+  - the _Noise setting is now 5 times more sensitive (divide your old _Noise setting by 5 to get previous behavior)
+  - you may need to slightly increase your _FadeOut setting if your old setting was below 0.5
+  - start and end tints will no longer depend on Fresnel or InvertedFresnel settings (so your old color gradient may need some readjustments)
+  - added FresnelFadeIn setting so you can gradually fade in the Fresnel effect starting from the nozzle exit.
+ - Echo (Dynamic) shader:
+  - echo spacing (_EchoLength) setting will now properly scale with the mesh scale
+  - new _ExpandLength setting stretches the individual echos
+
 v0.7.1
 ------
 - Changed the default blend mode of all additive-type effects to One One, this is controlled by a new Settings item called EnableLegacyBlendModes

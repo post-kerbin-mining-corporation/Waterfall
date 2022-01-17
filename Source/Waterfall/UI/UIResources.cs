@@ -47,7 +47,6 @@ namespace Waterfall.UI
     {
       var icon = _iconList.First().Value;
       _iconList.TryGetValue(name, out icon);
-      Utils.Log($"{icon.iconAtlas}");
       return icon;
     }
 
