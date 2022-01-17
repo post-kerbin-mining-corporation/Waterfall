@@ -70,7 +70,7 @@ namespace Waterfall
       }
 
       List<string> bundlePaths = Directory.GetFiles(path, pathSpec,SearchOption.AllDirectories).ToList();
-      List<string> orderedBundles = bundlePaths.OrderByAlphaNumeric(x => Path.GetFileNameWithoutExtension(x));
+      List<string> orderedBundles = bundlePaths.OrderBy(x => Path.GetFileNameWithoutExtension(x)).ToList();
 
       foreach (string bundle in orderedBundles)
       {

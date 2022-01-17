@@ -1,3 +1,7 @@
+v0.8.1
+------
+- Fix compatibility with KSP < 1.12
+
 v0.8.0
 ------
 - Significant rewrite of controller and controller UI code. This resulted in a change to how generated configs look, but existing configs should work fine (thanks ArXen42 for all the hard work for this)
