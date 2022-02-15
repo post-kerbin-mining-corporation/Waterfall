@@ -14,7 +14,6 @@ namespace Waterfall
 
     protected void Start()
     {
-      Settings.Load();
       WaterfallAssets.Load();
     }
   }
@@ -34,7 +33,6 @@ namespace Waterfall
     public static bool DebugMode      = false;
     public static bool DebugUIMode    = false;
 
-
     public static float AtmosphereDensityExponent = 0.5128f;
     public static float MinimumEffectIntensity    = 0.005f;
     public static float MinimumLightIntensity     = 0.05f;
@@ -42,12 +40,17 @@ namespace Waterfall
     public static bool  EnableDistortion          = true;
     public static bool  EnableLegacyBlendModes    = false;
 
+    private static bool _loadedOnce = false;
+
     /// <summary>
     ///   Load data from configuration
     /// </summary>
     public static void Load()
     {
-      var settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WATERFALL_SETTINGS");
+      if (_loadedOnce) return;
+
+      _loadedOnce = true;
+      var settingsNode = GameDatabase.Instance.GetConfigNode("Waterfall/WaterfallSettings/WATERFALL_SETTINGS");
 
       Utils.Log("[Settings]: Started loading", LogType.Settings);
       if (settingsNode != null)

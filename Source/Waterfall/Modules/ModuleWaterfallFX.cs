@@ -31,6 +31,12 @@ namespace Waterfall
 
     public List<WaterfallController> Controllers => allControllers.Values.ToList();
 
+    public override void OnAwake()
+    {
+      base.OnAwake();
+      if (HighLogic.LoadedScene == GameScenes.LOADING) Settings.Load();
+    }
+
     public void Start()
     {
       if (HighLogic.LoadedSceneIsFlight)
@@ -151,12 +157,6 @@ namespace Waterfall
       }
 
       return toRet.ToStringAndRelease();
-    }
-
-    public override void OnAwake()
-    {
-      base.OnAwake();
-      if (HighLogic.LoadedSceneIsFlight) { }
     }
 
     private void LoadEffects(ConfigNode node)
