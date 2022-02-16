@@ -84,7 +84,7 @@ namespace Waterfall
       if (node.HasNode(WaterfallConstants.EffectNodeName) || node.HasNode(WaterfallConstants.TemplateNodeName))
         config = node;
       else
-        config = part.partInfo.partPrefab.FindModulesImplementing<ModuleWaterfallFX>().FirstOrDefault(x => x.moduleID == this.moduleID).config;
+        config = part.partInfo.partPrefab.FindModulesImplementing<ModuleWaterfallFX>().FirstOrDefault(x => x.moduleID == moduleID).config;
 
       CleanupEffects();
       allFX.Clear();
@@ -323,7 +323,7 @@ namespace Waterfall
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting effect", LogType.Modules);
 
-      toRemove.CleanupEffect(this);
+      toRemove.CleanupEffect();
       if (toRemove.parentTemplate != null)
       {
         foreach (var t in Templates)
@@ -379,7 +379,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Cleanup Effects", LogType.Modules);
       foreach (var fx in allFX)
       {
-        fx.CleanupEffect(this);
+        fx.CleanupEffect();
       }
     }
 
