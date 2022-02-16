@@ -7,15 +7,37 @@ namespace Waterfall
 {
   public class EffectIntegrator
   {
-    public    string          transformName;
+    public string transformName;
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms;
+    public List<EffectModifier> handledModifiers;
+    public virtual void AddModifier(EffectModifier mod) => handledModifiers.Add(mod);
+    public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
+
+    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
+    {
+      Utils.Log($"[EffectIntegrator]: Initializing integrator for {effect.name} on modifier {mod.fxName}", LogType.Modifiers);
+      transformName = mod.transformName;
+      parentEffect = effect;
+
+      xforms = new();
+      var roots = parentEffect.GetModelTransforms();
+      foreach (var t in roots)
+      {
+        if (t.FindDeepChild(transformName) is Transform t1 && t1 != null)
+          xforms.Add(t1);
+        else
+          Utils.LogError($"[EffectIntegrator]: Unable to find transform {mod.transformName} on modifier {mod.fxName}");
+      }
+
+      handledModifiers = new();
+      handledModifiers.Add(mod);
+    }
   }
 
   public class EffectFloatIntegrator : EffectIntegrator
   {
     public string                    floatName;
-    public List<EffectFloatModifier> handledModifiers;
 
     private readonly Material[] m;
     private readonly Renderer[] r;
@@ -24,32 +46,10 @@ namespace Waterfall
 
     private readonly bool testIntensity;
 
-    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod)
+    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod)
     {
-      Utils.Log(String.Format("[EffectFloatIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);
-      xforms        = new();
-      transformName = floatMod.transformName;
-      parentEffect  = effect;
-      var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
-      {
-        var t1 = t.FindDeepChild(transformName);
-        if (t1 == null)
-        {
-          Utils.LogError(String.Format("[EffectFloatIntegrator]: Unable to find transform {0} on modifier {1}", transformName, floatMod.fxName));
-        }
-        else
-        {
-          xforms.Add(t1);
-        }
-      }
-
-
       // float specific
       floatName        = floatMod.floatName;
-      handledModifiers = new();
-      handledModifiers.Add(floatMod);
-
 
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
@@ -69,15 +69,6 @@ namespace Waterfall
       }
     }
 
-    public void AddModifier(EffectFloatModifier newMod)
-    {
-      handledModifiers.Add(newMod);
-    }
-
-    public void RemoveModifier(EffectFloatModifier newMod)
-    {
-      handledModifiers.Remove(newMod);
-    }
 
     public void Update()
     {
@@ -87,7 +78,7 @@ namespace Waterfall
 
       foreach (var floatMod in handledModifiers)
       {
-        var modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
+        var modResult = (floatMod as EffectFloatModifier).Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
 
         if (floatMod.effectMode == EffectModifierMode.REPLACE)
           applyValues = modResult;

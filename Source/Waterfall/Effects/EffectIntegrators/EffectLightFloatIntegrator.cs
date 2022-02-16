@@ -7,38 +7,16 @@ namespace Waterfall
   public class EffectLightFloatIntegrator : EffectIntegrator
   {
     public string                         floatName;
-    public List<EffectLightFloatModifier> handledModifiers;
 
     private readonly Light[]     l;
     private readonly List<float> initialFloatValues;
 
     private readonly bool testIntensity;
 
-    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod)
+    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
-      Utils.Log(String.Format("[EffectLightFloatIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);
-      xforms        = new();
-      transformName = floatMod.transformName;
-      parentEffect  = effect;
-      var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
-      {
-        var t1 = t.FindDeepChild(transformName);
-        if (t1 == null)
-        {
-          Utils.LogError(String.Format("[EffectLightFloatIntegrator]: Unable to find transform {0} on modifier {1}", transformName, floatMod.fxName));
-        }
-        else
-        {
-          xforms.Add(t1);
-        }
-      }
-
-
-      // float specific
+      // light-float specific
       floatName        = floatMod.floatName;
-      handledModifiers = new();
-      handledModifiers.Add(floatMod);
 
       foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
       {
@@ -47,7 +25,6 @@ namespace Waterfall
       }
 
       initialFloatValues = new();
-
       l = new Light[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
@@ -63,16 +40,6 @@ namespace Waterfall
       }
     }
 
-    public void AddModifier(EffectLightFloatModifier newMod)
-    {
-      handledModifiers.Add(newMod);
-    }
-
-    public void RemoveModifier(EffectLightFloatModifier newMod)
-    {
-      handledModifiers.Remove(newMod);
-    }
-
     public void Update()
     {
       if (Settings.EnableLights)
@@ -83,7 +50,7 @@ namespace Waterfall
           var applyValues = initialFloatValues;
           foreach (var floatMod in handledModifiers)
           {
-            var modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
+            var modResult = (floatMod as EffectLightFloatModifier).Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
 
             if (floatMod.effectMode == EffectModifierMode.REPLACE)
               applyValues = modResult;

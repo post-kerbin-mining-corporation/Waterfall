@@ -7,50 +7,15 @@ namespace Waterfall
 {
   public class EffectPositionIntegrator : EffectIntegrator
   {
-    public List<EffectPositionModifier> handledModifiers;
-
     private readonly List<Vector3> initialVectorValues;
 
-    public EffectPositionIntegrator(WaterfallEffect effect, EffectPositionModifier posMod)
+    public EffectPositionIntegrator(WaterfallEffect effect, EffectPositionModifier posMod) : base(effect, posMod)
     {
-      Utils.Log(String.Format("[EffectPositionIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, posMod.fxName), LogType.Modifiers);
-      xforms        = new();
-      transformName = posMod.transformName;
-      parentEffect  = effect;
-      var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
-      {
-        var t1 = t.FindDeepChild(transformName);
-        if (t1 == null)
-        {
-          Utils.LogError(String.Format("[EffectPositionIntegrator]: Unable to find transform {0} on modifier {1}", transformName, posMod.fxName));
-        }
-        else
-        {
-          xforms.Add(t1);
-        }
-      }
-
-
-      handledModifiers = new();
-      handledModifiers.Add(posMod);
-
-
       initialVectorValues = new();
-      for (int i = 0; i < xforms.Count; i++)
+      foreach (var x in xforms)
       {
-        initialVectorValues.Add(xforms[i].localPosition);
+        initialVectorValues.Add(x.localPosition);
       }
-    }
-
-    public void AddModifier(EffectPositionModifier newMod)
-    {
-      handledModifiers.Add(newMod);
-    }
-
-    public void RemoveModifier(EffectPositionModifier newMod)
-    {
-      handledModifiers.Remove(newMod);
     }
 
     public void Update()
@@ -60,7 +25,7 @@ namespace Waterfall
       var applyValues = initialVectorValues.ToList();
       foreach (var posMod in handledModifiers)
       {
-        var modResult = posMod.Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));
+        var modResult = (posMod as EffectPositionModifier).Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));
 
         if (posMod.effectMode == EffectModifierMode.REPLACE)
           applyValues = modResult;
