@@ -8,22 +8,18 @@ namespace Waterfall
   /// </summary>
   public class EffectRotationModifier : EffectModifier
   {
-    public FloatCurve xCurve;
-    public FloatCurve yCurve;
-    public FloatCurve zCurve;
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
+    public FloatCurve zCurve = new();
 
     private Vector3 baseRotation;
 
-    public EffectRotationModifier()
+    public EffectRotationModifier() : base()
     {
-      xCurve = new();
-      yCurve = new();
-      zCurve = new();
-
       modifierTypeName = "Rotation";
     }
 
-    public EffectRotationModifier(ConfigNode node)
+    public EffectRotationModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -31,13 +27,9 @@ namespace Waterfall
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-      xCurve = new();
-      yCurve = new();
-      zCurve = new();
       xCurve.Load(node.GetNode("xCurve"));
       yCurve.Load(node.GetNode("yCurve"));
       zCurve.Load(node.GetNode("zCurve"));
-      modifierTypeName = "Rotation";
     }
 
     public override ConfigNode Save()
@@ -57,7 +49,6 @@ namespace Waterfall
       base.Init(parentEffect);
       baseRotation = xforms[0].localEulerAngles;
     }
-
 
     public List<Vector3> Get(List<float> strengthList)
     {
@@ -84,5 +75,10 @@ namespace Waterfall
 
       return vectorList;
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectRotationIntegrator && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectRotationIntegrator(parentEffect, this);
+
   }
 }

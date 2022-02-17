@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -15,7 +16,7 @@ namespace Waterfall
   /// <summary>
   ///   Base effect modifer class
   /// </summary>
-  public class EffectModifier
+  public abstract class EffectModifier
   {
     // This is the game name of the effect
     public string fxName = "";
@@ -38,6 +39,9 @@ namespace Waterfall
     protected List<Transform> xforms;
     protected float           randomValue;
 
+    public EffectIntegrator integrator;
+    public virtual bool ValidForIntegrator => true;
+
     public EffectModifier()
     {
       xforms = new();
@@ -57,7 +61,7 @@ namespace Waterfall
       node.TryGetValue("randomnessScale",      ref randomScale);
       node.TryGetValue("useRandomness",        ref useRandomness);
       node.TryGetValue("randomnessController", ref randomnessController);
-      Utils.Log(String.Format("[EffectModifier]: Loading modifier {0} ", fxName), LogType.Modifiers);
+      Utils.Log($"[EffectModifier]: Loading modifier {fxName}", LogType.Modifiers);
     }
 
     /// <summary>
@@ -66,7 +70,7 @@ namespace Waterfall
     public virtual void Init(WaterfallEffect effect)
     {
       parentEffect = effect;
-      Utils.Log(String.Format("[EffectModifier]: Initializing modifier {0} ", fxName), LogType.Modifiers);
+      Utils.Log($"[EffectModifier]: Initializing modifier {fxName}", LogType.Modifiers);
       var roots = parentEffect.GetModelTransforms();
       xforms = new();
       foreach (var t in roots)
@@ -74,7 +78,7 @@ namespace Waterfall
         var t1 = t.FindDeepChild(transformName);
         if (t1 == null)
         {
-          Utils.LogError(String.Format("[EffectModifier]: Unable to find transform {0} on modifier {1}", transformName, fxName));
+          Utils.LogError($"[EffectModifier]: Unable to find transform {transformName} on modifier {fxName}");
         }
         else
         {
@@ -93,8 +97,6 @@ namespace Waterfall
       node.AddValue("useRandomness",        useRandomness);
       node.AddValue("randomnessController", randomnessController);
       node.AddValue("randomnessScale",      randomScale);
-
-
       return node;
     }
 
@@ -133,5 +135,36 @@ namespace Waterfall
     protected virtual void ApplyMultiply(List<float> strength) { }
 
     protected virtual void ApplySubtract(List<float> strength) { }
+
+    /// <summary>
+    /// Returns true if this specific integrator is ideal for this modifier (ie EffectFloatIntegrator for an EffectFloatModifier and the associated transform matches
+    /// </summary>
+    /// <param name="integrator"></param>
+    /// <returns></returns>
+    public virtual bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectIntegrator;
+
+    public abstract EffectIntegrator CreateIntegrator();
+
+    public virtual void CreateOrAttachToIntegrator<T>(List<T> integrators) where T : EffectIntegrator
+    {
+      if (integrators == null || !ValidForIntegrator) return;
+      T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
+      if (target == null)
+      {
+        target = CreateIntegrator() as T;
+        integrators.Add(target);
+      }
+      else target.AddModifier(this);
+      integrator = target;
+    }
+
+    public virtual void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
+    {
+      if (integrators?.FirstOrDefault(x => x.handledModifiers.Contains(this)) is T integrator)
+      {
+        integrator.RemoveModifier(this);
+        integrator = null;
+      }
+    }
   }
 }

@@ -8,21 +8,18 @@ namespace Waterfall
   /// </summary>
   public class EffectPositionModifier : EffectModifier
   {
-    public FloatCurve xCurve;
-    public FloatCurve yCurve;
-    public FloatCurve zCurve;
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
+    public FloatCurve zCurve = new();
 
     private Vector3 basePosition;
 
-    public EffectPositionModifier()
+    public EffectPositionModifier() : base()
     {
-      xCurve           = new();
-      yCurve           = new();
-      zCurve           = new();
       modifierTypeName = "Position";
     }
 
-    public EffectPositionModifier(ConfigNode node)
+    public EffectPositionModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -30,13 +27,9 @@ namespace Waterfall
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-      xCurve = new();
-      yCurve = new();
-      zCurve = new();
       xCurve.Load(node.GetNode("xCurve"));
       yCurve.Load(node.GetNode("yCurve"));
       zCurve.Load(node.GetNode("zCurve"));
-      modifierTypeName = "Position";
     }
 
     public override ConfigNode Save()
@@ -82,5 +75,9 @@ namespace Waterfall
 
       return vectorList;
     }
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectPositionIntegrator && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectPositionIntegrator(parentEffect, this);
+
   }
 }

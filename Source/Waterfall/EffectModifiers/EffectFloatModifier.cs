@@ -9,19 +9,16 @@ namespace Waterfall
   public class EffectFloatModifier : EffectModifier
   {
     public string floatName = "";
-
-    public FloatCurve curve;
-
+    public FloatCurve curve = new();
     private Material[] m;
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
 
-    public EffectFloatModifier()
+    public EffectFloatModifier() : base()
     {
-      curve = new();
-
       modifierTypeName = "Material Float";
     }
 
-    public EffectFloatModifier(ConfigNode node)
+    public EffectFloatModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -31,10 +28,7 @@ namespace Waterfall
       base.Load(node);
 
       node.TryGetValue("floatName", ref floatName);
-      curve = new();
       curve.Load(node.GetNode("floatCurve"));
-
-      modifierTypeName = "Material Float";
     }
 
     public override ConfigNode Save()
@@ -86,5 +80,10 @@ namespace Waterfall
       floatName = newFloatName;
       parentEffect.ModifierParameterChange(this);
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectFloatIntegrator i && i.floatName == floatName && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectFloatIntegrator(parentEffect, this);
+
   }
 }

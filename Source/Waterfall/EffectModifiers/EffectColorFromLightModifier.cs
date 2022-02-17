@@ -15,13 +15,14 @@ namespace Waterfall
     public Light[] lights;
 
     private Material[] m;
+    public override bool ValidForIntegrator => false;
 
-    public EffectColorFromLightModifier()
+    public EffectColorFromLightModifier() : base()
     {
       modifierTypeName = "Material Color From Light";
     }
 
-    public EffectColorFromLightModifier(ConfigNode node)
+    public EffectColorFromLightModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -33,8 +34,6 @@ namespace Waterfall
       node.TryGetValue("colorName",          ref colorName);
       node.TryGetValue("lightTransformName", ref lightTransformName);
       node.TryGetValue("colorBlend",         ref colorBlend);
-
-      modifierTypeName = "Material Color From Light";
     }
 
     public override ConfigNode Save()
@@ -52,7 +51,6 @@ namespace Waterfall
     {
       base.Init(parentEffect);
       m      = new Material[xforms.Count];
-      lights = new Light[xforms.Count];
       lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == parentEffect.parentName).ToArray();
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -70,7 +68,6 @@ namespace Waterfall
     public void ApplyLightName(string newLightName)
     {
       lightTransformName = newLightName;
-      lights             = new Light[xforms.Count];
       lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == lightTransformName).ToArray();
     }
 
@@ -84,5 +81,12 @@ namespace Waterfall
           m[i].SetColor(colorName, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
       }
     }
+
+    public override EffectIntegrator CreateIntegrator()
+    {
+      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
+      return null;
+    }
+
   }
 }

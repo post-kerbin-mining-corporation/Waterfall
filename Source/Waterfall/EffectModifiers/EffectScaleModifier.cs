@@ -8,21 +8,18 @@ namespace Waterfall
   /// </summary>
   public class EffectScaleModifier : EffectModifier
   {
-    public FloatCurve xCurve;
-    public FloatCurve yCurve;
-    public FloatCurve zCurve;
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
+    public FloatCurve zCurve = new();
 
     private Vector3 baseScale;
 
-    public EffectScaleModifier()
+    public EffectScaleModifier() : base()
     {
-      xCurve           = new();
-      yCurve           = new();
-      zCurve           = new();
       modifierTypeName = "Scale";
     }
 
-    public EffectScaleModifier(ConfigNode node)
+    public EffectScaleModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -30,13 +27,9 @@ namespace Waterfall
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-      xCurve = new();
-      yCurve = new();
-      zCurve = new();
       xCurve.Load(node.GetNode("xCurve"));
       yCurve.Load(node.GetNode("yCurve"));
       zCurve.Load(node.GetNode("zCurve"));
-      modifierTypeName = "Scale";
     }
 
     public override ConfigNode Save()
@@ -91,5 +84,10 @@ namespace Waterfall
         //xforms[i].localScale = new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue);
       }
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectScaleIntegrator && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectScaleIntegrator(parentEffect, this);
+
   }
 }

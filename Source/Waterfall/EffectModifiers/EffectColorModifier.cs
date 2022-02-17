@@ -11,24 +11,20 @@ namespace Waterfall
     public Gradient colorCurve;
     public string   colorName;
 
-    public FloatCurve rCurve;
-    public FloatCurve gCurve;
-    public FloatCurve bCurve;
-    public FloatCurve aCurve;
+    public FloatCurve rCurve = new();
+    public FloatCurve gCurve = new();
+    public FloatCurve bCurve = new();
+    public FloatCurve aCurve = new();
 
     private Material[] m;
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName);
 
-    public EffectColorModifier()
+    public EffectColorModifier() : base()
     {
-      rCurve = new();
-      gCurve = new();
-      bCurve = new();
-      aCurve = new();
-
       modifierTypeName = "Material Color";
     }
 
-    public EffectColorModifier(ConfigNode node)
+    public EffectColorModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -38,16 +34,10 @@ namespace Waterfall
       base.Load(node);
 
       node.TryGetValue("colorName", ref colorName);
-      rCurve = new();
-      gCurve = new();
-      bCurve = new();
-      aCurve = new();
       rCurve.Load(node.GetNode("rCurve"));
       gCurve.Load(node.GetNode("gCurve"));
       bCurve.Load(node.GetNode("bCurve"));
       aCurve.Load(node.GetNode("aCurve"));
-
-      modifierTypeName = "Material Color";
     }
 
     public override ConfigNode Save()
@@ -56,7 +46,6 @@ namespace Waterfall
 
       node.name = WaterfallConstants.ColorModifierNodeName;
       node.AddValue("colorName", colorName);
-
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
@@ -110,5 +99,9 @@ namespace Waterfall
       colorName = newColorName;
       parentEffect.ModifierParameterChange(this);
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectColorIntegrator i && i.colorName == colorName && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectColorIntegrator(parentEffect, this);
   }
 }

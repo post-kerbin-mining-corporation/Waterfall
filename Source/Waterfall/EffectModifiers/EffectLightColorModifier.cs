@@ -10,24 +10,20 @@ namespace Waterfall
   {
     public string colorName = "_Main";
 
-    public FloatCurve rCurve;
-    public FloatCurve gCurve;
-    public FloatCurve bCurve;
-    public FloatCurve aCurve;
+    public FloatCurve rCurve = new();
+    public FloatCurve gCurve = new();
+    public FloatCurve bCurve = new();
+    public FloatCurve aCurve = new();
 
     private Light[] l;
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName);
 
-    public EffectLightColorModifier()
+    public EffectLightColorModifier() : base()
     {
-      rCurve = new();
-      gCurve = new();
-      bCurve = new();
-      aCurve = new();
-
       modifierTypeName = "Light Color";
     }
 
-    public EffectLightColorModifier(ConfigNode node)
+    public EffectLightColorModifier(ConfigNode node) : this()
     {
       Load(node);
     }
@@ -37,16 +33,10 @@ namespace Waterfall
       base.Load(node);
 
       node.TryGetValue("colorName", ref colorName);
-      rCurve = new();
-      gCurve = new();
-      bCurve = new();
-      aCurve = new();
       rCurve.Load(node.GetNode("rCurve"));
       gCurve.Load(node.GetNode("gCurve"));
       bCurve.Load(node.GetNode("bCurve"));
       aCurve.Load(node.GetNode("aCurve"));
-
-      modifierTypeName = "Light Color";
     }
 
     public override ConfigNode Save()
@@ -55,7 +45,6 @@ namespace Waterfall
 
       node.name = WaterfallConstants.LightColorModifierNodeName;
       node.AddValue("colorName", colorName);
-
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
@@ -107,5 +96,9 @@ namespace Waterfall
       colorName = newColorName;
       parentEffect.ModifierParameterChange(this);
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectLightColorIntegrator i && i.colorName == colorName && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectLightColorIntegrator(parentEffect, this);
   }
 }
