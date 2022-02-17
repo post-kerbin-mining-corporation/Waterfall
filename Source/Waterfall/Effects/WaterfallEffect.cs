@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -283,13 +282,13 @@ namespace Waterfall
 
       foreach (var mod in fxModifiers)
       {
-        if (mod is EffectFloatModifier e) ParseFloatModifier(e);
-        else if (mod is EffectColorModifier c) ParseColorModifier(c);
-        else if (mod is EffectPositionModifier p) ParsePositionModifier(p);
-        else if (mod is EffectRotationModifier r) ParseRotationModifier(r);
-        else if (mod is EffectScaleModifier s) ParseScaleModifier(s);
-        else if (mod is EffectLightFloatModifier light) ParseLightFloatModifier(light);
-        else if (mod is EffectLightColorModifier lightColor) ParseLightColorModifier(lightColor);
+        if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
+        else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
+        else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
+        else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
+        else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
+        else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
+        else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
       }
     }
 
@@ -325,46 +324,14 @@ namespace Waterfall
       if (effectVisible)
       {
         model.Update();
-        for (int i = 0; i < fxModifiers.Count; i++)
-        {
-          fxModifiers[i].Apply(parentModule.GetControllerValue(fxModifiers[i].controllerName));
-        }
-
-        for (int i = 0; i < floatIntegrators.Count; i++)
-        {
-          floatIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < colorIntegrators.Count; i++)
-        {
-          colorIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < positionIntegrators.Count; i++)
-        {
-          positionIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < scaleIntegrators.Count; i++)
-        {
-          scaleIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < rotationIntegrators.Count; i++)
-        {
-          rotationIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < lightFloatIntegrators.Count; i++)
-        {
-          lightFloatIntegrators[i].Update();
-        }
-
-        for (int i = 0; i < lightColorIntegrators.Count; i++)
-        {
-          lightColorIntegrators[i].Update();
-        }
-
+        foreach (var fx in fxModifiers) fx.Apply(parentModule.GetControllerValue(fx.controllerName));
+        foreach (var integrator in floatIntegrators) integrator.Update();
+        foreach (var integrator in colorIntegrators) integrator.Update();
+        foreach (var integrator in positionIntegrators) integrator.Update();
+        foreach (var integrator in scaleIntegrators) integrator.Update();
+        foreach (var integrator in rotationIntegrators) integrator.Update();
+        foreach (var integrator in lightFloatIntegrators) integrator.Update();
+        foreach (var integrator in lightColorIntegrators) integrator.Update();
 
         int transparentQueueBase = 3000;
 
@@ -405,13 +372,13 @@ namespace Waterfall
     public void RemoveModifier(EffectModifier mod)
     {
       fxModifiers.Remove(mod);
-      if (mod is EffectFloatModifier f) RemoveModifier(f, floatIntegrators);
-      else if (mod is EffectColorModifier c) RemoveModifier(c, colorIntegrators);
-      else if (mod is EffectPositionModifier p) RemoveModifier(p, positionIntegrators);
-      else if (mod is EffectRotationModifier r) RemoveModifier(r, rotationIntegrators);
-      else if (mod is EffectScaleModifier s) RemoveModifier(s, scaleIntegrators);
-      else if (mod is EffectLightFloatModifier light) RemoveModifier(light, lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier lightColor) RemoveModifier(lightColor, lightColorIntegrators);
+      if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
+      else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
+      else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);
+      else if (mod is EffectRotationModifier) mod.RemoveFromIntegrator(rotationIntegrators);
+      else if (mod is EffectScaleModifier) mod.RemoveFromIntegrator(scaleIntegrators);
+      else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
+      else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -424,13 +391,13 @@ namespace Waterfall
     {
       mod.Init(this);
       fxModifiers.Add(mod);
-      if (mod is EffectFloatModifier e) ParseFloatModifier(e);
-      else if (mod is EffectColorModifier c) ParseColorModifier(c);
-      else if (mod is EffectPositionModifier p) ParsePositionModifier(p);
-      else if (mod is EffectRotationModifier r) ParseRotationModifier(r);
-      else if (mod is EffectScaleModifier s) ParseScaleModifier(s);
-      else if (mod is EffectLightFloatModifier light) ParseLightFloatModifier(light);
-      else if (mod is EffectLightColorModifier lightColor) ParseLightColorModifier(lightColor);
+      if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
+      else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
+      else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
+      else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
+      else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
+      else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
+      else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
     }
 
     public void MoveModifierFromTo(int oldIndex, int newIndex)
@@ -453,300 +420,6 @@ namespace Waterfall
       for (int i = 0; i < effectTransforms.Count; i++)
         effectTransforms[i].localScale = state ? Vector3.Scale(baseScales[i], TemplateScaleOffset) : Vector3.one * 0.00001f;
       effectVisible = state;
-    }
-
-    private void ParseFloatModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var floatMod = (EffectFloatModifier)fxMod;
-        if (floatMod != null)
-        {
-          bool                  needsNewIntegrator = true;
-          EffectFloatIntegrator targetIntegrator   = null;
-
-          foreach (var floatInt in floatIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (floatInt.handledModifiers.Contains(floatMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (floatInt.floatName == floatMod.floatName && floatInt.transformName == floatMod.transformName)
-            {
-              targetIntegrator   = floatInt;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator && floatMod.floatName != "")
-          {
-            var newIntegrator = new EffectFloatIntegrator(this, floatMod);
-            floatIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator && floatMod.floatName != "")
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(floatMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParseColorModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var colorMod = (EffectColorModifier)fxMod;
-        if (colorMod != null)
-        {
-          bool                  needsNewIntegrator = true;
-          EffectColorIntegrator targetIntegrator   = null;
-
-          foreach (var integrator in colorIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (integrator.handledModifiers.Contains(colorMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (integrator.colorName == colorMod.colorName && integrator.transformName == colorMod.transformName)
-            {
-              targetIntegrator   = integrator;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator && colorMod.colorName != "")
-          {
-            var newIntegrator = new EffectColorIntegrator(this, colorMod);
-            colorIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator && colorMod.colorName != "")
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(colorMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParsePositionModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var posMod = (EffectPositionModifier)fxMod;
-        if (posMod != null)
-        {
-          bool                     needsNewIntegrator = true;
-          EffectPositionIntegrator targetIntegrator   = null;
-
-          foreach (var integrator in positionIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (integrator.handledModifiers.Contains(posMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (integrator.transformName == posMod.transformName)
-            {
-              targetIntegrator   = integrator;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator)
-          {
-            var newIntegrator = new EffectPositionIntegrator(this, posMod);
-            positionIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator)
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(posMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParseScaleModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var scaleMod = (EffectScaleModifier)fxMod;
-        if (scaleMod != null)
-        {
-          bool                  needsNewIntegrator = true;
-          EffectScaleIntegrator targetIntegrator   = null;
-
-          foreach (var integrator in scaleIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (integrator.handledModifiers.Contains(scaleMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (integrator.transformName == scaleMod.transformName)
-            {
-              targetIntegrator   = integrator;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator)
-          {
-            var newIntegrator = new EffectScaleIntegrator(this, scaleMod);
-            scaleIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator)
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(scaleMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParseRotationModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var rotMod = (EffectRotationModifier)fxMod;
-        if (rotMod != null)
-        {
-          bool                     needsNewIntegrator = true;
-          EffectRotationIntegrator targetIntegrator   = null;
-
-          foreach (var integrator in rotationIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (integrator.handledModifiers.Contains(rotMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (integrator.transformName == rotMod.transformName)
-            {
-              targetIntegrator   = integrator;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator)
-          {
-            var newIntegrator = new EffectRotationIntegrator(this, rotMod);
-            rotationIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator)
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(rotMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParseLightFloatModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var floatMod = (EffectLightFloatModifier)fxMod;
-        if (floatMod != null)
-        {
-          bool                       needsNewIntegrator = true;
-          EffectLightFloatIntegrator targetIntegrator   = null;
-
-          foreach (var floatInt in lightFloatIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (floatInt.handledModifiers.Contains(floatMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (floatInt.floatName == floatMod.floatName && floatInt.transformName == floatMod.transformName)
-            {
-              targetIntegrator   = floatInt;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator && floatMod.floatName != "")
-          {
-            var newIntegrator = new EffectLightFloatIntegrator(this, floatMod);
-            lightFloatIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator && floatMod.floatName != "")
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(floatMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void ParseLightColorModifier(EffectModifier fxMod)
-    {
-      try
-      {
-        var colorMod = (EffectLightColorModifier)fxMod;
-        if (colorMod != null)
-        {
-          bool                       needsNewIntegrator = true;
-          EffectLightColorIntegrator targetIntegrator   = null;
-
-          foreach (var integrator in lightColorIntegrators)
-          {
-            // If already exists as a handled modifier, don't touch me
-            if (integrator.handledModifiers.Contains(colorMod))
-              return;
-
-            // if there's already an integrator that has the transform name and float name, don't need to add
-            if (integrator.colorName == colorMod.colorName && integrator.transformName == colorMod.transformName)
-            {
-              targetIntegrator   = integrator;
-              needsNewIntegrator = false;
-            }
-          }
-
-          if (needsNewIntegrator && colorMod.colorName != "")
-          {
-            var newIntegrator = new EffectLightColorIntegrator(this, colorMod);
-            lightColorIntegrators.Add(newIntegrator);
-          }
-          else if (!needsNewIntegrator && colorMod.colorName != "")
-          {
-            if (targetIntegrator != null)
-            {
-              targetIntegrator.AddModifier(colorMod);
-            }
-          }
-        }
-      }
-      catch (InvalidCastException e) { }
-    }
-
-    private void RemoveModifier<T>(EffectModifier fxMod, List<T> integrators) where T : EffectIntegrator
-    {
-      if (fxMod == null || integrators == null) return;
-      if (integrators.FirstOrDefault(x => x.handledModifiers.Contains(fxMod)) is T integrator)
-        integrator.RemoveModifier(fxMod);
     }
   }
 }
