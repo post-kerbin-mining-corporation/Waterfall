@@ -9,10 +9,10 @@ namespace Waterfall
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
-    public string eventName;
+    [Persistent] public string eventName;
 
-    public  FloatCurve    eventCurve    = new();
-    public  float         eventDuration = 1f;
+    public FloatCurve eventCurve = new();
+    [Persistent] public float eventDuration = 1f;
     private ModuleEngines engineController;
 
     private bool  enginePreState;
@@ -23,17 +23,12 @@ namespace Waterfall
     public EngineEventController() : base() { }
     public EngineEventController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(eventName),     ref eventName);
-      node.TryGetValue(nameof(eventDuration), ref eventDuration);
-
       eventCurve.Load(node.GetNode(nameof(eventCurve)));
     }
 
     public override ConfigNode Save()
     {
       var c = base.Save();
-      c.AddValue(nameof(eventDuration), eventDuration);
-      c.AddValue(nameof(eventName),     eventName);
       c.AddNode(Utils.SerializeFloatCurve(nameof(eventCurve), eventCurve));
       return c;
     }

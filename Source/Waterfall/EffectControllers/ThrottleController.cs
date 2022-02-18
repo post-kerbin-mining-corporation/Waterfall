@@ -14,19 +14,14 @@ namespace Waterfall
   public class ThrottleController : WaterfallController
   {
     public float  currentThrottle  = 1f;
-    public float  responseRateUp   = 100f;
-    public float  responseRateDown = 100f;
-    public string engineID         = String.Empty;
+    [Persistent] public float  responseRateUp   = 100f;
+    [Persistent] public float  responseRateDown = 100f;
+    [Persistent] public string engineID         = String.Empty;
 
     private ModuleEngines engineController;
 
     public ThrottleController() : base() { }
-    public ThrottleController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(responseRateUp),   ref responseRateUp);
-      node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
-      node.TryGetValue(nameof(engineID),         ref engineID);
-    }
+    public ThrottleController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -41,16 +36,6 @@ namespace Waterfall
 
       if (engineController == null)
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
-    }
-
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-
-      c.AddValue(nameof(engineID),         engineID);
-      c.AddValue(nameof(responseRateUp),   responseRateUp);
-      c.AddValue(nameof(responseRateDown), responseRateDown);
-      return c;
     }
 
     public override void Update()

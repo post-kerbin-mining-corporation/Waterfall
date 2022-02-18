@@ -8,7 +8,7 @@ namespace Waterfall
   /// </summary>
   public class EffectLightFloatModifier : EffectModifier
   {
-    public string floatName = "";
+    [Persistent] public string floatName = "";
     public FloatCurve curve = new();
     private Light[] l;
     public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
@@ -18,16 +18,11 @@ namespace Waterfall
       modifierTypeName = "Light Float";
     }
 
-    public EffectLightFloatModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectLightFloatModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-
-      node.TryGetValue("floatName", ref floatName);
       curve.Load(node.GetNode("floatCurve"));
     }
 
@@ -36,8 +31,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.LightFloatModifierNodeName;
-      node.AddValue("floatName", floatName);
-
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }

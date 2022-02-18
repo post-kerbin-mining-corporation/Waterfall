@@ -9,9 +9,9 @@ namespace Waterfall
   /// </summary>
   public class EffectColorFromLightModifier : EffectModifier
   {
-    public string  colorName;
-    public string  lightTransformName;
-    public float   colorBlend;
+    [Persistent] public string colorName;
+    [Persistent] public string lightTransformName;
+    [Persistent] public float colorBlend;
     public Light[] lights;
 
     private Material[] m;
@@ -22,28 +22,12 @@ namespace Waterfall
       modifierTypeName = "Material Color From Light";
     }
 
-    public EffectColorFromLightModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
-
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-
-      node.TryGetValue("colorName",          ref colorName);
-      node.TryGetValue("lightTransformName", ref lightTransformName);
-      node.TryGetValue("colorBlend",         ref colorBlend);
-    }
+    public EffectColorFromLightModifier(ConfigNode node) : base(node) { }
 
     public override ConfigNode Save()
     {
       var node = base.Save();
-
       node.name = WaterfallConstants.ColorFromLightNodeName;
-      node.AddValue("colorName",          colorName);
-      node.AddValue("lightTransformName", lightTransformName);
-      node.AddValue("colorBlend",         colorBlend);
       return node;
     }
 
@@ -87,6 +71,5 @@ namespace Waterfall
       Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
       return null;
     }
-
   }
 }

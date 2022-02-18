@@ -11,7 +11,6 @@ namespace Waterfall
     public FloatCurve xCurve = new();
     public FloatCurve yCurve = new();
     public FloatCurve zCurve = new();
-
     private Vector3 baseRotation;
 
     public EffectRotationModifier() : base()
@@ -19,10 +18,7 @@ namespace Waterfall
       modifierTypeName = "Rotation";
     }
 
-    public EffectRotationModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectRotationModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
@@ -37,7 +33,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.RotationModifierNodeName;
-
       node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
       node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
       node.AddNode(Utils.SerializeFloatCurve("zCurve", zCurve));

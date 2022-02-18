@@ -22,13 +22,13 @@ namespace Waterfall
     public string fxName = "";
 
     // This is the name of the controller that should be associated with the module
-    public string controllerName   = "";
-    public string transformName    = "";
+    [Persistent] public string controllerName   = "";
+    [Persistent] public string transformName    = "";
     public string modifierTypeName = "";
 
-    public bool   useRandomness;
-    public string randomnessController = nameof(RandomnessController);
-    public float  randomScale          = 1f;
+    [Persistent] public bool   useRandomness;
+    [Persistent] public string randomnessController = nameof(RandomnessController);
+    [Persistent] public float  randomnessScale          = 1f;
 
     public WaterfallEffect parentEffect;
 
@@ -54,13 +54,9 @@ namespace Waterfall
 
     public virtual void Load(ConfigNode node)
     {
+      ConfigNode.LoadObjectFromConfig(this, node);
       node.TryGetValue("name",           ref fxName);
-      node.TryGetValue("controllerName", ref controllerName);
-      node.TryGetValue("transformName",  ref transformName);
       node.TryGetEnum("combinationType", ref effectMode, EffectModifierMode.REPLACE);
-      node.TryGetValue("randomnessScale",      ref randomScale);
-      node.TryGetValue("useRandomness",        ref useRandomness);
-      node.TryGetValue("randomnessController", ref randomnessController);
       Utils.Log($"[EffectModifier]: Loading modifier {fxName}", LogType.Modifiers);
     }
 
@@ -89,14 +85,9 @@ namespace Waterfall
 
     public virtual ConfigNode Save()
     {
-      var node = new ConfigNode();
-      node.AddValue("name",                 fxName);
-      node.AddValue("controllerName",       controllerName);
-      node.AddValue("transformName",        transformName);
-      node.AddValue("combinationType",      effectMode.ToString());
-      node.AddValue("useRandomness",        useRandomness);
-      node.AddValue("randomnessController", randomnessController);
-      node.AddValue("randomnessScale",      randomScale);
+      var node = ConfigNode.CreateConfigFromObject(this);
+      node.AddValue("name", fxName);
+      node.AddValue("combinationType", effectMode.ToString());
       return node;
     }
 
@@ -108,7 +99,7 @@ namespace Waterfall
     {
       if (useRandomness)
       {
-        randomValue = parentEffect.parentModule.GetControllerValue(randomnessController)[0] * randomScale;
+        randomValue = parentEffect.parentModule.GetControllerValue(randomnessController)[0] * randomnessScale;
       }
 
       switch (effectMode)

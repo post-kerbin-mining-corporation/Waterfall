@@ -19,10 +19,7 @@ namespace Waterfall
       modifierTypeName = "Scale";
     }
 
-    public EffectScaleModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectScaleModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
@@ -74,15 +71,6 @@ namespace Waterfall
       }
 
       return vectorList;
-    }
-
-    protected override void ApplyReplace(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        //xforms[i].localScale = new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue);
-      }
     }
 
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectScaleIntegrator && integrator.transformName == transformName;

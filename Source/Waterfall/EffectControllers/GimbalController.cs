@@ -1,26 +1,15 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace Waterfall
 {
   [DisplayName("Gimbal")]
   public class GimbalController : WaterfallController
   {
-    public  string       axis            = "x";
+    [Persistent] public string axis = "x";
     private ModuleGimbal gimbalController;
 
     public GimbalController() : base() { }
-    public GimbalController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(axis), ref axis);
-    }
-
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-      c.AddValue(nameof(axis), axis);
-      return c;
-    }
+    public GimbalController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {

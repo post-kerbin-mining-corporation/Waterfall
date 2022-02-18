@@ -10,7 +10,7 @@ namespace Waterfall
   {
     public FloatCurve scrollCurveX = new();
     public FloatCurve scrollCurveY = new();
-    public string     textureName;
+    [Persistent] public string textureName;
     private Material[] m;
     public override bool ValidForIntegrator => false;
 
@@ -19,16 +19,11 @@ namespace Waterfall
       modifierTypeName = GetType().Name;
     }
 
-    public EffectUVScrollModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectUVScrollModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-
-      node.TryGetValue("textureName", ref textureName);
       scrollCurveX.Load(node.GetNode("scrollCurveX"));
       scrollCurveY.Load(node.GetNode("scrollCurveY"));
     }
@@ -38,8 +33,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.UVScrollModifierNodeName;
-      node.AddValue("textureName", textureName);
-
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveX", scrollCurveX));
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveY", scrollCurveY));
       return node;

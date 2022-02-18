@@ -19,14 +19,14 @@ namespace Waterfall
   [DisplayName("Custom (Pull)")]
   public class CustomPullController : WaterfallController
   {
-    public string engineID   = String.Empty;
-    public string memberName = "currentThrottle"; // There is ThrottleController for that, but works as an example
+    [Persistent] public string engineID   = String.Empty;
+    [Persistent] public string memberName = "currentThrottle"; // There is ThrottleController for that, but works as an example
 
-    public float minInputValue;
-    public float maxInputValue = 1;
+    [Persistent] public float minInputValue;
+    [Persistent] public float maxInputValue = 1;
 
-    public  float responseRateUp;
-    public  float responseRateDown;
+    [Persistent] public float responseRateUp;
+    [Persistent] public float responseRateDown;
     private float currentValue;
 
     private ModuleEngines engineController;
@@ -34,15 +34,7 @@ namespace Waterfall
 
     public CustomPullController() : base() { }
 
-    public CustomPullController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(engineID),         ref engineID);
-      node.TryGetValue(nameof(memberName),       ref memberName);
-      node.TryGetValue(nameof(minInputValue),    ref minInputValue);
-      node.TryGetValue(nameof(maxInputValue),    ref maxInputValue);
-      node.TryGetValue(nameof(responseRateUp),   ref responseRateUp);
-      node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
-    }
+    public CustomPullController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -89,20 +81,6 @@ namespace Waterfall
 
       Utils.LogError($"[{nameof(CustomPullController)}]: Could not find any public instance method, property or field named {memberName} to use with {nameof(CustomPullController)} named {name}, effect controller will not do anything");
       return () => 0;
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = base.Save();
-
-      node.AddValue(nameof(engineID),         engineID);
-      node.AddValue(nameof(memberName),       memberName);
-      node.AddValue(nameof(minInputValue),    minInputValue);
-      node.AddValue(nameof(maxInputValue),    maxInputValue);
-      node.AddValue(nameof(responseRateUp),   responseRateUp);
-      node.AddValue(nameof(responseRateDown), responseRateDown);
-
-      return node;
     }
 
     public override void Update()

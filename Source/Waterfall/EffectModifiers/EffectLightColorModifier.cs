@@ -8,7 +8,7 @@ namespace Waterfall
   /// </summary>
   public class EffectLightColorModifier : EffectModifier
   {
-    public string colorName = "_Main";
+    [Persistent] public string colorName = "_Main";
 
     public FloatCurve rCurve = new();
     public FloatCurve gCurve = new();
@@ -23,16 +23,12 @@ namespace Waterfall
       modifierTypeName = "Light Color";
     }
 
-    public EffectLightColorModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectLightColorModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
-      node.TryGetValue("colorName", ref colorName);
       rCurve.Load(node.GetNode("rCurve"));
       gCurve.Load(node.GetNode("gCurve"));
       bCurve.Load(node.GetNode("bCurve"));
@@ -44,7 +40,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.LightColorModifierNodeName;
-      node.AddValue("colorName", colorName);
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));

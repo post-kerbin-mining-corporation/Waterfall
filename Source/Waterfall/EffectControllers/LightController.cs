@@ -13,21 +13,11 @@ namespace Waterfall
   [DisplayName("Light")]
   public class LightController : WaterfallController
   {
-    public  string lightName       = "";
+    [Persistent] public string lightName = "";
     private Light  lightController;
 
     public LightController() : base() { }
-    public LightController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(lightName), ref lightName);
-    }
-
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-      c.AddValue(nameof(lightName), lightName);
-      return c;
-    }
+    public LightController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {

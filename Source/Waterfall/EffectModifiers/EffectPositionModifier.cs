@@ -11,7 +11,6 @@ namespace Waterfall
     public FloatCurve xCurve = new();
     public FloatCurve yCurve = new();
     public FloatCurve zCurve = new();
-
     private Vector3 basePosition;
 
     public EffectPositionModifier() : base()
@@ -19,10 +18,7 @@ namespace Waterfall
       modifierTypeName = "Position";
     }
 
-    public EffectPositionModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectPositionModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {

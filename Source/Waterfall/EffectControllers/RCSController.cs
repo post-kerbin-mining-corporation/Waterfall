@@ -14,18 +14,13 @@ namespace Waterfall
   public class RCSController : WaterfallController
   {
     public  List<float> currentThrottle;
-    public  float       responseRateUp        = 100f;
-    public  float       responseRateDown      = 100f;
-    public  string      thrusterTransformName = String.Empty;
+    [Persistent] public float responseRateUp         = 100f;
+    [Persistent] public float responseRateDown       = 100f;
+    [Persistent] public string thrusterTransformName = String.Empty;
     private ModuleRCSFX rcsController;
 
     public RCSController() : base() { }
-    public RCSController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(responseRateUp),        ref responseRateUp);
-      node.TryGetValue(nameof(responseRateDown),      ref responseRateDown);
-      node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
-    }
+    public RCSController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -46,16 +41,6 @@ namespace Waterfall
       {
         currentThrottle.Add(0f);
       }
-    }
-
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-
-      c.AddValue(nameof(responseRateUp),        responseRateUp);
-      c.AddValue(nameof(responseRateDown),      responseRateDown);
-      c.AddValue(nameof(thrusterTransformName), thrusterTransformName);
-      return c;
     }
 
     public override void Update()

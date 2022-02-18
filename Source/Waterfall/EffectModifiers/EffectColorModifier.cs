@@ -9,7 +9,7 @@ namespace Waterfall
   public class EffectColorModifier : EffectModifier
   {
     public Gradient colorCurve;
-    public string   colorName;
+    [Persistent] public string colorName;
 
     public FloatCurve rCurve = new();
     public FloatCurve gCurve = new();
@@ -24,16 +24,12 @@ namespace Waterfall
       modifierTypeName = "Material Color";
     }
 
-    public EffectColorModifier(ConfigNode node) : this()
-    {
-      Load(node);
-    }
+    public EffectColorModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
-      node.TryGetValue("colorName", ref colorName);
       rCurve.Load(node.GetNode("rCurve"));
       gCurve.Load(node.GetNode("gCurve"));
       bCurve.Load(node.GetNode("bCurve"));
@@ -45,7 +41,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.ColorModifierNodeName;
-      node.AddValue("colorName", colorName);
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));

@@ -13,15 +13,12 @@ namespace Waterfall
   [DisplayName("Thrust")]
   public class ThrustController : WaterfallController
   {
-    public  string        engineID = String.Empty;
+    [Persistent] public string engineID = String.Empty;
     public  float         currentThrustFraction;
     private ModuleEngines engineController;
 
     public ThrustController() : base() { }
-    public ThrustController(ConfigNode node) : base(node)
-    {
-      node.TryGetValue(nameof(engineID), ref engineID);
-    }
+    public ThrustController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -36,14 +33,6 @@ namespace Waterfall
 
       if (engineController == null)
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
-    }
-
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-
-      c.AddValue(nameof(engineID), engineID);
-      return c;
     }
 
     public override void Update()
