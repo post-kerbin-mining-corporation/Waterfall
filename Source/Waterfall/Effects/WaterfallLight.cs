@@ -8,53 +8,39 @@ namespace Waterfall
   {
     public string    transformName     = "";
     public string    baseTransformName = "";
-    public float     intensity         = 1f;
-    public float     range             = 1f;
-    public Color     color;
-    public LightType lightType;
-
-    public float angle;
+    [Persistent] public float     intensity = 1f;
+    [Persistent] public float     range = 1f;
+    [Persistent] public Color     color;
+    [Persistent] public LightType lightType = LightType.Point;
+    [Persistent] public float     angle;
 
     public List<Light> lights;
 
     public WaterfallLight()
     {
       color     = Color.white;
-      lightType = LightType.Point;
-      intensity = 1f;
-      range     = 1f;
     }
 
-    public WaterfallLight(ConfigNode node)
+    public WaterfallLight(ConfigNode node) : this()
     {
       Load(node);
     }
 
     public void Load(ConfigNode node)
     {
-      color     = Color.white;
-      lightType = LightType.Point;
+      ConfigNode.LoadObjectFromConfig(this, node);
       node.TryGetValue("transform",     ref transformName);
       node.TryGetValue("baseTransform", ref baseTransformName);
-      node.TryGetValue("intensity",     ref intensity);
-      node.TryGetValue("range",         ref range);
-      node.TryGetEnum("lightType", ref lightType, LightType.Point);
-      node.TryGetValue("color", ref color);
-      node.TryGetValue("angle", ref angle);
 
-      Utils.Log(String.Format("[WaterfallLight]: Loading new light for {0} ", transformName), LogType.Effects);
+      Utils.Log($"[WaterfallLight]: Loading new light for {transformName}", LogType.Effects);
     }
 
     public ConfigNode Save()
     {
-      var node = new ConfigNode();
+      var node = ConfigNode.CreateConfigFromObject(this);
       node.name = WaterfallConstants.LightNodeName;
       node.AddValue("transform", transformName);
-      node.AddValue("intensity", intensity);
-      node.AddValue("range",     range);
-      node.AddValue("lightType", lightType);
-      node.AddValue("color",     color);
-      node.AddValue("angle",     angle);
+      node.AddValue("baseTransform", baseTransformName);
       return node;
     }
 
