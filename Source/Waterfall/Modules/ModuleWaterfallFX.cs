@@ -24,6 +24,8 @@ namespace Waterfall
     protected bool started;
     private   bool isHDR;
     protected ConfigNode config;
+    protected ConfigNode[] effectsNodes = { };
+    protected ConfigNode[] templatesNodes = { };
 
     public List<WaterfallEffect> FX => allFX;
 
@@ -75,17 +77,32 @@ namespace Waterfall
 
       if (HighLogic.LoadedScene == GameScenes.LOADING)  // Store the node for later, nothing else to do now
       {
-        config = node;
+        config = node.CreateCopy();
         return;
       }
       else if (HighLogic.LoadedSceneIsEditor) return; // Nothing to do in the Editor
 
-      // Flight Scene.  If we have a full config node here, it's because B9PS invoked.
       // KSP behaviour is to only provide the Persistent data, everything else is in the prefab.
-      if (node.HasNode(WaterfallConstants.EffectNodeName) || node.HasNode(WaterfallConstants.TemplateNodeName))
-        config = node;
-      else
+      if (!node.HasNode(WaterfallConstants.EffectNodeName) && !node.HasNode(WaterfallConstants.TemplateNodeName))
+      {
         config = part.partInfo.partPrefab.FindModulesImplementing<ModuleWaterfallFX>().FirstOrDefault(x => x.moduleID == moduleID).config;
+        effectsNodes = config.GetNodes(WaterfallConstants.EffectNodeName);
+        templatesNodes = config.GetNodes(WaterfallConstants.TemplateNodeName);
+      }
+      else
+      {
+        config = config.CreateCopy();
+        if (node.HasNode(WaterfallConstants.EffectNodeName))
+          effectsNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
+        if (node.HasNode(WaterfallConstants.TemplateNodeName))
+          templatesNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
+        config.RemoveNodes(WaterfallConstants.EffectNodeName);
+        config.RemoveNodes(WaterfallConstants.TemplateNodeName);
+        foreach (var n in effectsNodes)
+          config.AddNode(n);
+        foreach (var n in templatesNodes)
+          config.AddNode(n);
+      }
 
       CleanupEffects();
       allFX.Clear();
