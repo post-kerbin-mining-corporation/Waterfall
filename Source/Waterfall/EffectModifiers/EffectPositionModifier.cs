@@ -46,31 +46,8 @@ namespace Waterfall
       basePosition = xforms[0].localPosition;
     }
 
-    public List<Vector3> Get(List<float> strengthList)
-    {
-      var vectorList = new List<Vector3>();
+    public List<Vector3> Get(List<float> input, List<Vector3> output) => Get(input, output, xCurve, yCurve, zCurve);
 
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < xforms.Count; i++)
-        {
-          vectorList.Add(new(xCurve.Evaluate(strengthList[i]) + randomValue,
-                             yCurve.Evaluate(strengthList[i]) + randomValue,
-                             zCurve.Evaluate(strengthList[i]) + randomValue));
-        }
-      }
-      else
-      {
-        for (int i = 0; i < xforms.Count; i++)
-        {
-          vectorList.Add(new(xCurve.Evaluate(strengthList[0]) + randomValue,
-                             yCurve.Evaluate(strengthList[0]) + randomValue,
-                             zCurve.Evaluate(strengthList[0]) + randomValue));
-        }
-      }
-
-      return vectorList;
-    }
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectPositionIntegrator && integrator.transformName == transformName;
 
     public override EffectIntegrator CreateIntegrator() => new EffectPositionIntegrator(parentEffect, this);

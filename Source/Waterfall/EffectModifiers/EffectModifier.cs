@@ -22,13 +22,13 @@ namespace Waterfall
     public string fxName = "";
 
     // This is the name of the controller that should be associated with the module
-    [Persistent] public string controllerName   = "";
-    [Persistent] public string transformName    = "";
+    [Persistent] public string controllerName = "";
+    [Persistent] public string transformName = "";
     public string modifierTypeName = "";
 
-    [Persistent] public bool   useRandomness;
+    [Persistent] public bool useRandomness;
     [Persistent] public string randomnessController = nameof(RandomnessController);
-    [Persistent] public float  randomnessScale          = 1f;
+    [Persistent] public float randomnessScale = 1f;
 
     public WaterfallEffect parentEffect;
 
@@ -38,7 +38,7 @@ namespace Waterfall
     // The Transform that holds the thing the effect should modify
     protected List<Transform> xforms;
     protected List<float> controllerData = new();
-    protected float           randomValue;
+    protected float randomValue;
 
     public EffectIntegrator integrator;
     public virtual bool ValidForIntegrator => true;
@@ -56,7 +56,7 @@ namespace Waterfall
     public virtual void Load(ConfigNode node)
     {
       ConfigNode.LoadObjectFromConfig(this, node);
-      node.TryGetValue("name",           ref fxName);
+      node.TryGetValue("name", ref fxName);
       node.TryGetEnum("combinationType", ref effectMode, EffectModifierMode.REPLACE);
       Utils.Log($"[EffectModifier]: Loading modifier {fxName}", LogType.Modifiers);
     }
@@ -158,6 +158,30 @@ namespace Waterfall
         integrator.RemoveModifier(this);
         integrator = null;
       }
+    }
+
+    public virtual List<Vector3> Get(List<float> input, List<Vector3> output, FloatCurve xCurve, FloatCurve yCurve, FloatCurve zCurve)
+    {
+      output.Clear();
+      if (input.Count > 1)
+      {
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          output.Add(new(xCurve.Evaluate(input[i]) + randomValue,
+                         yCurve.Evaluate(input[i]) + randomValue,
+                         zCurve.Evaluate(input[i]) + randomValue));
+        }
+      }
+      else
+      {
+        float xVal = xCurve.Evaluate(input[0]);
+        float yVal = yCurve.Evaluate(input[0]);
+        float zVal = zCurve.Evaluate(input[0]);
+        for (int i = 0; i < xforms.Count; i++)
+          output.Add(new(xVal + randomValue, yVal + randomValue, zVal + randomValue));
+      }
+
+      return output;
     }
   }
 }

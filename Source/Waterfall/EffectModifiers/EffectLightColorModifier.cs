@@ -57,31 +57,30 @@ namespace Waterfall
       }
     }
 
-    public List<Color> Get(List<float> strengthList)
+    public List<Color> Get(List<float> input, List<Color> output)
     {
-      var colorList = new List<Color>();
-      if (strengthList.Count > 1)
+      output.Clear();
+      if (input.Count > 1)
       {
         for (int i = 0; i < l.Length; i++)
         {
-          colorList.Add(new(rCurve.Evaluate(strengthList[i]) + randomValue,
-                            gCurve.Evaluate(strengthList[i]) + randomValue,
-                            bCurve.Evaluate(strengthList[i]) + randomValue,
-                            aCurve.Evaluate(strengthList[i]) + randomValue));
+          output.Add(new(rCurve.Evaluate(input[i]) + randomValue,
+                         gCurve.Evaluate(input[i]) + randomValue,
+                         bCurve.Evaluate(input[i]) + randomValue,
+                         aCurve.Evaluate(input[i]) + randomValue));
         }
       }
       else
       {
+        float rVal = rCurve.Evaluate(input[0]);
+        float gVal = gCurve.Evaluate(input[0]);
+        float bVal = bCurve.Evaluate(input[0]);
+        float aVal = aCurve.Evaluate(input[0]);
         for (int i = 0; i < l.Length; i++)
-        {
-          colorList.Add(new(rCurve.Evaluate(strengthList[0]) + randomValue,
-                            gCurve.Evaluate(strengthList[0]) + randomValue,
-                            bCurve.Evaluate(strengthList[0]) + randomValue,
-                            aCurve.Evaluate(strengthList[0]) + randomValue));
-        }
+          output.Add(new(rVal + randomValue, gVal + randomValue, bVal + randomValue, aVal + randomValue));
       }
 
-      return colorList;
+      return output;
     }
 
     public Light GetLight() => l[0];

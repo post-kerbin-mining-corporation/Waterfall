@@ -5,6 +5,7 @@ namespace Waterfall
 {
   public class EffectPositionIntegrator : EffectIntegrator
   {
+    protected List<Vector3> modifierData = new();
     protected List<Vector3> initialValues = new();
     protected List<Vector3> workingValues = new();
 
@@ -24,7 +25,7 @@ namespace Waterfall
       foreach (var mod in handledModifiers)
       {
         parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
-        var modResult = (mod as EffectPositionModifier).Get(controllerData);
+        var modResult = (mod as EffectPositionModifier).Get(controllerData, modifierData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
 

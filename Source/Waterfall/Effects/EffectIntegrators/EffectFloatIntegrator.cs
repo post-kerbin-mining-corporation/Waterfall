@@ -79,6 +79,7 @@ namespace Waterfall
   public class EffectFloatIntegrator : EffectIntegrator
   {
     public string                    floatName;
+    protected List<float> modifierData = new();
     protected List<float> initialValues = new();
     protected List<float> workingValues = new();
 
@@ -114,7 +115,7 @@ namespace Waterfall
       foreach (var mod in handledModifiers)
       {
         parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
-        var modResult = (mod as EffectFloatModifier).Get(controllerData);
+        var modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
 
