@@ -10,6 +10,7 @@ namespace Waterfall
     public string transformName;
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms = new();
+    protected List<float> controllerData = new();
     public List<EffectModifier> handledModifiers = new();
     public virtual void AddModifier(EffectModifier mod) => handledModifiers.Add(mod);
     public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
@@ -112,7 +113,8 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        var modResult = (mod as EffectFloatModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        var modResult = (mod as EffectFloatModifier).Get(controllerData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
 

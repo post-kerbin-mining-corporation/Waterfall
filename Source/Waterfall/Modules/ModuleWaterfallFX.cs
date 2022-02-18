@@ -268,14 +268,13 @@ namespace Waterfall
     /// </summary>
     /// <param name="controllerName"></param>
     /// <returns></returns>
-    public List<float> GetControllerValue(string controllerName)
+    public void GetControllerValue(string controllerName, List<float> output)
     {
-      List<float> res = new();
+      output.Clear();
       if (allControllers.TryGetValue(controllerName, out var controllerValue))
-        controllerValue.Get(res);
+        controllerValue.Get(output);
       else
-        res.Add(0);
-      return res;
+        output.Add(0);
     }
 
     /// <summary>

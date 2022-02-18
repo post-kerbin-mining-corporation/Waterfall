@@ -33,7 +33,8 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        var modResult = (mod as EffectLightColorModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        var modResult = (mod as EffectLightColorModifier).Get(controllerData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
 

@@ -15,6 +15,7 @@ namespace Waterfall
     public readonly List<Vector3>                    baseScales = new();
     public          ModuleWaterfallFX                parentModule;
     public          WaterfallEffectTemplate          parentTemplate;
+    protected readonly List<float>                   controllerData = new();
     public readonly List<EffectFloatIntegrator>      floatIntegrators = new();
     public readonly List<EffectLightFloatIntegrator> lightFloatIntegrators = new();
     public readonly List<EffectLightColorIntegrator> lightColorIntegrators = new();
@@ -324,7 +325,11 @@ namespace Waterfall
       if (effectVisible)
       {
         model.Update();
-        foreach (var fx in fxModifiers) fx.Apply(parentModule.GetControllerValue(fx.controllerName));
+        foreach (var fx in fxModifiers)
+        {
+          parentModule.GetControllerValue(fx.controllerName, controllerData);
+          fx.Apply(controllerData);
+        }
         foreach (var integrator in floatIntegrators) integrator.Update();
         foreach (var integrator in colorIntegrators) integrator.Update();
         foreach (var integrator in positionIntegrators) integrator.Update();

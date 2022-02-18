@@ -23,7 +23,8 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        var modResult = (mod as EffectRotationModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        var modResult = (mod as EffectRotationModifier).Get(controllerData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
 
