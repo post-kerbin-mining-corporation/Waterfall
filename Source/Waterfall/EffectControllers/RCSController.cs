@@ -19,11 +19,9 @@ namespace Waterfall
     public  string      thrusterTransformName = String.Empty;
     private ModuleRCSFX rcsController;
 
-    public RCSController() { }
-
-    public RCSController(ConfigNode node)
+    public RCSController() : base() { }
+    public RCSController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(name),                  ref name);
       node.TryGetValue(nameof(responseRateUp),        ref responseRateUp);
       node.TryGetValue(nameof(responseRateDown),      ref responseRateDown);
       node.TryGetValue(nameof(thrusterTransformName), ref thrusterTransformName);
@@ -33,9 +31,9 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      rcsController = host.GetComponents<ModuleRCSFX>().ToList().Find(x => x.thrusterTransformName == thrusterTransformName);
+      rcsController = host.GetComponents<ModuleRCSFX>().FirstOrDefault(x => x.thrusterTransformName == thrusterTransformName);
       if (rcsController == null)
-        rcsController = host.GetComponent<ModuleRCSFX>();
+        rcsController = host.part.FindModuleImplementing<ModuleRCSFX>();
 
       if (rcsController == null)
       {
@@ -60,33 +58,34 @@ namespace Waterfall
       return c;
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
       if (rcsController == null)
       {
         Utils.LogWarning("[RCSController] RCS controller not assigned");
-        return new() { 0f };
+        value = 0;
+        return;
       }
-
-      if (overridden)
-      {
-        var overrideValues = new List<float>(rcsController.thrusterTransforms.Count);
+      if (!overridden)
         for (int i = 0; i < rcsController.thrusterTransforms.Count; i++)
         {
-          overrideValues.Add(overrideValue);
+          float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
+          float responseRate = newThrottle > currentThrottle[i] ? responseRateUp : responseRateDown;
+          currentThrottle[i] = Mathf.MoveTowards(currentThrottle[i], newThrottle, responseRate * TimeWarp.deltaTime);
         }
+    }
 
-        return overrideValues;
-      }
-
-      for (int i = 0; i < currentThrottle.Count; i++)
+    public override void Get(List<float> output)
+    {
+      if (rcsController == null)
       {
-        float newThrottle  = rcsController.thrustForces[i] / rcsController.thrusterPower;
-        float responseRate = newThrottle > currentThrottle[i] ? responseRateUp : responseRateDown;
-        currentThrottle[i] = Mathf.MoveTowards(currentThrottle[i], newThrottle, responseRate * TimeWarp.deltaTime);
+        base.Get(output);
+        return;
       }
 
-      return new(currentThrottle);
+      output.Clear();
+      for (int i = 0; i < currentThrottle.Count; i++)
+        output.Add(overridden ? overrideValue : currentThrottle[i]);
     }
   }
 }

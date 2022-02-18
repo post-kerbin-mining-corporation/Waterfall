@@ -13,17 +13,13 @@ namespace Waterfall
   [DisplayName("Light")]
   public class LightController : WaterfallController
   {
-    public  float  currentThrottle = 1;
     public  string lightName       = "";
     private Light  lightController;
 
-
-    public LightController() { }
-
-    public LightController(ConfigNode node)
+    public LightController() : base() { }
+    public LightController(ConfigNode node) : base(node)
     {
       node.TryGetValue(nameof(lightName), ref lightName);
-      node.TryGetValue(nameof(name),      ref name);
     }
 
     public override ConfigNode Save()
@@ -37,26 +33,20 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      lightController = host.GetComponentsInChildren<Light>().ToList().Find(x => x.transform.name == lightName);
+      lightController = host.GetComponentsInChildren<Light>().FirstOrDefault(x => x.transform.name == lightName);
       if (lightController == null)
-        lightController = host.GetComponentsInChildren<Light>().ToList().First();
+        lightController = host.GetComponentsInChildren<Light>().FirstOrDefault();
 
       if (lightController == null)
         Utils.LogError("[LightController] Could not find any lights on Initialize");
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
-      if (overridden)
-        return new() { overrideValue };
-
       if (lightController == null)
-      {
         Utils.LogWarning("[lightController] Light controller not assigned");
-        return new() { 0f };
-      }
 
-      return new() { lightController.intensity };
+      value = lightController != null ? lightController.intensity : 0;
     }
   }
 }

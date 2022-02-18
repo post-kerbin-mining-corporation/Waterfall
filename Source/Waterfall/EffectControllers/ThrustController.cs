@@ -17,11 +17,9 @@ namespace Waterfall
     public  float         currentThrustFraction;
     private ModuleEngines engineController;
 
-    public ThrustController() { }
-
-    public ThrustController(ConfigNode node)
+    public ThrustController() : base() { }
+    public ThrustController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(name),     ref name);
       node.TryGetValue(nameof(engineID), ref engineID);
     }
 
@@ -29,11 +27,11 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
+      engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
         Utils.Log($"[ThrustController] Could not find engine ID {engineID}, using first module");
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 
       if (engineController == null)
@@ -48,21 +46,15 @@ namespace Waterfall
       return c;
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
-      if (overridden)
-        return new() { overrideValue };
-
       if (engineController == null)
       {
         Utils.LogWarning("[ThrustController] Engine controller not assigned");
-        return new() { 0f };
+        currentThrustFraction = 0;
       }
-
-      if (!engineController.isOperational)
-      {
+      else if (!engineController.isOperational)
         currentThrustFraction = 0f;
-      }
       else
       {
         // Thanks to NathanKell for the formula.
@@ -73,7 +65,7 @@ namespace Waterfall
                               * engineController.multIsp;
       }
 
-      return new() { currentThrustFraction };
+      value = currentThrustFraction;
     }
   }
 }

@@ -32,11 +32,10 @@ namespace Waterfall
     private ModuleEngines engineController;
     private Func<float>   pullValueMethod = () => 0;
 
-    public CustomPullController() { }
+    public CustomPullController() : base() { }
 
-    public CustomPullController(ConfigNode node)
+    public CustomPullController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(name),             ref name);
       node.TryGetValue(nameof(engineID),         ref engineID);
       node.TryGetValue(nameof(memberName),       ref memberName);
       node.TryGetValue(nameof(minInputValue),    ref minInputValue);
@@ -53,7 +52,7 @@ namespace Waterfall
       if (engineController == null)
       {
         Utils.Log($"[{nameof(CustomPullController)}]: Could not find engine ID {engineID}, using first module if available");
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 
       if (engineController == null)
@@ -106,25 +105,20 @@ namespace Waterfall
       return node;
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
-      if (overridden)
+      if (!overridden)
       {
-        return new() { overrideValue };
+        float newValue = Mathf.InverseLerp(minInputValue, maxInputValue, GetValue());
+        float responseRate = newValue > currentValue
+          ? responseRateUp
+          : responseRateDown;
+
+        currentValue = responseRate > 0
+          ? Mathf.MoveTowards(currentValue, newValue, responseRate * TimeWarp.deltaTime)
+          : newValue;
       }
-
-      // If zero response rate - do no smoothing
-
-      float newValue = Mathf.InverseLerp(minInputValue, maxInputValue, GetValue());
-      float responseRate = newValue > currentValue
-        ? responseRateUp
-        : responseRateDown;
-
-      currentValue = responseRate > 0
-        ? Mathf.MoveTowards(currentValue, newValue, responseRate * TimeWarp.deltaTime)
-        : newValue;
-
-      return new() { currentValue };
+      value = currentValue;
     }
 
     private float GetValue()

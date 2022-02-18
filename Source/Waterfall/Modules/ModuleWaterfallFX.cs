@@ -53,7 +53,8 @@ namespace Waterfall
         bool changeHDR = FlightCamera.fetch.cameras[0].allowHDR != isHDR;
         if (changeHDR)
           isHDR = !isHDR;
-
+        foreach (var controller in allControllers.Values)
+          controller.Update();
         foreach (var fx in allFX)
         {
           fx.Update();
@@ -269,7 +270,12 @@ namespace Waterfall
     /// <returns></returns>
     public List<float> GetControllerValue(string controllerName)
     {
-      return allControllers.TryGetValue(controllerName, out var controllerValue) ? controllerValue.Get() : (new() { 0f });
+      List<float> res = new();
+      if (allControllers.TryGetValue(controllerName, out var controllerValue))
+        controllerValue.Get(res);
+      else
+        res.Add(0);
+      return res;
     }
 
     /// <summary>

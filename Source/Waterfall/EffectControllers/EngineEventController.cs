@@ -9,9 +9,7 @@ namespace Waterfall
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
-    public float  currentThrottle = 1;
     public string eventName;
-
 
     public  FloatCurve    eventCurve    = new();
     public  float         eventDuration = 1f;
@@ -22,11 +20,9 @@ namespace Waterfall
     private bool  eventReady;
     private float eventTime;
 
-    public EngineEventController() { }
-
-    public EngineEventController(ConfigNode node)
+    public EngineEventController() : base() { }
+    public EngineEventController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(name),          ref name);
       node.TryGetValue(nameof(eventName),     ref eventName);
       node.TryGetValue(nameof(eventDuration), ref eventDuration);
 
@@ -46,53 +42,32 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == host.engineID);
+      engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
       if (engineController == null)
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.part.FindModuleImplementing<ModuleEngines>();
 
       if (engineController == null)
         Utils.LogError("[EngineEventController] Could not find engine controller on Initialize");
 
       if (eventName == "flameout")
       {
-        eventReady = engineController.EngineIgnited;
-        if (engineController.EngineIgnited)
-          enginePreState = true;
+        eventReady = enginePreState = engineController.EngineIgnited;
       }
-
-      if (eventName == "ignition")
+      else if (eventName == "ignition")
       {
-        eventReady = !engineController.EngineIgnited;
-        if (engineController.EngineIgnited)
-        {
-          enginePreState = false;
-        }
+        eventReady = enginePreState = !engineController.EngineIgnited;
       }
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
-      if (overridden)
-        return new() { overrideValue };
-
       if (engineController == null)
-      {
         Utils.LogWarning("[EngineEventController] Engine controller not assigned");
-        return new() { 0f };
-      }
 
+      value = 0;
+      if (engineController != null && (eventName == "flameout" || eventName == "ignition"))
+        value = eventCurve.Evaluate(CheckStateChange());
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
-      if (eventName == "flameout")
-      {
-        return new() { eventCurve.Evaluate(CheckStateChange()) };
-      }
-
-      if (eventName == "ignition")
-      {
-        return new() { eventCurve.Evaluate(CheckStateChange()) };
-      }
-
-      return new() { 0f };
     }
 
     public float CheckStateChange()
@@ -102,7 +77,7 @@ namespace Waterfall
         /// Check if engine state flipped
         if (engineController.EngineIgnited != enginePreState)
         {
-          Utils.Log($"[EngineEventController] {eventName} fired ", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
           eventReady   = false;
           eventPlaying = true;
           eventTime    = 0f;
@@ -111,11 +86,7 @@ namespace Waterfall
       else if (eventPlaying)
       {
         eventTime += TimeWarp.deltaTime;
-        if (eventTime > eventDuration)
-        {
-          eventPlaying = false;
-        }
-
+        eventPlaying = eventTime <= eventDuration;
         return eventTime;
       }
       else if (!eventPlaying && !eventReady)
@@ -123,7 +94,7 @@ namespace Waterfall
         // Check to see if event can be reset
         if (engineController.EngineIgnited == enginePreState)
         {
-          Utils.Log($"[EngineEventController] {eventName} ready ", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
           eventReady = true;
         }
       }

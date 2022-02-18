@@ -20,11 +20,9 @@ namespace Waterfall
 
     private ModuleEngines engineController;
 
-    public ThrottleController() { }
-
-    public ThrottleController(ConfigNode node)
+    public ThrottleController() : base() { }
+    public ThrottleController(ConfigNode node) : base(node)
     {
-      node.TryGetValue(nameof(name),             ref name);
       node.TryGetValue(nameof(responseRateUp),   ref responseRateUp);
       node.TryGetValue(nameof(responseRateDown), ref responseRateDown);
       node.TryGetValue(nameof(engineID),         ref engineID);
@@ -34,11 +32,11 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
+      engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
         Utils.Log($"[ThrottleController] Could not find engine ID {engineID}, using first module");
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 
       if (engineController == null)
@@ -55,35 +53,20 @@ namespace Waterfall
       return c;
     }
 
-    public override List<float> Get()
+    public override void Update()
     {
-      if (overridden)
-        return new() { overrideValue };
-
       if (engineController == null)
       {
         Utils.LogWarning("[ThrottleController] Engine controller not assigned");
-        return new() { 0f };
-      }
-
-
-      if (!engineController.isOperational)
-      {
+        currentThrottle = 0;
+      } 
+      else if (!engineController.isOperational)
         currentThrottle = 0f;
-      }
+      else if (engineController.currentThrottle > currentThrottle)
+        currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateUp * TimeWarp.deltaTime);
       else
-      {
-        if (engineController.currentThrottle > currentThrottle)
-        {
-          currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateUp * TimeWarp.deltaTime);
-        }
-        else
-        {
-          currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
-        }
-      }
-
-      return new() { currentThrottle };
+        currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
+      value = currentThrottle;
     }
   }
 }
