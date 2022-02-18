@@ -1,52 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
-  public class EffectScaleIntegrator : EffectIntegrator
+  public class EffectPositionIntegrator : EffectIntegrator
   {
-    private readonly List<Vector3> initialVectorValues;
+    protected List<Vector3> initialValues = new();
+    protected List<Vector3> workingValues = new();
 
-    public EffectScaleIntegrator(WaterfallEffect effect, EffectScaleModifier mod) : base(effect, mod)
+    public EffectPositionIntegrator(WaterfallEffect effect, EffectPositionModifier posMod) : base(effect, posMod)
     {
-      initialVectorValues = new();
       foreach (var x in xforms)
-      {
-        initialVectorValues.Add(x.localScale);
-      }
+        initialValues.Add(x.localPosition);
     }
 
-    public void Update()
+    public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      var applyValues = initialVectorValues.ToList();
+      workingValues.Clear();
+      workingValues.AddRange(initialValues);
+
       foreach (var mod in handledModifiers)
       {
-        var modResult = (mod as EffectScaleModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
-
-        if (mod.effectMode == EffectModifierMode.REPLACE)
-          applyValues = modResult;
-
-        if (mod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = Vector3.Scale(applyValues[i], modResult[i]);
-
-        if (mod.effectMode == EffectModifierMode.ADD)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] + modResult[i];
-
-        if (mod.effectMode == EffectModifierMode.SUBTRACT)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] - modResult[i];
+        var modResult = (mod as EffectPositionModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        Integrate(mod.effectMode, workingValues, modResult);
       }
 
       for (int i = 0; i < xforms.Count; i++)
-      {
-        xforms[i].localScale = applyValues[i];
-      }
+        xforms[i].localPosition = workingValues[i];
     }
   }
 }

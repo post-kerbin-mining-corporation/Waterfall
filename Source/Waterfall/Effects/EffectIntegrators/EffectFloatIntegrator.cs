@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Waterfall
 {
-  public class EffectIntegrator
+  public abstract class EffectIntegrator
   {
     public string transformName;
     protected WaterfallEffect parentEffect;
-    protected List<Transform> xforms;
-    public List<EffectModifier> handledModifiers;
+    protected List<Transform> xforms = new();
+    public List<EffectModifier> handledModifiers = new();
     public virtual void AddModifier(EffectModifier mod) => handledModifiers.Add(mod);
     public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
 
@@ -20,7 +20,6 @@ namespace Waterfall
       transformName = mod.transformName;
       parentEffect = effect;
 
-      xforms = new();
       var roots = parentEffect.GetModelTransforms();
       foreach (var t in roots)
       {
@@ -30,19 +29,60 @@ namespace Waterfall
           Utils.LogError($"[EffectIntegrator]: Unable to find transform {mod.transformName} on modifier {mod.fxName}");
       }
 
-      handledModifiers = new();
       handledModifiers.Add(mod);
+    }
+
+    public abstract void Update();
+
+    public void Integrate(EffectModifierMode mode, List<float> items, List<float> modifiers)
+    {
+      int count = Math.Min(items.Count, modifiers.Count);
+      for (int i = 0; i < count; i++)
+        items[i] = mode switch
+        {
+          EffectModifierMode.REPLACE => modifiers[i],
+          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
+          EffectModifierMode.ADD => items[i] + modifiers[i],
+          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
+          _ => items[i]
+        };
+    }
+    public void Integrate(EffectModifierMode mode, List<Vector3> items, List<Vector3> modifiers)
+    {
+      int count = Math.Min(items.Count, modifiers.Count);
+      for (int i = 0; i < count; i++)
+        items[i] = mode switch
+        {
+          EffectModifierMode.REPLACE => modifiers[i],
+          EffectModifierMode.MULTIPLY => Vector3.Scale(items[i], modifiers[i]),
+          EffectModifierMode.ADD => items[i] + modifiers[i],
+          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
+          _ => items[i]
+        };
+    }
+    public void Integrate(EffectModifierMode mode, List<Color> items, List<Color> modifiers)
+    {
+      int count = Math.Min(items.Count, modifiers.Count);
+      for (int i = 0; i < count; i++)
+        items[i] = mode switch
+        {
+          EffectModifierMode.REPLACE => modifiers[i],
+          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
+          EffectModifierMode.ADD => items[i] + modifiers[i],
+          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
+          _ => items[i]
+        };
     }
   }
 
   public class EffectFloatIntegrator : EffectIntegrator
   {
     public string                    floatName;
+    protected List<float> initialValues = new();
+    protected List<float> workingValues = new();
 
     private readonly Material[] m;
     private readonly Renderer[] r;
-
-    private readonly List<float> initialFloatValues;
 
     private readonly bool testIntensity;
 
@@ -50,14 +90,8 @@ namespace Waterfall
     {
       // float specific
       floatName        = floatMod.floatName;
+      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
-      foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
-      {
-        if (floatName == nm)
-          testIntensity = true;
-      }
-
-      initialFloatValues = new();
       m                  = new Material[xforms.Count];
       r                  = new Renderer[xforms.Count];
 
@@ -65,59 +99,34 @@ namespace Waterfall
       {
         r[i] = xforms[i].GetComponent<Renderer>();
         m[i] = r[i].material;
-        initialFloatValues.Add(m[i].GetFloat(floatName));
+        initialValues.Add(m[i].GetFloat(floatName));
       }
     }
 
-
-    public void Update()
+    public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      var applyValues = initialFloatValues.ToList();
+      workingValues.Clear();
+      workingValues.AddRange(initialValues);
 
-      foreach (var floatMod in handledModifiers)
+      foreach (var mod in handledModifiers)
       {
-        var modResult = (floatMod as EffectFloatModifier).Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
-
-        if (floatMod.effectMode == EffectModifierMode.REPLACE)
-          applyValues = modResult;
-
-        if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] * modResult[i];
-
-        if (floatMod.effectMode == EffectModifierMode.ADD)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] + modResult[i];
-
-        if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] - modResult[i];
+        var modResult = (mod as EffectFloatModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        Integrate(mod.effectMode, workingValues, modResult);
       }
 
       for (int i = 0; i < m.Length; i++)
       {
         if (testIntensity)
         {
-          if (r[i].enabled && applyValues[i] < Settings.MinimumEffectIntensity)
-          {
+          if (r[i].enabled && workingValues[i] < Settings.MinimumEffectIntensity)
             r[i].enabled = false;
-          }
-          else if (!r[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
-          {
+          else if (!r[i].enabled && workingValues[i] >= Settings.MinimumEffectIntensity)
             r[i].enabled = true;
-            m[i].SetFloat(floatName, applyValues[i]);
-          }
-          else if (r[i].enabled && applyValues[i] >= Settings.MinimumEffectIntensity)
-          {
-            m[i].SetFloat(floatName, applyValues[i]);
-          }
         }
-        else
-        {
-          m[i].SetFloat(floatName, applyValues[i]);
-        }
+        if (r[i].enabled)
+          m[i].SetFloat(floatName, workingValues[i]);
       }
     }
   }

@@ -1,52 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
-  public class EffectPositionIntegrator : EffectIntegrator
+  public class EffectScaleIntegrator : EffectIntegrator
   {
-    private readonly List<Vector3> initialVectorValues;
-
-    public EffectPositionIntegrator(WaterfallEffect effect, EffectPositionModifier posMod) : base(effect, posMod)
+    protected List<Vector3> initialValues = new();
+    protected List<Vector3> workingValues = new();
+    
+    public EffectScaleIntegrator(WaterfallEffect effect, EffectScaleModifier mod) : base(effect, mod)
     {
-      initialVectorValues = new();
       foreach (var x in xforms)
-      {
-        initialVectorValues.Add(x.localPosition);
-      }
+        initialValues.Add(x.localScale);
     }
 
-    public void Update()
+    public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      var applyValues = initialVectorValues.ToList();
-      foreach (var posMod in handledModifiers)
+      workingValues.Clear();
+      workingValues.AddRange(initialValues);
+
+      foreach (var mod in handledModifiers)
       {
-        var modResult = (posMod as EffectPositionModifier).Get(parentEffect.parentModule.GetControllerValue(posMod.controllerName));
-
-        if (posMod.effectMode == EffectModifierMode.REPLACE)
-          applyValues = modResult;
-
-        if (posMod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = Vector3.Scale(applyValues[i], modResult[i]);
-
-        if (posMod.effectMode == EffectModifierMode.ADD)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] + modResult[i];
-
-        if (posMod.effectMode == EffectModifierMode.SUBTRACT)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] - modResult[i];
+        var modResult = (mod as EffectScaleModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        Integrate(mod.effectMode, workingValues, modResult);
       }
 
       for (int i = 0; i < xforms.Count; i++)
-      {
-        xforms[i].localPosition = applyValues[i];
-      }
+        xforms[i].localScale = workingValues[i];
     }
   }
 }

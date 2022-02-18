@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -7,107 +7,65 @@ namespace Waterfall
   public class EffectLightFloatIntegrator : EffectIntegrator
   {
     public string                         floatName;
+    protected List<float> initialValues = new();
+    protected List<float> workingValues = new();
 
     private readonly Light[]     l;
-    private readonly List<float> initialFloatValues;
 
     private readonly bool testIntensity;
 
     public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
       // light-float specific
-      floatName        = floatMod.floatName;
+      floatName = floatMod.floatName;
+      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
-      foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
-      {
-        if (floatName == "Intensity")
-          testIntensity = true;
-      }
-
-      initialFloatValues = new();
       l = new Light[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
 
-        if (floatName == "Intensity")
-          initialFloatValues.Add(l[i].intensity);
-        if (floatName == "Range")
-          initialFloatValues.Add(l[i].range);
-        if (floatName == "SpotAngle")
-          initialFloatValues.Add(l[i].spotAngle);
+        if (floatName == "Intensity") initialValues.Add(l[i].intensity);
+        else if (floatName == "Range") initialValues.Add(l[i].range);
+        else if (floatName == "SpotAngle") initialValues.Add(l[i].spotAngle);
       }
     }
 
-    public void Update()
+    public override void Update()
     {
-      if (Settings.EnableLights)
+      if (!Settings.EnableLights || handledModifiers.Count == 0)
+        return;
+      workingValues.Clear();
+      workingValues.AddRange(initialValues);
+
+      foreach (var mod in handledModifiers)
       {
-        float lightBaseScale = parentEffect.TemplateScaleOffset.x;
-        if (handledModifiers.Count > 0)
+        var modResult = (mod as EffectLightFloatModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
+        Integrate(mod.effectMode, workingValues, modResult);
+      }
+
+      float lightBaseScale = parentEffect.TemplateScaleOffset.x;
+      for (int i = 0; i < l.Length; i++)
+      {
+        workingValues[i] *= lightBaseScale;
+        if (testIntensity)
         {
-          var applyValues = initialFloatValues;
-          foreach (var floatMod in handledModifiers)
-          {
-            var modResult = (floatMod as EffectLightFloatModifier).Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
-
-            if (floatMod.effectMode == EffectModifierMode.REPLACE)
-              applyValues = modResult;
-
-            if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] * modResult[i];
-
-            if (floatMod.effectMode == EffectModifierMode.ADD)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] + modResult[i];
-
-            if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] - modResult[i];
-          }
-
-          for (int i = 0; i < l.Length; i++)
-          {
-            applyValues[i] *= lightBaseScale;
-            if (testIntensity)
-            {
-              if (l[i].enabled && applyValues[i] < Settings.MinimumLightIntensity)
-              {
-                l[i].enabled = false;
-              }
-              else if (!l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
-              {
-                l[i].enabled = true;
-
-                UpdateFloats(l[i], applyValues[i]);
-              }
-              else if (l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
-              {
-                UpdateFloats(l[i], applyValues[i]);
-              }
-            }
-            else
-            {
-              UpdateFloats(l[i], applyValues[i]);
-            }
-          }
+          if (l[i].enabled && workingValues[i] < Settings.MinimumLightIntensity)
+            l[i].enabled = false;
+          else if (!l[i].enabled && workingValues[i] >= Settings.MinimumLightIntensity)
+            l[i].enabled = true;
         }
+        if (l[i].enabled) 
+          UpdateFloats(l[i], workingValues[i]);
       }
     }
 
     protected void UpdateFloats(Light l, float f)
     {
-      if (floatName == "Intensity")
-        l.intensity = f;
-      if (floatName == "Range")
-      {
-        l.range = f;
-      }
-
-      if (floatName == "SpotAngle")
-        l.spotAngle = f;
+      if (floatName == "Intensity") l.intensity = f;
+      else if (floatName == "Range") l.range = f;
+      else if (floatName == "SpotAngle") l.spotAngle = f;
     }
   }
 }

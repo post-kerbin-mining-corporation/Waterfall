@@ -1,52 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
   public class EffectRotationIntegrator : EffectIntegrator
   {
-    private readonly List<Vector3> initialVectorValues;
+    protected List<Vector3> initialValues = new();
+    protected List<Vector3> workingValues = new();
 
     public EffectRotationIntegrator(WaterfallEffect effect, EffectRotationModifier mod) : base(effect, mod)
     {
-      initialVectorValues = new();
       foreach (var x in xforms)
-      {
-        initialVectorValues.Add(x.localEulerAngles);
-      }
+        initialValues.Add(x.localEulerAngles);
     }
 
-    public void Update()
+    public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      var applyValues = initialVectorValues.ToList();
+      workingValues.Clear();
+      workingValues.AddRange(initialValues);
+
       foreach (var mod in handledModifiers)
       {
         var modResult = (mod as EffectRotationModifier).Get(parentEffect.parentModule.GetControllerValue(mod.controllerName));
-
-        if (mod.effectMode == EffectModifierMode.REPLACE)
-          applyValues = modResult;
-
-        if (mod.effectMode == EffectModifierMode.MULTIPLY)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = Vector3.Scale(applyValues[i], modResult[i]);
-
-        if (mod.effectMode == EffectModifierMode.ADD)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] + modResult[i];
-
-        if (mod.effectMode == EffectModifierMode.SUBTRACT)
-          for (int i = 0; i < applyValues.Count; i++)
-            applyValues[i] = applyValues[i] - modResult[i];
+        Integrate(mod.effectMode, workingValues, modResult);
       }
 
       for (int i = 0; i < xforms.Count; i++)
-      {
-        xforms[i].localEulerAngles = applyValues[i];
-      }
+        xforms[i].localEulerAngles = workingValues[i];
     }
   }
 }
