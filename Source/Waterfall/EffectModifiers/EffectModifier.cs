@@ -41,6 +41,8 @@ namespace Waterfall
     protected float randomValue;
 
     public EffectIntegrator integrator;
+    public WaterfallController Controller { get; private set; }
+    private WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
 
     public EffectModifier()
@@ -67,6 +69,8 @@ namespace Waterfall
     public virtual void Init(WaterfallEffect effect)
     {
       parentEffect = effect;
+      Controller = parentEffect.parentModule.AllControllersDict.TryGetValue(controllerName, out var controller) ? controller : null;
+      randomController = parentEffect.parentModule.AllControllersDict.TryGetValue(randomnessController, out controller) ? controller : null;
       Utils.Log($"[EffectModifier]: Initializing modifier {fxName}", LogType.Modifiers);
       var roots = parentEffect.GetModelTransforms();
       xforms = new();
@@ -98,9 +102,9 @@ namespace Waterfall
     /// <param name="strength"></param>
     public virtual void Apply(List<float> strength)
     {
-      if (useRandomness)
+      if (useRandomness && randomController != null)
       {
-        parentEffect.parentModule.GetControllerValue(randomnessController, controllerData);
+        randomController.Get(controllerData);
         randomValue = controllerData[0] * randomnessScale;
       }
 
