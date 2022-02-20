@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Profiling;
+using UnityEngine;
 using Waterfall.EffectControllers;
 
 namespace Waterfall
@@ -17,9 +19,9 @@ namespace Waterfall
 
 
     protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
-
-    protected readonly List<WaterfallEffect>         allFX = new(16);
+    protected readonly List<WaterfallEffect> allFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
+    protected readonly List<Renderer> allRenderers = new(128);
 
     protected bool started;
     private   bool isHDR;
@@ -32,6 +34,7 @@ namespace Waterfall
     public List<WaterfallEffectTemplate> Templates => allTemplates;
 
     public List<WaterfallController> Controllers => allControllers.Values.ToList();
+    public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
 
     public override void OnAwake()
     {
@@ -48,21 +51,42 @@ namespace Waterfall
       }
     }
 
+    private void GatherRenderers()
+    {
+      if (allRenderers.Count == 0)
+        foreach (var fx in allFX)
+          allRenderers.AddUniqueRange(fx.effectRenderers);
+    }
+
+    private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
+    private static readonly ProfilerMarker luControllers = new ProfilerMarker("Waterfall.LateUpdate.Controllers");
+    private static readonly ProfilerMarker luEffects = new ProfilerMarker("Waterfall.LateUpdate.Effects");
     protected void LateUpdate()
     {
       if (HighLogic.LoadedSceneIsFlight)
       {
-        bool changeHDR = FlightCamera.fetch.cameras[0].allowHDR != isHDR;
+        luSetup.Begin();
+        GatherRenderers();
+        var camera = FlightCamera.fetch.cameras[0];
+        bool changeHDR = camera.allowHDR != isHDR;
         if (changeHDR)
           isHDR = !isHDR;
+        luSetup.End();
+        luControllers.Begin();
         foreach (var controller in allControllers.Values)
+        {
           controller.Update();
+        }
+        luControllers.End();
+        luEffects.Begin();
         foreach (var fx in allFX)
         {
           fx.Update();
           if (changeHDR)
             fx.SetHDR(isHDR);
         }
+        luEffects.End();
+        WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
       }
     }
 
@@ -287,11 +311,13 @@ namespace Waterfall
     /// <returns></returns>
     public void GetControllerValue(string controllerName, List<float> output)
     {
-      output.Clear();
-      if (allControllers.TryGetValue(controllerName, out var controllerValue))
-        controllerValue.Get(output);
+      if (allControllers.TryGetValue(controllerName, out var controller))
+        controller.Get(output);
       else
+      {
+        output.Clear();
         output.Add(0);
+      }
     }
 
     /// <summary>

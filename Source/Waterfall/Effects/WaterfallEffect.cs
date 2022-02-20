@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -33,7 +34,7 @@ namespace Waterfall
     protected readonly  List<Transform>      effectTransforms = new();
     private   readonly  List<Material>       effectRendererMaterials = new();
     private   readonly  List<Transform>      effectRendererTransforms = new();
-    private   readonly  List<Renderer>       effectRenderers = new();
+    internal  readonly  List<Renderer>       effectRenderers = new();
 
     public WaterfallEffect() { }
 
@@ -320,16 +321,29 @@ namespace Waterfall
 
     public List<Transform> GetModelTransforms() => model.modelTransforms;
 
+    private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Effect.Update");
+    private static readonly ProfilerMarker s_ModelUpdate = new ProfilerMarker("Waterfall.Effect.Update.ModelUpdate");
+    private static readonly ProfilerMarker s_fxApply = new ProfilerMarker("Waterfall.Effect.Update.FxApply");
+    private static readonly ProfilerMarker s_Integrators = new ProfilerMarker("Waterfall.Effect.Update.Integrators");
+
     public void Update()
     {
+      s_Update.Begin();
       if (effectVisible)
       {
-        model.Update();
+        using (s_ModelUpdate.Auto())
+        {
+          model.Update();   // This call doesn't do anything currently.
+        }
         foreach (var fx in fxModifiers)
         {
-          parentModule.GetControllerValue(fx.controllerName, controllerData);
-          fx.Apply(controllerData);
+          using (s_fxApply.Auto())
+          {
+            fx.Controller.Get(controllerData);
+            fx.Apply(controllerData);
+          }
         }
+        s_Integrators.Begin();
         foreach (var integrator in floatIntegrators) integrator.Update();
         foreach (var integrator in colorIntegrators) integrator.Update();
         foreach (var integrator in positionIntegrators) integrator.Update();
@@ -337,27 +351,41 @@ namespace Waterfall
         foreach (var integrator in rotationIntegrators) integrator.Update();
         foreach (var integrator in lightFloatIntegrators) integrator.Update();
         foreach (var integrator in lightColorIntegrators) integrator.Update();
-
-        int transparentQueueBase = 3000;
-
-        int   queueDepth   = 750;
-        float sortedDepth  = 1000f;
-        int   distortQueue = transparentQueueBase + 2;
-
-        var c = FlightCamera.fetch.cameras[0].transform;
-        for (int i = 0; i < effectRendererMaterials.Count; i++)
-        {
-          float camDistBounds    = Vector3.Dot(effectRenderers[i].bounds.center      - c.position, c.forward);
-          float camDistTransform = Vector3.Dot(effectRenderers[i].transform.position - c.position, c.forward);
-
-          int qDelta = queueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / sortedDepth * queueDepth, 0, queueDepth);
-          if (effectRendererMaterials[i].HasProperty("_Strength"))
-            qDelta = distortQueue;
-          if (effectRendererMaterials[i].HasProperty("_Intensity"))
-            qDelta += 1;
-          effectRendererMaterials[i].renderQueue = transparentQueueBase + qDelta;
-        }
+        s_Integrators.End();
       }
+      s_Update.End();
+    }
+
+    private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
+    public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
+    {
+      camerasProf.Begin();
+      int transparentQueueBase = 3000;
+
+      int queueDepth = 750;
+      float sortedDepth = 1000f;
+      int distortQueue = transparentQueueBase + 2;
+
+      var c = camera.transform;
+      foreach (var renderer in renderers)
+      {
+        if (!renderer.enabled) continue;
+        Material mat = renderer.material;
+
+        int qDelta;
+        if (mat.HasProperty("_Strength"))
+          qDelta = distortQueue;
+        else
+        {
+          float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
+          float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
+          qDelta = queueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / sortedDepth * queueDepth, 0, queueDepth);
+        }
+        if (mat.HasProperty("_Intensity"))
+          qDelta += 1;
+        mat.renderQueue = transparentQueueBase + qDelta;
+      }
+      camerasProf.End();
     }
 
     public void SetHDR(bool isHDR)
