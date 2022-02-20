@@ -36,6 +36,12 @@ namespace Waterfall
     public static float AtmosphereDensityExponent = 0.5128f;
     public static float MinimumEffectIntensity    = 0.005f;
     public static float MinimumLightIntensity     = 0.05f;
+
+    public static int   TransparentQueueBase      = 3000;
+    public static int   DistortQueue              = TransparentQueueBase + 2;
+    public static int   QueueDepth                = 750;
+    public static float SortedDepth               = 1000f;
+
     public static bool  EnableLights              = true;
     public static bool  EnableDistortion          = true;
     public static bool  EnableLegacyBlendModes    = false;
@@ -68,6 +74,10 @@ namespace Waterfall
         settingsNode.TryGetValue("AtmosphereDensityExponent", ref AtmosphereDensityExponent);
         settingsNode.TryGetValue("MinimumEffectIntensity",    ref MinimumEffectIntensity);
         settingsNode.TryGetValue("MinimumLightIntensity",     ref MinimumLightIntensity);
+        settingsNode.TryGetValue("TransparentQueueBase",      ref TransparentQueueBase);
+        settingsNode.TryGetValue("DistortQueue",              ref DistortQueue);
+        settingsNode.TryGetValue("QueueDepth",                ref QueueDepth);
+        settingsNode.TryGetValue("SortedDepth",               ref SortedDepth);
         settingsNode.TryGetValue("EnableLights",              ref EnableLights);
         settingsNode.TryGetValue("EnableDistortion",          ref EnableDistortion);
         settingsNode.TryGetValue("EnableLegacyBlendModes",    ref EnableLegacyBlendModes);

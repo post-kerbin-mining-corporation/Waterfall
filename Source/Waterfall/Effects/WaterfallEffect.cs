@@ -322,7 +322,6 @@ namespace Waterfall
     public List<Transform> GetModelTransforms() => model.modelTransforms;
 
     private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Effect.Update");
-    private static readonly ProfilerMarker s_ModelUpdate = new ProfilerMarker("Waterfall.Effect.Update.ModelUpdate");
     private static readonly ProfilerMarker s_fxApply = new ProfilerMarker("Waterfall.Effect.Update.FxApply");
     private static readonly ProfilerMarker s_Integrators = new ProfilerMarker("Waterfall.Effect.Update.Integrators");
 
@@ -331,10 +330,6 @@ namespace Waterfall
       s_Update.Begin();
       if (effectVisible)
       {
-        using (s_ModelUpdate.Auto())
-        {
-          model.Update();   // This call doesn't do anything currently.
-        }
         foreach (var fx in fxModifiers)
         {
           using (s_fxApply.Auto())
@@ -360,12 +355,6 @@ namespace Waterfall
     public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
     {
       camerasProf.Begin();
-      int transparentQueueBase = 3000;
-
-      int queueDepth = 750;
-      float sortedDepth = 1000f;
-      int distortQueue = transparentQueueBase + 2;
-
       var c = camera.transform;
       foreach (var renderer in renderers)
       {
@@ -374,16 +363,16 @@ namespace Waterfall
 
         int qDelta;
         if (mat.HasProperty("_Strength"))
-          qDelta = distortQueue;
+          qDelta = Settings.DistortQueue;
         else
         {
           float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
           float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
-          qDelta = queueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / sortedDepth * queueDepth, 0, queueDepth);
+          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
         }
         if (mat.HasProperty("_Intensity"))
           qDelta += 1;
-        mat.renderQueue = transparentQueueBase + qDelta;
+        mat.renderQueue = Settings.TransparentQueueBase + qDelta;
       }
       camerasProf.End();
     }
