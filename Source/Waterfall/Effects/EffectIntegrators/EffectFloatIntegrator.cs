@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Waterfall
@@ -78,12 +79,11 @@ namespace Waterfall
 
   public class EffectFloatIntegrator : EffectIntegrator
   {
-    public string                    floatName;
-    protected List<float> modifierData = new();
-    protected List<float> initialValues = new();
-    protected List<float> workingValues = new();
+    public string floatName;
+    protected readonly List<float> modifierData = new();
+    protected readonly List<float> initialValues = new();
+    protected readonly List<float> workingValues = new();
 
-    private readonly Material[] m;
     private readonly Renderer[] r;
 
     private readonly bool testIntensity;
@@ -94,43 +94,65 @@ namespace Waterfall
       floatName        = floatMod.floatName;
       testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
-      m                  = new Material[xforms.Count];
       r                  = new Renderer[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         r[i] = xforms[i].GetComponent<Renderer>();
-        m[i] = r[i].material;
-        initialValues.Add(m[i].GetFloat(floatName));
+        initialValues.Add(r[i].material.GetFloat(floatName));
       }
     }
+
+    private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.FloatIntegrator.Update");
+    private static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.FloatIntegrator.ListPrep");
+    private static readonly ProfilerMarker s_GetControllerValue = new ProfilerMarker("Waterfall.FloatIntegrator.GetControllerValue");
+    private static readonly ProfilerMarker s_GetModifierData = new ProfilerMarker("Waterfall.FloatIntegrator.GetModifierData");
+    private static readonly ProfilerMarker s_Integrate = new ProfilerMarker("Waterfall.FloatIntegrator.Integrate");
+    private static readonly ProfilerMarker s_Apply = new ProfilerMarker("Waterfall.FloatIntegrator.ApplyResult");
 
     public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
+      s_Update.Begin();
+
+      s_ListPrep.Begin();
       workingValues.Clear();
       workingValues.AddRange(initialValues);
+      s_ListPrep.End();
 
       foreach (var mod in handledModifiers)
       {
-        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
-        var modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData);
-        Integrate(mod.effectMode, workingValues, modResult);
+        using (s_GetControllerValue.Auto())
+        {
+          //parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+          mod.Controller?.Get(controllerData);
+        }
+        List<float> modResult;
+        using (s_GetModifierData.Auto()) { modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData); }
+        using (s_Integrate.Auto())
+        {
+          Integrate(mod.effectMode, workingValues, modResult);
+        }
       }
 
-      for (int i = 0; i < m.Length; i++)
+      s_Apply.Begin();
+      for (int i = 0; i < r.Length; i++)
       {
+        var rend = r[i];
+        float val = workingValues[i];
         if (testIntensity)
         {
-          if (r[i].enabled && workingValues[i] < Settings.MinimumEffectIntensity)
-            r[i].enabled = false;
-          else if (!r[i].enabled && workingValues[i] >= Settings.MinimumEffectIntensity)
-            r[i].enabled = true;
+          if (rend.enabled && val < Settings.MinimumEffectIntensity)
+            rend.enabled = false;
+          else if (!rend.enabled && val >= Settings.MinimumEffectIntensity)
+            rend.enabled = true;
         }
-        if (r[i].enabled)
-          m[i].SetFloat(floatName, workingValues[i]);
+        if (rend.enabled)
+          rend.material.SetFloat(floatName, val);
       }
+      s_Apply.End();
+      s_Update.End();
     }
   }
 }
