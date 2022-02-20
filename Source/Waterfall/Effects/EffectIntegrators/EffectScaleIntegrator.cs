@@ -5,9 +5,9 @@ namespace Waterfall
 {
   public class EffectScaleIntegrator : EffectIntegrator
   {
-    protected List<Vector3> modifierData = new();
-    protected List<Vector3> initialValues = new();
-    protected List<Vector3> workingValues = new();
+    protected readonly List<Vector3> modifierData = new();
+    protected readonly List<Vector3> initialValues = new();
+    protected readonly List<Vector3> workingValues = new();
     
     public EffectScaleIntegrator(WaterfallEffect effect, EffectScaleModifier mod) : base(effect, mod)
     {
@@ -24,7 +24,7 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        mod.Controller?.Get(controllerData);
         var modResult = (mod as EffectScaleModifier).Get(controllerData, modifierData);
         Integrate(mod.effectMode, workingValues, modResult);
       }

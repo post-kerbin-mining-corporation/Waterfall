@@ -6,9 +6,9 @@ namespace Waterfall
   public class EffectColorIntegrator : EffectIntegrator
   {
     public string                    colorName;
-    protected List<Color> modifierData = new();
-    protected List<Color> initialValues = new();
-    protected List<Color> workingValues = new();
+    protected readonly List<Color> modifierData = new();
+    protected readonly List<Color> initialValues = new();
+    protected readonly List<Color> workingValues = new();
 
     private readonly Material[]  m;
 
@@ -34,7 +34,7 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        mod.Controller?.Get(controllerData);
         var modResult = (mod as EffectColorModifier).Get(controllerData, modifierData);
         Integrate(mod.effectMode, workingValues, modResult);
       }

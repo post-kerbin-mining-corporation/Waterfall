@@ -7,9 +7,9 @@ namespace Waterfall
   public class EffectLightFloatIntegrator : EffectIntegrator
   {
     public string                         floatName;
-    protected List<float> modifierData = new();
-    protected List<float> initialValues = new();
-    protected List<float> workingValues = new();
+    protected readonly List<float> modifierData = new();
+    protected readonly List<float> initialValues = new();
+    protected readonly List<float> workingValues = new();
 
     private readonly Light[]     l;
 
@@ -42,7 +42,7 @@ namespace Waterfall
 
       foreach (var mod in handledModifiers)
       {
-        parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
+        mod.Controller?.Get(controllerData);
         var modResult = (mod as EffectLightFloatModifier).Get(controllerData, modifierData);
         Integrate(mod.effectMode, workingValues, modResult);
       }
@@ -50,16 +50,17 @@ namespace Waterfall
       float lightBaseScale = parentEffect.TemplateScaleOffset.x;
       for (int i = 0; i < l.Length; i++)
       {
-        workingValues[i] *= lightBaseScale;
+        var light = l[i];
+        float value = workingValues[i] * lightBaseScale;
         if (testIntensity)
         {
-          if (l[i].enabled && workingValues[i] < Settings.MinimumLightIntensity)
-            l[i].enabled = false;
-          else if (!l[i].enabled && workingValues[i] >= Settings.MinimumLightIntensity)
-            l[i].enabled = true;
+          if (light.enabled && value < Settings.MinimumLightIntensity)
+            light.enabled = false;
+          else if (!light.enabled && value >= Settings.MinimumLightIntensity)
+            light.enabled = true;
         }
-        if (l[i].enabled) 
-          UpdateFloats(l[i], workingValues[i]);
+        if (light.enabled)
+          UpdateFloats(light, value);
       }
     }
 
