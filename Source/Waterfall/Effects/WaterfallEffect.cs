@@ -36,10 +36,10 @@ namespace Waterfall
     private   readonly  List<Transform>      effectRendererTransforms = new();
     internal  readonly  List<Renderer>       effectRenderers = new();
 
-    public WaterfallEffect() { }
-
     public WaterfallEffect(string parent, WaterfallModel mdl, WaterfallEffectTemplate templateOwner = null)
     {
+      if (templateOwner != null)
+        parentTemplate = templateOwner;
       parentName             = parent;
       model                  = mdl;
       TemplatePositionOffset = templateOwner != null ? parentTemplate.position : Vector3.zero;
@@ -55,25 +55,6 @@ namespace Waterfall
       TemplateRotationOffset = Vector3.zero;
       TemplateScaleOffset    = Vector3.one;
       Load(node);
-    }
-
-    public WaterfallEffect(ConfigNode node, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset)
-    {
-      TemplatePositionOffset = positionOffset;
-      TemplateRotationOffset = rotationOffset;
-      TemplateScaleOffset    = scaleOffset;
-
-      Load(node);
-    }
-
-    public WaterfallEffect(WaterfallEffect fx, Vector3 positionOffset, Vector3 rotationOffset, Vector3 scaleOffset, string overrideTransformName)
-    {
-      TemplatePositionOffset = positionOffset;
-      TemplateRotationOffset = rotationOffset;
-      TemplateScaleOffset    = scaleOffset;
-      if (overrideTransformName != "")
-        fx.savedNode.SetValue("parentName", overrideTransformName, true);
-      Load(fx.savedNode);
     }
 
     public WaterfallEffect(WaterfallEffect fx, WaterfallEffectTemplate templateOwner)
