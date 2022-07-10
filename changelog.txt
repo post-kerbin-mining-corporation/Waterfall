@@ -1,3 +1,7 @@
+v0.8.2
+------
+- Fix to procedural particles shader
+
 v0.8.1
 ------
 - Fix compatibility with KSP < 1.12
