@@ -44,13 +44,15 @@ namespace Waterfall
       if (engineController == null)
         Utils.LogError("[EngineEventController] Could not find engine controller on Initialize");
 
+      enginePreState = engineController.EngineIgnited;
+
       if (eventName == "flameout")
       {
-        eventReady = enginePreState = engineController.EngineIgnited;
+        eventReady = enginePreState;
       }
       else if (eventName == "ignition")
       {
-        eventReady = enginePreState = !engineController.EngineIgnited;
+        eventReady = !enginePreState;
       }
     }
 
