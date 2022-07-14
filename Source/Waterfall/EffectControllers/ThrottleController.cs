@@ -36,6 +36,11 @@ namespace Waterfall
 
       if (engineController == null)
         Utils.LogError("[ThrottleController] Could not find engine controller on Initialize");
+      else
+      {
+        currentThrottle = engineController.isOperational ? engineController.currentThrottle : 0f;
+        value = currentThrottle;
+      }
     }
 
     public override void Update()
