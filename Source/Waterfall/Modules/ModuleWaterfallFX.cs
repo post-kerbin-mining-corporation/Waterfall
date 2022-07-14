@@ -39,7 +39,6 @@ namespace Waterfall
     public override void OnAwake()
     {
       base.OnAwake();
-      if (HighLogic.LoadedScene == GameScenes.LOADING) Settings.Load();
     }
 
     public void Start()
