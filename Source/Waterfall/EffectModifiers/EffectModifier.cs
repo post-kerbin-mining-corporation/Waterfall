@@ -70,7 +70,18 @@ namespace Waterfall
     {
       parentEffect = effect;
       Controller = parentEffect.parentModule.AllControllersDict.TryGetValue(controllerName, out var controller) ? controller : null;
+      if (Controller == null)
+      {
+        Utils.LogError($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
+      }
+
       randomController = parentEffect.parentModule.AllControllersDict.TryGetValue(randomnessController, out controller) ? controller : null;
+
+      if (randomController == null && useRandomness)
+      {
+        Utils.LogError($"[EffectModifier]: Randomness controller {randomnessController} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
+      }
+
       Utils.Log($"[EffectModifier]: Initializing modifier {fxName}", LogType.Modifiers);
       var roots = parentEffect.GetModelTransforms();
       xforms = new();
