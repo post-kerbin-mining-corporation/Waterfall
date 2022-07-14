@@ -423,6 +423,19 @@ namespace Waterfall
       for (int i = 0; i < effectTransforms.Count; i++)
         effectTransforms[i].localScale = state ? Vector3.Scale(baseScales[i], TemplateScaleOffset) : Vector3.one * 0.00001f;
       effectVisible = state;
+
+      foreach (var r in effectRenderers)
+      {
+        r.enabled = state;
+      }
+
+      foreach (var waterfallLight in model.lights)
+      {
+        foreach (var light in waterfallLight.lights)
+        {
+          light.enabled = state;
+        }
+      }
     }
   }
 }
