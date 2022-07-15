@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Waterfall.EffectControllers;
 
 namespace Waterfall
 {
@@ -45,7 +46,9 @@ namespace Waterfall
     /// <param name="host"></param>
     public virtual ConfigNode Save()
     {
-      return ConfigNode.CreateConfigFromObject(this);
+      var node = ConfigNode.CreateConfigFromObject(this);
+      node.name = EffectControllersMetadata.GetConfigNodeName(GetType());
+      return node;
     }
 
     /// <summary>
