@@ -331,6 +331,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Added new controller", LogType.Modules);
       allControllers.Add(newController.name, newController);
       newController.Initialize(this);
+      InitializeEffects();
     }
 
     public void RemoveController(WaterfallController toRemove)
