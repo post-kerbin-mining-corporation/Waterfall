@@ -419,6 +419,7 @@ namespace Waterfall
         Utils.Log($"[ModuleWaterfallFX]: Initializing effect {fx.name}");
         fx.InitializeEffect(this, false, useRelativeScaling);
       }
+      allRenderers.Clear();
     }
 
     protected void CleanupEffects()
