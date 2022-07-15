@@ -70,7 +70,7 @@ namespace Waterfall
                          aCurve.Evaluate(input[i]) + randomValue));
         }
       }
-      else
+      else if (input.Count == 1)
       {
         float rVal = rCurve.Evaluate(input[0]);
         float gVal = gCurve.Evaluate(input[0]);

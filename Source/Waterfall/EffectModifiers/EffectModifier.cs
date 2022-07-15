@@ -187,7 +187,7 @@ namespace Waterfall
                          zCurve.Evaluate(input[i]) + randomValue));
         }
       }
-      else
+      else if (input.Count == 1)
       {
         float xVal = xCurve.Evaluate(input[0]);
         float yVal = yCurve.Evaluate(input[0]);

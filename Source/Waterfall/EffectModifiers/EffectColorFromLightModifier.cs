@@ -35,7 +35,7 @@ namespace Waterfall
     {
       base.Init(parentEffect);
       m      = new Material[xforms.Count];
-      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == parentEffect.parentName).ToArray();
+      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().Where(x => x.transform.name == parentEffect.parentName).ToArray();
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
@@ -52,7 +52,7 @@ namespace Waterfall
     public void ApplyLightName(string newLightName)
     {
       lightTransformName = newLightName;
-      lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == lightTransformName).ToArray();
+      lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().Where(x => x.transform.name == lightTransformName).ToArray();
     }
 
     protected override void ApplyReplace(List<float> strengthList)
