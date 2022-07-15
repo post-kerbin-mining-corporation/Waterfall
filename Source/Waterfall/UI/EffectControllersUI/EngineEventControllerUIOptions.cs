@@ -56,6 +56,7 @@ namespace Waterfall.UI.EffectControllersUI
 
     protected override void LoadOptions(EngineEventController controller)
     {
+      eventFlag           = Math.Max(0, eventTypes.IndexOf(controller.eventName));
       eventCurve          = controller.eventCurve;
       eventDuration       = controller.eventDuration;
       eventDurationString = controller.eventDuration.ToString();
