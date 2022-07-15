@@ -13,7 +13,7 @@ namespace Waterfall
 
     public FloatCurve eventCurve = new();
     [Persistent] public float eventDuration = 1f;
-    private ModuleEngines engineController;
+    private ModuleEngines engineModule;
 
     private bool  enginePreState;
     private bool  eventPlaying;
@@ -37,14 +37,14 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
-      if (engineController == null)
-        engineController = host.part.FindModuleImplementing<ModuleEngines>();
+      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
+      if (engineModule == null)
+        engineModule = host.part.FindModuleImplementing<ModuleEngines>();
 
-      if (engineController == null)
+      if (engineModule == null)
         Utils.LogError("[EngineEventController] Could not find engine controller on Initialize");
 
-      enginePreState = engineController.EngineIgnited;
+      enginePreState = engineModule.EngineIgnited;
 
       if (eventName == "flameout")
       {
@@ -58,11 +58,11 @@ namespace Waterfall
 
     public override void Update()
     {
-      if (engineController == null)
+      if (engineModule == null)
         Utils.LogWarning("[EngineEventController] Engine controller not assigned");
 
       value = 0;
-      if (engineController != null && (eventName == "flameout" || eventName == "ignition"))
+      if (engineModule != null && (eventName == "flameout" || eventName == "ignition"))
         value = eventCurve.Evaluate(CheckStateChange());
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
     }
@@ -72,7 +72,7 @@ namespace Waterfall
       if (eventReady)
       {
         /// Check if engine state flipped
-        if (engineController.EngineIgnited != enginePreState)
+        if (engineModule.EngineIgnited != enginePreState)
         {
           Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
           eventReady   = false;
@@ -89,7 +89,7 @@ namespace Waterfall
       else if (!eventPlaying && !eventReady)
       {
         // Check to see if event can be reset
-        if (engineController.EngineIgnited == enginePreState)
+        if (engineModule.EngineIgnited == enginePreState)
         {
           Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
           eventReady = true;
