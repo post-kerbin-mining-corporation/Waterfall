@@ -315,7 +315,16 @@ namespace Waterfall
         {
           using (s_fxApply.Auto())
           {
-            fx.Controller.Get(controllerData);
+            if (fx.Controller == null)
+            {
+              controllerData.Clear();
+              controllerData.Add(0.0f);
+            }
+            else
+            {
+              fx.Controller.Get(controllerData);
+            }
+
             fx.Apply(controllerData);
           }
         }
