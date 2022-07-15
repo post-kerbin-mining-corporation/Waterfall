@@ -99,7 +99,14 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         r[i] = xforms[i].GetComponent<Renderer>();
-        initialValues.Add(r[i].material.GetFloat(floatName));
+        try
+        {
+          initialValues.Add(r[i].material.GetFloat(floatName));
+        }
+        catch (Exception e)
+        {
+          Utils.LogError($"Material {r[i].material.name} failed to get float {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID};\n{e}");
+        }
       }
     }
 
