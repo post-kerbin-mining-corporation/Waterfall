@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -15,10 +16,16 @@ namespace Waterfall
     [Persistent] public float eventDuration = 1f;
     private ModuleEngines engineModule;
 
-    private bool  enginePreState;
+    private Func<ModuleEngines, bool> getEngineStateFunc; // when the result of this function transitions from false -> true, the event should fire
     private bool  eventPlaying;
-    private bool  eventReady;
+    private bool  eventReady;     // the event can fire on the next transition
     private float eventTime;
+
+    private static readonly Dictionary<string, Func<ModuleEngines, bool>> EngineStateFuncs = new()
+    {
+      { "flameout", (engineModule) => engineModule.flameout || !engineModule.EngineIgnited},
+      { "ignition", (engineModule) => engineModule.EngineIgnited},
+    };
 
     public EngineEventController() : base() { }
     public EngineEventController(ConfigNode node) : base(node)
@@ -42,27 +49,24 @@ namespace Waterfall
         engineModule = host.part.FindModuleImplementing<ModuleEngines>();
 
       if (engineModule == null)
-        Utils.LogError("[EngineEventController] Could not find engine controller on Initialize");
+        Utils.LogError($"[EngineEventController] Could not find engine module for waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}' on Initialize");
 
-      enginePreState = engineModule.EngineIgnited;
+      EngineStateFuncs.TryGetValue(eventName, out getEngineStateFunc);
 
-      if (eventName == "flameout")
+      if (getEngineStateFunc != null)
       {
-        eventReady = enginePreState;
+        eventReady = !getEngineStateFunc(engineModule);
       }
-      else if (eventName == "ignition")
+      else
       {
-        eventReady = !enginePreState;
+        Utils.LogError($"[EngineEventController] Invalid engine eventName '{eventName}' in waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}'");
       }
     }
 
     public override void Update()
     {
-      if (engineModule == null)
-        Utils.LogWarning("[EngineEventController] Engine controller not assigned");
-
       value = 0;
-      if (engineModule != null && (eventName == "flameout" || eventName == "ignition"))
+      if (engineModule != null && getEngineStateFunc != null)
         value = eventCurve.Evaluate(CheckStateChange());
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
     }
@@ -72,7 +76,7 @@ namespace Waterfall
       if (eventReady)
       {
         /// Check if engine state flipped
-        if (engineModule.EngineIgnited != enginePreState)
+        if (getEngineStateFunc(engineModule))
         {
           Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
           eventReady   = false;
@@ -89,7 +93,7 @@ namespace Waterfall
       else if (!eventPlaying && !eventReady)
       {
         // Check to see if event can be reset
-        if (engineModule.EngineIgnited == enginePreState)
+        if (!getEngineStateFunc(engineModule))
         {
           Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
           eventReady = true;
