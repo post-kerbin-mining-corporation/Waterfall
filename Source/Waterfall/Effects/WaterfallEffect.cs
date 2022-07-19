@@ -311,23 +311,23 @@ namespace Waterfall
       s_Update.Begin();
       if (effectVisible)
       {
+        s_fxApply.Begin();
         foreach (var fx in fxModifiers)
         {
-          using (s_fxApply.Auto())
+          if (fx.Controller == null)
           {
-            if (fx.Controller == null)
-            {
-              controllerData.Clear();
-              controllerData.Add(0.0f);
-            }
-            else
-            {
-              fx.Controller.Get(controllerData);
-            }
-
-            fx.Apply(controllerData);
+            controllerData.Clear();
+            controllerData.Add(0.0f);
           }
+          else
+          {
+            fx.Controller.Get(controllerData);
+          }
+
+          fx.Apply(controllerData);
         }
+        s_fxApply.End();
+
         s_Integrators.Begin();
         foreach (var integrator in floatIntegrators) integrator.Update();
         foreach (var integrator in colorIntegrators) integrator.Update();

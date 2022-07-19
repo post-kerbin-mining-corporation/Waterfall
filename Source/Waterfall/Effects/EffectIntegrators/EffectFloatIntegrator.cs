@@ -119,8 +119,7 @@ namespace Waterfall
 
     private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.FloatIntegrator.Update");
     private static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.FloatIntegrator.ListPrep");
-    private static readonly ProfilerMarker s_GetControllerValue = new ProfilerMarker("Waterfall.FloatIntegrator.GetControllerValue");
-    private static readonly ProfilerMarker s_GetModifierData = new ProfilerMarker("Waterfall.FloatIntegrator.GetModifierData");
+    private static readonly ProfilerMarker s_Modifiers = new ProfilerMarker("Waterfall.FloatIntegrator.Modifiers");
     private static readonly ProfilerMarker s_Integrate = new ProfilerMarker("Waterfall.FloatIntegrator.Integrate");
     private static readonly ProfilerMarker s_Apply = new ProfilerMarker("Waterfall.FloatIntegrator.ApplyResult");
 
@@ -135,20 +134,19 @@ namespace Waterfall
       workingValues.AddRange(initialValues);
       s_ListPrep.End();
 
+      s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        using (s_GetControllerValue.Auto())
-        {
-          //parentEffect.parentModule.GetControllerValue(mod.controllerName, controllerData);
-          mod.Controller?.Get(controllerData);
-        }
+        mod.Controller?.Get(controllerData);
+
         List<float> modResult;
-        using (s_GetModifierData.Auto()) { modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData); }
-        using (s_Integrate.Auto())
-        {
-          Integrate(mod.effectMode, workingValues, modResult);
-        }
+        modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData);
+
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modResult);
+        s_Integrate.End();
       }
+      s_Modifiers.End();
 
       s_Apply.Begin();
       for (int i = 0; i < r.Length; i++)
