@@ -58,5 +58,16 @@ namespace Waterfall
         currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
       value = currentThrottle;
     }
+
+    public override void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+      base.UpgradeToCurrentVersion(loadedVersion);
+
+      if (loadedVersion < Version.FixedRampRates)
+      {
+        responseRateDown *= Math.Max(1, referencingModifierCount);
+        responseRateUp *= Math.Max(1, referencingModifierCount);
+      }
+    }
   }
 }

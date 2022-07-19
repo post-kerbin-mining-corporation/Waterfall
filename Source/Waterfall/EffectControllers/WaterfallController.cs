@@ -16,6 +16,7 @@ namespace Waterfall
     [Persistent] public string name = "unnamedController";
     public bool overridden;
     public float overrideValue;
+    public int referencingModifierCount = 0; // NOTE: this is only used for the upgrade pipeline and set on load, it does not get updated as effects are added or removed
     protected float value;
     protected ModuleWaterfallFX parentModule;
 
@@ -85,6 +86,11 @@ namespace Waterfall
     public virtual void SetOverrideValue(float value)
     {
       overrideValue = value;
+    }
+
+    public virtual void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+
     }
   }
 }

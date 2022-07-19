@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -101,6 +102,33 @@ namespace Waterfall
       }
 
       return 0f;
+    }
+
+    public override void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+      base.UpgradeToCurrentVersion(loadedVersion);
+
+      if (loadedVersion < Version.FixedRampRates)
+      {
+        float scaleFactor = 1.0f / Math.Max(1, referencingModifierCount);
+
+        eventDuration *= scaleFactor;
+
+        var keys = eventCurve.Curve.keys;
+        
+        for (int i = 0; i < keys.Length; ++i)
+        {
+          Keyframe key = keys[i];
+
+          key.time *= scaleFactor;
+          key.inTangent /= scaleFactor;
+          key.outTangent /= scaleFactor;
+
+          keys[i] = key;
+        }
+
+        eventCurve = new FloatCurve(keys);
+      }
     }
   }
 }

@@ -72,5 +72,15 @@ namespace Waterfall
       for (int i = 0; i < currentThrottle.Count; i++)
         output.Add(overridden ? overrideValue : currentThrottle[i]);
     }
+    public override void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+      base.UpgradeToCurrentVersion(loadedVersion);
+
+      if (loadedVersion < Version.FixedRampRates)
+      {
+        responseRateDown *= Math.Max(1, referencingModifierCount);
+        responseRateUp *= Math.Max(1, referencingModifierCount);
+      }
+    }
   }
 }

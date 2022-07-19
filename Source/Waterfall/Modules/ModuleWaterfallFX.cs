@@ -7,8 +7,16 @@ using Waterfall.EffectControllers;
 
 namespace Waterfall
 {
+  public enum Version
+  {
+    Initial,
+    FixedRampRates,
+  }
+
   public class ModuleWaterfallFX : PartModule
   {
+    public static readonly Version CurrentVersion = Enum.GetValues(typeof(Version)).Cast<Version>().Max();
+
     // This identifies this FX module for reference elsewhere
     [KSPField(isPersistant = false)] public string moduleID = "";
 
@@ -17,6 +25,7 @@ namespace Waterfall
 
     [KSPField(isPersistant = false)] public bool useRelativeScaling;
 
+    [KSPField(isPersistant = false)] public Version version = CurrentVersion;
 
     protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
     protected readonly List<WaterfallEffect> allFX = new(16);
@@ -132,6 +141,11 @@ namespace Waterfall
       allTemplates.Clear();
       allControllers.Clear();
 
+      if (!config.HasValue(nameof(version)))
+      {
+        version = Version.Initial;
+      }
+
       LoadControllers(config);
       LoadEffects(config);
 
@@ -149,6 +163,7 @@ namespace Waterfall
       var newNode = new ConfigNode("MODULE");
       newNode.AddValue("name",     "ModuleWaterfallFX");
       newNode.AddValue("moduleID", moduleID);
+      newNode.AddValue("version", version);
       //newNode.AddValue("engineID", engineID);
 
       foreach (var ctrl in Controllers)
@@ -394,6 +409,20 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Initializing", LogType.Modules);
       InitializeControllers();
       InitializeEffects();
+
+      UpgradeToCurrentVersion();
+    }
+
+    private void UpgradeToCurrentVersion()
+    {
+      if (version < CurrentVersion)
+      {
+        foreach (var c in Controllers)
+        {
+          c.UpgradeToCurrentVersion(version);
+        }
+        version = CurrentVersion;
+      }
     }
 
     /// <summary>

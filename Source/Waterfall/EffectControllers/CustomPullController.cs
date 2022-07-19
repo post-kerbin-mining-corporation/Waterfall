@@ -119,5 +119,16 @@ namespace Waterfall
         return 0;
       }
     }
+
+    public override void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+      base.UpgradeToCurrentVersion(loadedVersion);
+
+      if (loadedVersion < Version.FixedRampRates)
+      {
+        responseRateDown *= Math.Max(1, referencingModifierCount);
+        responseRateUp *= Math.Max(1, referencingModifierCount);
+      }
+    }
   }
 }
