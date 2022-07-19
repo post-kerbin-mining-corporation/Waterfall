@@ -13,7 +13,14 @@ namespace Waterfall
     protected List<Transform> xforms = new();
     protected List<float> controllerData = new();
     public List<EffectModifier> handledModifiers = new();
-    public virtual void AddModifier(EffectModifier mod) => handledModifiers.Add(mod);
+    public virtual void AddModifier(EffectModifier mod)
+    {
+      handledModifiers.Add(mod);
+      if (mod.Controller != null)
+      {
+        mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
+      }
+    }
     public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
 
     public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
@@ -31,7 +38,7 @@ namespace Waterfall
           Utils.LogError($"[EffectIntegrator]: Unable to find transform {mod.transformName} on modifier {mod.fxName}");
       }
 
-      handledModifiers.Add(mod);
+      AddModifier(mod);
     }
 
     public abstract void Update();
