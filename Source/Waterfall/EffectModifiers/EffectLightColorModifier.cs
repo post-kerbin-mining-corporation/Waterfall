@@ -64,20 +64,23 @@ namespace Waterfall
       {
         for (int i = 0; i < l.Length; i++)
         {
-          output.Add(new(rCurve.Evaluate(input[i]) + randomValue,
-                         gCurve.Evaluate(input[i]) + randomValue,
-                         bCurve.Evaluate(input[i]) + randomValue,
-                         aCurve.Evaluate(input[i]) + randomValue));
+          float inValue = input[i];
+          output[i] = new(rCurve.Evaluate(inValue) + randomValue,
+                          gCurve.Evaluate(inValue) + randomValue,
+                          bCurve.Evaluate(inValue) + randomValue,
+                          aCurve.Evaluate(inValue) + randomValue);
         }
       }
       else if (input.Count == 1)
       {
-        float rVal = rCurve.Evaluate(input[0]);
-        float gVal = gCurve.Evaluate(input[0]);
-        float bVal = bCurve.Evaluate(input[0]);
-        float aVal = aCurve.Evaluate(input[0]);
+        float inValue = input[0];
+        Color color = new Color(
+          rCurve.Evaluate(inValue) + randomValue,
+          gCurve.Evaluate(inValue) + randomValue,
+          bCurve.Evaluate(inValue) + randomValue,
+          aCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < l.Length; i++)
-          output.Add(new(rVal + randomValue, gVal + randomValue, bVal + randomValue, aVal + randomValue));
+          output.Add(color);
       }
 
       return output;

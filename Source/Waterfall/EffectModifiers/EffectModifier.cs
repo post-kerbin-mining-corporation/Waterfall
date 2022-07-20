@@ -190,18 +190,21 @@ namespace Waterfall
       {
         for (int i = 0; i < xforms.Count; i++)
         {
-          output.Add(new(xCurve.Evaluate(input[i]) + randomValue,
-                         yCurve.Evaluate(input[i]) + randomValue,
-                         zCurve.Evaluate(input[i]) + randomValue));
+          float inValue = input[i];
+          output[i] = new(xCurve.Evaluate(inValue) + randomValue,
+                          yCurve.Evaluate(inValue) + randomValue,
+                          zCurve.Evaluate(inValue) + randomValue);
         }
       }
       else if (input.Count == 1)
       {
-        float xVal = xCurve.Evaluate(input[0]);
-        float yVal = yCurve.Evaluate(input[0]);
-        float zVal = zCurve.Evaluate(input[0]);
+        float inValue = input[0];
+        Vector3 vec = new(
+          xCurve.Evaluate(inValue) + randomValue,
+          yCurve.Evaluate(inValue) + randomValue,
+          zCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < xforms.Count; i++)
-          output.Add(new(xVal + randomValue, yVal + randomValue, zVal + randomValue));
+          output.Add(vec);
       }
 
       return output;

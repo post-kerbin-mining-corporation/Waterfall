@@ -55,9 +55,9 @@ namespace Waterfall
       }
       else if (input.Count == 1)
       {
-        float data = curve.Evaluate(input[0]);
+        float data = curve.Evaluate(input[0]) + randomValue;
         for (int i = 0; i < m.Length; i++)
-          output.Add(data + randomValue);
+          output.Add(data);
       }
 
       return output;
