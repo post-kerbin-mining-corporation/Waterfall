@@ -140,7 +140,7 @@ namespace Waterfall
         mod.Controller?.Get(controllerData);
 
         List<float> modResult;
-        modResult = (mod as EffectFloatModifier).Get(controllerData, modifierData);
+        modResult = ((EffectFloatModifier)mod).Get(controllerData, modifierData);
 
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modResult);
