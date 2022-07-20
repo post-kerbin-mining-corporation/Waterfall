@@ -45,6 +45,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
       if (engineModule == null)
         engineModule = host.part.FindModuleImplementing<ModuleEngines>();
@@ -64,11 +66,11 @@ namespace Waterfall
       }
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
-      value = 0;
+      values[0] = 0;
       if (engineModule != null && getEngineStateFunc != null)
-        value = eventCurve.Evaluate(CheckStateChange());
+        values[0] = eventCurve.Evaluate(CheckStateChange());
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
     }
 

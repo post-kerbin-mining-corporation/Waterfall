@@ -23,6 +23,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       lightController = host.GetComponentsInChildren<Light>().FirstOrDefault(x => x.transform.name == lightName);
       if (lightController == null)
         lightController = host.GetComponentsInChildren<Light>().FirstOrDefault();
@@ -31,12 +33,15 @@ namespace Waterfall
         Utils.LogError("[LightController] Could not find any lights on Initialize");
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
       if (lightController == null)
+      {
         Utils.LogWarning("[lightController] Light controller not assigned");
+        return;
+      }
 
-      value = lightController != null ? lightController.intensity : 0;
+      values[0] = lightController.intensity;
     }
   }
 }

@@ -24,6 +24,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
@@ -35,7 +37,7 @@ namespace Waterfall
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
       if (engineController == null)
       {
@@ -54,7 +56,7 @@ namespace Waterfall
                               * engineController.multIsp;
       }
 
-      value = currentThrustFraction;
+      values[0] = currentThrustFraction;
     }
   }
 }

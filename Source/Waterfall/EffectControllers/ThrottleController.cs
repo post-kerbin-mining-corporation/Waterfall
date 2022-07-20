@@ -27,6 +27,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
@@ -39,11 +41,11 @@ namespace Waterfall
       else
       {
         currentThrottle = engineController.isOperational ? engineController.currentThrottle : 0f;
-        value = currentThrottle;
+        values[0] = currentThrottle;
       }
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
       if (engineController == null)
       {
@@ -56,7 +58,7 @@ namespace Waterfall
         currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateUp * TimeWarp.deltaTime);
       else
         currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
-      value = currentThrottle;
+      values[0] = currentThrottle;
     }
 
     public override void UpgradeToCurrentVersion(Version loadedVersion)

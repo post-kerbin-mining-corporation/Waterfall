@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,9 +8,9 @@ namespace Waterfall
   public class EffectLightFloatIntegrator : EffectIntegrator
   {
     public string                         floatName;
-    protected readonly List<float> modifierData = new();
-    protected readonly List<float> initialValues = new();
-    protected readonly List<float> workingValues = new();
+    protected readonly float[] modifierData;
+    protected readonly float[] initialValues;
+    protected readonly float[] workingValues;
 
     private readonly Light[]     l;
 
@@ -22,14 +23,17 @@ namespace Waterfall
       testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       l = new Light[xforms.Count];
+      modifierData = new float[xforms.Count];
+      initialValues = new float[xforms.Count];
+      workingValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
 
-        if (floatName == "Intensity") initialValues.Add(l[i].intensity);
-        else if (floatName == "Range") initialValues.Add(l[i].range);
-        else if (floatName == "SpotAngle") initialValues.Add(l[i].spotAngle);
+        if (floatName == "Intensity") initialValues[i] = l[i].intensity;
+        else if (floatName == "Range") initialValues[i] = l[i].range;
+        else if (floatName == "SpotAngle") initialValues[i] = l[i].spotAngle;
       }
     }
 
@@ -37,14 +41,17 @@ namespace Waterfall
     {
       if (!Settings.EnableLights || handledModifiers.Count == 0)
         return;
-      workingValues.Clear();
-      workingValues.AddRange(initialValues);
+
+      Array.Copy(initialValues, workingValues, l.Length);
 
       foreach (var mod in handledModifiers)
       {
-        mod.Controller?.Get(controllerData);
-        var modResult = ((EffectLightFloatModifier)mod).Get(controllerData, modifierData);
-        Integrate(mod.effectMode, workingValues, modResult);
+        if (mod.Controller != null)
+        {
+          float[] controllerData = mod.Controller.Get();
+          ((EffectLightFloatModifier)mod).Get(controllerData, modifierData);
+          Integrate(mod.effectMode, workingValues, modifierData);
+        }
       }
 
       float lightBaseScale = parentEffect.TemplateScaleOffset.x;

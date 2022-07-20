@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
@@ -6,9 +7,9 @@ namespace Waterfall
   public class EffectLightColorIntegrator : EffectIntegrator
   {
     public string                         colorName;
-    protected readonly List<Color> modifierData = new();
-    protected readonly List<Color> initialValues = new();
-    protected readonly List<Color> workingValues = new();
+    protected readonly Color[] modifierData;
+    protected readonly Color[] initialValues;
+    protected readonly Color[] workingValues;
 
     private readonly Light[]     l;
 
@@ -17,11 +18,14 @@ namespace Waterfall
       // light-color specific
       colorName        = floatMod.colorName;
       l = new Light[xforms.Count];
+      modifierData = new Color[xforms.Count];
+      initialValues = new Color[xforms.Count];
+      workingValues = new Color[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
-        initialValues.Add(l[i].color);
+        initialValues[i] = l[i].color;
       }
     }
 
@@ -29,14 +33,16 @@ namespace Waterfall
     {
       if (handledModifiers.Count == 0)
         return;
-      workingValues.Clear();
-      workingValues.AddRange(initialValues);
+      Array.Copy(initialValues, workingValues, l.Length);
 
       foreach (var mod in handledModifiers)
       {
-        mod.Controller?.Get(controllerData);
-        var modResult = ((EffectLightColorModifier)mod).Get(controllerData, modifierData);
-        Integrate(mod.effectMode, workingValues, modResult);
+        if (mod.Controller != null)
+        {
+          float[] controllerData = mod.Controller.Get();
+          ((EffectLightColorModifier)mod).Get(controllerData, modifierData);
+          Integrate(mod.effectMode, workingValues, modifierData);
+        }
       }
 
       for (int i = 0; i < l.Length; i++)

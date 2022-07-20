@@ -227,8 +227,7 @@ namespace Waterfall.UI
       }
       else
       {
-        List<float> output = new();
-        ctrl.Get(output);
+        float[] output = ctrl.Get();
         ctrl.overrideValue = GUILayout.HorizontalSlider(output[0], 0f, sliderMax, GUILayout.MaxWidth(100f));
       }
 

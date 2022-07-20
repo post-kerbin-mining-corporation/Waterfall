@@ -49,6 +49,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       if (noiseType == PerlinNoiseName)
         noiseFunc = PerlinNoise;
       else if (noiseType == RandomNoiseName)
@@ -61,9 +63,9 @@ namespace Waterfall
 
     public float PerlinNoise() => Mathf.PerlinNoise(seed + Time.time * speed, seed + Time.time * speed) * (scale - minimum) + minimum;
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
-      value = noiseFunc();
+      values[0] = noiseFunc();
     }
   }
 }

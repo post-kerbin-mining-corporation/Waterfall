@@ -1,32 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
   public class EffectScaleIntegrator : EffectIntegrator
   {
-    protected readonly List<Vector3> modifierData = new();
-    protected readonly List<Vector3> initialValues = new();
-    protected readonly List<Vector3> workingValues = new();
+    protected readonly Vector3[] modifierData;
+    protected readonly Vector3[] initialValues;
+    protected readonly Vector3[] workingValues;
     
     public EffectScaleIntegrator(WaterfallEffect effect, EffectScaleModifier mod) : base(effect, mod)
     {
-      foreach (var x in xforms)
-        initialValues.Add(x.localScale);
+      modifierData = new Vector3[xforms.Count];
+      initialValues = new Vector3[xforms.Count];
+      workingValues = new Vector3[xforms.Count];
+
+      for(int i = 0; i < xforms.Count; i++)
+        initialValues[i] = xforms[i].localScale;
     }
 
     public override void Update()
     {
       if (handledModifiers.Count == 0)
         return;
-      workingValues.Clear();
-      workingValues.AddRange(initialValues);
+      Array.Copy(initialValues, modifierData, initialValues.Length);
 
       foreach (var mod in handledModifiers)
       {
-        mod.Controller?.Get(controllerData);
-        var modResult = ((EffectScaleModifier)mod).Get(controllerData, modifierData);
-        Integrate(mod.effectMode, workingValues, modResult);
+        if (mod.Controller != null)
+        {
+          float[] controllerData = mod.Controller.Get();
+          ((EffectScaleModifier)mod).Get(controllerData, modifierData);
+          Integrate(mod.effectMode, workingValues, modifierData);
+        }
       }
 
       for (int i = 0; i < xforms.Count; i++)

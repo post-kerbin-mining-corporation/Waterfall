@@ -318,19 +318,20 @@ namespace Waterfall
 
     public override string GetInfo() => "";
 
+    private static readonly float[] EmptyControllerResult = new float[1];
+
     /// <summary>
     ///   Gets the value of the requested controller by name
     /// </summary>
     /// <param name="controllerName"></param>
     /// <returns></returns>
-    public void GetControllerValue(string controllerName, List<float> output)
+    public float[] GetControllerValues(string controllerName)
     {
       if (allControllers.TryGetValue(controllerName, out var controller))
-        controller.Get(output);
+        return controller.Get();
       else
       {
-        output.Clear();
-        output.Add(0);
+        return EmptyControllerResult;
       }
     }
 
@@ -459,56 +460,6 @@ namespace Waterfall
       {
         fx.CleanupEffect();
       }
-    }
-
-    /// <summary>
-    ///   Sets a specific controller's value
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    public void SetControllerValue(string name, float value)
-    {
-      if (allControllers.TryGetValue(name, out var controller))
-        controller.Set(value);
-      else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerValue for id {name}", LogType.Modules);
-    }
-
-    /// <summary>
-    ///   Sets this module controllers as overridden by something: its controllers will be set to override
-    /// </summary>
-    /// <param name="mode"></param>
-    public void SetControllerOverride(bool mode)
-    {
-      foreach (var kvp in allControllers)
-      {
-        kvp.Value.SetOverride(mode);
-      }
-    }
-
-    /// <summary>
-    ///   Sets this module controllers as overridden by something: its controllers will be set to override
-    /// </summary>
-    /// <param name="mode"></param>
-    public void SetControllerOverride(string name, bool mode)
-    {
-      if (allControllers.TryGetValue(name, out var controller))
-        controller.SetOverride(mode);
-      else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverride for id {name}", LogType.Modules);
-    }
-
-    /// <summary>
-    ///   Sets a specific controller as overridden by something: its controllers will be set to override and a value will be supplied
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    public void SetControllerOverrideValue(string name, float value)
-    {
-      if (allControllers.TryGetValue(name, out var controller))
-        controller.SetOverrideValue(value);
-      else
-        Utils.Log($"[ModuleWaterfallFX] Couldn't SetControllerOverrideValue for id {name}", LogType.Modules);
     }
   }
 }

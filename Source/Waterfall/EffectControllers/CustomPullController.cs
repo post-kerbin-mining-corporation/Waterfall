@@ -40,6 +40,8 @@ namespace Waterfall
     {
       base.Initialize(host);
 
+      values = new float[1];
+
       engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
@@ -83,20 +85,17 @@ namespace Waterfall
       return () => 0;
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
-      if (!overridden)
-      {
-        float newValue = Mathf.InverseLerp(minInputValue, maxInputValue, GetValue());
-        float responseRate = newValue > currentValue
-          ? responseRateUp
-          : responseRateDown;
+      float newValue = Mathf.InverseLerp(minInputValue, maxInputValue, GetValue());
+      float responseRate = newValue > currentValue
+        ? responseRateUp
+        : responseRateDown;
 
-        currentValue = responseRate > 0
-          ? Mathf.MoveTowards(currentValue, newValue, responseRate * TimeWarp.deltaTime)
-          : newValue;
-      }
-      value = currentValue;
+      currentValue = responseRate > 0
+        ? Mathf.MoveTowards(currentValue, newValue, responseRate * TimeWarp.deltaTime)
+        : newValue;
+      values[0] = currentValue;
     }
 
     private float GetValue()

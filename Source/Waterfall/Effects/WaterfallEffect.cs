@@ -16,7 +16,6 @@ namespace Waterfall
     public readonly List<Vector3>                    baseScales = new();
     public          ModuleWaterfallFX                parentModule;
     public          WaterfallEffectTemplate          parentTemplate;
-    protected readonly List<float>                   controllerData = new();
     public readonly List<EffectFloatIntegrator>      floatIntegrators = new();
     public readonly List<EffectLightFloatIntegrator> lightFloatIntegrators = new();
     public readonly List<EffectLightColorIntegrator> lightColorIntegrators = new();
@@ -306,6 +305,8 @@ namespace Waterfall
     private static readonly ProfilerMarker s_fxApply = new ProfilerMarker("Waterfall.Effect.Update.FxApply");
     private static readonly ProfilerMarker s_Integrators = new ProfilerMarker("Waterfall.Effect.Update.Integrators");
 
+    private static readonly float[] EmptyControllerValues = new float[1];
+
     public void Update()
     {
       s_Update.Begin();
@@ -314,16 +315,7 @@ namespace Waterfall
         s_fxApply.Begin();
         foreach (var fx in fxModifiers)
         {
-          if (fx.Controller == null)
-          {
-            controllerData.Clear();
-            controllerData.Add(0.0f);
-          }
-          else
-          {
-            fx.Controller.Get(controllerData);
-          }
-
+          float[] controllerData = fx.Controller == null ? EmptyControllerValues : fx.Controller.Get();
           fx.Apply(controllerData);
         }
         s_fxApply.End();

@@ -45,22 +45,19 @@ namespace Waterfall
       }
     }
 
-    public List<float> Get(List<float> input, List<float> output)
+    public void Get(float[] input, float[] output)
     {
-      output.Clear();
-      if (input.Count > 1)
+      if (input.Length > 1)
       {
         for (int i = 0; i < m.Length; i++)
-          output.Add(curve.Evaluate(input[i]) + randomValue);
+          output[i] = curve.Evaluate(input[i]) + randomValue;
       }
-      else if (input.Count == 1)
+      else if (input.Length == 1)
       {
         float data = curve.Evaluate(input[0]) + randomValue;
         for (int i = 0; i < m.Length; i++)
-          output.Add(data);
+          output[i] = data;
       }
-
-      return output;
     }
 
     public Material GetMaterial() => m[0];

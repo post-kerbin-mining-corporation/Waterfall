@@ -8,7 +8,10 @@ namespace Waterfall
     [Persistent] public string axis = "x";
     private ModuleGimbal gimbalController;
 
-    public GimbalController() : base() { }
+    public GimbalController() : base()
+    {
+      values = new float[1];
+    }
     public GimbalController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
@@ -21,16 +24,17 @@ namespace Waterfall
         Utils.LogError("[GimbalController] Could not find gimbal controller on Initialize");
     }
 
-    public override void Update()
+    protected override void UpdateInternal()
     {
       if (gimbalController == null)
+      {
         Utils.LogWarning("[GimbalController] Gimbal controller not assigned");
+        return;
+      }
 
-      if (gimbalController == null) value = 0;
-      else if (overridden) value = overrideValue;
-      else if (axis == "x") value = gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP;
-      else if (axis == "y") value = gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP;
-      else if (axis == "z") value = gimbalController.actuationLocal.z;
+      if (axis == "x") values[0] = gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP;
+      else if (axis == "y") values[0] = gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP;
+      else if (axis == "z") values[0] = gimbalController.actuationLocal.z;
     }
   }
 }

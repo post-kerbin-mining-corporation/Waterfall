@@ -45,7 +45,7 @@ namespace Waterfall
       baseRotation = xforms[0].localEulerAngles;
     }
 
-    public List<Vector3> Get(List<float> input, List<Vector3> output) => Get(input, output, xCurve, yCurve, zCurve);
+    public void Get(float[] input, Vector3[] output) => Get(input, output, xCurve, yCurve, zCurve);
 
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectRotationIntegrator && integrator.transformName == transformName;
 

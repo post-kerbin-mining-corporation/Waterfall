@@ -48,7 +48,7 @@ namespace Waterfall
       }
     }
 
-    public override void Apply(List<float> strengthList)
+    public override void Apply(float[] strengthList)
     {
       float strength = strengthList[0];
       for (int i = 0; i < m.Length; i++)

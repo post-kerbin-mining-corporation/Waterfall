@@ -57,10 +57,9 @@ namespace Waterfall
       }
     }
 
-    public List<Color> Get(List<float> input, List<Color> output)
+    public void Get(float[] input, Color[] output)
     {
-      output.Clear();
-      if (input.Count > 1)
+      if (input.Length > 1)
       {
         for (int i = 0; i < l.Length; i++)
         {
@@ -71,7 +70,7 @@ namespace Waterfall
                           aCurve.Evaluate(inValue) + randomValue);
         }
       }
-      else if (input.Count == 1)
+      else if (input.Length == 1)
       {
         float inValue = input[0];
         Color color = new Color(
@@ -80,10 +79,8 @@ namespace Waterfall
           bCurve.Evaluate(inValue) + randomValue,
           aCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < l.Length; i++)
-          output.Add(color);
+          output[i] = color;
       }
-
-      return output;
     }
 
     public Light GetLight() => l[0];

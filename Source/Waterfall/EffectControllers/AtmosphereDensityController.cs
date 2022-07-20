@@ -12,10 +12,17 @@ namespace Waterfall
     public AtmosphereDensityController() : base() { }
     public AtmosphereDensityController(ConfigNode node) : base(node) { }
 
-    public override void Update()
+    public override void Initialize(ModuleWaterfallFX host)
+    {
+      base.Initialize(host);
+
+      values = new float[1];
+    }
+
+    protected override void UpdateInternal()
     {
       //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
-      value = Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
+      values[0] = Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
     }
   }
 }

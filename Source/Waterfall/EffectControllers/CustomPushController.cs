@@ -12,8 +12,12 @@ namespace Waterfall
   [DisplayName("Custom (Push)")]
   public class CustomPushController : WaterfallController
   {
-    public CustomPushController() : base() { }
+    public CustomPushController() : base()
+    {
+      values = new float[1];
+    }
     public CustomPushController(ConfigNode node) : base(node) { }
-    public override void Update() {}
+
+    protected override void UpdateInternal() { }
   }
 }

@@ -37,7 +37,6 @@ namespace Waterfall
 
     // The Transform that holds the thing the effect should modify
     protected List<Transform> xforms;
-    protected List<float> controllerData = new();
     protected float randomValue;
 
     public EffectIntegrator integrator;
@@ -119,11 +118,11 @@ namespace Waterfall
     ///   Apply the effect with the various combine modes
     /// </summary>
     /// <param name="strength"></param>
-    public virtual void Apply(List<float> strength)
+    public virtual void Apply(float[] strength)
     {
       if (useRandomness && randomController != null)
       {
-        randomController.Get(controllerData);
+        float[] controllerData = randomController.Get();
         randomValue = controllerData[0] * randomnessScale;
       }
 
@@ -144,13 +143,13 @@ namespace Waterfall
       }
     }
 
-    protected virtual void ApplyReplace(List<float> strength) { }
+    protected virtual void ApplyReplace(float[] strength) { }
 
-    protected virtual void ApplyAdd(List<float> strength) { }
+    protected virtual void ApplyAdd(float[] strength) { }
 
-    protected virtual void ApplyMultiply(List<float> strength) { }
+    protected virtual void ApplyMultiply(float[] strength) { }
 
-    protected virtual void ApplySubtract(List<float> strength) { }
+    protected virtual void ApplySubtract(float[] strength) { }
 
     /// <summary>
     /// Returns true if this specific integrator is ideal for this modifier (ie EffectFloatIntegrator for an EffectFloatModifier and the associated transform matches
@@ -183,10 +182,9 @@ namespace Waterfall
       }
     }
 
-    public virtual List<Vector3> Get(List<float> input, List<Vector3> output, FloatCurve xCurve, FloatCurve yCurve, FloatCurve zCurve)
+    public void Get(float[] input, Vector3[] output, FloatCurve xCurve, FloatCurve yCurve, FloatCurve zCurve)
     {
-      output.Clear();
-      if (input.Count > 1)
+      if (input.Length > 1)
       {
         for (int i = 0; i < xforms.Count; i++)
         {
@@ -196,7 +194,7 @@ namespace Waterfall
                           zCurve.Evaluate(inValue) + randomValue);
         }
       }
-      else if (input.Count == 1)
+      else if (input.Length == 1)
       {
         float inValue = input[0];
         Vector3 vec = new(
@@ -204,10 +202,8 @@ namespace Waterfall
           yCurve.Evaluate(inValue) + randomValue,
           zCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < xforms.Count; i++)
-          output.Add(vec);
+          output[i] = vec;
       }
-
-      return output;
     }
   }
 }

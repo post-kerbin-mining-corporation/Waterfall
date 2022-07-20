@@ -60,7 +60,7 @@ namespace Waterfall
       lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().Where(x => x.transform.name == lightTransformName).ToArray();
     }
 
-    protected override void ApplyReplace(List<float> strengthList)
+    protected override void ApplyReplace(float[] strengthList)
     {
       for (int i = 0; i < m.Length; i++)
       {

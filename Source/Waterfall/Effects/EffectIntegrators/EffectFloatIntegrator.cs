@@ -11,7 +11,6 @@ namespace Waterfall
     public string transformName;
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms = new();
-    protected List<float> controllerData = new();
     public List<EffectModifier> handledModifiers = new();
     public virtual void AddModifier(EffectModifier mod)
     {
@@ -43,9 +42,9 @@ namespace Waterfall
 
     public abstract void Update();
 
-    public void Integrate(EffectModifierMode mode, List<float> items, List<float> modifiers)
+    public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
     {
-      int count = Math.Min(items.Count, modifiers.Count);
+      int count = Math.Min(items.Length, modifiers.Length);
       for (int i = 0; i < count; i++)
         items[i] = mode switch
         {
@@ -56,9 +55,9 @@ namespace Waterfall
           _ => items[i]
         };
     }
-    public void Integrate(EffectModifierMode mode, List<Vector3> items, List<Vector3> modifiers)
+    public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
-      int count = Math.Min(items.Count, modifiers.Count);
+      int count = Math.Min(items.Length, modifiers.Length);
       for (int i = 0; i < count; i++)
         items[i] = mode switch
         {
@@ -69,9 +68,9 @@ namespace Waterfall
           _ => items[i]
         };
     }
-    public void Integrate(EffectModifierMode mode, List<Color> items, List<Color> modifiers)
+    public void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
     {
-      int count = Math.Min(items.Count, modifiers.Count);
+      int count = Math.Min(items.Length, modifiers.Length);
       for (int i = 0; i < count; i++)
         items[i] = mode switch
         {
@@ -97,9 +96,9 @@ namespace Waterfall
         floatPropertyID = Shader.PropertyToID(_floatName);
       }
     }
-    protected readonly List<float> modifierData = new();
-    protected readonly List<float> initialValues = new();
-    protected readonly List<float> workingValues = new();
+    protected readonly float[] modifierData;
+    protected readonly float[] initialValues;
+    protected readonly float[] workingValues;
 
     private readonly Renderer[] r;
 
@@ -112,13 +111,16 @@ namespace Waterfall
       testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       r                  = new Renderer[xforms.Count];
+      modifierData = new float[xforms.Count];
+      initialValues = new float[xforms.Count];
+      workingValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         r[i] = xforms[i].GetComponent<Renderer>();
         try
         {
-          initialValues.Add(r[i].material.GetFloat(floatPropertyID));
+          initialValues[i] = r[i].material.GetFloat(floatPropertyID);
         }
         catch (Exception e)
         {
@@ -140,21 +142,22 @@ namespace Waterfall
       s_Update.Begin();
 
       s_ListPrep.Begin();
-      workingValues.Clear();
-      workingValues.AddRange(initialValues);
+      Array.Copy(initialValues, workingValues, workingValues.Length);
       s_ListPrep.End();
 
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        mod.Controller?.Get(controllerData);
+        if (mod.Controller != null)
+        {
+          float[] controllerData = mod.Controller.Get();
 
-        List<float> modResult;
-        modResult = ((EffectFloatModifier)mod).Get(controllerData, modifierData);
+          ((EffectFloatModifier)mod).Get(controllerData, modifierData);
 
-        s_Integrate.Begin();
-        Integrate(mod.effectMode, workingValues, modResult);
-        s_Integrate.End();
+          s_Integrate.Begin();
+          Integrate(mod.effectMode, workingValues, modifierData);
+          s_Integrate.End();
+        }
       }
       s_Modifiers.End();
 

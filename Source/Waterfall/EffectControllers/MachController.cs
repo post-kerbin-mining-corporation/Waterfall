@@ -10,9 +10,17 @@ namespace Waterfall
   {
     public MachController() : base() { }
     public MachController(ConfigNode node) : base(node) { }
-    public override void Update()
+
+    public override void Initialize(ModuleWaterfallFX host)
     {
-      value = (float) parentModule.vessel.mach;
+      base.Initialize(host);
+
+      values = new float[1];
+    }
+
+    protected override void UpdateInternal()
+    {
+      values[0] = (float) parentModule.vessel.mach;
     }
   }
 }
