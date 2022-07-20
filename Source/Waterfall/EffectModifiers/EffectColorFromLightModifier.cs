@@ -15,6 +15,7 @@ namespace Waterfall
     public Light[] lights;
 
     private Material[] m;
+    private int colorPropertyID;
     public override bool ValidForIntegrator => false;
 
     public EffectColorFromLightModifier() : base()
@@ -22,7 +23,10 @@ namespace Waterfall
       modifierTypeName = "Material Color From Light";
     }
 
-    public EffectColorFromLightModifier(ConfigNode node) : base(node) { }
+    public EffectColorFromLightModifier(ConfigNode node) : base(node)
+    {
+      colorPropertyID = Shader.PropertyToID(colorName);
+    }
 
     public override ConfigNode Save()
     {
@@ -47,6 +51,7 @@ namespace Waterfall
     public void ApplyColorName(string newColorName)
     {
       colorName = newColorName;
+      colorPropertyID = Shader.PropertyToID(colorName);
     }
 
     public void ApplyLightName(string newLightName)
@@ -60,9 +65,9 @@ namespace Waterfall
       for (int i = 0; i < m.Length; i++)
       {
         if (lights != null && lights.Length > i)
-          m[i].SetColor(colorName, lights[i].color * colorBlend + Color.white * (1f - colorBlend));
+          m[i].SetColor(colorPropertyID, lights[i].color * colorBlend + Color.white * (1f - colorBlend));
         else if (lights != null && lights.Length > 0)
-          m[i].SetColor(colorName, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
+          m[i].SetColor(colorPropertyID, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
       }
     }
 

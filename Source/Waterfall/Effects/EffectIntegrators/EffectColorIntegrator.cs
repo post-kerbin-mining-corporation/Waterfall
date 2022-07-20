@@ -5,7 +5,17 @@ namespace Waterfall
 {
   public class EffectColorIntegrator : EffectIntegrator
   {
-    public string                    colorName;
+    private int colorPropertyID;
+    private string _colorName;
+    public string colorName
+    {
+      get { return _colorName; }
+      set
+      {
+        _colorName = value;
+        colorPropertyID = Shader.PropertyToID(_colorName);
+      }
+    }
     protected readonly List<Color> modifierData = new();
     protected readonly List<Color> initialValues = new();
     protected readonly List<Color> workingValues = new();
@@ -21,7 +31,7 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
-        initialValues.Add(m[i].GetColor(colorName));
+        initialValues.Add(m[i].GetColor(colorPropertyID));
       }
     }
 
@@ -40,7 +50,7 @@ namespace Waterfall
       }
 
       for (int i = 0; i < m.Length; i++)
-        m[i].SetColor(colorName, workingValues[i]);
+        m[i].SetColor(colorPropertyID, workingValues[i]);
     }
   }
 }

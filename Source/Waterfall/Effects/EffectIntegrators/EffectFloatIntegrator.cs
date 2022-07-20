@@ -86,7 +86,17 @@ namespace Waterfall
 
   public class EffectFloatIntegrator : EffectIntegrator
   {
-    public string floatName;
+    private string _floatName;
+    private int floatPropertyID;
+    public string floatName
+    {
+      get { return _floatName; }
+      set
+      {
+        _floatName = value;
+        floatPropertyID = Shader.PropertyToID(_floatName);
+      }
+    }
     protected readonly List<float> modifierData = new();
     protected readonly List<float> initialValues = new();
     protected readonly List<float> workingValues = new();
@@ -108,7 +118,7 @@ namespace Waterfall
         r[i] = xforms[i].GetComponent<Renderer>();
         try
         {
-          initialValues.Add(r[i].material.GetFloat(floatName));
+          initialValues.Add(r[i].material.GetFloat(floatPropertyID));
         }
         catch (Exception e)
         {
@@ -161,7 +171,7 @@ namespace Waterfall
             rend.enabled = true;
         }
         if (rend.enabled)
-          rend.material.SetFloat(floatName, val);
+          rend.material.SetFloat(floatPropertyID, val);
       }
       s_Apply.End();
       s_Update.End();
