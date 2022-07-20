@@ -7,9 +7,10 @@ Shader "Waterfall/Procedural Particles (Additive)"
         _StartTint("StartTint", Color) = (1,1,1,1)
 		_EndTint("EndTint", Color) = (1,1,1,1)
         _Brightness("Brightness", Range(0, 5)) = 1
+        _PlumeDir("Exhaust Direction", Vector) = (0,1,0,0)
         [Space]
 
-        _Scale("Scale", Range(1, 10)) = 1
+        _Scale("Scale", Range(1, 15)) = 1
         _Expand("Expand", Range(0, 5)) = 0
         _FadeIn("Fade In", Range(0, 1)) = 0.4
         _FadeOut("Fade Out", Range(0.0, 2.5)) = 1
@@ -36,6 +37,7 @@ Shader "Waterfall/Procedural Particles (Additive)"
     float4 _StartTint;
     float4 _EndTint;
     float _Brightness;
+    float4 _PlumeDir;
     float _Scale;
     float _Expand;
     float _FadeIn;
@@ -131,9 +133,29 @@ Shader "Waterfall/Procedural Particles (Additive)"
                 float viewdot : TEXCOORD4;
             };
 
+            float3 dirToViewSpace(float3 view_zero, float3 dir) {
+                float3 perpendicular = normalize(dir);
+                float3 view = UnityObjectToViewPos(perpendicular);
+                return view - view_zero;
+            }
+
             float4 billboardTransform(in float4 vertex, in float beta) {
+                float3 view_zero = UnityObjectToViewPos(float3(0, 0, 0));
+                float3 plumeDir = normalize(_PlumeDir.xyz);
+
+                // calculate two vectors perpendicular to plumeDir
+                float3 notPlumeDir = normalize(plumeDir + float3(1, 1, 1));
+                float3 perpendicular1 = cross(plumeDir, notPlumeDir);
+                float3 perpendicular2 = cross(plumeDir, perpendicular1);
+                // transform those to view space
+                float3 perp1view = dirToViewSpace(view_zero, perpendicular1);
+                float3 perp2view = dirToViewSpace(view_zero, perpendicular2);
+                // combine the scaling of these vectors through the model matrix
+                float transformScaleTotal = sqrt(length(cross(perp1view, perp2view)));
+                //float transformScaleTotal = length(perp1view); <- simple version, only uses one dimension to check scaling
+
                 // only transform y with MV matrix, then add xz components, then apply projection
-                float scale = _Scale + beta * _Expand;
+                float scale = (_Scale + beta * _Expand) * transformScaleTotal;
                 float4 xz = float4(vertex.x, vertex.z, 0, 0);
                 float4 yView = float4(UnityObjectToViewPos(float4(0, vertex.y, 0, 1)), 1);
 
