@@ -159,21 +159,35 @@ namespace Waterfall
       s_Modifiers.End();
 
       s_Apply.Begin();
-      for (int i = 0; i < r.Length; i++)
+      if (testIntensity)
       {
-        var rend = r[i];
-        float val = workingValues[i];
-        if (testIntensity)
+        for (int i = 0; i < r.Length; i++)
         {
+          var rend = r[i];
+          float val = workingValues[i];
+          
           if (rend.enabled && val < Settings.MinimumEffectIntensity)
             rend.enabled = false;
           else if (!rend.enabled && val >= Settings.MinimumEffectIntensity)
             rend.enabled = true;
+
+          if (rend.enabled)
+            rend.material.SetFloat(floatPropertyID, val);
         }
-        if (rend.enabled)
-          rend.material.SetFloat(floatPropertyID, val);
+      }
+      else
+      {
+        for (int i = 0; i < r.Length; i++)
+        {
+          var rend = r[i];
+          float val = workingValues[i];
+
+          if (rend.enabled)
+            rend.material.SetFloat(floatPropertyID, val);
+        }
       }
       s_Apply.End();
+
       s_Update.End();
     }
   }
