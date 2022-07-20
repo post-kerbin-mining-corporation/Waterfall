@@ -44,7 +44,7 @@ Shader "Waterfall/Additive (Volumetric)"
         Blend one one
 
         ZWrite Off
-        ZTest Off
+        ZTest Always
         Cull Front
 
         Pass
