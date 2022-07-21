@@ -12,11 +12,14 @@ namespace Waterfall
   [DisplayName("Custom (Push)")]
   public class CustomPushController : WaterfallController
   {
-    public CustomPushController() : base()
+    public CustomPushController() : base() { }
+    public CustomPushController(ConfigNode node) : base(node) { }
+
+    public override void Initialize(ModuleWaterfallFX host)
     {
+      base.Initialize(host);
       values = new float[1];
     }
-    public CustomPushController(ConfigNode node) : base(node) { }
 
     protected override void UpdateInternal() { }
   }

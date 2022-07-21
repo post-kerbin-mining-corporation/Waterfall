@@ -8,15 +8,14 @@ namespace Waterfall
     [Persistent] public string axis = "x";
     private ModuleGimbal gimbalController;
 
-    public GimbalController() : base()
-    {
-      values = new float[1];
-    }
+    public GimbalController() : base() { }
     public GimbalController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
+
+      values = new float[1];
 
       gimbalController = host.part.FindModuleImplementing<ModuleGimbal>();
 
