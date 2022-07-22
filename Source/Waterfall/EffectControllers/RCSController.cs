@@ -13,7 +13,6 @@ namespace Waterfall
   [DisplayName("RCS")]
   public class RCSController : WaterfallController
   {
-    public  List<float> currentThrottle;
     [Persistent] public float responseRateUp         = 100f;
     [Persistent] public float responseRateDown       = 100f;
     [Persistent] public string thrusterTransformName = String.Empty;
@@ -36,12 +35,6 @@ namespace Waterfall
         return;
       }
 
-      currentThrottle = new(rcsController.thrusterTransforms.Count);
-      for (int i = 0; i < rcsController.thrusterTransforms.Count; i++)
-      {
-        currentThrottle.Add(0f);
-      }
-
       values = new float[rcsController.thrusterTransforms.Count];
     }
 
@@ -52,11 +45,11 @@ namespace Waterfall
         Utils.LogWarning("[RCSController] RCS controller not assigned");
         return;
       }
-      for (int i = 0; i < rcsController.thrusterTransforms.Count; i++)
+      for (int i = 0; i < values.Length; i++)
       {
         float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
-        float responseRate = newThrottle > currentThrottle[i] ? responseRateUp : responseRateDown;
-        currentThrottle[i] = Mathf.MoveTowards(currentThrottle[i], newThrottle, responseRate * TimeWarp.deltaTime);
+        float responseRate = newThrottle > values[i] ? responseRateUp : responseRateDown;
+        values[i] = Mathf.MoveTowards(values[i], newThrottle, responseRate * TimeWarp.deltaTime);
       }
     }
 
