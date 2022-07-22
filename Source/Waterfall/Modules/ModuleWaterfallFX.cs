@@ -136,19 +136,6 @@ namespace Waterfall
           config.AddNode(n);
       }
 
-      CleanupEffects();
-      allFX.Clear();
-      allTemplates.Clear();
-      allControllers.Clear();
-
-      if (!config.HasValue(nameof(version)))
-      {
-        version = Version.Initial;
-      }
-
-      LoadControllers(config);
-      LoadEffects(config);
-
       // Wait for OnStart to initialize, if it hasn't already run. (B9PS can call after OnStart())
       if (started)
         Initialize();
@@ -408,6 +395,25 @@ namespace Waterfall
     protected void Initialize()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing", LogType.Modules);
+
+      // we load controllers and effects here instead of OnLoad because OnLoad will not be called for modules that exist in a prefab but not craft file
+      // e.g. if a craft file was saved without waterfall installed
+      if (config != null)
+      {
+        CleanupEffects();
+        allFX.Clear();
+        allTemplates.Clear();
+        allControllers.Clear();
+
+        if (!config.HasValue(nameof(version)))
+        {
+          version = Version.Initial;
+        }
+
+        LoadControllers(config);
+        LoadEffects(config);
+      }
+
       InitializeControllers();
       InitializeEffects();
 
