@@ -56,6 +56,7 @@ Shader "Waterfall/Additive (Volumetric)"
             #include "unitycg.cginc"
 
             sampler2D_float _CameraDepthTexture;
+            float4 _CameraDepthTexture_TexelSize;
             sampler2D _MainTex;
             float _Fresnel;
             float _FresnelFadeIn;
@@ -94,7 +95,7 @@ Shader "Waterfall/Additive (Volumetric)"
             struct v2f
             {
                 float4 vertex                   : SV_POSITION;
-                float4 clipPos                  : COLOR0;    // same as vertex, but vertex seems to be unavailable/changed in fragment shader
+                float4 screenPos                : COLOR0;    // screenposition of vertex
                 float3 V                        : TEXCOORD0; // (Vx, Vy, Vz) * Sv
                 float3 uvy                      : TEXCOORD1; // (u, v, vertex y coordinate, )
                 float4 B                        : TEXCOORD2; // (Bm, B0, B1, Bt) * Sv
@@ -129,7 +130,7 @@ Shader "Waterfall/Additive (Volumetric)"
                 float3 vertex = i.vertex.xyz;
                 vertex.xz *= sqrt(mad(vertex.y, mad(a.x, vertex.y, b.x), 1.0));   // vertex xz-position
                 o.vertex = UnityObjectToClipPos(float4(vertex, 1));               // vertex clip position
-                o.clipPos = o.vertex;
+                o.screenPos = ComputeScreenPos(o.vertex);
                 
                 // ray values
                 o.V = vertex - o.Cam.xyz;
@@ -300,9 +301,8 @@ Shader "Waterfall/Additive (Volumetric)"
                 float Raydepth = Si.y - Si.x;
                 
                 // read depth of solid object from _CameraDepthTexture
-                float4 screenUV = ComputeGrabScreenPos(i.clipPos);
-                float opaqueDepth = tex2Dproj(_CameraDepthTexture, screenUV).x;
-
+                float opaqueDepth = tex2Dproj(_CameraDepthTexture, i.screenPos).x;
+                
                 // ray entry and exit positions
                 float3 objectEntry = mad(Si.x, i.V, i.Cam);
                 float3 objectExit = mad(Si.y, i.V, i.Cam);
