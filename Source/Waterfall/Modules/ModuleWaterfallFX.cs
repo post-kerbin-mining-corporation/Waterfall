@@ -33,7 +33,7 @@ namespace Waterfall
     protected readonly List<Renderer> allRenderers = new(128);
 
     protected bool started;
-    private   bool isHDR;
+    private bool isHDR;
     protected ConfigNode config;
     protected ConfigNode[] effectsNodes = { };
     protected ConfigNode[] templatesNodes = { };
@@ -148,7 +148,7 @@ namespace Waterfall
     public string ExportModule()
     {
       var newNode = new ConfigNode("MODULE");
-      newNode.AddValue("name",     "ModuleWaterfallFX");
+      newNode.AddValue("name", "ModuleWaterfallFX");
       newNode.AddValue("moduleID", moduleID);
       newNode.AddValue("version", version);
       //newNode.AddValue("engineID", engineID);
@@ -205,7 +205,7 @@ namespace Waterfall
     private void LoadEffects(ConfigNode node)
     {
       Utils.Log($"[ModuleWaterfallFX]: Loading Effects on moduleID {moduleID}", LogType.Modules);
-      var effectNodes   = node.GetNodes(WaterfallConstants.EffectNodeName);
+      var effectNodes = node.GetNodes(WaterfallConstants.EffectNodeName);
       var templateNodes = node.GetNodes(WaterfallConstants.TemplateNodeName);
 
       foreach (var fxDataNode in effectNodes)
@@ -227,7 +227,7 @@ namespace Waterfall
       }
 
       Utils.Log($"[ModuleWaterfallFX]: Finished loading {allTemplates.Count} templates", LogType.Modules);
-      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects",          LogType.Modules);
+      Utils.Log($"[ModuleWaterfallFX]: Finished loading {allFX.Count} effects", LogType.Modules);
     }
 
     /// <summary>
@@ -362,7 +362,7 @@ namespace Waterfall
       {
         foreach (var t in Templates.Where(x => x == target))
         {
-            t.allFX.Add(effect);
+          t.allFX.Add(effect);
         }
       }
 
@@ -395,6 +395,9 @@ namespace Waterfall
     protected void Initialize()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing", LogType.Modules);
+
+      // Some shaders require the depth texture; force-enable that.
+        FlightCamera.fetch.mainCamera.depthTextureMode |= DepthTextureMode.Depth;
 
       // we load controllers and effects here instead of OnLoad because OnLoad will not be called for modules that exist in a prefab but not craft file
       // e.g. if a craft file was saved without waterfall installed
