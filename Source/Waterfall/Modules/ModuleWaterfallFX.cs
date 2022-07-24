@@ -45,6 +45,17 @@ namespace Waterfall
     public List<WaterfallController> Controllers => allControllers.Values.ToList();
     public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
 
+    /// <summary>
+    /// Sets the value of a specific controller
+    /// Interface method. Used by other mods to push values to controllers
+    /// </summary>
+    /// <param name="controllerID"></param>
+    /// <param name="value"></param>
+    public void SetControllerValue(string controllerID, float value)
+    {
+      allControllers[controllerID].Set(value);
+    }
+
     public override void OnAwake()
     {
       base.OnAwake();
@@ -69,6 +80,7 @@ namespace Waterfall
     private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
     private static readonly ProfilerMarker luControllers = new ProfilerMarker("Waterfall.LateUpdate.Controllers");
     private static readonly ProfilerMarker luEffects = new ProfilerMarker("Waterfall.LateUpdate.Effects");
+
     protected void LateUpdate()
     {
       if (HighLogic.LoadedSceneIsFlight)
