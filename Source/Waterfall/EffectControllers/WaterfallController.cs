@@ -13,20 +13,65 @@ namespace Waterfall
     /// </summary>
     public const string LegacyControllerTypeNodeName = "linkedTo";
 
-    public    string            name = "unnamedController";
-    public    bool              overridden;
-    public    float             overrideValue;
-    protected float             value;
+    [Persistent] public string name = "unnamedController";
+    public bool overridden
+    {
+      get { return _overridden; }
+      set
+      {
+        _overridden = value;
+        if (_overridden)
+        {
+          Set(overrideValue);
+        }
+      }
+    }
+    public float overrideValue
+    {
+      get {  return _overrideValue; }
+      set
+      {
+        _overrideValue = value;
+        if (overridden)
+        {
+          Set(_overrideValue);
+        }
+      }
+    }
+    protected bool _overridden;
+    protected float _overrideValue;
+
+    public int referencingModifierCount = 0; // NOTE: this is only used for the upgrade pipeline and set on load, it does not get updated as effects are added or removed
+    protected float[] values;
     protected ModuleWaterfallFX parentModule;
+
+    public WaterfallController() { }
+    public WaterfallController(ConfigNode node) : this()
+    {
+      ConfigNode.LoadObjectFromConfig(this, node);
+    }
+
+    public void Update()
+    {
+      if (!overridden)
+      {
+        UpdateInternal();
+      }
+    }
+
+    /// <summary>
+    /// Get and store the value of the controller.  Consumers should call Get() to retrieve the data.
+    /// </summary>
+    protected abstract void UpdateInternal();
 
     /// <summary>
     ///   Get the value of the controller.
     /// </summary>
     /// <returns></returns>
-    public virtual List<float> Get() =>
-      overridden
-        ? new List<float>() { overrideValue }
-        : new List<float>() { 0f };
+    public float[] Get()
+    {
+      return values;
+    }
 
     /// <summary>
     ///   Saves the controller
@@ -34,9 +79,9 @@ namespace Waterfall
     /// <param name="host"></param>
     public virtual ConfigNode Save()
     {
-      var c = new ConfigNode(EffectControllersMetadata.GetConfigNodeName(GetType()));
-      c.AddValue(nameof(name), name);
-      return c;
+      var node = ConfigNode.CreateConfigFromObject(this);
+      node.name = EffectControllersMetadata.GetConfigNodeName(GetType());
+      return node;
     }
 
     /// <summary>
@@ -52,16 +97,19 @@ namespace Waterfall
     ///   Sets the value of the controller
     /// </summary>
     /// <param name="mode"></param>
-    public virtual void Set(float newValue)
+    public void Set(float newValue)
     {
-      value = newValue;
+      for (int i = 0; i < values.Length; i++)
+      {
+        values[i] = newValue;
+      }
     }
 
     /// <summary>
     ///   Sets whether this controller is overridden, likely controlled by the UI
     /// </summary>
     /// <param name="mode"></param>
-    public virtual void SetOverride(bool mode)
+    public void SetOverride(bool mode)
     {
       overridden = mode;
     }
@@ -70,9 +118,14 @@ namespace Waterfall
     ///   Sets the override value, not controlled by the game, likely an editor UI
     /// </summary>
     /// <param name="value"></param>
-    public virtual void SetOverrideValue(float value)
+    public void SetOverrideValue(float value)
     {
       overrideValue = value;
+    }
+
+    public virtual void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+
     }
   }
 }

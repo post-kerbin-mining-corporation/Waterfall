@@ -8,33 +8,22 @@ namespace Waterfall
   /// </summary>
   public class EffectFloatModifier : EffectModifier
   {
-    public string floatName = "";
-
-    public FloatCurve curve;
-
+    [Persistent] public string floatName = "";
+    public FloatCurve curve = new();
     private Material[] m;
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
 
-    public EffectFloatModifier()
+    public EffectFloatModifier() : base()
     {
-      curve = new();
-
       modifierTypeName = "Material Float";
     }
 
-    public EffectFloatModifier(ConfigNode node)
-    {
-      Load(node);
-    }
+    public EffectFloatModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-
-      node.TryGetValue("floatName", ref floatName);
-      curve = new();
       curve.Load(node.GetNode("floatCurve"));
-
-      modifierTypeName = "Material Float";
     }
 
     public override ConfigNode Save()
@@ -42,7 +31,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.FloatModifierNodeName;
-      node.AddValue("floatName", floatName);
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
     }
@@ -57,26 +45,19 @@ namespace Waterfall
       }
     }
 
-    public List<float> Get(List<float> strengthList)
+    public void Get(float[] input, float[] output)
     {
-      var floatList = new List<float>();
-
-      if (strengthList.Count > 1)
+      if (input.Length > 1)
       {
         for (int i = 0; i < m.Length; i++)
-        {
-          floatList.Add(curve.Evaluate(strengthList[i]) + randomValue);
-        }
+          output[i] = curve.Evaluate(input[i]) + randomValue;
       }
-      else
+      else if (input.Length == 1)
       {
+        float data = curve.Evaluate(input[0]) + randomValue;
         for (int i = 0; i < m.Length; i++)
-        {
-          floatList.Add(curve.Evaluate(strengthList[0]) + randomValue);
-        }
+          output[i] = data;
       }
-
-      return floatList;
     }
 
     public Material GetMaterial() => m[0];
@@ -86,5 +67,10 @@ namespace Waterfall
       floatName = newFloatName;
       parentEffect.ModifierParameterChange(this);
     }
+
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectFloatIntegrator i && i.floatName == floatName && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectFloatIntegrator(parentEffect, this);
+
   }
 }

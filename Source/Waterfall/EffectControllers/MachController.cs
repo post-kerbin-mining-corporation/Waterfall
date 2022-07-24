@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace Waterfall
 {
@@ -9,25 +8,19 @@ namespace Waterfall
   [DisplayName("Mach")]
   public class MachController : WaterfallController
   {
-    public float mach = 0;
-
-    public MachController() { }
-
-    public MachController(ConfigNode node)
-    {
-      node.TryGetValue(nameof(name), ref name);
-    }
+    public MachController() : base() { }
+    public MachController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
+
+      values = new float[1];
     }
 
-    public override List<float> Get()
+    protected override void UpdateInternal()
     {
-      if (overridden)
-        return new() { overrideValue };
-      return new() { (float)parentModule.vessel.mach };
+      values[0] = (float) parentModule.vessel.mach;
     }
   }
 }

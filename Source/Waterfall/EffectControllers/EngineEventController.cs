@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -9,35 +11,32 @@ namespace Waterfall
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
-    public float  currentThrottle = 1;
-    public string eventName;
+    [Persistent] public string eventName;
 
+    public FloatCurve eventCurve = new();
+    [Persistent] public float eventDuration = 1f;
+    private ModuleEngines engineModule;
 
-    public  FloatCurve    eventCurve    = new();
-    public  float         eventDuration = 1f;
-    private ModuleEngines engineController;
-
-    private bool  enginePreState;
+    private Func<ModuleEngines, bool> getEngineStateFunc; // when the result of this function transitions from false -> true, the event should fire
     private bool  eventPlaying;
-    private bool  eventReady;
+    private bool  eventReady;     // the event can fire on the next transition
     private float eventTime;
 
-    public EngineEventController() { }
-
-    public EngineEventController(ConfigNode node)
+    private static readonly Dictionary<string, Func<ModuleEngines, bool>> EngineStateFuncs = new()
     {
-      node.TryGetValue(nameof(name),          ref name);
-      node.TryGetValue(nameof(eventName),     ref eventName);
-      node.TryGetValue(nameof(eventDuration), ref eventDuration);
+      { "flameout", (engineModule) => engineModule.flameout || !engineModule.EngineIgnited},
+      { "ignition", (engineModule) => engineModule.EngineIgnited},
+    };
 
+    public EngineEventController() : base() { }
+    public EngineEventController(ConfigNode node) : base(node)
+    {
       eventCurve.Load(node.GetNode(nameof(eventCurve)));
     }
 
     public override ConfigNode Save()
     {
       var c = base.Save();
-      c.AddValue(nameof(eventDuration), eventDuration);
-      c.AddValue(nameof(eventName),     eventName);
       c.AddNode(Utils.SerializeFloatCurve(nameof(eventCurve), eventCurve));
       return c;
     }
@@ -46,53 +45,33 @@ namespace Waterfall
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == host.engineID);
-      if (engineController == null)
-        engineController = host.GetComponent<ModuleEngines>();
+      values = new float[1];
 
-      if (engineController == null)
-        Utils.LogError("[EngineEventController] Could not find engine controller on Initialize");
+      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
+      if (engineModule == null)
+        engineModule = host.part.FindModuleImplementing<ModuleEngines>();
 
-      if (eventName == "flameout")
+      if (engineModule == null)
+        Utils.LogError($"[EngineEventController] Could not find engine module for waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}' on Initialize");
+
+      EngineStateFuncs.TryGetValue(eventName, out getEngineStateFunc);
+
+      if (getEngineStateFunc != null)
       {
-        eventReady = engineController.EngineIgnited;
-        if (engineController.EngineIgnited)
-          enginePreState = true;
+        eventReady = !getEngineStateFunc(engineModule);
       }
-
-      if (eventName == "ignition")
+      else
       {
-        eventReady = !engineController.EngineIgnited;
-        if (engineController.EngineIgnited)
-        {
-          enginePreState = false;
-        }
+        Utils.LogError($"[EngineEventController] Invalid engine eventName '{eventName}' in waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}'");
       }
     }
 
-    public override List<float> Get()
+    protected override void UpdateInternal()
     {
-      if (overridden)
-        return new() { overrideValue };
-
-      if (engineController == null)
-      {
-        Utils.LogWarning("[EngineEventController] Engine controller not assigned");
-        return new() { 0f };
-      }
-
+      values[0] = 0;
+      if (engineModule != null && getEngineStateFunc != null)
+        values[0] = eventCurve.Evaluate(CheckStateChange());
       //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
-      if (eventName == "flameout")
-      {
-        return new() { eventCurve.Evaluate(CheckStateChange()) };
-      }
-
-      if (eventName == "ignition")
-      {
-        return new() { eventCurve.Evaluate(CheckStateChange()) };
-      }
-
-      return new() { 0f };
     }
 
     public float CheckStateChange()
@@ -100,9 +79,9 @@ namespace Waterfall
       if (eventReady)
       {
         /// Check if engine state flipped
-        if (engineController.EngineIgnited != enginePreState)
+        if (getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} fired ", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
           eventReady   = false;
           eventPlaying = true;
           eventTime    = 0f;
@@ -111,24 +90,47 @@ namespace Waterfall
       else if (eventPlaying)
       {
         eventTime += TimeWarp.deltaTime;
-        if (eventTime > eventDuration)
-        {
-          eventPlaying = false;
-        }
-
+        eventPlaying = eventTime <= eventDuration;
         return eventTime;
       }
       else if (!eventPlaying && !eventReady)
       {
         // Check to see if event can be reset
-        if (engineController.EngineIgnited == enginePreState)
+        if (!getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} ready ", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
           eventReady = true;
         }
       }
 
       return 0f;
+    }
+
+    public override void UpgradeToCurrentVersion(Version loadedVersion)
+    {
+      base.UpgradeToCurrentVersion(loadedVersion);
+
+      if (loadedVersion < Version.FixedRampRates)
+      {
+        float scaleFactor = 1.0f / Math.Max(1, referencingModifierCount);
+
+        eventDuration *= scaleFactor;
+
+        var keys = eventCurve.Curve.keys;
+        
+        for (int i = 0; i < keys.Length; ++i)
+        {
+          Keyframe key = keys[i];
+
+          key.time *= scaleFactor;
+          key.inTangent /= scaleFactor;
+          key.outTangent /= scaleFactor;
+
+          keys[i] = key;
+        }
+
+        eventCurve = new FloatCurve(keys);
+      }
     }
   }
 }

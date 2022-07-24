@@ -19,6 +19,7 @@ namespace Waterfall
 
     public static void ModuleManagerPostLoad()
     {
+      Settings.Load();
       WaterfallParticleLoader.LoadParticles();
       ShaderLoader.LoadShaders();
       ShaderLoader.LoadShaderProperties();

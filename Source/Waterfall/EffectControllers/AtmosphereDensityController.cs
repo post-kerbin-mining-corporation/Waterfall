@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using UnityEngine;
 
 namespace Waterfall
@@ -10,30 +9,20 @@ namespace Waterfall
   [DisplayName("Atmosphere Density")]
   public class AtmosphereDensityController : WaterfallController
   {
-    public float atmosphereDepth = 1;
-
-    public AtmosphereDensityController() { }
-
-    public AtmosphereDensityController(ConfigNode node)
-    {
-      node.TryGetValue(nameof(name), ref name);
-    }
+    public AtmosphereDensityController() : base() { }
+    public AtmosphereDensityController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
+
+      values = new float[1];
     }
 
-    public override List<float> Get()
+    protected override void UpdateInternal()
     {
-      if (overridden)
-        return new() { overrideValue };
-      return new()
-      {
-        Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent)
-
-        //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
-      };
+      //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
+      values[0] = Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
     }
   }
 }

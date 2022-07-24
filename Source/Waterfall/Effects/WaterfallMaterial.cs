@@ -191,30 +191,17 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetFloat(string propertyName, float value)
     {
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialFloatProperty();
-        newProp.propertyName  = propertyName;
-        newProp.propertyValue = value;
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialFloatProperty t && prop != null)
+        t.propertyValue = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialFloatProperty
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialFloatProperty)p;
-            t.propertyValue = value;
-          }
-        }
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)
@@ -234,30 +221,17 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetVector4(string propertyName, Vector4 value)
     {
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialVector4Property();
-        newProp.propertyName  = propertyName;
-        newProp.propertyValue = value;
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialVector4Property t && prop != null)
+        t.propertyValue = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialVector4Property
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialVector4Property)p;
-            t.propertyValue = value;
-          }
-        }
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)
@@ -274,31 +248,18 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetTextureScale(string propertyName, Vector2 value)
     {
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialTextureProperty();
-        newProp.propertyName  = propertyName;
-        newProp.textureOffset = materials[0].GetTextureOffset(propertyName);
-        newProp.textureScale  = value;
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialTextureProperty t && prop != null)
+        t.textureScale = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialTextureProperty
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialTextureProperty)p;
-            t.textureScale = value;
-          }
-        }
+          propertyName = propertyName,
+          textureOffset = materials[0].GetTextureOffset(propertyName),
+          textureScale = value
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)
@@ -315,32 +276,19 @@ namespace Waterfall
     public void SetTexture(string propertyName, string value)
     {
       Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value}", LogType.Effects);
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialTextureProperty();
-        newProp.propertyName  = propertyName;
-        newProp.texturePath   = value;
-        newProp.textureScale  = materials[0].GetTextureScale(propertyName);
-        newProp.textureOffset = materials[0].GetTextureOffset(propertyName);
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialTextureProperty t && prop != null)
+        t.texturePath = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialTextureProperty
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialTextureProperty)p;
-            t.texturePath = value;
-          }
-        }
+          propertyName = propertyName,
+          texturePath = value,
+          textureScale = materials[0].GetTextureScale(propertyName),
+          textureOffset = materials[0].GetTextureOffset(propertyName)
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)
@@ -357,31 +305,18 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetTextureOffset(string propertyName, Vector2 value)
     {
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialTextureProperty();
-        newProp.propertyName  = propertyName;
-        newProp.textureScale  = materials[0].GetTextureScale(propertyName);
-        newProp.textureOffset = value;
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialTextureProperty t && prop != null)
+        t.textureOffset = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialTextureProperty
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialTextureProperty)p;
-            t.textureOffset = value;
-          }
-        }
+          propertyName = propertyName,
+          textureScale = materials[0].GetTextureScale(propertyName),
+          textureOffset = value
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)
@@ -397,30 +332,17 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetColor(string propertyName, Color value)
     {
-      bool existsSavedProperty = false;
-      foreach (var p in matProperties)
-      {
-        if (p.propertyName == propertyName)
-          existsSavedProperty = true;
-      }
-
-      if (!existsSavedProperty)
-      {
-        var newProp = new WaterfallMaterialColorProperty();
-        newProp.propertyName  = propertyName;
-        newProp.propertyValue = value;
-        matProperties.Add(newProp);
-      }
+      var prop = matProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallMaterialColorProperty t && prop != null)
+        t.propertyValue = value;
       else
       {
-        foreach (var p in matProperties)
+        var newProp = new WaterfallMaterialColorProperty
         {
-          if (p.propertyName == propertyName)
-          {
-            var t = (WaterfallMaterialColorProperty)p;
-            t.propertyValue = value;
-          }
-        }
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        matProperties.Add(newProp);
       }
 
       foreach (var mat in materials)

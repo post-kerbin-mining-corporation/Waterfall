@@ -19,7 +19,7 @@ namespace Waterfall.UI
       combineModes    = Enum.GetNames(typeof(EffectModifierMode));
       combineModeFlag = (int)mod.effectMode;
       modifier        = mod;
-      randomText      = modifier.randomScale.ToString();
+      randomText      = modifier.randomnessScale.ToString();
       windowPos       = new(WaterfallUI.Instance.WindowPosition.xMax + 5f, WaterfallUI.Instance.WindowPosition.yMin, 500f, 100f);
     }
 
@@ -92,7 +92,7 @@ namespace Waterfall.UI
         modifier.randomnessController = GUILayout.TextArea(modifier.randomnessController);
         GUILayout.Label("Scale");
         randomText = GUILayout.TextArea(randomText);
-        if (Single.TryParse(randomText, out modifier.randomScale)) { }
+        if (Single.TryParse(randomText, out modifier.randomnessScale)) { }
       }
 
       GUILayout.EndHorizontal();

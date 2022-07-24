@@ -1,4 +1,4 @@
-// Utils
+﻿// Utils
 
 using System;
 using System.Collections.Generic;
@@ -30,27 +30,28 @@ namespace Waterfall
     }
 
     /// <summary>
+    /// Is logging enabled?
+    /// </summary>
+    /// <param name="logType">Logging Type</param>
+    /// <returns>True if logging is enabled</returns>
+    public static bool IsLogging(LogType logType = LogType.Any)
+    {
+      return logType == LogType.Any
+              || (logType == LogType.Settings && Settings.DebugSettings)
+              || (logType == LogType.UI && Settings.DebugUIMode)
+              || (logType == LogType.Modules && Settings.DebugModules)
+              || (logType == LogType.Effects && Settings.DebugEffects)
+              || (logType == LogType.Modifiers && Settings.DebugModifiers);
+    }
+
+    /// <summary>
     ///   Log a message with the mod name tag prefixed
     /// </summary>
     /// <param name="str">message string </param>
     public static void Log(string str, LogType logType)
     {
-      bool doLog = false;
-      if (logType == LogType.Settings && Settings.DebugSettings)
-        doLog = true;
-      if (logType == LogType.UI && Settings.DebugUIMode)
-        doLog = true;
-      if (logType == LogType.Modules && Settings.DebugModules)
-        doLog = true;
-      if (logType == LogType.Effects && Settings.DebugEffects)
-        doLog = true;
-      if (logType == LogType.Modifiers && Settings.DebugModifiers)
-        doLog = true;
-      if (logType == LogType.Any)
-        doLog = true;
-
-      if (doLog)
-        Debug.Log(String.Format("[{0}]{1}", ModName, str));
+      if (IsLogging(logType))
+        Debug.Log($"[{ModName}]{str}");
     }
 
     /// <summary>

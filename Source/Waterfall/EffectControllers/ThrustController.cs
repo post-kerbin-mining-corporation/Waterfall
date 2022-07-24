@@ -13,56 +13,39 @@ namespace Waterfall
   [DisplayName("Thrust")]
   public class ThrustController : WaterfallController
   {
-    public  string        engineID = String.Empty;
+    [Persistent] public string engineID = String.Empty;
     public  float         currentThrustFraction;
     private ModuleEngines engineController;
 
-    public ThrustController() { }
-
-    public ThrustController(ConfigNode node)
-    {
-      node.TryGetValue(nameof(name),     ref name);
-      node.TryGetValue(nameof(engineID), ref engineID);
-    }
+    public ThrustController() : base() { }
+    public ThrustController(ConfigNode node) : base(node) { }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
 
-      engineController = host.GetComponents<ModuleEngines>().ToList().Find(x => x.engineID == engineID);
+      values = new float[1];
+
+      engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
         Utils.Log($"[ThrustController] Could not find engine ID {engineID}, using first module");
-        engineController = host.GetComponent<ModuleEngines>();
+        engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 
       if (engineController == null)
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
     }
 
-    public override ConfigNode Save()
+    protected override void UpdateInternal()
     {
-      var c = base.Save();
-
-      c.AddValue(nameof(engineID), engineID);
-      return c;
-    }
-
-    public override List<float> Get()
-    {
-      if (overridden)
-        return new() { overrideValue };
-
       if (engineController == null)
       {
         Utils.LogWarning("[ThrustController] Engine controller not assigned");
-        return new() { 0f };
+        currentThrustFraction = 0;
       }
-
-      if (!engineController.isOperational)
-      {
+      else if (!engineController.isOperational)
         currentThrustFraction = 0f;
-      }
       else
       {
         // Thanks to NathanKell for the formula.
@@ -73,7 +56,7 @@ namespace Waterfall
                               * engineController.multIsp;
       }
 
-      return new() { currentThrustFraction };
+      values[0] = currentThrustFraction;
     }
   }
 }

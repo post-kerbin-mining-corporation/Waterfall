@@ -8,32 +8,24 @@ namespace Waterfall
   /// </summary>
   public class EffectUVScrollModifier : EffectModifier
   {
-    public  FloatCurve scrollCurveX;
-    public  FloatCurve scrollCurveY;
-    public  string     textureName;
+    public FloatCurve scrollCurveX = new();
+    public FloatCurve scrollCurveY = new();
+    [Persistent] public string textureName;
     private Material[] m;
+    public override bool ValidForIntegrator => false;
 
-    public EffectUVScrollModifier()
+    public EffectUVScrollModifier() : base()
     {
-      scrollCurveX = new();
-      scrollCurveY = new();
+      modifierTypeName = GetType().Name;
     }
 
-    public EffectUVScrollModifier(ConfigNode node)
-    {
-      Load(node);
-    }
+    public EffectUVScrollModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-
-      node.TryGetValue("textureName", ref textureName);
-      scrollCurveX = new();
-      scrollCurveY = new();
       scrollCurveX.Load(node.GetNode("scrollCurveX"));
       scrollCurveY.Load(node.GetNode("scrollCurveY"));
-      modifierTypeName = GetType().Name;
     }
 
     public override ConfigNode Save()
@@ -41,8 +33,6 @@ namespace Waterfall
       var node = base.Save();
 
       node.name = WaterfallConstants.UVScrollModifierNodeName;
-      node.AddValue("textureName", textureName);
-
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveX", scrollCurveX));
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveY", scrollCurveY));
       return node;
@@ -58,7 +48,7 @@ namespace Waterfall
       }
     }
 
-    public override void Apply(List<float> strengthList)
+    public override void Apply(float[] strengthList)
     {
       float strength = strengthList[0];
       for (int i = 0; i < m.Length; i++)
@@ -72,6 +62,12 @@ namespace Waterfall
           y = 0f;
         m[i].SetTextureOffset(textureName, new(x, y));
       }
+    }
+
+    public override EffectIntegrator CreateIntegrator()
+    {
+      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
+      return null;
     }
   }
 }
