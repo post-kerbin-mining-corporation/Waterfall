@@ -114,6 +114,7 @@
     <Compile Include="EffectControllers\MachController.cs" />
     <Compile Include="EffectControllers\RandomnessController.cs" />
     <Compile Include="EffectControllers\RCSController.cs" />
+    <Compile Include="EffectControllers\RemapController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />
     <Compile Include="EffectControllers\ThrustController.cs" />
     <Compile Include="EffectModifiers\EffectLightColorModifier.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="UI\EffectControllersUI\MachControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\RandomnessControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\RCSControllerUIOptions.cs" />
+    <Compile Include="UI\EffectControllersUI\RemapControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\ThrottleControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\ThrustControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\UIControllerPopupWindow.cs" />
@@ -201,7 +203,7 @@
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).*" "$(SolutionDir)\..\..\GameData\Waterfall\Plugins\"</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
     </Target>
