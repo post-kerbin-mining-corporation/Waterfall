@@ -35,7 +35,14 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
-        initialValues[i] = m[i].GetColor(colorPropertyID);
+        if (m[i].HasProperty(colorPropertyID))
+        {
+          initialValues[i] = m[i].GetColor(colorPropertyID);
+        }
+        else
+        {
+          Utils.LogError($"Material {m[i].name} does not have color property {colorName} for modifier {colorMod.fxName} in module {effect.parentModule.moduleID}");
+        }
       }
     }
 
