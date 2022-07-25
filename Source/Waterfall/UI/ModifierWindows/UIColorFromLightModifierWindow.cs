@@ -34,7 +34,7 @@ namespace Waterfall.UI
       GUILayout.BeginHorizontal();
       GUILayout.Label("Light Transform Name");
       int selectedIndex = GUILayout.SelectionGrid(lightIndex, lightNames, 4);
-      if (selectedIndex != colorIndex)
+      if (selectedIndex != lightIndex)
       {
         lightIndex = selectedIndex;
         lightName  = lightNames[lightIndex];
