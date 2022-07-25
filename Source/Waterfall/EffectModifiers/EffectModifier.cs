@@ -106,11 +106,16 @@ namespace Waterfall
       }
     }
 
+    protected abstract string ConfigNodeName { get; }
+
     public virtual ConfigNode Save()
     {
       var node = ConfigNode.CreateConfigFromObject(this);
       node.AddValue("name", fxName);
       node.AddValue("combinationType", effectMode.ToString());
+
+      node.name = ConfigNodeName;
+
       return node;
     }
 
@@ -181,8 +186,93 @@ namespace Waterfall
         integrator = null;
       }
     }
+  }
 
-    public void Get(float[] input, Vector3[] output, FloatCurve xCurve, FloatCurve yCurve, FloatCurve zCurve)
+  public abstract class EffectModifier_Color : EffectModifier
+  {
+    public FloatCurve rCurve = new();
+    public FloatCurve gCurve = new();
+    public FloatCurve bCurve = new();
+    public FloatCurve aCurve = new();
+
+    public EffectModifier_Color() : base() { }
+    public EffectModifier_Color(ConfigNode node) : base(node) { }
+
+    public override void Load(ConfigNode node)
+    {
+      base.Load(node);
+
+      rCurve.Load(node.GetNode("rCurve"));
+      gCurve.Load(node.GetNode("gCurve"));
+      bCurve.Load(node.GetNode("bCurve"));
+      aCurve.Load(node.GetNode("aCurve"));
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = base.Save();
+
+      node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
+      node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
+      node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
+      node.AddNode(Utils.SerializeFloatCurve("aCurve", aCurve));
+      return node;
+    }
+
+    public void Get(float[] input, Color[] output)
+    {
+      if (input.Length > 1)
+      {
+        for (int i = 0; i < output.Length; i++)
+        {
+          float inValue = input[i];
+          output[i] = new(rCurve.Evaluate(inValue) + randomValue,
+                          gCurve.Evaluate(inValue) + randomValue,
+                          bCurve.Evaluate(inValue) + randomValue,
+                          aCurve.Evaluate(inValue) + randomValue);
+        }
+      }
+      else if (input.Length == 1)
+      {
+        float inValue = input[0];
+        Color color = new Color(
+          rCurve.Evaluate(inValue) + randomValue,
+          gCurve.Evaluate(inValue) + randomValue,
+          bCurve.Evaluate(inValue) + randomValue,
+          aCurve.Evaluate(inValue) + randomValue);
+        for (int i = 0; i < output.Length; i++)
+          output[i] = color;
+      }
+    }
+  }
+
+  public abstract class EffectModifier_Vector3 : EffectModifier
+  {
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
+    public FloatCurve zCurve = new();
+
+    public EffectModifier_Vector3() : base() { }
+    public EffectModifier_Vector3(ConfigNode node) : base(node) { }
+
+    public override void Load(ConfigNode node)
+    {
+      base.Load(node);
+      xCurve.Load(node.GetNode("xCurve"));
+      yCurve.Load(node.GetNode("yCurve"));
+      zCurve.Load(node.GetNode("zCurve"));
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = base.Save();
+
+      node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
+      node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
+      node.AddNode(Utils.SerializeFloatCurve("zCurve", zCurve));
+      return node;
+    }
+    public void Get(float[] input, Vector3[] output)
     {
       if (input.Length > 1)
       {
@@ -203,6 +293,41 @@ namespace Waterfall
           zCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < xforms.Count; i++)
           output[i] = vec;
+      }
+    }
+  }
+
+  public abstract class EffectModifier_Float : EffectModifier
+  {
+    public FloatCurve curve = new();
+
+    public EffectModifier_Float() : base() { }
+    public EffectModifier_Float(ConfigNode node) : base(node) { }
+
+    public override void Load(ConfigNode node)
+    {
+      base.Load(node);
+      curve.Load(node.GetNode("floatCurve"));
+    }
+    public override ConfigNode Save()
+    {
+      var node = base.Save();
+      node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
+      return node;
+    }
+
+    public void Get(float[] input, float[] output)
+    {
+      if (input.Length > 1)
+      {
+        for (int i = 0; i < output.Length; i++)
+          output[i] = curve.Evaluate(input[i]) + randomValue;
+      }
+      else if (input.Length == 1)
+      {
+        float data = curve.Evaluate(input[0]) + randomValue;
+        for (int i = 0; i < output.Length; i++)
+          output[i] = data;
       }
     }
   }

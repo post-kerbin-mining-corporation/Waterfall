@@ -9,6 +9,8 @@ namespace Waterfall
   /// </summary>
   public class EffectColorFromLightModifier : EffectModifier
   {
+    protected override string ConfigNodeName => WaterfallConstants.ColorFromLightNodeName;
+
     [Persistent] public string colorName;
     [Persistent] public string lightTransformName;
     [Persistent] public float colorBlend;
@@ -26,13 +28,6 @@ namespace Waterfall
     public EffectColorFromLightModifier(ConfigNode node) : base(node)
     {
       colorPropertyID = Shader.PropertyToID(colorName);
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = base.Save();
-      node.name = WaterfallConstants.ColorFromLightNodeName;
-      return node;
     }
 
     public override void Init(WaterfallEffect parentEffect)
