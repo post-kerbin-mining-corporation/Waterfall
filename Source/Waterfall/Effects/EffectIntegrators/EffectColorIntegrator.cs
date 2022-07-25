@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Waterfall
 {
-  public class EffectColorIntegrator : EffectIntegrator
+  public class EffectColorIntegrator : EffectIntegrator_Color
   {
     private int colorPropertyID;
     private string _colorName;
@@ -17,9 +18,6 @@ namespace Waterfall
         colorPropertyID = Shader.PropertyToID(_colorName);
       }
     }
-    protected readonly Color[] modifierData;
-    protected readonly Color[] initialValues;
-    protected readonly Color[] workingValues;
 
     private readonly Material[]  m;
 
@@ -29,9 +27,7 @@ namespace Waterfall
       colorName        = colorMod.colorName;
 
       m                  = new Material[xforms.Count];
-      modifierData = new Color[xforms.Count];
-      initialValues = new Color[xforms.Count];
-      workingValues = new Color[xforms.Count];
+
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
@@ -46,23 +42,8 @@ namespace Waterfall
       }
     }
 
-    public override void Update()
+    protected override void Apply()
     {
-      if (handledModifiers.Count == 0)
-        return;
-      
-      Array.Copy(initialValues, workingValues, m.Length);
-
-      foreach (var mod in handledModifiers)
-      {
-        if (mod.Controller != null)
-        {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectColorModifier)mod).Get(controllerData, modifierData);
-          Integrate(mod.effectMode, workingValues, modifierData);
-        }
-      }
-
       for (int i = 0; i < m.Length; i++)
         m[i].SetColor(colorPropertyID, workingValues[i]);
     }

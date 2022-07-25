@@ -8,6 +8,8 @@ namespace Waterfall
   /// </summary>
   public class EffectUVScrollModifier : EffectModifier
   {
+    protected override string ConfigNodeName => WaterfallConstants.UVScrollModifierNodeName;
+
     public FloatCurve scrollCurveX = new();
     public FloatCurve scrollCurveY = new();
     [Persistent] public string textureName;
@@ -32,7 +34,6 @@ namespace Waterfall
     {
       var node = base.Save();
 
-      node.name = WaterfallConstants.UVScrollModifierNodeName;
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveX", scrollCurveX));
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveY", scrollCurveY));
       return node;

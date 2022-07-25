@@ -122,6 +122,7 @@
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />

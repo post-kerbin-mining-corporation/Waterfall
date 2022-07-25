@@ -321,13 +321,16 @@ namespace Waterfall
         s_fxApply.End();
 
         s_Integrators.Begin();
-        foreach (var integrator in floatIntegrators) integrator.Update();
-        foreach (var integrator in colorIntegrators) integrator.Update();
-        foreach (var integrator in positionIntegrators) integrator.Update();
-        foreach (var integrator in scaleIntegrators) integrator.Update();
-        foreach (var integrator in rotationIntegrators) integrator.Update();
-        foreach (var integrator in lightFloatIntegrators) integrator.Update();
-        foreach (var integrator in lightColorIntegrators) integrator.Update();
+        foreach (var integrator in floatIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        foreach (var integrator in colorIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        foreach (var integrator in positionIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        foreach (var integrator in scaleIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        foreach (var integrator in rotationIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        if (Settings.EnableLights)
+        {
+          foreach (var integrator in lightFloatIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+          foreach (var integrator in lightColorIntegrators) if (integrator.handledModifiers.Count > 0) integrator.Update();
+        }
         s_Integrators.End();
       }
       s_Update.End();
