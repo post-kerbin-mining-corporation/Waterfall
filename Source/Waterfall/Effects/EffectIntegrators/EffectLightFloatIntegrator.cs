@@ -11,13 +11,10 @@ namespace Waterfall
 
     private readonly Light[]     l;
 
-    private readonly bool testIntensity;
-
-    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
+    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
     {
       // light-float specific
       floatName = floatMod.floatName;
-      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       l = new Light[xforms.Count];
 
@@ -31,8 +28,10 @@ namespace Waterfall
       }
     }
 
-    protected override void Apply()
+    protected override bool Apply_TestIntensity()
     {
+      bool anyActive = false;
+
       float lightBaseScale = parentEffect.TemplateScaleOffset.x;
       for (int i = 0; i < l.Length; i++)
       {
@@ -46,8 +45,13 @@ namespace Waterfall
             light.enabled = true;
         }
         if (light.enabled)
+        {
           UpdateFloats(light, value);
+          anyActive = true;
+        }
       }
+
+      return anyActive;
     }
 
     protected void UpdateFloats(Light l, float f)

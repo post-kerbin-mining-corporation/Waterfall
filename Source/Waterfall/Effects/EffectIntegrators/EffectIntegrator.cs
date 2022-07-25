@@ -39,6 +39,14 @@ namespace Waterfall
       AddModifier(mod);
     }
 
+    // REVIEW: there are some problems here:
+    // A) 2 virtual calls might hurt performance - how do we get this down to 1 and keep the code sharing where it should be?
+    // This might be overthinking it - it's only 2 virtual calls per integrator
+    // Should the common part just be a protected function that the virtual derived classes have to call?
+    // This might make profiling markup annoying
+    // B) it's a code smell that the bool return value is only meaningful for some of the integrators (float integrators that control visibility)
+    // C) It's strange that the boolean for TestIntensity lives in the EffectIntegrator_Float but the threshold and application logic is in the derived classes
+    public abstract void Update();
     protected abstract void Apply();
 
     public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
@@ -104,11 +112,27 @@ namespace Waterfall
 
   public abstract class EffectIntegrator_Float : EffectIntegratorTyped<float>
   {
-    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod) : base(effect, mod) { }
+    public readonly bool testIntensity;
+
+    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity_) : base(effect, mod)
+    {
+      testIntensity = testIntensity_;
+    }
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 
-    public void Update()
+    public override void Update()
+    {
+      Update_TestIntensity();
+    }
+    protected override void Apply()
+    {
+      Apply_TestIntensity();
+    }
+
+    protected abstract bool Apply_TestIntensity();
+
+    public bool Update_TestIntensity()
     {
       s_Update.Begin();
 
@@ -131,10 +155,12 @@ namespace Waterfall
       s_Modifiers.End();
 
       s_Apply.Begin();
-      Apply();
+      bool result = Apply_TestIntensity();
       s_Apply.End();
 
       s_Update.End();
+
+      return result;
     }
   }
 
@@ -144,7 +170,7 @@ namespace Waterfall
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Color.Update");
 
-    public void Update()
+    public override void Update()
     {
       s_Update.Begin();
 
@@ -180,7 +206,7 @@ namespace Waterfall
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Vector3.Update");
 
-    public void Update()
+    public override void Update()
     {
       s_Update.Begin();
 
