@@ -353,6 +353,7 @@ namespace Waterfall
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting controller", LogType.Modules);
       allControllers.Remove(toRemove.name);
+      allRenderers.Clear();
     }
 
     public void AddEffect(WaterfallEffect newEffect)
@@ -380,6 +381,7 @@ namespace Waterfall
 
       allFX.Add(effect);
       effect.InitializeEffect(this, fromNothing, useRelativeScaling);
+      allRenderers.Clear();
     }
 
     public void RemoveEffect(WaterfallEffect toRemove)
@@ -399,6 +401,7 @@ namespace Waterfall
       }
 
       allFX.Remove(toRemove);
+      allRenderers.Clear();
     }
 
     /// <summary>
@@ -409,7 +412,7 @@ namespace Waterfall
       Utils.Log("[ModuleWaterfallFX]: Initializing", LogType.Modules);
 
       // Some shaders require the depth texture; force-enable that.
-        FlightCamera.fetch.mainCamera.depthTextureMode |= DepthTextureMode.Depth;
+      FlightCamera.fetch.mainCamera.depthTextureMode |= DepthTextureMode.Depth;
 
       // we load controllers and effects here instead of OnLoad because OnLoad will not be called for modules that exist in a prefab but not craft file
       // e.g. if a craft file was saved without waterfall installed
