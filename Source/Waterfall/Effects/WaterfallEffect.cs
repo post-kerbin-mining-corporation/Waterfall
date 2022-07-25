@@ -399,8 +399,11 @@ namespace Waterfall
         UpdateIntegratorArray(scaleIntegrators);
         UpdateIntegratorArray(rotationIntegrators);
 
-        UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
-        UpdateIntegratorArray(lightColorIntegrators);
+        if (Settings.EnableLights)
+        {
+          UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
+          UpdateIntegratorArray(lightColorIntegrators);
+        }
         s_Integrators.End();
       }
       s_Update.End();
