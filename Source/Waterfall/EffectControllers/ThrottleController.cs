@@ -49,15 +49,19 @@ namespace Waterfall
     {
       if (engineController == null)
       {
-        Utils.LogWarning("[ThrottleController] Engine controller not assigned");
         currentThrottle = 0;
-      } 
-      else if (!engineController.isOperational)
-        currentThrottle = 0f;
-      else if (engineController.currentThrottle > currentThrottle)
-        currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateUp * TimeWarp.deltaTime);
+      }
       else
-        currentThrottle = Mathf.MoveTowards(currentThrottle, engineController.currentThrottle, responseRateDown * TimeWarp.deltaTime);
+      {
+        float targetThrottle = engineController.isOperational ? engineController.currentThrottle : 0f;
+
+        if (currentThrottle != targetThrottle)
+        {
+          float rampRate = targetThrottle > currentThrottle ? responseRateUp : responseRateDown;
+          currentThrottle = Mathf.MoveTowards(currentThrottle, targetThrottle, rampRate * TimeWarp.deltaTime);
+        }
+      }
+      
       values[0] = currentThrottle;
     }
 
