@@ -110,6 +110,13 @@ namespace Waterfall
       }
     }
 
+    private void FetchConfigFromPrefab()
+    {
+      config = part.partInfo.partPrefab.FindModulesImplementing<ModuleWaterfallFX>().FirstOrDefault(x => x.moduleID == moduleID).config;
+      effectsNodes = config.GetNodes(WaterfallConstants.EffectNodeName);
+      templatesNodes = config.GetNodes(WaterfallConstants.TemplateNodeName);
+    }
+
     /// <summary>
     ///   Load all CONTROLLERS, TEMPLATES and EFFECTS
     /// </summary>
@@ -129,9 +136,7 @@ namespace Waterfall
       // KSP behaviour is to only provide the Persistent data, everything else is in the prefab.
       if (!node.HasNode(WaterfallConstants.EffectNodeName) && !node.HasNode(WaterfallConstants.TemplateNodeName))
       {
-        config = part.partInfo.partPrefab.FindModulesImplementing<ModuleWaterfallFX>().FirstOrDefault(x => x.moduleID == moduleID).config;
-        effectsNodes = config.GetNodes(WaterfallConstants.EffectNodeName);
-        templatesNodes = config.GetNodes(WaterfallConstants.TemplateNodeName);
+        FetchConfigFromPrefab();
       }
       else
       {
@@ -416,6 +421,11 @@ namespace Waterfall
 
       // we load controllers and effects here instead of OnLoad because OnLoad will not be called for modules that exist in a prefab but not craft file
       // e.g. if a craft file was saved without waterfall installed
+      if (config == null)
+      {
+        FetchConfigFromPrefab();
+      }
+      
       if (config != null)
       {
         CleanupEffects();
