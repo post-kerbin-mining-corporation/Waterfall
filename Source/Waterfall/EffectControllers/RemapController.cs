@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Collections;
 using UnityEngine;
@@ -43,14 +43,17 @@ namespace Waterfall
       values = new float[source.Get().Length];
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
-      if (source == null) return;
-      float[] sourceValues = source.Get();
-      for (int i = 0; i < sourceValues.Length; ++i)
+      if (source != null)
       {
-        values[i] = mappingCurve.Evaluate(sourceValues[i]);
+        float[] sourceValues = source.Get();
+        for (int i = 0; i < sourceValues.Length; ++i)
+        {
+          values[i] = mappingCurve.Evaluate(sourceValues[i]);
+        }
       }
+      return false;
     }
   }
 }

@@ -21,6 +21,9 @@ namespace Waterfall
       values = new float[1];
     }
 
-    protected override void UpdateInternal() { }
+    protected override bool UpdateInternal()
+    {
+      return values[0] != 0;
+    }
   }
 }

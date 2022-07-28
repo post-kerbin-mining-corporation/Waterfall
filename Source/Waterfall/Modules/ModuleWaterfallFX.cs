@@ -45,6 +45,8 @@ namespace Waterfall
     public List<WaterfallController> Controllers => allControllers.Values.ToList();
     public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
 
+    bool isAwake = true;
+
     /// <summary>
     /// Sets the value of a specific controller
     /// Interface method. Used by other mods to push values to controllers
@@ -93,20 +95,34 @@ namespace Waterfall
           isHDR = !isHDR;
         luSetup.End();
         luControllers.Begin();
+        bool controllersAwake = false;
         foreach (var controller in allControllers.Values)
         {
-          controller.Update();
+          controllersAwake = controller.Update() || controllersAwake;
         }
         luControllers.End();
-        luEffects.Begin();
-        foreach (var fx in allFX)
+
+        isAwake = isAwake || controllersAwake;
+
+        if (isAwake)
         {
-          fx.Update();
-          if (changeHDR)
-            fx.SetHDR(isHDR);
+          bool effectsAwake = false;
+          luEffects.Begin();
+          foreach (var fx in allFX)
+          {
+            effectsAwake = fx.Update() || effectsAwake;
+            if (changeHDR)
+              fx.SetHDR(isHDR);
+          }
+
+          if (!controllersAwake && !effectsAwake)
+          {
+            isAwake = false;
+          }
+
+          luEffects.End();
+          WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
         }
-        luEffects.End();
-        WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
       }
     }
 

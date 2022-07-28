@@ -51,18 +51,22 @@ namespace Waterfall
       ConfigNode.LoadObjectFromConfig(this, node);
     }
 
-    public void Update()
+    public bool Update()
     {
+      bool awake = overridden;
+      
       if (!overridden)
       {
-        UpdateInternal();
+        awake = UpdateInternal();
       }
+
+      return awake;
     }
 
     /// <summary>
     /// Get and store the value of the controller.  Consumers should call Get() to retrieve the data.
     /// </summary>
-    protected abstract void UpdateInternal();
+    protected abstract bool UpdateInternal();
 
     /// <summary>
     ///   Get the value of the controller.
