@@ -118,13 +118,19 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         r[i] = xforms[i].GetComponent<Renderer>();
-        try
+
+        if (r[i] == null)
+        {
+          // TODO: it would be really nice to print the path to the transform that failed, but I don't see an easy way offhand
+          Utils.LogError($"Integrator for {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID} failed to find a renderer on transform {transformName}");
+        }
+        else if (r[i].material.HasProperty(floatPropertyID))
         {
           initialValues[i] = r[i].material.GetFloat(floatPropertyID);
         }
-        catch (Exception e)
+        else
         {
-          Utils.LogError($"Material {r[i].material.name} failed to get float {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID};\n{e}");
+          Utils.LogError($"Material {r[i].material.name} does not have float property {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID}");
         }
       }
     }

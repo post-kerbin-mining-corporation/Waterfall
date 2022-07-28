@@ -84,7 +84,8 @@ namespace Waterfall
           Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
           eventReady   = false;
           eventPlaying = true;
-          eventTime    = 0f;
+          eventTime    = TimeWarp.deltaTime;
+          return eventTime;
         }
       }
       else if (eventPlaying)
