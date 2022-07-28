@@ -350,7 +350,7 @@ namespace Waterfall
       }
     }
 
-    private void UpdateIntegratorArray_TestIntensity(List<EffectFloatIntegrator> integrators)
+    private void UpdateIntegratorArray_TestIntensity<T>(List<T> integrators) where T : EffectIntegrator_Float
     {
       for (int i=0; i < integrators.Count;)
       {
@@ -398,9 +398,9 @@ namespace Waterfall
         UpdateIntegratorArray(positionIntegrators);
         UpdateIntegratorArray(scaleIntegrators);
         UpdateIntegratorArray(rotationIntegrators);
-        
-        foreach (var integrator in lightFloatIntegrators) integrator.Update();
-        foreach (var integrator in lightColorIntegrators) integrator.Update();
+
+        UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
+        UpdateIntegratorArray(lightColorIntegrators);
         s_Integrators.End();
       }
       s_Update.End();
