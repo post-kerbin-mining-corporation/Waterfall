@@ -52,41 +52,106 @@ namespace Waterfall
     public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
+      switch (mode)
+      {
+        case EffectModifierMode.REPLACE:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.MULTIPLY:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] *= modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.ADD:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] += modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.SUBTRACT:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] -= modifiers[i];
+          }
+          break;
+      }
     }
+
     public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => Vector3.Scale(items[i], modifiers[i]),
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
+      switch (mode)
+      {
+        case EffectModifierMode.REPLACE:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.MULTIPLY:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = Vector3.Scale(items[i], modifiers[i]);
+          }
+          break;
+
+        case EffectModifierMode.ADD:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] += modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.SUBTRACT:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] -= modifiers[i];
+          }
+          break;
+      }
     }
+
     public void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
+      switch (mode)
+      {
+        case EffectModifierMode.REPLACE:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.MULTIPLY:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] *= modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.ADD:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] += modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.SUBTRACT:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] -= modifiers[i];
+          }
+          break;
+      }
     }
 
     protected static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.Integrator.ListPrep");
