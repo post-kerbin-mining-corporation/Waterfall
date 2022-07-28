@@ -40,7 +40,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-<<<<<<< HEAD
     <ReferencePath Condition="'$(ReferencePath)' == ''">\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\</ReferencePath>
     <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64.exe</KSPExecutable>
     <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app</KSPExecutable>
@@ -52,19 +51,6 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(ReferencePath)\$(KSPExecutable)</StartProgram>
     <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
-=======
-      <ReferencePath Condition="'$(ReferencePath)' == ''">\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\</ReferencePath>
-      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64.exe</KSPExecutable>
-      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app</KSPExecutable>
-      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP.x86_64</KSPExecutable>
-      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64_Data\Managed</ManagedRelativePath>
-      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app\Contents\Resources\Data\Managed</ManagedRelativePath>
-      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP_Data\Managed</ManagedRelativePath>
-      <ManagedPath>$(ReferencePath)\$(ManagedRelativePath)</ManagedPath>
-      <StartAction>Program</StartAction>
-      <StartProgram>$(ReferencePath)\$(KSPExecutable)</StartProgram>
-      <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
->>>>>>> 2c9a1e9 (fix up project files to use reference path)
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(ManagedPath)\Assembly-CSharp.dll">
