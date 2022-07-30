@@ -24,7 +24,7 @@ namespace Waterfall
     {
       if (handledModifiers.Count == 0)
         return;
-      Array.Copy(initialValues, modifierData, initialValues.Length);
+      Array.Copy(initialValues, workingValues, initialValues.Length);
 
       foreach (var mod in handledModifiers)
       {
