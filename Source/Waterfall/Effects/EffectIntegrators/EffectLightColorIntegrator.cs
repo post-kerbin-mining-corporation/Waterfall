@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -8,90 +7,46 @@ namespace Waterfall
   public class EffectLightColorIntegrator : EffectIntegrator
   {
     public string                         colorName;
-    public List<EffectLightColorModifier> handledModifiers;
+    protected readonly Color[] modifierData;
+    protected readonly Color[] initialValues;
+    protected readonly Color[] workingValues;
 
     private readonly Light[]     l;
-    private readonly List<Color> initialColorValues;
 
-    public EffectLightColorIntegrator(WaterfallEffect effect, EffectLightColorModifier floatMod)
+    public EffectLightColorIntegrator(WaterfallEffect effect, EffectLightColorModifier floatMod) : base(effect, floatMod)
     {
-      Utils.Log(String.Format("[EffectLightColorIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);
-      xforms        = new();
-      transformName = floatMod.transformName;
-      parentEffect  = effect;
-      var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
-      {
-        var t1 = t.FindDeepChild(transformName);
-        if (t1 == null)
-        {
-          Utils.LogError(String.Format("[EffectLightColorIntegrator]: Unable to find transform {0} on modifier {1}", transformName, floatMod.fxName));
-        }
-        else
-        {
-          xforms.Add(t1);
-        }
-      }
-
-
-      // float specific
+      // light-color specific
       colorName        = floatMod.colorName;
-      handledModifiers = new();
-      handledModifiers.Add(floatMod);
-
-      initialColorValues = new();
-
       l = new Light[xforms.Count];
+      modifierData = new Color[xforms.Count];
+      initialValues = new Color[xforms.Count];
+      workingValues = new Color[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
-
-
-        initialColorValues.Add(l[i].color);
+        initialValues[i] = l[i].color;
       }
     }
 
-    public void AddModifier(EffectLightColorModifier newMod)
+    public override void Update()
     {
-      handledModifiers.Add(newMod);
-    }
+      if (handledModifiers.Count == 0)
+        return;
+      Array.Copy(initialValues, workingValues, l.Length);
 
-    public void RemoveModifier(EffectLightColorModifier newMod)
-    {
-      handledModifiers.Remove(newMod);
-    }
-
-    public void Update()
-    {
-      if (handledModifiers.Count > 0)
+      foreach (var mod in handledModifiers)
       {
-        var applyValues = initialColorValues.ToList();
-        foreach (var colorMod in handledModifiers)
+        if (mod.Controller != null)
         {
-          var modResult = colorMod.Get(parentEffect.parentModule.GetControllerValue(colorMod.controllerName));
-
-          if (colorMod.effectMode == EffectModifierMode.REPLACE)
-            applyValues = modResult;
-
-          if (colorMod.effectMode == EffectModifierMode.MULTIPLY)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] * modResult[i];
-
-          if (colorMod.effectMode == EffectModifierMode.ADD)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] + modResult[i];
-
-          if (colorMod.effectMode == EffectModifierMode.SUBTRACT)
-            for (int i = 0; i < applyValues.Count; i++)
-              applyValues[i] = applyValues[i] - modResult[i];
-        }
-
-        for (int i = 0; i < l.Length; i++)
-        {
-          l[i].color = applyValues[i];
+          float[] controllerData = mod.Controller.Get();
+          ((EffectLightColorModifier)mod).Get(controllerData, modifierData);
+          Integrate(mod.effectMode, workingValues, modifierData);
         }
       }
+
+      for (int i = 0; i < l.Length; i++)
+        l[i].color = workingValues[i];
     }
   }
 }

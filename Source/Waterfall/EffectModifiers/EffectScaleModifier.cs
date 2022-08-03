@@ -8,35 +8,25 @@ namespace Waterfall
   /// </summary>
   public class EffectScaleModifier : EffectModifier
   {
-    public FloatCurve xCurve;
-    public FloatCurve yCurve;
-    public FloatCurve zCurve;
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
+    public FloatCurve zCurve = new();
 
     private Vector3 baseScale;
 
-    public EffectScaleModifier()
+    public EffectScaleModifier() : base()
     {
-      xCurve           = new();
-      yCurve           = new();
-      zCurve           = new();
       modifierTypeName = "Scale";
     }
 
-    public EffectScaleModifier(ConfigNode node)
-    {
-      Load(node);
-    }
+    public EffectScaleModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
-      xCurve = new();
-      yCurve = new();
-      zCurve = new();
       xCurve.Load(node.GetNode("xCurve"));
       yCurve.Load(node.GetNode("yCurve"));
       zCurve.Load(node.GetNode("zCurve"));
-      modifierTypeName = "Scale";
     }
 
     public override ConfigNode Save()
@@ -57,39 +47,11 @@ namespace Waterfall
       baseScale = xforms[0].localScale;
     }
 
-    public List<Vector3> Get(List<float> strengthList)
-    {
-      var vectorList = new List<Vector3>();
+    public void Get(float[] input, Vector3[] output) => Get(input, output, xCurve, yCurve, zCurve);
 
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < xforms.Count; i++)
-        {
-          vectorList.Add(new(xCurve.Evaluate(strengthList[i]) + randomValue,
-                             yCurve.Evaluate(strengthList[i]) + randomValue,
-                             zCurve.Evaluate(strengthList[i]) + randomValue));
-        }
-      }
-      else
-      {
-        for (int i = 0; i < xforms.Count; i++)
-        {
-          vectorList.Add(new(xCurve.Evaluate(strengthList[0]) + randomValue,
-                             yCurve.Evaluate(strengthList[0]) + randomValue,
-                             zCurve.Evaluate(strengthList[0]) + randomValue));
-        }
-      }
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectScaleIntegrator && integrator.transformName == transformName;
 
-      return vectorList;
-    }
+    public override EffectIntegrator CreateIntegrator() => new EffectScaleIntegrator(parentEffect, this);
 
-    protected override void ApplyReplace(List<float> strengthList)
-    {
-      float strength = strengthList[0];
-      for (int i = 0; i < xforms.Count; i++)
-      {
-        //xforms[i].localScale = new Vector3(xCurve.Evaluate(strength)+ randomValue, yCurve.Evaluate(strength)+ randomValue, zCurve.Evaluate(strength)+ randomValue);
-      }
-    }
   }
 }

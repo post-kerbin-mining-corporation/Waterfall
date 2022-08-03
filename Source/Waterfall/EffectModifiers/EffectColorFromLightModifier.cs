@@ -9,42 +9,29 @@ namespace Waterfall
   /// </summary>
   public class EffectColorFromLightModifier : EffectModifier
   {
-    public string  colorName;
-    public string  lightTransformName;
-    public float   colorBlend;
+    [Persistent] public string colorName;
+    [Persistent] public string lightTransformName;
+    [Persistent] public float colorBlend;
     public Light[] lights;
 
     private Material[] m;
+    private int colorPropertyID;
+    public override bool ValidForIntegrator => false;
 
-    public EffectColorFromLightModifier()
+    public EffectColorFromLightModifier() : base()
     {
       modifierTypeName = "Material Color From Light";
     }
 
-    public EffectColorFromLightModifier(ConfigNode node)
+    public EffectColorFromLightModifier(ConfigNode node) : base(node)
     {
-      Load(node);
-    }
-
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-
-      node.TryGetValue("colorName",          ref colorName);
-      node.TryGetValue("lightTransformName", ref lightTransformName);
-      node.TryGetValue("colorBlend",         ref colorBlend);
-
-      modifierTypeName = "Material Color From Light";
+      colorPropertyID = Shader.PropertyToID(colorName);
     }
 
     public override ConfigNode Save()
     {
       var node = base.Save();
-
       node.name = WaterfallConstants.ColorFromLightNodeName;
-      node.AddValue("colorName",          colorName);
-      node.AddValue("lightTransformName", lightTransformName);
-      node.AddValue("colorBlend",         colorBlend);
       return node;
     }
 
@@ -52,8 +39,7 @@ namespace Waterfall
     {
       base.Init(parentEffect);
       m      = new Material[xforms.Count];
-      lights = new Light[xforms.Count];
-      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == parentEffect.parentName).ToArray();
+      lights = parentEffect.parentModule.GetComponentsInChildren<Light>().Where(x => x.transform.name == parentEffect.parentName).ToArray();
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
@@ -65,24 +51,30 @@ namespace Waterfall
     public void ApplyColorName(string newColorName)
     {
       colorName = newColorName;
+      colorPropertyID = Shader.PropertyToID(colorName);
     }
 
     public void ApplyLightName(string newLightName)
     {
       lightTransformName = newLightName;
-      lights             = new Light[xforms.Count];
-      lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().ToList().FindAll(x => x.transform.name == lightTransformName).ToArray();
+      lights             = parentEffect.parentModule.GetComponentsInChildren<Light>().Where(x => x.transform.name == lightTransformName).ToArray();
     }
 
-    protected override void ApplyReplace(List<float> strengthList)
+    protected override void ApplyReplace(float[] strengthList)
     {
       for (int i = 0; i < m.Length; i++)
       {
         if (lights != null && lights.Length > i)
-          m[i].SetColor(colorName, lights[i].color * colorBlend + Color.white * (1f - colorBlend));
+          m[i].SetColor(colorPropertyID, lights[i].color * colorBlend + Color.white * (1f - colorBlend));
         else if (lights != null && lights.Length > 0)
-          m[i].SetColor(colorName, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
+          m[i].SetColor(colorPropertyID, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
       }
+    }
+
+    public override EffectIntegrator CreateIntegrator()
+    {
+      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
+      return null;
     }
   }
 }
