@@ -5,147 +5,77 @@ using UnityEngine;
 
 namespace Waterfall
 {
- 
-  public class EffectLightFloatIntegrator: EffectIntegrator
+  public class EffectLightFloatIntegrator : EffectIntegrator
   {
+    public string                         floatName;
+    protected readonly float[] modifierData;
+    protected readonly float[] initialValues;
+    protected readonly float[] workingValues;
 
-    Light[] l;
-    public string floatName;
-    List<float> initialFloatValues;
-    public List<EffectLightFloatModifier> handledModifiers;
+    private readonly Light[]     l;
 
-    bool testIntensity = false;
-    
-    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod)
+    private readonly bool testIntensity;
+
+    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
-      Utils.Log(String.Format("[EffectLightFloatIntegrator]: Initializing integrator for {0} on modifier {1}", effect.name, floatMod.fxName), LogType.Modifiers);
-      xforms = new List<Transform>();
-      transformName = floatMod.transformName;
-      parentEffect = effect;
-      List<Transform> roots = parentEffect.GetModelTransforms();
-      foreach (Transform t in roots)
-      {
-        Transform t1 = t.FindDeepChild(transformName);
-        if (t1 == null)
-        {
-          Utils.LogError(String.Format("[EffectLightFloatIntegrator]: Unable to find transform {0} on modifier {1}", transformName, floatMod.fxName));
-        }
-        else
-        {
-          xforms.Add(t1);
-        }
-      }
-
-
-      // float specific
+      // light-float specific
       floatName = floatMod.floatName;
-      handledModifiers = new List<EffectLightFloatModifier>();
-      handledModifiers.Add(floatMod);
-
-      foreach (string nm in WaterfallConstants.ShaderPropertyHideFloatNames)
-      {
-        if (floatName == "Intensity")
-          testIntensity = true;
-      }
-
-      initialFloatValues = new List<float>();
+      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       l = new Light[xforms.Count];
+      modifierData = new float[xforms.Count];
+      initialValues = new float[xforms.Count];
+      workingValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
 
-        if (floatName == "Intensity")
-        initialFloatValues.Add(l[i].intensity);
-        if (floatName == "Range")
-          initialFloatValues.Add(l[i].range);
-        if (floatName == "SpotAngle")
-          initialFloatValues.Add(l[i].spotAngle);
+        if (floatName == "Intensity") initialValues[i] = l[i].intensity;
+        else if (floatName == "Range") initialValues[i] = l[i].range;
+        else if (floatName == "SpotAngle") initialValues[i] = l[i].spotAngle;
       }
     }
-    public void AddModifier(EffectLightFloatModifier newMod)
+
+    public override void Update()
     {
-      handledModifiers.Add(newMod);
-    }
-    public void RemoveModifier(EffectLightFloatModifier newMod)
-    {
-      handledModifiers.Remove(newMod);
-    }
-    public void Update()
-    {
-      if (Settings.EnableLights)
+      if (!Settings.EnableLights || handledModifiers.Count == 0)
+        return;
+
+      Array.Copy(initialValues, workingValues, l.Length);
+
+      foreach (var mod in handledModifiers)
       {
-        float lightBaseScale = parentEffect.TemplateScaleOffset.x;
-        if (handledModifiers.Count > 0)
+        if (mod.Controller != null)
         {
-
-          List<float> applyValues = initialFloatValues;
-          foreach (EffectLightFloatModifier floatMod in handledModifiers)
-          {
-            List<float> modResult = floatMod.Get(parentEffect.parentModule.GetControllerValue(floatMod.controllerName));
-
-            if (floatMod.effectMode == EffectModifierMode.REPLACE)
-              applyValues = modResult;
-
-            if (floatMod.effectMode == EffectModifierMode.MULTIPLY)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] * modResult[i];
-
-            if (floatMod.effectMode == EffectModifierMode.ADD)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] + modResult[i];
-
-            if (floatMod.effectMode == EffectModifierMode.SUBTRACT)
-              for (int i = 0; i < applyValues.Count; i++)
-                applyValues[i] = applyValues[i] - modResult[i];
-
-          }
-
-          for (int i = 0; i < l.Length; i++)
-          {
-            applyValues[i] *= lightBaseScale;
-            if (testIntensity)
-            {
-              if (l[i].enabled && applyValues[i] < Settings.MinimumLightIntensity)
-              {
-                l[i].enabled = false;
-              }
-              else if (!l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
-              {
-
-                l[i].enabled = true;
-
-                UpdateFloats(l[i], applyValues[i]);
-              }
-              else if (l[i].enabled && applyValues[i] >= Settings.MinimumLightIntensity)
-              {
-                UpdateFloats(l[i], applyValues[i]);
-              }
-            }
-            else
-            {
-              UpdateFloats(l[i], applyValues[i]);
-            }
-          }
+          float[] controllerData = mod.Controller.Get();
+          ((EffectLightFloatModifier)mod).Get(controllerData, modifierData);
+          Integrate(mod.effectMode, workingValues, modifierData);
         }
+      }
+
+      float lightBaseScale = parentEffect.TemplateScaleOffset.x;
+      for (int i = 0; i < l.Length; i++)
+      {
+        var light = l[i];
+        float value = workingValues[i] * lightBaseScale;
+        if (testIntensity)
+        {
+          if (light.enabled && value < Settings.MinimumLightIntensity)
+            light.enabled = false;
+          else if (!light.enabled && value >= Settings.MinimumLightIntensity)
+            light.enabled = true;
+        }
+        if (light.enabled)
+          UpdateFloats(light, value);
       }
     }
 
     protected void UpdateFloats(Light l, float f)
     {
-      if (floatName == "Intensity")
-        l.intensity = f;
-      if (floatName == "Range")
-      {
-        
-        l.range = f;
-      }
-      if (floatName == "SpotAngle")
-        l.spotAngle = f;
+      if (floatName == "Intensity") l.intensity = f;
+      else if (floatName == "Range") l.range = f;
+      else if (floatName == "SpotAngle") l.spotAngle = f;
     }
   }
-
- 
-  
 }

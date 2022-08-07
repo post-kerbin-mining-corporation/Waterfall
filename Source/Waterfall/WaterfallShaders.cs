@@ -1,63 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using UnityEngine;
 
 namespace Waterfall
 {
   /// <summary>
-  /// Class for loading and retrieving shaders
+  ///   Class for loading and retrieving shaders
   /// </summary>
   public static class ShaderLoader
   {
     /// <summary>
-    /// A collection of all shaders loaded by Waterfall
+    ///   A collection of all shaders loaded by Waterfall
     /// </summary>
-    private static readonly Dictionary<String, Shader> ShaderDictionary = new Dictionary<String, Shader>();
+    private static readonly Dictionary<string, Shader> ShaderDictionary = new();
 
     /// <summary>
-    /// A collection of all editable shader properies
+    ///   A collection of all editable shader properies
     /// </summary>
-    private static Dictionary<string, MaterialData> ShaderPropertyMap = new Dictionary<string, MaterialData>();
+    private static readonly Dictionary<string, MaterialData> ShaderPropertyMap = new();
 
     /// <summary>
-    /// Requests a shader by name
+    ///   Requests a shader by name
     /// </summary>
     /// <param name="shaderName"></param>
     /// <returns></returns>
-    public static Shader GetShader(String shaderName)
+    public static Shader GetShader(string shaderName)
     {
       Utils.Log("[ShaderLoader]: Getting shader " + shaderName);
       return ShaderDictionary.ContainsKey(shaderName) ? ShaderDictionary[shaderName] : null;
     }
 
 
-    public static Dictionary<string, MaterialData> GetShaderPropertyMap()
-      {
-      return ShaderPropertyMap;
-      }
-    /// <summary>
-    /// Requests a shader by name
-    /// </summary>
-    /// <returns></returns>
-    public static List<string> GetAllShadersNames()
-    {
-      return ShaderDictionary.Keys.ToList();
-    }
+    public static Dictionary<string, MaterialData> GetShaderPropertyMap() => ShaderPropertyMap;
 
     /// <summary>
-    /// Loads all shaders in the plugin's data directory
+    ///   Requests a shader by name
+    /// </summary>
+    /// <returns></returns>
+    public static List<string> GetAllShadersNames() => ShaderDictionary.Keys.ToList();
+
+    /// <summary>
+    ///   Loads all shaders in the plugin's data directory
     /// </summary>
     public static void LoadShaders()
     {
-      Utils.Log("[ShaderLoader]: Loading shaders");
-      String path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Shaders/");
-      String pathSpec;
-      if (Application.platform == RuntimePlatform.WindowsPlayer &&
-         SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
+      
+      
+      string path = Path.Combine(KSPUtil.ApplicationRootPath);
+
+      Utils.Log($"[ShaderLoader]: Loading Shaders");
+
+      string pathSpec;
+      if (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
       {
         pathSpec = "*-linux.waterfall"; // fixes OpenGL on windows
       }
@@ -74,30 +69,35 @@ namespace Waterfall
         pathSpec = "*-macos.waterfall";
       }
 
-      String[] bundlePaths = Directory.GetFiles(path, pathSpec);
+      List<string> bundlePaths = Directory.GetFiles(path, pathSpec,SearchOption.AllDirectories).ToList();
+      List<string> orderedBundles = bundlePaths.OrderBy(x => Path.GetFileNameWithoutExtension(x)).ToList();
 
-      foreach (String bundle in bundlePaths)
+      foreach (string bundle in orderedBundles)
       {
-        ShaderLoader.LoadAssetBundleAtPath(bundle);
+        LoadAssetBundleAtPath(bundle);
       }
     }
+
     /// <summary>
-    /// Manually load Shader Asset bundles by path
+    ///   Manually load Shader Asset bundles by path
     /// </summary>
-    public static void LoadAssetBundleAtPath(String bundlePath)
+    public static void LoadAssetBundleAtPath(string bundlePath)
     {
-
-      Utils.Log($"[ShaderLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
-      AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
-      Shader[] shaders = bundle.LoadAllAssets<Shader>();
-
-      foreach (Shader shader in shaders)
+      Utils.Log($"[ShaderLoader]: Loading shaders from {Path.GetFileNameWithoutExtension(bundlePath)}");
+      var bundle  = AssetBundle.LoadFromFile(bundlePath);
+      var shaders = bundle.LoadAllAssets<Shader>();
+      foreach (var shader in shaders)
       {
-        Utils.Log($"[ShaderLoader]: Adding {shader.name}");
+        Utils.Log($"[ShaderLoader]: Adding {shader.name} ({Path.GetFileNameWithoutExtension(bundlePath)})");
         if (!ShaderDictionary.ContainsKey(shader.name))
+        {
           ShaderDictionary.Add(shader.name, shader);
+        }
         else
-          Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists");
+        {
+          ShaderDictionary[shader.name] = shader;
+          Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists, replacing with new version");
+        }
       }
 
       bundle.Unload(false); // unload the raw asset bundle
@@ -105,19 +105,18 @@ namespace Waterfall
 
     public static void LoadShaderProperties()
     {
-      foreach (ConfigNode node in GameDatabase.Instance.GetConfigNodes("WATERFALL_SHADER_PARAM"))
+      foreach (var node in GameDatabase.Instance.GetConfigNodes("WATERFALL_SHADER_PARAM"))
       {
         try
         {
           string propertyName = node.GetValue("name");
-          Vector2 range = Vector2.zero;
+          var    range        = Vector2.zero;
 
           node.TryGetValue("range", ref range);
-          WaterfallMaterialPropertyType t = WaterfallMaterialPropertyType.Float;
-          node.TryGetEnum<WaterfallMaterialPropertyType>("type", ref t, WaterfallMaterialPropertyType.Float);
-          MaterialData m = new MaterialData(t, range);
+          var t = WaterfallMaterialPropertyType.Float;
+          node.TryGetEnum("type", ref t, WaterfallMaterialPropertyType.Float);
+          var m = new MaterialData(t, range);
           ShaderPropertyMap.Add(propertyName, m);
-          
         }
         catch
         {
@@ -126,5 +125,4 @@ namespace Waterfall
       }
     }
   }
-  
 }

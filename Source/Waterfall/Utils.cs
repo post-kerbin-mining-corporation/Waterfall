@@ -1,8 +1,7 @@
-// Utils
+﻿// Utils
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Waterfall
@@ -16,39 +15,47 @@ namespace Waterfall
     Modifiers,
     Any
   }
+
   public static class Utils
   {
     public static string ModName = "Waterfall";
 
     /// <summary>
-    /// Log a message with the mod name tag prefixed
+    ///   Log a message with the mod name tag prefixed
     /// </summary>
     /// <param name="str">message string </param>
     public static void Log(string str)
     {
-      Utils.Log(str, LogType.Any);
+      Log(str, LogType.Any);
     }
 
     /// <summary>
-    /// Log a message with the mod name tag prefixed
+    /// Is logging enabled?
+    /// </summary>
+    /// <param name="logType">Logging Type</param>
+    /// <returns>True if logging is enabled</returns>
+    public static bool IsLogging(LogType logType = LogType.Any)
+    {
+      return logType == LogType.Any
+              || (logType == LogType.Settings && Settings.DebugSettings)
+              || (logType == LogType.UI && Settings.DebugUIMode)
+              || (logType == LogType.Modules && Settings.DebugModules)
+              || (logType == LogType.Effects && Settings.DebugEffects)
+              || (logType == LogType.Modifiers && Settings.DebugModifiers);
+    }
+
+    /// <summary>
+    ///   Log a message with the mod name tag prefixed
     /// </summary>
     /// <param name="str">message string </param>
     public static void Log(string str, LogType logType)
     {
-      bool doLog = false;
-      if (logType == LogType.Settings && Settings.DebugSettings) doLog = true;
-      if (logType == LogType.UI && Settings.DebugUIMode) doLog = true;
-      if (logType == LogType.Modules && Settings.DebugModules) doLog = true;
-      if (logType == LogType.Effects && Settings.DebugEffects) doLog = true;
-      if (logType == LogType.Modifiers && Settings.DebugModifiers) doLog = true;
-      if (logType == LogType.Any) doLog = true;
-
-      if (doLog)
-        Debug.Log(String.Format("[{0}]{1}", ModName, str));
+      if (IsLogging(logType))
+        Debug.Log($"[{ModName}]{str}");
     }
 
     /// <summary>
-    /// Log an error with the mod name tag prefixed
+    ///   Log an error with the mod name tag prefixed
     /// </summary>
     /// <param name="str">Error string </param>
     public static void LogError(string str)
@@ -57,7 +64,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    /// Log a warning with the mod name tag prefixed
+    ///   Log a warning with the mod name tag prefixed
     /// </summary>
     /// <param name="str">warning string </param>
     public static void LogWarning(string str)
@@ -67,28 +74,31 @@ namespace Waterfall
 
     public static ConfigNode SerializeFloatCurve(string name, FloatCurve curve)
     {
-      ConfigNode node = new ConfigNode();
+      var node = new ConfigNode();
       curve.Save(node);
       node.name = name;
       return node;
     }
   }
+
   public static class ConfigNodeParseExtension
   {
     public static bool TryParseVector3(this ConfigNode theNode, string valueName, ref Vector3 result)
     {
-      if (!theNode.HasValue(valueName)) return false;
+      if (!theNode.HasValue(valueName))
+        return false;
 
       result = ConfigNode.ParseVector3(theNode.GetValue(valueName));
       return true;
     }
   }
+
   public static class TransformDeepChildExtension
   {
     //Breadth-first search
     public static Transform FindDeepChild(this Transform aParent, string aName)
     {
-      Queue<Transform> queue = new Queue<Transform>();
+      var queue = new Queue<Transform>();
       queue.Enqueue(aParent);
       while (queue.Count > 0)
       {
@@ -98,8 +108,8 @@ namespace Waterfall
         foreach (Transform t in c)
           queue.Enqueue(t);
       }
+
       return null;
     }
-
   }
 }

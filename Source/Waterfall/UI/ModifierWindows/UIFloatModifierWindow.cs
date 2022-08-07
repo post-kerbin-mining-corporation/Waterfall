@@ -1,96 +1,19 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using UnityEngine;
-using KSP.UI.Screens;
-using KSP.Localization;
 
 namespace Waterfall.UI
 {
-
   public class UIFloatModifierWindow : UIModifierWindow
   {
-    #region GUI Variables
-    Vector2 curveButtonDims = new Vector2(100f, 50f);
-
-    Texture2D miniCurve;
-
-    #endregion
-
-    #region GUI Widgets
-    #endregion
-
-    #region  Data
-    CurveUpdateFunction floatCurveFunction;
-    string floatName = "_TintColor";
-    int floatIndex = 0;
-    string[] floatNames;
-    public EffectFloatModifier floatMod;
-    #endregion
-
-    public UIFloatModifierWindow(EffectFloatModifier mod, bool show) : base((EffectModifier)mod, show)
+    public UIFloatModifierWindow(EffectFloatModifier mod, bool show) : base(mod, show)
     {
-      floatMod = mod;
-      floatNames = MaterialUtils.FindValidShaderProperties(floatMod.GetMaterial(), WaterfallMaterialPropertyType.Float).ToArray();
-      floatIndex = floatNames.ToList().FindIndex(x => x == floatMod.floatName);
-      floatCurveFunction = new CurveUpdateFunction(UpdateFloatCurve);
+      floatMod           = mod;
+      floatNames         = MaterialUtils.FindValidShaderProperties(floatMod.GetMaterial(), WaterfallMaterialPropertyType.Float).ToArray();
+      floatIndex         = floatNames.ToList().FindIndex(x => x == floatMod.floatName);
+      floatCurveFunction = UpdateFloatCurve;
       GenerateCurveThumbs(mod);
     }
 
-
-    protected void UpdateFloatCurve(FloatCurve curve)
-    {
-      floatMod.curve = curve;
-      UpdateModifierPanel();
-    }
-
-    /// <summary>
-    /// Initialize the UI widgets, do localization, set up styles
-    /// </summary>
-    protected override void InitUI()
-    {
-      base.InitUI();
-      windowTitle = "Modifier Editor - Material Parameter";
-    }
-    /// <summary>
-    /// Draws the modifier content
-    /// </summary>
-    protected override void DrawModifierPanel()
-    {
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Shader Float Name");
-      int selectedIndex = GUILayout.SelectionGrid(floatIndex, floatNames, 4);
-      if (selectedIndex != floatIndex)
-      {
-        floatIndex = selectedIndex;
-        floatName = floatNames[floatIndex];
-        floatMod.ApplyFloatName(floatName);
-      }
-      GUILayout.EndHorizontal();
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("Float Curve", GUILayout.Width(hdrWidth));
-      Rect buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y);
-      Rect imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
-      if (GUI.Button(buttonRect, ""))
-      {
-        EditCurve(floatMod.curve, floatCurveFunction);
-        selectionFlag = 1;
-      }
-      GUI.DrawTexture(imageRect, miniCurve);
-      if (GUILayout.Button("Copy", GUILayout.Width(copyWidth)))
-      {
-        CopyCurve(floatMod.curve);
-      }
-      if (GUILayout.Button("Paste", GUILayout.Width(copyWidth)))
-      {
-        PasteCurve(floatMod.curve, out floatMod.curve);
-      }
-      GUILayout.EndHorizontal();
-    }
     public override void UpdateCurves(FloatCurve newCurve, string tag)
     {
       //base.UpdateCurves(newCurve, tag);
@@ -100,18 +23,95 @@ namespace Waterfall.UI
     }
 
     /// <summary>
-    /// Draws the modifier content
+    ///   Initialize the UI widgets, do localization, set up styles
+    /// </summary>
+    protected override void InitUI()
+    {
+      base.InitUI();
+      windowTitle = "Modifier Editor - Material Parameter";
+    }
+
+    /// <summary>
+    ///   Draws the modifier content
+    /// </summary>
+    protected override void DrawModifierPanel()
+    {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Shader Float Name");
+      int selectedIndex = GUILayout.SelectionGrid(floatIndex, floatNames, 4);
+      if (selectedIndex != floatIndex)
+      {
+        floatIndex = selectedIndex;
+        floatName  = floatNames[floatIndex];
+        floatMod.ApplyFloatName(floatName);
+      }
+
+      GUILayout.EndHorizontal();
+
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Float Curve", GUILayout.Width(hdrWidth));
+      var buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y);
+      var imageRect  = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
+      if (GUI.Button(buttonRect, ""))
+      {
+        EditCurve(floatMod.curve, floatCurveFunction);
+        selectionFlag = 1;
+      }
+
+      GUI.DrawTexture(imageRect, miniCurve);
+      if (GUILayout.Button("Copy", GUILayout.Width(copyWidth)))
+      {
+        CopyCurve(floatMod.curve);
+      }
+
+      if (GUILayout.Button("Paste", GUILayout.Width(copyWidth)))
+      {
+        PasteCurve(floatMod.curve, out floatMod.curve);
+      }
+
+      GUILayout.EndHorizontal();
+    }
+
+    /// <summary>
+    ///   Draws the modifier content
     /// </summary>
     protected override void UpdateModifierPanel()
     {
       GenerateCurveThumbs(floatMod);
     }
+
+
+    protected void UpdateFloatCurve(FloatCurve curve)
+    {
+      floatMod.curve = curve;
+      UpdateModifierPanel();
+    }
+
     protected void GenerateCurveThumbs(EffectFloatModifier floatMod)
     {
       miniCurve = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve, Color.green);
     }
 
+    #region GUI Variables
 
+    private readonly Vector2 curveButtonDims = new(100f, 50f);
+
+    private Texture2D miniCurve;
+
+    #endregion
+
+    #region GUI Widgets
+
+    #endregion
+
+    #region Data
+
+    private readonly CurveUpdateFunction floatCurveFunction;
+    private          string              floatName = "_TintColor";
+    private          int                 floatIndex;
+    private readonly string[]            floatNames;
+    public           EffectFloatModifier floatMod;
+
+    #endregion
   }
-
 }

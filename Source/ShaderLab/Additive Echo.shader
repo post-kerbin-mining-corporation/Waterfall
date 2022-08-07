@@ -23,6 +23,7 @@
     _ExpandLinear("Linear Expansion", Range(-10, 10)) = 0
     _ExpandSquare("Quadratic Expansion", Range(-10, 10)) = 0
     _ExpandBounded("Bounded Expansion", Range(-10, 10)) = 0
+    _ExpandLength("Length Expansion", Range(0, 10)) = 1
 
     [Space]
     
@@ -34,13 +35,11 @@
 
     _TileX("Tiling X", Float) = 1
     _TileY("Tiling Y", Float) = 1
-    _SrcMode("SrcMode", Float) = 1
-    _DestMode("DestMode", Float) = 6
     
     [Space]
 
     _Echos("Number of Echos", Range(1, 12)) = 1
-    _EchoLength("Echo Length", Range(0, 20)) = 2
+    _EchoLength("Echo Distance", Range(0, 20)) = 2
     _Stretch("Stretch", Range(-1, 1)) = 0
     _EchoFalloff("Echo Falloff", Range(0, 1)) = 0
     _Dimming("Dimming", Range(-1, 1)) = 0
@@ -50,7 +49,7 @@
     Tags { "Queue" = "Transparent" "IgnoreProjector" = "True"  }
 
 
-    Blend[_SrcMode][_DestMode]
+    Blend One One
 
     ZWrite Off
     ZTest LEqual
@@ -79,10 +78,10 @@
     float _FadeIn;
     float _FadeOut;
 
-    float _ExpandOffset;
     float _ExpandLinear;
     float _ExpandSquare;
     float _ExpandBounded;
+    float _ExpandLength;
 
     float _FalloffStart;
     float _Symmetry;
@@ -151,12 +150,14 @@
                       + _ExpandSquare * sqr(-i.vertex.y)
                       + _ExpandBounded * bounded(-i.vertex.y);
         o.vertex.xyz += normal * value;
-
+        o.vertex.y *= _ExpandLength;
+        
         // new normal calculation
         float deriv = _ExpandLinear * linDeriv(-i.vertex.y)
                     + _ExpandSquare * sqrDeriv(-i.vertex.y)
                     + _ExpandBounded * boundedDeriv(-i.vertex.y);
         normal.y += deriv;
+        normal.y /= _ExpandLength;
         normal = normalize(normal);
         o.worldNormal = normalize(mul(normal, (float3x3)unity_WorldToObject));
         
@@ -178,9 +179,7 @@
         o[2].color       = i[2].color;
         
         float3 plumeDir = normalize(unity_ObjectToWorld._12_22_32);
-        float ymult = dot(unity_WorldToObject._21_22_23, plumeDir);
-        
-        float3 plumePos = float3(-i[0].vertex.y, -i[1].vertex.y, -i[2].vertex.y);
+        float3 plumePos = float3(-i[0].vertex.y, -i[1].vertex.y, -i[2].vertex.y) / _ExpandLength;
         float EchoLength = _EchoLength;
         int Echos = clamp(_Echos, 1, 12);
         
@@ -203,7 +202,7 @@
                 o[v].data = float3(E, plumePos[v], viewdot);
                 triStream.Append(o[v]);
                 
-                i[v].vertex.y -= ymult * EchoLength;
+                i[v].vertex.y -= EchoLength;
                 o[v].uv_MainTex.y += 0.5 * _TileY;
             }
             triStream.RestartStrip();

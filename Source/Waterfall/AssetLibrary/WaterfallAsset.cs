@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Waterfall
+﻿namespace Waterfall
 {
   public enum AssetWorkflow
   {
@@ -17,27 +11,30 @@ namespace Waterfall
     Smoke,
     Other
   }
+
   public class WaterfallAsset
   {
     public string Name = "default";
     public string Description = "default description";
     public string Asset = "";
     public AssetWorkflow Workflow;
-    public string Path;
+    public string        Path;
 
     public WaterfallAsset() { }
+
     public WaterfallAsset(ConfigNode node)
     {
       Load(node);
     }
+
     public virtual void Load(ConfigNode node)
     {
-      node.TryGetEnum<AssetWorkflow>("workflow", ref Workflow, AssetWorkflow.Other);
+      node.TryGetEnum("workflow", ref Workflow, AssetWorkflow.Other);
       node.TryGetValue("description", ref Description);
       node.TryGetValue("name", ref Name);
       node.TryGetValue("path", ref Path);
       node.TryGetValue("asset", ref Asset);
+
     }
   }
-
 }

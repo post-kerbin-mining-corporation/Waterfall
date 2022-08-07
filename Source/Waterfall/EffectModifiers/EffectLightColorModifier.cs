@@ -1,66 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall
 {
-
   /// <summary>
-  /// Material color modifier
+  ///   Material color modifier
   /// </summary>
   public class EffectLightColorModifier : EffectModifier
   {
-    public string colorName = "_Main";
+    [Persistent] public string colorName = "_Main";
 
-    public FloatCurve rCurve;
-    public FloatCurve gCurve;
-    public FloatCurve bCurve;
-    public FloatCurve aCurve;
+    public FloatCurve rCurve = new();
+    public FloatCurve gCurve = new();
+    public FloatCurve bCurve = new();
+    public FloatCurve aCurve = new();
 
-    Light[] l;
+    private Light[] l;
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName);
 
-    public EffectLightColorModifier()
+    public EffectLightColorModifier() : base()
     {
-      rCurve = new FloatCurve();
-      gCurve = new FloatCurve();
-      bCurve = new FloatCurve();
-      aCurve = new FloatCurve();
-
       modifierTypeName = "Light Color";
     }
-    public EffectLightColorModifier(ConfigNode node) { Load(node); }
+
+    public EffectLightColorModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
-      node.TryGetValue("colorName", ref colorName);
-      rCurve = new FloatCurve();
-      gCurve = new FloatCurve();
-      bCurve = new FloatCurve();
-      aCurve = new FloatCurve();
       rCurve.Load(node.GetNode("rCurve"));
       gCurve.Load(node.GetNode("gCurve"));
       bCurve.Load(node.GetNode("bCurve"));
       aCurve.Load(node.GetNode("aCurve"));
-
-      modifierTypeName = "Light Color";
     }
+
     public override ConfigNode Save()
     {
-      ConfigNode node = base.Save();
+      var node = base.Save();
 
       node.name = WaterfallConstants.LightColorModifierNodeName;
-      node.AddValue("colorName", colorName);
-
       node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
       node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
       node.AddNode(Utils.SerializeFloatCurve("aCurve", aCurve));
       return node;
     }
+
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -69,47 +55,44 @@ namespace Waterfall
       {
         l[i] = xforms[i].GetComponent<Light>();
       }
-
     }
-    public List<Color> Get(List<float> strengthList)
+
+    public void Get(float[] input, Color[] output)
     {
-      List<Color> colorList = new List<Color>();
-      if (strengthList.Count > 1)
+      if (input.Length > 1)
       {
         for (int i = 0; i < l.Length; i++)
         {
-          colorList.Add(
-           new Color(
-             rCurve.Evaluate(strengthList[i]) + randomValue,
-           gCurve.Evaluate(strengthList[i]) + randomValue,
-           bCurve.Evaluate(strengthList[i]) + randomValue,
-           aCurve.Evaluate(strengthList[i]) + randomValue));
+          float inValue = input[i];
+          output[i] = new(rCurve.Evaluate(inValue) + randomValue,
+                          gCurve.Evaluate(inValue) + randomValue,
+                          bCurve.Evaluate(inValue) + randomValue,
+                          aCurve.Evaluate(inValue) + randomValue);
         }
       }
-      else
+      else if (input.Length == 1)
       {
+        float inValue = input[0];
+        Color color = new Color(
+          rCurve.Evaluate(inValue) + randomValue,
+          gCurve.Evaluate(inValue) + randomValue,
+          bCurve.Evaluate(inValue) + randomValue,
+          aCurve.Evaluate(inValue) + randomValue);
         for (int i = 0; i < l.Length; i++)
-        {
-          colorList.Add(
-            new Color(
-              rCurve.Evaluate(strengthList[0]) + randomValue,
-            gCurve.Evaluate(strengthList[0]) + randomValue,
-            bCurve.Evaluate(strengthList[0]) + randomValue,
-            aCurve.Evaluate(strengthList[0]) + randomValue));
-        }
+          output[i] = color;
       }
-      return colorList;
     }
 
-    public Light GetLight()
-    {
-      return l[0];
-    }
+    public Light GetLight() => l[0];
+
     public void ApplyMaterialName(string newColorName)
     {
       colorName = newColorName;
       parentEffect.ModifierParameterChange(this);
     }
-  }
 
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectLightColorIntegrator i && i.colorName == colorName && integrator.transformName == transformName;
+
+    public override EffectIntegrator CreateIntegrator() => new EffectLightColorIntegrator(parentEffect, this);
+  }
 }

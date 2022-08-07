@@ -7,3 +7,4 @@ build-deploy/
 bin/
 obj/
 *.swp
+**/*.csproj.user
