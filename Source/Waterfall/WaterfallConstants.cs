@@ -16,6 +16,7 @@ namespace Waterfall
     public static string ColorNodeName            = "COLOR";
     public static string Vector4NodeName          = "VECTOR4";
     public static string TextureNodeName          = "TEXTURE";
+    public static string ParticleNodeName         = "PARTICLE";
 
     public static string ColorModifierNodeName    = "COLORMODIFIER";
     public static string FloatModifierNodeName    = "FLOATMODIFIER";

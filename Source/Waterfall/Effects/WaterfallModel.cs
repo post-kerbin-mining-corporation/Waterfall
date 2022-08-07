@@ -14,9 +14,6 @@ namespace Waterfall
     public string rotationOffestString;
     public string scaleOffsetString;
 
-    public string overrideShader = "";
-    public List<WaterfallMaterial> materials;
-    public List<WaterfallLight> lights;
     
     public string                  overrideShader = "";
     public List<WaterfallMaterial> materials;

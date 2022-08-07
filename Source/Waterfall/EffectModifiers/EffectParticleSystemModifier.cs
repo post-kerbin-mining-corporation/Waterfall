@@ -13,31 +13,26 @@ namespace Waterfall
   public class EffectParticleSystemModifier : EffectModifier
   {
     public string paramName = "";
-    public FloatCurve curve1;
-    public FloatCurve curve2;
+    public FloatCurve curve1 = new();
+    public FloatCurve curve2 = new();
 
     WaterfallParticleEmitter[] p;
 
-    public EffectParticleSystemModifier()
+    public EffectParticleSystemModifier() : base()
     {
-      curve1 = new FloatCurve();
-      curve2 = new FloatCurve();
-
       modifierTypeName = "Particle System";
     }
-    public EffectParticleSystemModifier(ConfigNode node) { Load(node); }
+
+    public EffectParticleSystemModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
       base.Load(node);
 
       node.TryGetValue("paramName", ref paramName);
-      curve1 = new FloatCurve();
       curve1.Load(node.GetNode("curve1"));
-      curve2 = new FloatCurve();
       curve2.Load(node.GetNode("curve2"));
 
-      modifierTypeName = "Particle System";
     }
     public override ConfigNode Save()
     {
@@ -60,6 +55,28 @@ namespace Waterfall
       }
 
     }
+
+    public void Get(float[] input, Vector2[] output)
+    {
+      if (input.Length > 1)
+      {
+        for (int i = 0; i < p.Length; i++)
+        {
+          float inValue = input[i];
+          output[i] = new(curve1.Evaluate(inValue) + randomValue,
+                          curve2.Evaluate(inValue) + randomValue);
+        }
+      }
+      else if (input.Length == 1)
+      {
+        float inValue = input[0];
+        Vector2 vec = new Vector2(
+          curve1.Evaluate(inValue) + randomValue,
+          curve2.Evaluate(inValue) + randomValue);
+        for (int i = 0; i < p.Length; i++)
+          output[i] = vec;
+      }
+    }
     public List<Vector2> Get(List<float> strengthList)
     {
       List<Vector2> floatList = new List<Vector2>();
@@ -81,7 +98,6 @@ namespace Waterfall
       }
       return floatList;
     }
-
     public WaterfallParticleEmitter GetEmitter()
     {
       return p[0];
@@ -91,6 +107,12 @@ namespace Waterfall
       paramName = newParamName;
       parentEffect.ModifierParameterChange(this);
     }
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectParticleParameterIntegrator && integrator.transformName == transformName;
+
+
+    public override EffectIntegrator CreateIntegrator() => new EffectParticleParameterIntegrator(parentEffect, this);
+
+    
   }
 
 }

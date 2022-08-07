@@ -55,6 +55,19 @@ namespace Waterfall
           _ => items[i]
         };
     }
+    public void Integrate(EffectModifierMode mode, Vector2[] items, Vector2[] modifiers)
+    {
+      int count = Math.Min(items.Length, modifiers.Length);
+      for (int i = 0; i < count; i++)
+        items[i] = mode switch
+        {
+          EffectModifierMode.REPLACE => modifiers[i],
+          EffectModifierMode.MULTIPLY => Vector2.Scale(items[i], modifiers[i]),
+          EffectModifierMode.ADD => items[i] + modifiers[i],
+          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
+          _ => items[i]
+        };
+    }
     public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);

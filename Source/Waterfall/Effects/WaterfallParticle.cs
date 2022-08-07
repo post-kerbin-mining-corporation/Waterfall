@@ -60,33 +60,6 @@ namespace Waterfall
 
     }
 
-
-    //public void SetRanges(
-    //  Vector2 emissionRangeNew,
-    //  Vector2 speedRangeNew,
-    //  Vector2 sizeRangeNew,
-    //  Vector2 lifetimeRangeNew)
-    //{
-    //  emissionRateRange = emissionRangeNew;
-    //  emissionSpeedRange = speedRangeNew;
-    //  startSizeRange = sizeRangeNew;
-    //  lifetimeRange = lifetimeRangeNew;
-    //}
-    //protected void SetParticles()
-    //{
-    //  float srfSpeed = 0;// (float)part.vessel.srfSpeed;
-    //  float pressureAtm = 1;// (float)vessel.mainBody.GetPressureAtm(part.vessel.altitude);
-    //  for (int i = 0; i < emitters.Count; i++)
-    //  {
-    //    emitters[i].Set(
-    //      emissionRateRange * SpeedEmissionScaleCurve.Evaluate(srfSpeed),
-    //      emissionSpeedRange,
-    //      startSizeRange * AtmoSizeScaleCurve.Evaluate(pressureAtm),
-    //      lifetimeRange * SpeedLifetimeScaleCurve.Evaluate(srfSpeed),
-    //      AtmoAlphaFadeCurve.Evaluate(pressureAtm));
-    //  }
-    //}
-
   }
 
   public class WaterfallParticleEmitter : MonoBehaviour
@@ -96,10 +69,10 @@ namespace Waterfall
     private ParticleSystem emitter;
     private ParticleSystemRenderer renderer;
 
+    ParticleSystem.Particle[] particleBuffer;
     private ParticleSystem.MainModule main;
     private ParticleSystem.EmissionModule emit;
     private ParticleSystem.ShapeModule shape;
-    private static ParticleSystem.Particle[] particles;
 
     public void Start()
     {
@@ -116,13 +89,9 @@ namespace Waterfall
         emit = emitter.emission;
         shape = emitter.shape;
       }
-
-      // FloatingOrigin.RegisterParticleSystem(emitter);
     }
 
-    Vector3d trueVelocity;
 
-    ParticleSystem.Particle[] particleBuffer;
 
     public void Update()
     {
@@ -140,18 +109,15 @@ namespace Waterfall
 
           float distancePerFrame = (float)frameVel.magnitude * TimeWarp.deltaTime;
           Vector3 nrmVelocity = (-frameVel.normalized);
-          //Utils.Log($"D/frame: {distancePerFrame}, |v|: {frameVel.magnitude}");
           while (particleCount > 0)
           {
             particleBuffer[particleCount - 1].position =
               particleBuffer[particleCount - 1].position + (-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity;
-            //particleBuffer[particleCount - 1].velocity = -frameVel + UnityEngine.Random.insideUnitSphere*0.4f;
             particleCount--;
 
           }
           emitter.SetParticles(particleBuffer, pc);
         }
-        ///Utils.Log($"Krakensbane vel {Krakensbane.GetFrameVelocity()}, thresh {FloatingOrigin.fetch.threshold} ({FlightGlobals.ActiveVessel.obt_velocity.magnitude})");
       }
 
 
@@ -211,28 +177,5 @@ namespace Waterfall
       }
     }
 
-    //public void Set(
-    //  Vector2 emissionRange,
-    //  Vector2 speedRange,
-    //  Vector2 sizeRange,
-    //  Vector2 lifetimeRange,
-    //  float fade
-    //  )
-    //{
-    //  var main = emitter.main;
-    //  main.startSpeed = new ParticleSystem.MinMaxCurve(speedRange.x, speedRange.y);
-    //  main.startSize = new ParticleSystem.MinMaxCurve(sizeRange.x, sizeRange.y);
-    //  main.startLifetime = new ParticleSystem.MinMaxCurve(lifetimeRange.x, lifetimeRange.y);
-
-    //  var emit = emitter.emission;
-    //  emit.rateOverTime = new ParticleSystem.MinMaxCurve(emissionRange.x, emissionRange.y);
-
-    //  var color = emitter.colorOverLifetime;
-
-    //  Gradient grad = color.color.gradient;
-    //  grad.SetKeys(grad.colorKeys, new GradientAlphaKey[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(fade * 1f, 0.01f), new GradientAlphaKey(fade * 0.3f, 0.5f), new GradientAlphaKey(0f, 1f) });
-    //  color.color = new ParticleSystem.MinMaxGradient(grad);
-
-    //}
   }
 }

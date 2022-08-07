@@ -23,6 +23,7 @@ namespace Waterfall
     public readonly List<EffectRotationIntegrator>   rotationIntegrators = new();
     public readonly List<EffectScaleIntegrator>      scaleIntegrators = new();
     public readonly List<EffectColorIntegrator>      colorIntegrators = new();
+    public readonly List<EffectParticleParameterIntegrator> particleIntegrators = new();
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
@@ -266,7 +267,7 @@ namespace Waterfall
       rotationIntegrators.Clear();
       scaleIntegrators.Clear();
       lightFloatIntegrators.Clear();
-      lightCollorIntegrators.Clear();
+      lightColorIntegrators.Clear();
       particleIntegrators.Clear();
 
       foreach (var mod in fxModifiers)

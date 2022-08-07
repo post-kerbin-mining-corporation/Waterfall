@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Waterfall.Modules;
 using Waterfall.UI.EffectControllersUI;
 
 namespace Waterfall.UI
@@ -52,11 +51,6 @@ namespace Waterfall.UI
       if (texturePickWindow != null)
       {
         texturePickWindow.Update();
-      }
-
-      if (smokeEditWindow != null)
-      {
-        smokeEditWindow.Update();
       }
 
       if (selectedTemplate != null)
@@ -871,7 +865,6 @@ namespace Waterfall.UI
     private UILightEditWindow       lightEditWindow;
     private UIColorPickerWindow     colorPickWindow;
     private UITexturePickerWindow   texturePickWindow;
-    private UISmokeEditWindow       smokeEditWindow;
     private string                  currentCurveTag;
 
     #endregion
