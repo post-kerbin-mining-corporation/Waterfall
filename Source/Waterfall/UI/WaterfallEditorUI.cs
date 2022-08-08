@@ -99,6 +99,11 @@ namespace Waterfall.UI
       {
         materialEditWindow.Draw();
       }
+      
+      if (particleEditWindow != null)
+      {
+        particleEditWindow.Draw();
+      }
 
       if (lightEditWindow != null)
       {
@@ -695,7 +700,19 @@ namespace Waterfall.UI
 
       return lightEditWindow;
     }
+    public UIParticleEditWindow OpenParticleEditWindow(WaterfallModel mdl)
+    {
+      if (particleEditWindow != null)
+      {
+        particleEditWindow.ChangeParticle(mdl);
+      }
+      else
+      {
+        particleEditWindow = new(mdl, true);
+      }
 
+      return particleEditWindow;
+    }
     public UIColorPickerWindow OpenColorEditWindow(Color c)
     {
       if (colorPickWindow != null)
@@ -862,6 +879,7 @@ namespace Waterfall.UI
     private UIControllerPopupWindow controlAddWindow;
     private UIModifierWindow        currentModWinForCurve;
     private UIMaterialEditWindow    materialEditWindow;
+    private UIParticleEditWindow    particleEditWindow;
     private UILightEditWindow       lightEditWindow;
     private UIColorPickerWindow     colorPickWindow;
     private UITexturePickerWindow   texturePickWindow;

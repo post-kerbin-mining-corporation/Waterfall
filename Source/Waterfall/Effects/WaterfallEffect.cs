@@ -395,7 +395,7 @@ namespace Waterfall
       else if (mod is EffectScaleModifier) mod.RemoveFromIntegrator(scaleIntegrators);
       else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
-      else if (mod is EffectParticleParameterIntegrator) mod.RemoveFromIntegrator(particleIntegrators);
+      else if (mod is EffectParticleSystemModifier) mod.RemoveFromIntegrator(particleIntegrators);
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -415,7 +415,7 @@ namespace Waterfall
       else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
       else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
-      else if (mod is EffectParticleParameterIntegrator) mod.CreateOrAttachToIntegrator(particleIntegrators);
+      else if (mod is EffectParticleSystemModifier) mod.CreateOrAttachToIntegrator(particleIntegrators);
     }
 
     public void MoveModifierFromTo(int oldIndex, int newIndex)

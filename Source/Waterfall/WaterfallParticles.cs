@@ -6,17 +6,21 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  ///   Class for loading and retrieving shaders
+  ///   Class for loading and retrieving particles from assetbundles
   /// </summary>
   public static class WaterfallParticleLoader
   {
     /// <summary>
-    ///   A collection of all shaders loaded by Waterfall
+    ///   A collection of all particle assets loaded by Waterfall
     /// </summary>
     private static readonly Dictionary<string, GameObject> ParticleDictionary = new();
+    /// <summary>
+    ///   A collection of all editable particle properies
+    /// </summary>
+    private static readonly Dictionary<string, ParticleData> ParticlePropertyMap = new();
 
     /// <summary>
-    ///   Requests a shader by name
+    ///   Requests a particle by name
     /// </summary>
     /// <param name="shaderName"></param>
     /// <returns></returns>
@@ -26,14 +30,18 @@ namespace Waterfall
       return ParticleDictionary.ContainsKey(particleName) ? ParticleDictionary[particleName] : null;
     }
 
+
+    public static Dictionary<string, ParticleData> GetParticlePropertyMap() => ParticlePropertyMap;
+
+
     /// <summary>
     ///   Requests a shader by name
     /// </summary>
     /// <returns></returns>
-    public static List<string> GetAllShadersNames() => ParticleDictionary.Keys.ToList();
+    public static List<string> GetAllParticlesNames() => ParticleDictionary.Keys.ToList();
 
     /// <summary>
-    ///   Loads all shaders in the plugin's data directory
+    ///   Loads all particles in the plugin's data directory
     /// </summary>
     public static void LoadParticles()
     {
@@ -41,7 +49,7 @@ namespace Waterfall
       string path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Particles/");
       string pathSpec;
 
-      pathSpec = "*.particle"; // fixes OpenGL on windows
+      pathSpec = "*.particle"; 
 
 
       string[] bundlePaths = Directory.GetFiles(path, pathSpec);
@@ -53,7 +61,7 @@ namespace Waterfall
     }
 
     /// <summary>
-    ///   Manually load Shader Asset bundles by path
+    ///   Manually load Particle Asset bundles by path
     /// </summary>
     public static void LoadAssetBundleAtPath(string bundlePath)
     {
@@ -71,6 +79,29 @@ namespace Waterfall
       }
 
       //bundle.Unload(false); // unload the raw asset bundle
+    }
+
+    public static void LoadParticleProperties()
+    {
+      foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.ParticlePropertyNodeName))
+      {
+        try
+        {
+          string propertyName = node.GetValue("name");
+          var range = Vector2.zero;
+
+          node.TryGetValue("range", ref range);
+          var t = WaterfallParticlePropertyType.Range;
+          node.TryGetEnum("type", ref t, WaterfallParticlePropertyType.Range);
+          var m = new ParticleData(t, range);
+          Utils.Log($"[WaterfallParticleLoader]: Adding {propertyName} property");
+          ParticlePropertyMap.Add(propertyName, m);
+        }
+        catch
+        {
+          Utils.LogError($"[WaterfallParticleLoader] Issue loading particle param from node: {node}");
+        }
+      }
     }
   }
 }

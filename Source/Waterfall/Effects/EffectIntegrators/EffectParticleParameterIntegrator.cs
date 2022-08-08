@@ -26,7 +26,6 @@ namespace Waterfall
       initialValues = new Vector2[xforms.Count];
       workingValues = new Vector2[xforms.Count];
 
-      // float specific
       particleParamName = particleMod.paramName;
 
 
@@ -38,6 +37,7 @@ namespace Waterfall
         initialValues[i] = emits[i].Get(particleParamName);
       }
     }
+
     public override void Update()
     {
 

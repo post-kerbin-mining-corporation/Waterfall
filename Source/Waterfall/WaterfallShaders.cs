@@ -105,7 +105,7 @@ namespace Waterfall
 
     public static void LoadShaderProperties()
     {
-      foreach (var node in GameDatabase.Instance.GetConfigNodes("WATERFALL_SHADER_PARAM"))
+      foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.ShaderPropertyNodeName))
       {
         try
         {

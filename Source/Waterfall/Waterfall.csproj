@@ -144,6 +144,7 @@
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="Effects\WaterfallEffectTemplate.cs" />
+    <Compile Include="Effects\WaterfallParticleProperty.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Effects\WaterfallParticle.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="UI\ModifierWindows\UIModifierWindow.cs" />
     <Compile Include="UI\UIMaterialEditWindow.cs" />
     <Compile Include="UI\UIModelEditWindow.cs" />
+    <Compile Include="UI\UIParticleEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
     <Compile Include="UI\UITexturePickerWindow.cs" />

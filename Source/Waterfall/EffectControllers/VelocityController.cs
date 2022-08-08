@@ -9,7 +9,7 @@ namespace Waterfall
   /// A controller that pulls from vessel velocity magnitude. has surface and orbit modes
   /// </summary>
   [Serializable]
-  [DisplayName("Thrust")]
+  [DisplayName("Velocity")]
   public class VelocityController : WaterfallController
   {
     public int mode = 0;

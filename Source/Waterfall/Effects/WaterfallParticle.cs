@@ -13,7 +13,7 @@ namespace Waterfall
     public string baseTransformName = "";
     public string assetName = "";
 
-    private List<WaterfallParticleEmitter> systems;
+    public List<WaterfallParticleEmitter> systems;
 
     public WaterfallParticle()
     { }
@@ -57,7 +57,14 @@ namespace Waterfall
 
 
       Utils.Log($"[WaterfallParticle]: Initialized Waterfall Particle at {parentTransform}, {systems.Count} Count", LogType.Effects);
+    }
 
+    public void SetParticleRange(string propertyName, Vector2 value)
+    {
+      foreach( var p in systems)
+      {
+        ParticleUtils.SetParticleSystemRangeValue(propertyName, p.emitter, value);
+      }
     }
 
   }
@@ -66,15 +73,16 @@ namespace Waterfall
   {
     private Transform self;
     private Transform parent;
-    private ParticleSystem emitter;
+    public ParticleSystem emitter;
     private ParticleSystemRenderer renderer;
 
-    ParticleSystem.Particle[] particleBuffer;
-    private ParticleSystem.MainModule main;
-    private ParticleSystem.EmissionModule emit;
-    private ParticleSystem.ShapeModule shape;
+    private ParticleSystem.Particle[] particleBuffer;
 
-    public void Start()
+    private ParticleSystem.MainModule particleMain;
+    private ParticleSystem.EmissionModule particleEmit;
+    private ParticleSystem.ShapeModule particleShape;
+
+    public void Awake()
     {
       self = transform;
       parent = self.parent;
@@ -85,9 +93,13 @@ namespace Waterfall
 
       if (emitter)
       {
-        main = emitter.main;
-        emit = emitter.emission;
-        shape = emitter.shape;
+        particleMain = emitter.main;
+        particleEmit = emitter.emission;
+        particleShape = emitter.shape;
+        Utils.Log($"[WaterfallParticleEmitter]: Set up emitter {emitter} on {transform.name}. \n" +
+          $"emit: {particleEmit} \n" +
+          $"shape {particleShape} \n" +
+          $"main {particleMain}", LogType.Effects);
       }
     }
 
@@ -125,23 +137,25 @@ namespace Waterfall
 
     public Vector2 Get(string paramName)
     {
+      if (emitter != null)
+        return Vector2.zero;
 
       switch (paramName)
       {
         case "StartSpeed":
-          return new Vector2(main.startSpeed.constantMin, main.startSpeed.constantMax);
+          return new Vector2(particleMain.startSpeed.constantMin, particleMain.startSpeed.constantMax);
         case "StartSize":
-          return new Vector2(main.startSize.constantMin, main.startSize.constantMax);
+          return new Vector2(particleMain.startSize.constantMin, particleMain.startSize.constantMax);
         case "StartLifetime":
-          return new Vector2(main.startLifetime.constantMin, main.startLifetime.constantMax);
+          return new Vector2(particleMain.startLifetime.constantMin, particleMain.startLifetime.constantMax);
         case "EmissionRate":
-          return new Vector2(emit.rateOverTime.constantMin, emit.rateOverTime.constantMax);
+          return new Vector2(particleEmit.rateOverTime.constantMin, particleEmit.rateOverTime.constantMax);
         case "MaxParticles":
-          return new Vector2(main.maxParticles, main.maxParticles);
+          return new Vector2(particleMain.maxParticles, particleMain.maxParticles);
         case "EmissionVolumeLength":
-          return new Vector2(shape.length, shape.length);
+          return new Vector2(particleShape.length, particleShape.length);
         case "EmissionVolumeRadius":
-          return new Vector2(shape.radius, shape.radius);
+          return new Vector2(particleShape.radius, particleShape.radius);
       }
       return Vector2.zero;
     }
@@ -151,25 +165,25 @@ namespace Waterfall
       switch (paramName)
       {
         case "StartSpeed":
-          main.startSpeed = newCurve;
+          particleMain.startSpeed = newCurve;
           break;
         case "StartSize":
-          main.startSize = newCurve;
+          particleMain.startSize = newCurve;
           break;
         case "StartLifetime":
-          main.startLifetime = newCurve;
+          particleMain.startLifetime = newCurve;
           break;
         case "EmissionRate":
-          emit.rateOverTime = newCurve;
+          particleEmit.rateOverTime = newCurve;
           break;
         case "MaxParticles":
-          main.maxParticles = (int)paramValue.x;
+          particleMain.maxParticles = (int)paramValue.x;
           break;
         case "EmissionVolumeLength":
-          shape.length = paramValue.x;
+          particleShape.length = paramValue.x;
           break;
         case "EmissionVolumeRadius":
-          shape.radius = paramValue.x;
+          particleShape.radius = paramValue.x;
           break;
         default:
           break;

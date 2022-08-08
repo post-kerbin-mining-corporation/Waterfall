@@ -107,6 +107,7 @@ namespace Waterfall
       paramName = newParamName;
       parentEffect.ModifierParameterChange(this);
     }
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(paramName);
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectParticleParameterIntegrator && integrator.transformName == transformName;
 
 

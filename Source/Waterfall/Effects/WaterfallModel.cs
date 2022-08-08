@@ -14,17 +14,17 @@ namespace Waterfall
     public string rotationOffestString;
     public string scaleOffsetString;
 
-    
-    public string                  overrideShader = "";
+
+    public string overrideShader = "";
     public List<WaterfallMaterial> materials;
-    public List<WaterfallLight>    lights;
+    public List<WaterfallLight> lights;
     public List<WaterfallParticle> particles;
 
 
     public List<Transform> modelTransforms;
-    public Vector3         modelPositionOffset = Vector3.zero;
-    public Vector3         modelRotationOffset = Vector3.zero;
-    public Vector3         modelScaleOffset    = Vector3.one;
+    public Vector3 modelPositionOffset = Vector3.zero;
+    public Vector3 modelRotationOffset = Vector3.zero;
+    public Vector3 modelScaleOffset = Vector3.one;
 
     protected bool randomized = true;
 
@@ -36,17 +36,17 @@ namespace Waterfall
     public WaterfallModel(string modelPath, string shader, bool randomizeSeed)
     {
       modelTransforms = new();
-      path            = modelPath;
-      overrideShader  = shader;
-      randomized      = randomizeSeed;
+      path = modelPath;
+      overrideShader = shader;
+      randomized = randomizeSeed;
     }
 
     public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, bool randomizeSeed)
     {
 
       modelTransforms = new();
-      path            = modelAsset.Path;
-      asset           = modelAsset.Asset;
+      path = modelAsset.Path;
+      asset = modelAsset.Asset;
 
       if (shaderAsset == null)
         overrideShader = null;
@@ -66,7 +66,7 @@ namespace Waterfall
         Utils.LogError("[WaterfallModel]: Unabled to find required path string in MODEL node");
       node.TryGetValue("positionOffset", ref modelPositionOffset);
       node.TryGetValue("rotationOffset", ref modelRotationOffset);
-      node.TryGetValue("scaleOffset",    ref modelScaleOffset);
+      node.TryGetValue("scaleOffset", ref modelScaleOffset);
 
       materials = new();
       foreach (var materialNode in node.GetNodes(WaterfallConstants.MaterialNodeName))
@@ -91,10 +91,10 @@ namespace Waterfall
     {
       var node = new ConfigNode();
       node.name = WaterfallConstants.ModelNodeName;
-      node.AddValue("path",           path);
+      node.AddValue("path", path);
       node.AddValue("positionOffset", modelPositionOffset);
       node.AddValue("rotationOffset", modelRotationOffset);
-      node.AddValue("scaleOffset",    modelScaleOffset);
+      node.AddValue("scaleOffset", modelScaleOffset);
       foreach (var m in materials)
       {
         node.AddNode(m.Save());
@@ -135,14 +135,14 @@ namespace Waterfall
       if (fromNothing)
       {
         materials = new();
-        lights    = new();
+        lights = new();
         particles = new();
 
 
         if (lightObjs.Length > 0)
         {
           var l = new WaterfallLight();
-          l.lights        = new();
+          l.lights = new();
           l.transformName = lightObjs[0].name;
           lights.Add(l);
         }
@@ -153,14 +153,14 @@ namespace Waterfall
           if (overrideShader != null)
             m.shaderName = overrideShader;
           m.useAutoRandomization = randomized;
-          m.materials            = new();
-          m.transformName        = r.transform.name;
+          m.materials = new();
+          m.transformName = r.transform.name;
           materials.Add(m);
         }
 
         if (asset != null && asset != "")
         {
-                    WaterfallParticle p = new WaterfallParticle();
+          WaterfallParticle p = new WaterfallParticle();
           p.transformName = modelTransform.name;
           p.assetName = asset;
 
@@ -198,18 +198,18 @@ namespace Waterfall
     {
       modelPositionOffset = position;
       modelRotationOffset = rotation;
-      modelScaleOffset    = scale;
+      modelScaleOffset = scale;
 
       Utils.Log($"[WaterfallModel] Applying model offsets {position}, {rotation}, {scale}", LogType.Effects);
 
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
-      scaleOffsetString    = $"{scale.x}, {scale.y}, {scale.z}";
+      scaleOffsetString = $"{scale.x}, {scale.y}, {scale.z}";
 
       foreach (var modelTransform in modelTransforms)
       {
         modelTransform.localPosition = modelPositionOffset;
-        modelTransform.localScale    = modelScaleOffset;
+        modelTransform.localScale = modelScaleOffset;
 
         if (modelRotationOffset == Vector3.zero)
         {
@@ -475,5 +475,23 @@ namespace Waterfall
         }
       }
     }
+    public void SetParticleRange(string propertyName, Vector2 value)
+    {
+      foreach (var p in particles)
+      {
+        foreach (var ps in p.systems)
+          ParticleUtils.SetParticleSystemRangeValue(propertyName, ps.emitter, value);
+
+        if (modelTransforms.Count > 1)
+          foreach (var t in modelTransforms)
+          {
+            foreach (var r in t.GetComponentsInChildren<ParticleSystem>())
+            {
+              ParticleUtils.SetParticleSystemRangeValue(propertyName, r, value);
+            }
+          }
+      }
+    }
   }
+
 }
