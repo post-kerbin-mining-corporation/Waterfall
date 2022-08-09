@@ -15,6 +15,7 @@ namespace Waterfall
     public static string FloatNodeName            = "FLOAT";
     public static string ColorNodeName            = "COLOR";
     public static string Vector2NodeName          = "VECTOR2";
+    public static string RangeNodeName            = "RANGE";
     public static string Vector4NodeName          = "VECTOR4";
     public static string TextureNodeName          = "TEXTURE";
     public static string ParticleNodeName         = "PARTICLE";
@@ -30,7 +31,8 @@ namespace Waterfall
     public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
     public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
 
-    public static string ParticleSystemModifierNodeName = "PARTICLESYSTEMMODIFIER";
+    public static string ParticleRangeModifierNodeName = "PARTICLERANGEMODIFIER";
+    public static string ParticleFloatModifierNodeName = "PARTICLEFLOATMODIFIER";
 
     public static string ShaderPropertyNodeName = "WATERFALL_SHADER_PARAM";
     public static string ParticlePropertyNodeName = "WATERFALL_PARTICLE_PARAM";

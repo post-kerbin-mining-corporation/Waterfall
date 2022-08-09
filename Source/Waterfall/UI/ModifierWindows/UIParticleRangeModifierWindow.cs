@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
-  class UIParticleSystemModifierWindow : UIModifierWindow
+  public class UIParticleRangeModifierWindow : UIModifierWindow
   {
     #region GUI Variables
-    Vector2 curveButtonDims = new Vector2(100f, 50f);
+    private Vector2 curveButtonDims = new Vector2(100f, 50f);
 
-    Texture2D miniCurve1;
-    Texture2D miniCurve2;
+    private Texture2D miniCurve1;
+    private Texture2D miniCurve2;
 
     #endregion
 
@@ -20,18 +20,18 @@ namespace Waterfall.UI
     #endregion
 
     #region  Data
-    CurveUpdateFunction curve1Function;
-    CurveUpdateFunction curve2Function;
-    string paramName = "X";
-    int paramIndex = 0;
-    string[] paramNames;
-    public EffectParticleSystemModifier paramMod;
+    private CurveUpdateFunction curve1Function;
+    private CurveUpdateFunction curve2Function;
+    private string paramName = "X";
+    private int paramIndex = 0;
+    private string[] paramNames;
+    public EffectParticleRangeModifier paramMod;
     #endregion
 
-    public UIParticleSystemModifierWindow(EffectParticleSystemModifier mod, bool show) : base((EffectModifier)mod, show)
+    public UIParticleRangeModifierWindow(EffectParticleRangeModifier mod, bool show) : base((EffectModifier)mod, show)
     {
       paramMod = mod;
-      paramNames = WaterfallConstants.ParticleParameterMap.Keys.ToArray();
+      paramNames = WaterfallParticleLoader.FindValidParticleProperties(WaterfallParticlePropertyType.Range).ToArray();
       paramIndex = paramNames.ToList().FindIndex(x => x == paramMod.paramName);
       curve1Function = new CurveUpdateFunction(UpdateFloatCurve1);
       curve2Function = new CurveUpdateFunction(UpdateFloatCurve2);
@@ -55,7 +55,7 @@ namespace Waterfall.UI
     protected override void InitUI()
     {
       base.InitUI();
-      windowTitle = "Modifier Editor - Particle System Parameter";
+      windowTitle = "Modifier Editor - Particle System Range";
     }
     /// <summary>
     /// Draws the modifier content
@@ -139,7 +139,7 @@ namespace Waterfall.UI
     {
       GenerateCurveThumbs(paramMod);
     }
-    protected void GenerateCurveThumbs(EffectParticleSystemModifier floatMod)
+    protected void GenerateCurveThumbs(EffectParticleRangeModifier floatMod)
     {
       miniCurve1 = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve1, Color.red);
       miniCurve2 = GraphUtils.GenerateCurveTexture(texWidth, texHeight, floatMod.curve2, Color.green);

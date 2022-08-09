@@ -6,25 +6,32 @@ using UnityEngine;
 namespace Waterfall
 {
 
-  public class EffectParticleParameterIntegrator : EffectIntegrator
+  public class EffectParticleFloatIntegrator : EffectIntegrator
   {
 
     private string particleParamName;
-
-    protected readonly Vector2[] modifierData;
-    protected readonly Vector2[] initialValues;
-    protected readonly Vector2[] workingValues;
+    public string paramName
+    {
+      get { return particleParamName; }
+      set
+      {
+        particleParamName = value;
+      }
+    }
+    protected readonly float[] modifierData;
+    protected readonly float[] initialValues;
+    protected readonly float[] workingValues;
 
     private readonly WaterfallParticleEmitter[] emits;
 
-    public EffectParticleParameterIntegrator(WaterfallEffect effect, EffectParticleSystemModifier particleMod): base (effect, particleMod)
+    public EffectParticleFloatIntegrator(WaterfallEffect effect, EffectParticleFloatModifier particleMod): base (effect, particleMod)
     {
 
       emits = new WaterfallParticleEmitter[xforms.Count];
 
-      modifierData = new Vector2[xforms.Count];
-      initialValues = new Vector2[xforms.Count];
-      workingValues = new Vector2[xforms.Count];
+      modifierData = new float[xforms.Count];
+      initialValues = new float[xforms.Count];
+      workingValues = new float[xforms.Count];
 
       particleParamName = particleMod.paramName;
 
@@ -34,7 +41,7 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         emits[i] = xforms[i].GetComponent<WaterfallParticleEmitter>();
-        initialValues[i] = emits[i].Get(particleParamName);
+        emits[i].Get(particleParamName, out initialValues[i]);
       }
     }
 
@@ -51,7 +58,7 @@ namespace Waterfall
         if (mod.Controller != null)
         {
           float[] controllerData = mod.Controller.Get();
-          ((EffectParticleSystemModifier)mod).Get(controllerData, modifierData);
+          ((EffectParticleFloatModifier)mod).Get(controllerData, modifierData);
           Integrate(mod.effectMode, workingValues, modifierData);
         }
       }

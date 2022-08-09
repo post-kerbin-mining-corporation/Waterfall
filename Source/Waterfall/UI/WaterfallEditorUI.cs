@@ -620,10 +620,19 @@ namespace Waterfall.UI
       catch (InvalidCastException e) { }
       try
       {
-        EffectParticleSystemModifier psMod = (EffectParticleSystemModifier)fxMod;
+        EffectParticleFloatModifier psMod = (EffectParticleFloatModifier)fxMod;
         if (psMod != null)
         {
-          editWindows.Add(new UIParticleSystemModifierWindow(psMod, true));
+          editWindows.Add(new UIParticleFloatModifierWindow(psMod, true));
+        }
+      }
+      catch (InvalidCastException e) { }
+      try
+      {
+        EffectParticleRangeModifier psMod = (EffectParticleRangeModifier)fxMod;
+        if (psMod != null)
+        {
+          editWindows.Add(new UIParticleRangeModifierWindow(psMod, true));
         }
       }
       catch (InvalidCastException e) { }

@@ -49,7 +49,7 @@ namespace Waterfall
       string path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Particles/");
       string pathSpec;
 
-      pathSpec = "*.particle"; 
+      pathSpec = "*.particle";
 
 
       string[] bundlePaths = Directory.GetFiles(path, pathSpec);
@@ -66,7 +66,7 @@ namespace Waterfall
     public static void LoadAssetBundleAtPath(string bundlePath)
     {
       Utils.Log($"[WaterfallParticleLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
-      var bundle  = AssetBundle.LoadFromFile(bundlePath);
+      var bundle = AssetBundle.LoadFromFile(bundlePath);
       var systems = bundle.LoadAllAssets<GameObject>();
 
       foreach (var sys in systems)
@@ -80,7 +80,21 @@ namespace Waterfall
 
       //bundle.Unload(false); // unload the raw asset bundle
     }
+    public static List<string> FindValidParticleProperties(WaterfallParticlePropertyType propType)
+    {
+      var validProps = new List<string>();
+      foreach (var mProp in ParticlePropertyMap)
+      {
 
+        if (mProp.Value.type == propType)
+        {
+          validProps.Add(mProp.Key);
+        }
+      }
+
+
+      return validProps;
+    }
     public static void LoadParticleProperties()
     {
       foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.ParticlePropertyNodeName))

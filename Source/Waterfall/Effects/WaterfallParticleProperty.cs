@@ -9,7 +9,8 @@ namespace Waterfall
 {
   public enum WaterfallParticlePropertyType
   {
-    Range
+    Range,
+    Float
   }
 
   public class WaterfallParticleProperty
@@ -44,19 +45,56 @@ namespace Waterfall
     {
       node.TryGetValue("rangeName", ref propertyName);
       node.TryGetValue("value", ref propertyValue);
-      Utils.Log($"[WaterfallParticleRangeProperty]: loaded Vector2 {propertyName} with value {propertyValue.ToString()}", LogType.Effects);
     }
 
     public override void Initialize(ParticleSystem s)
     {
-      ParticleUtils.SetParticleSystemRangeValue(propertyName, s, propertyValue);
+      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
     }
 
     public override ConfigNode Save()
     {
       var node = new ConfigNode();
-      node.name = WaterfallConstants.Vector4NodeName;
+      node.name = WaterfallConstants.RangeNodeName;
       node.AddValue("rangeName", propertyName);
+      node.AddValue("value", propertyValue);
+
+      return node;
+    }
+  }
+
+
+  public class WaterfallParticleFloatProperty : WaterfallParticleProperty
+  {
+    public float propertyValue;
+
+    public WaterfallParticleFloatProperty()
+    {
+      propertyType = WaterfallParticlePropertyType.Float;
+    }
+
+    public WaterfallParticleFloatProperty(ConfigNode node)
+    {
+      Load(node);
+      propertyType = WaterfallParticlePropertyType.Float;
+    }
+
+    public override void Load(ConfigNode node)
+    {
+      node.TryGetValue("floatName", ref propertyName);
+      node.TryGetValue("value", ref propertyValue);
+    }
+
+    public override void Initialize(ParticleSystem s)
+    {
+      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = new ConfigNode();
+      node.name = WaterfallConstants.FloatNodeName;
+      node.AddValue("floatName", propertyName);
       node.AddValue("value", propertyValue);
 
       return node;

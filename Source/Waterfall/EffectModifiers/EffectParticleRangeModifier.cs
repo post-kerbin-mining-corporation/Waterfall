@@ -10,20 +10,20 @@ namespace Waterfall
   /// <summary>
   /// Particle system modifier
   /// </summary>
-  public class EffectParticleSystemModifier : EffectModifier
+  public class EffectParticleRangeModifier : EffectModifier
   {
     public string paramName = "";
     public FloatCurve curve1 = new();
     public FloatCurve curve2 = new();
 
-    WaterfallParticleEmitter[] p;
+    private WaterfallParticleEmitter[] p;
 
-    public EffectParticleSystemModifier() : base()
+    public EffectParticleRangeModifier() : base()
     {
-      modifierTypeName = "Particle System";
+      modifierTypeName = "Particle System Range";
     }
 
-    public EffectParticleSystemModifier(ConfigNode node) : base(node) { }
+    public EffectParticleRangeModifier(ConfigNode node) : base(node) { }
 
     public override void Load(ConfigNode node)
     {
@@ -38,7 +38,7 @@ namespace Waterfall
     {
       ConfigNode node = base.Save();
 
-      node.name = WaterfallConstants.ParticleSystemModifierNodeName;
+      node.name = WaterfallConstants.ParticleRangeModifierNodeName;
       node.AddValue("paramName", paramName);
 
       node.AddNode(Utils.SerializeFloatCurve("curve1", curve1));
@@ -77,27 +77,6 @@ namespace Waterfall
           output[i] = vec;
       }
     }
-    public List<Vector2> Get(List<float> strengthList)
-    {
-      List<Vector2> floatList = new List<Vector2>();
-      if (strengthList.Count > 1)
-      {
-        for (int i = 0; i < p.Length; i++)
-        {
-          floatList.Add(new Vector2(
-            curve1.Evaluate(strengthList[i]) + randomValue, curve2.Evaluate(strengthList[i]) + randomValue));
-        }
-      }
-      else
-      {
-        for (int i = 0; i < p.Length; i++)
-        {
-          floatList.Add(new Vector2(
-            curve1.Evaluate(strengthList[0]) + randomValue, curve2.Evaluate(strengthList[i]) + randomValue));
-        }
-      }
-      return floatList;
-    }
     public WaterfallParticleEmitter GetEmitter()
     {
       return p[0];
@@ -108,10 +87,9 @@ namespace Waterfall
       parentEffect.ModifierParameterChange(this);
     }
     public override bool ValidForIntegrator => !string.IsNullOrEmpty(paramName);
-    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectParticleParameterIntegrator && integrator.transformName == transformName;
+    public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectParticleRangeIntegrator i && i.paramName == paramName && integrator.transformName == transformName;
 
-
-    public override EffectIntegrator CreateIntegrator() => new EffectParticleParameterIntegrator(parentEffect, this);
+    public override EffectIntegrator CreateIntegrator() => new EffectParticleRangeIntegrator(parentEffect, this);
 
     
   }

@@ -14,7 +14,9 @@ namespace Waterfall.UI
 
 
     private Dictionary<string, Vector2> rangeValues = new();
+    private Dictionary<string, float> floatValues = new();
     private Dictionary<string, string[]> rangeStrings = new();
+    private Dictionary<string, string> floatStrings = new();
 
 
     public UIParticleEditWindow(WaterfallModel modelToEdit, bool show) : base(show)
@@ -58,6 +60,7 @@ namespace Waterfall.UI
       GUI.DragWindow();
     }
 
+   
     protected void DrawTitle()
     {
       GUILayout.BeginHorizontal();
@@ -79,10 +82,56 @@ namespace Waterfall.UI
 
     protected void DrawParticleEdit()
     {
-      float headerWidth = 120f;
-      bool delta = false;
+      
       GUILayout.Label("<b>Particle Parameters</b>");
 
+      DrawFloats();
+      DrawRanges();
+    }
+
+    protected void DrawFloats()
+    {
+
+      foreach (var kvp in floatValues.ToList())
+      {
+        float headerWidth = 140f;
+        float sliderVal;
+        string textVal;
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
+        sliderVal = GUILayout.HorizontalSlider(floatValues[kvp.Key],
+                                               WaterfallParticleLoader.GetParticlePropertyMap()[kvp.Key].floatRange.x,
+                                               WaterfallParticleLoader.GetParticlePropertyMap()[kvp.Key].floatRange.y);
+
+        if (sliderVal != floatValues[kvp.Key])
+        {
+          floatValues[kvp.Key] = sliderVal;
+          floatStrings[kvp.Key] = sliderVal.ToString();
+          model.SetParticleValue(kvp.Key, floatValues[kvp.Key]);
+        }
+        textVal = GUILayout.TextArea(floatStrings[kvp.Key], GUILayout.Width(90f));
+
+
+        if (textVal != floatStrings[kvp.Key])
+        {
+          float outVal;
+          if (Single.TryParse(textVal, out outVal))
+          {
+            floatValues[kvp.Key] = outVal;
+            model.SetParticleValue(kvp.Key, floatValues[kvp.Key]);
+          }
+          floatStrings[kvp.Key] = textVal;
+        }
+
+        GUILayout.EndHorizontal();
+      }
+
+    }
+
+
+    protected void DrawRanges()
+    {
+      float headerWidth = 140f;
       foreach (var kvp in rangeValues.ToList())
       {
         float sliderValX;
@@ -90,7 +139,7 @@ namespace Waterfall.UI
         float sliderValY;
         string textValY;
 
-        GUILayout.Label(kvp.Key, GUILayout.Width(headerWidth));
+        GUILayout.Label($"<b>{kvp.Key}</b>", GUILayout.Width(headerWidth));
         GUILayout.BeginHorizontal();
         GUILayout.Label("Low");
         sliderValX = GUILayout.HorizontalSlider(rangeValues[kvp.Key].x,
@@ -102,7 +151,7 @@ namespace Waterfall.UI
           rangeValues[kvp.Key] = new Vector2(sliderValX, rangeValues[kvp.Key].y);
           rangeStrings[kvp.Key][0] = sliderValX.ToString();
 
-          model.SetParticleRange(kvp.Key, rangeValues[kvp.Key]);
+          model.SetParticleValue(kvp.Key, rangeValues[kvp.Key]);
         }
 
         textValX = GUILayout.TextArea(rangeStrings[kvp.Key][0], GUILayout.Width(90f));
@@ -115,7 +164,7 @@ namespace Waterfall.UI
           {
             rangeValues[kvp.Key] = new Vector2(outVal, rangeValues[kvp.Key].y);
 
-            model.SetParticleRange(kvp.Key, rangeValues[kvp.Key]);
+            model.SetParticleValue(kvp.Key, rangeValues[kvp.Key]);
           }
 
           rangeStrings[kvp.Key][0] = textValX;
@@ -134,7 +183,7 @@ namespace Waterfall.UI
         {
           rangeValues[kvp.Key] = new Vector2(rangeValues[kvp.Key].x, sliderValY);
           rangeStrings[kvp.Key][1] = sliderValY.ToString();
-          model.SetParticleRange(kvp.Key, rangeValues[kvp.Key]);
+          model.SetParticleValue(kvp.Key, rangeValues[kvp.Key]);
         }
 
         textValY = GUILayout.TextArea(rangeStrings[kvp.Key][1], GUILayout.Width(90f));
@@ -146,7 +195,7 @@ namespace Waterfall.UI
           if (Single.TryParse(textValY, out outVal))
           {
             rangeValues[kvp.Key] = new Vector2(rangeValues[kvp.Key].x, outVal);
-            model.SetParticleRange(kvp.Key, rangeValues[kvp.Key]);
+            model.SetParticleValue(kvp.Key, rangeValues[kvp.Key]);
           }
 
           rangeStrings[kvp.Key][1] = textValY;
@@ -156,9 +205,8 @@ namespace Waterfall.UI
         GUILayout.EndHorizontal();
       }
 
-      
-
     }
+
 
     protected void InitializeParticleProperties(WaterfallParticle p)
     {
@@ -166,6 +214,8 @@ namespace Waterfall.UI
       
       rangeValues = new();
       rangeStrings = new();
+      floatValues = new();
+      floatStrings = new();
       
 
       foreach (var pProp in WaterfallParticleLoader.GetParticlePropertyMap())
@@ -173,12 +223,16 @@ namespace Waterfall.UI
 
         if (pProp.Value.type == WaterfallParticlePropertyType.Range)
         {
-          var vec2 = ParticleUtils.GetParticleSystemRangeValue(pProp.Key, p.systems[0].emitter);
-
+          ParticleUtils.GetParticleSystemValue(pProp.Key,  p.systems[0].emitter, out Vector2 vec2);
           rangeValues.Add(pProp.Key, vec2);
           rangeStrings.Add(pProp.Key, new[] { $"{vec2.x}", $"{vec2.y}"});
         }
-
+        if (pProp.Value.type == WaterfallParticlePropertyType.Float)
+        {
+          ParticleUtils.GetParticleSystemValue(pProp.Key, p.systems[0].emitter, out float val);
+          floatValues.Add(pProp.Key, val);
+          floatStrings.Add(pProp.Key, $"{val}");
+        }
 
       }
     }

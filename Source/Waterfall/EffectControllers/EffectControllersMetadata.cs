@@ -60,7 +60,8 @@ namespace Waterfall.EffectControllers
         ["rcs"]                = ControllersByType[typeof(RCSController)],
         ["throttle"]           = ControllersByType[typeof(ThrottleController)],
         ["engineEvent"]        = ControllersByType[typeof(EngineEventController)],
-        ["thrust"]             = ControllersByType[typeof(ThrustController)]
+        ["thrust"]             = ControllersByType[typeof(ThrustController)],
+        ["velocity"]           = ControllersByType[typeof(VelocityController)]
       };
     }
 

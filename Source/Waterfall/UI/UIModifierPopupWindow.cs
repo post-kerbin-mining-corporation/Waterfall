@@ -13,7 +13,18 @@ namespace Waterfall.UI
   public class UIModifierPopupWindow : UIPopupWindow
   {
     protected        string            windowTitle   = "";
-    private readonly string[]          modifierTypes = { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color", "Particle Parameter" };
+    private readonly string[]          modifierTypes = { 
+      "Position", 
+      "Rotation", 
+      "Scale", 
+      "Material Color", 
+      "Material Float", 
+      "Light Material Color", 
+      "Light Float", 
+      "Light Color", 
+      "Particle Float", 
+      "Particle Range" 
+    };
     private          ModifierPopupMode windowMode;
     private          EffectModifier    modifier;
     private          WaterfallEffect   effect;
@@ -273,15 +284,23 @@ namespace Waterfall.UI
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      if (modifierTypes[modifierFlag] == "Particle Parameter")
+      if (modifierTypes[modifierFlag] == "Particle Float")
       {
-        var newMod = new EffectParticleSystemModifier();
+        var newMod = new EffectParticleFloatModifier();
         newMod.fxName = newModifierName;
         newMod.transformName = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-  
+      if (modifierTypes[modifierFlag] == "Particle Range")
+      {
+        var newMod = new EffectParticleRangeModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+
 
       return null;
     }
