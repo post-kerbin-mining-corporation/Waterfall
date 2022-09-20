@@ -99,7 +99,6 @@ namespace Waterfall
       {
         node.AddNode(m.Save());
       }
-
       foreach (var l in lights)
       {
         node.AddNode(l.Save());
@@ -479,6 +478,7 @@ namespace Waterfall
     {
       foreach (var p in particles)
       {
+        p.SetParticleValue(propertyName, value);
         foreach (var ps in p.systems)
           ParticleUtils.SetParticleSystemValue(propertyName, ps.emitter, value);
 
@@ -496,6 +496,7 @@ namespace Waterfall
     {
       foreach (var p in particles)
       {
+        p.SetParticleValue(propertyName, value);
         foreach (var ps in p.systems)
           ParticleUtils.SetParticleSystemValue(propertyName, ps.emitter, value);
 

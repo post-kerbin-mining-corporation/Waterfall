@@ -33,10 +33,19 @@ namespace Waterfall
 
     public static string ParticleRangeModifierNodeName = "PARTICLERANGEMODIFIER";
     public static string ParticleFloatModifierNodeName = "PARTICLEFLOATMODIFIER";
+    public static string ParticleColorModifierNodeName = "PARTICLECOLORMODIFIER";
 
     public static string ShaderPropertyNodeName = "WATERFALL_SHADER_PARAM";
     public static string ParticlePropertyNodeName = "WATERFALL_PARTICLE_PARAM";
     public static string[] ShaderPropertyHideFloatNames = { "_Brightness", "_Intensity", "_Strength" };
+
+    public static string ParticleParamNameStartSpeed = "StartSpeed";
+    public static string ParticleParamNameStartSize = "StartSize";
+    public static string ParticleParamNameStartLifetime = "StartLifetime";
+    public static string ParticleParamNameEmissionRate = "EmissionRate";
+    public static string ParticleParamNameMaxParticles = "MaxParticles";
+    public static string ParticleParamNameEmissionVolumeLength = "EmissionVolumeLength";
+    public static string ParticleParamNameEmissionVolumeRadius = "EmissionVolumeRadius";
 
     public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd = new()
     {

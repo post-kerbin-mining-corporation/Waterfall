@@ -75,19 +75,78 @@ namespace Waterfall
 
       systems.Add(go.AddComponent<WaterfallParticleEmitter>());
 
+      foreach (var p in pProperties)
+      {
+        foreach(var sys in systems)
+        {
+          p.Initialize(sys.emitter);
+        }
+        
+      }
 
       Utils.Log($"[WaterfallParticle]: Initialized Waterfall Particle at {parentTransform}, {systems.Count} Count", LogType.Effects);
     }
 
     public void SetParticleValue(string propertyName, Vector2 value)
     {
-      foreach( var p in systems)
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleRangeProperty t && prop != null)
+        t.propertyValue = value;
+      else
+      {
+        var newProp = new WaterfallParticleRangeProperty
+        {
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        pProperties.Add(newProp);
+      }
+
+
+      foreach ( var p in systems)
       {
         ParticleUtils.SetParticleSystemValue(propertyName, p.emitter, value);
       }
     }
     public void SetParticleValue(string propertyName, float value)
     {
+
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleFloatProperty t && prop != null)
+        t.propertyValue = value;
+      else
+      {
+        var newProp = new WaterfallParticleFloatProperty
+        {
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        pProperties.Add(newProp);
+      }
+
+
+      foreach (var p in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, p.emitter, value);
+      }
+    }
+
+    public void SetParticleValue(string propertyName, Color value)
+    {
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleColorProperty t && prop != null)
+        t.propertyValue = value;
+      else
+      {
+        var newProp = new WaterfallParticleColorProperty
+        {
+          propertyName = propertyName,
+          propertyValue = value
+        };
+        pProperties.Add(newProp);
+      }
+
+
       foreach (var p in systems)
       {
         ParticleUtils.SetParticleSystemValue(propertyName, p.emitter, value);
@@ -139,7 +198,7 @@ namespace Waterfall
         {
           Vector3d frameVel = Krakensbane.GetFrameVelocity();
 
-
+          
           particleBuffer = new ParticleSystem.Particle[emitter.particleCount];
 
           int particleCount = emitter.GetParticles(particleBuffer);
@@ -147,6 +206,8 @@ namespace Waterfall
 
           float distancePerFrame = (float)frameVel.magnitude * TimeWarp.deltaTime;
           Vector3 nrmVelocity = (-frameVel.normalized);
+
+          Utils.Log($"frame vel at {frameVel.magnitude}: \n - normVel {nrmVelocity}\n - moving particle by {(-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity}");
           while (particleCount > 0)
           {
             particleBuffer[particleCount - 1].position =
@@ -159,6 +220,24 @@ namespace Waterfall
       }
 
 
+    }
+
+    public void Get(string paramName, out Color result)
+    {
+      if (emitter == null)
+      {
+        result = Color.white;
+        return;
+      }
+      switch (paramName)
+      {
+        case "StartColor":
+          result = particleMain.startColor.color;
+          break;
+        default:
+          result = Color.white;
+          break;
+      }
     }
 
     public  void Get(string paramName, out Vector2 result)
@@ -258,10 +337,26 @@ namespace Waterfall
           break;
         default:
           break;
+      }
+    }
+    public void Set(string paramName, Color paramValue)
+    {
+      if (emitter == null)
+        return;
 
+      ParticleSystem.MinMaxGradient newCurve = new ParticleSystem.MinMaxGradient(paramValue);
+
+      switch (paramName)
+      {
+        case "StartColor":
+          particleMain.startColor = newCurve;
+          break;
+        default:
+          break;
       }
 
     }
+
 
 
   }

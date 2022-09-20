@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Waterfall.EffectModifiers;
 
 namespace Waterfall.UI
 {
@@ -23,7 +24,8 @@ namespace Waterfall.UI
       "Light Float", 
       "Light Color", 
       "Particle Float", 
-      "Particle Range" 
+      "Particle Range",
+      "Particle Color"
     };
     private          ModifierPopupMode windowMode;
     private          EffectModifier    modifier;
@@ -300,7 +302,14 @@ namespace Waterfall.UI
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-
+      if (modifierTypes[modifierFlag] == "Particle Color")
+      {
+        var newMod = new EffectParticleColorModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
 
       return null;
     }

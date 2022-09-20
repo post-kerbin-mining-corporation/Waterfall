@@ -4,6 +4,36 @@ namespace Waterfall
 {
   public static class ParticleUtils
   {
+    /// <summary>
+    /// Get a Color value from a particle system
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="result"></param>
+    public static void GetParticleSystemValue(string paramName, ParticleSystem system, out Color result)
+    {
+      if (system == null)
+      {
+        result = Color.white;
+        return;
+      }
+      switch (paramName)
+      {
+        case "StartColor":
+          result = system.main.startColor.color;
+          break;
+        default:
+          result = Color.white;
+          break;
+      }
+    }
+
+    /// <summary>
+    /// Get a Vector2 value from a particle system
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="result"></param>
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, out Vector2 result)
     {
       if (system == null)
@@ -11,7 +41,6 @@ namespace Waterfall
         result = Vector2.zero;
         return;
       }
-
       switch (paramName)
       {
         case "StartSpeed":
@@ -30,8 +59,14 @@ namespace Waterfall
           result = Vector2.zero;
           break;
       }
-
     }
+
+    /// <summary>
+    /// Get a float value from a particle system
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="result"></param>
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, out float result)
     {
       if (system == null)
@@ -54,8 +89,14 @@ namespace Waterfall
           break;
       }
       result = 0f;
-
     }
+
+    /// <summary>
+    /// Set a particle system Vector2 value
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="paramValue"></param>
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, Vector2 paramValue)
     {
       if (system == null)
@@ -82,10 +123,40 @@ namespace Waterfall
           break;
         default:
           break;
-
       }
-
     }
+
+    /// <summary>
+    /// Set a particle system Color value
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="paramValue"></param>
+    public static void SetParticleSystemValue(string paramName, ParticleSystem system, Color paramValue)
+    {
+      if (system == null)
+        return;
+
+      ParticleSystem.MinMaxGradient newCurve = new ParticleSystem.MinMaxGradient(paramValue);
+      ParticleSystem.MainModule particleMain = system.main;
+
+      switch (paramName)
+      {
+        case "StartColor":
+          particleMain.startColor = newCurve;
+          break;
+        default:
+          break;
+      }
+    }
+
+
+    /// <summary>
+    /// Set a particle system float value
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="system"></param>
+    /// <param name="paramValue"></param>
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, float paramValue)
     {
       if (system == null)
@@ -108,11 +179,8 @@ namespace Waterfall
           break;
         default:
           break;
-
       }
-
     }
-
   }
 
   public enum ParticleParameterType
@@ -128,14 +196,12 @@ namespace Waterfall
     public string Name;
 
     /// <summary>
-    /// The type,
+    /// The particle parameter type
     /// </summary>
     public ParticleParameterType ParamType;
 
-    public ParticleParameterData(string nm, ParticleParameterType tp)
-    {
-
-    }
+    public ParticleParameterData(string nm, ParticleParameterType tp) { }
+ 
   }
 
   public class ParticleData

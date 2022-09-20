@@ -10,7 +10,8 @@ namespace Waterfall
   public enum WaterfallParticlePropertyType
   {
     Range,
-    Float
+    Float,
+    Color
   }
 
   public class WaterfallParticleProperty
@@ -95,6 +96,43 @@ namespace Waterfall
       var node = new ConfigNode();
       node.name = WaterfallConstants.FloatNodeName;
       node.AddValue("floatName", propertyName);
+      node.AddValue("value", propertyValue);
+
+      return node;
+    }
+  }
+
+  public class WaterfallParticleColorProperty : WaterfallParticleProperty
+  {
+    public Color propertyValue;
+
+    public WaterfallParticleColorProperty()
+    {
+      propertyType = WaterfallParticlePropertyType.Color;
+    }
+
+    public WaterfallParticleColorProperty(ConfigNode node)
+    {
+      Load(node);
+      propertyType = WaterfallParticlePropertyType.Color;
+    }
+
+    public override void Load(ConfigNode node)
+    {
+      node.TryGetValue("colorName", ref propertyName);
+      node.TryGetValue("value", ref propertyValue);
+    }
+
+    public override void Initialize(ParticleSystem s)
+    {
+      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = new ConfigNode();
+      node.name = WaterfallConstants.ColorNodeName;
+      node.AddValue("colorName", propertyName);
       node.AddValue("value", propertyValue);
 
       return node;
