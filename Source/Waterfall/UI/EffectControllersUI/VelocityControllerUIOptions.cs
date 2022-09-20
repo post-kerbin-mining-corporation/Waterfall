@@ -14,7 +14,12 @@ namespace Waterfall.UI.EffectControllersUI
     public override void DrawOptions()
     {
       GUILayout.Label("Velocity Mode");
-      int flagChanged = GUILayout.SelectionGrid(modeFlag, modes, Mathf.Min(modes.Length, 2), UIResources.GetStyle("radio_text_button"));
+      int flagChanged = GUILayout.SelectionGrid(
+        modeFlag, 
+        modes, 
+        Mathf.Min(modes.Length, 2), 
+        UIResources.GetStyle("radio_text_button"));
+
       modeFlag = flagChanged;
     }
 

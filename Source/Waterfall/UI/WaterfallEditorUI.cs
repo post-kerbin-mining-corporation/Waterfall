@@ -215,6 +215,9 @@ namespace Waterfall.UI
       if (ctrl is GimbalController)
         sliderMin = -1f;
 
+      if (ctrl is VelocityController)
+        sliderMax = 3000f;
+
       if (ctrl.overridden)
       {
         ctrl.overrideValue = GUILayout.HorizontalSlider(ctrl.overrideValue, sliderMin, sliderMax, GUILayout.MaxWidth(100f));

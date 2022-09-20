@@ -205,13 +205,15 @@ namespace Waterfall
           int pc = particleCount;
 
           float distancePerFrame = (float)frameVel.magnitude * TimeWarp.deltaTime;
-          Vector3 nrmVelocity = (-frameVel.normalized);
+          Vector3 nrmVelocity = -frameVel.normalized;
 
-          Utils.Log($"frame vel at {frameVel.magnitude}: \n - normVel {nrmVelocity}\n - moving particle by {(-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity}");
+         // Utils.Log($"frame vel at {frameVel.magnitude}: \n - normVel {nrmVelocity}\n - moving particle by {(-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity}");
           while (particleCount > 0)
           {
             particleBuffer[particleCount - 1].position =
-              particleBuffer[particleCount - 1].position + (-frameVel * TimeWarp.deltaTime) - UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity;
+              particleBuffer[particleCount - 1].position + 
+              (-frameVel * TimeWarp.deltaTime) - 
+              UnityEngine.Random.Range(0f, distancePerFrame) * nrmVelocity;
             particleCount--;
 
           }
