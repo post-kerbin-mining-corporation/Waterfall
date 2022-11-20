@@ -51,8 +51,9 @@ namespace Waterfall
       if (baseTransformName != "")
       {
         var candidates = parentTransform.GetComponentsInChildren<Transform>();
-        foreach (var t in candidates)
+        for (int i = 0; i < candidates.Length; i++)
         {
+          var t = candidates[i];
           var l = t.GetComponent<Light>();
           if (l != null)
           {
@@ -72,8 +73,9 @@ namespace Waterfall
 
       Utils.Log($"[WaterfallLight]: Initialized WaterfallLight at {parentTransform}, {lights.Count} Count", LogType.Effects);
 
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.range     = range;
         l.type      = lightType;
         l.intensity = intensity;
@@ -85,8 +87,9 @@ namespace Waterfall
     public void SetRange(float value)
     {
       range = value;
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.range = range;
       }
     }
@@ -94,8 +97,9 @@ namespace Waterfall
     public void SetAngle(float value)
     {
       angle = value;
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.spotAngle = angle;
       }
     }
@@ -103,8 +107,9 @@ namespace Waterfall
     public void SetIntensity(float value)
     {
       intensity = value;
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.intensity = intensity;
       }
     }
@@ -112,8 +117,9 @@ namespace Waterfall
     public void SetColor(Color value)
     {
       color = value;
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.color = color;
       }
     }
@@ -121,8 +127,9 @@ namespace Waterfall
     public void SetLightType(LightType lType)
     {
       lightType = lType;
-      foreach (var l in lights)
+      for (int i = 0; i < lights.Count; i++)
       {
+        var l = lights[i];
         l.type = lightType;
       }
     }

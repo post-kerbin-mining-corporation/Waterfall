@@ -92,8 +92,9 @@ namespace Waterfall
       Utils.Log($"[EffectModifier]: Initializing modifier {fxName}", LogType.Modifiers);
       var roots = parentEffect.GetModelTransforms();
       xforms = new();
-      foreach (var t in roots)
+      for (int i = 0; i < roots.Count; i++)
       {
+        var t  = roots[i];
         var t1 = t.FindDeepChild(transformName);
         if (t1 == null)
         {

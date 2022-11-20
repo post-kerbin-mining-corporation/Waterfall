@@ -13,9 +13,10 @@ namespace Waterfall.UI
     /// <returns></returns>
     public static List<FloatString4> FloatCurveToPoints(FloatCurve inCurve)
     {
-      var outPoints = new List<FloatString4>();
-      foreach (var kf in inCurve.Curve.keys)
+      var outPoints = new List<FloatString4>(inCurve.Curve.keys.Length);
+      for (int i = 0; i < inCurve.Curve.keys.Length; i++)
       {
+        var kf = inCurve.Curve.keys[i];
         outPoints.Add(new(kf.time, kf.value, kf.inTangent, kf.outTangent));
       }
 
@@ -30,8 +31,9 @@ namespace Waterfall.UI
     public static string PointsToString(List<FloatString4> inPoints)
     {
       string buff = "";
-      foreach (var p in inPoints)
+      for (int i = 0; i < inPoints.Count; i++)
       {
+        var p = inPoints[i];
         buff += $"key = {p.floats.x} {p.floats.y} {p.floats.z} {p.floats.w}";
       }
 
@@ -48,9 +50,10 @@ namespace Waterfall.UI
       var newPoints = new List<FloatString4>();
 
       string[] lines = data.Split('\n');
-      foreach (string line in lines)
+      for (int i = 0; i < lines.Length; i++)
       {
-        string[] pcs = line.Trim().Split(new[] { '=', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        string   line = lines[i];
+        string[] pcs  = line.Trim().Split(new[] { '=', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         if (pcs.Length >= 3 && pcs[0] == "key")
         {
           var nv = new FloatString4();

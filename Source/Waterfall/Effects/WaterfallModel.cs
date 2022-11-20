@@ -164,8 +164,9 @@ namespace Waterfall
 
     public void Update()
     {
-      foreach (var m in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var m = materials[i];
         m.Update();
       }
     }
@@ -182,8 +183,9 @@ namespace Waterfall
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
       scaleOffsetString    = $"{scale.x}, {scale.y}, {scale.z}";
 
-      foreach (var modelTransform in modelTransforms)
+      for (int i = 0; i < modelTransforms.Count; i++)
       {
+        var modelTransform = modelTransforms[i];
         modelTransform.localPosition = modelPositionOffset;
         modelTransform.localScale    = modelScaleOffset;
 
@@ -200,11 +202,13 @@ namespace Waterfall
 
     public void SetEnabled(bool state)
     {
-      foreach (var modelTransform in modelTransforms)
+      for (int i = 0; i < modelTransforms.Count; i++)
       {
-        var skinRenderers = modelTransform.GetComponentsInChildren<SkinnedMeshRenderer>();
-        foreach (var renderer in skinRenderers)
+        var modelTransform = modelTransforms[i];
+        var skinRenderers  = modelTransform.GetComponentsInChildren<SkinnedMeshRenderer>();
+        for (int j = 0; j < skinRenderers.Length; j++)
         {
+          var renderer = skinRenderers[j];
           renderer.enabled = state;
         }
 
@@ -214,20 +218,24 @@ namespace Waterfall
 
     public void SetTexture(WaterfallMaterial targetMat, string propertyName, string value)
     {
-      foreach (var m in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var m = materials[i];
         if (m == targetMat)
         {
           m.SetTexture(propertyName, value);
           if (modelTransforms.Count > 1)
           {
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var renderers = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < renderers.Length; rendererIndex++)
               {
-                if (r.name == m.transformName)
+                var renderer = renderers[rendererIndex];
+                if (renderer.name == m.transformName)
                 {
-                  r.material.SetTexture(propertyName, GameDatabase.Instance.GetTexture(value, false));
+                  renderer.material.SetTexture(propertyName, GameDatabase.Instance.GetTexture(value, false));
                 }
               }
             }
@@ -238,17 +246,21 @@ namespace Waterfall
 
     public void SetFloat(WaterfallMaterial targetMat, string propertyName, float value)
     {
-      foreach (var m in materials)
+      for (int matIndex = 0; matIndex < materials.Count; matIndex++)
       {
+        var m = materials[matIndex];
         if (m == targetMat)
         {
           m.SetFloat(propertyName, value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var rs = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
               {
+                var r = rs[rendererIndex];
                 if (r.name == m.transformName)
                 {
                   if (propertyName == "_Seed" && m.useAutoRandomization) { }
@@ -265,16 +277,20 @@ namespace Waterfall
 
     public void SetVector4(WaterfallMaterial targetMat, string propertyName, Vector4 value)
     {
-      foreach (var m in materials)
+      for (int matIndex = 0; matIndex < materials.Count; matIndex++)
       {
+        var m = materials[matIndex];
         if (m == targetMat)
         {
           m.SetVector4(propertyName, value);
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var rs = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
               {
+                var r = rs[rendererIndex];
                 if (r.name == m.transformName)
                 {
                   r.material.SetVector(propertyName, value);
@@ -287,16 +303,20 @@ namespace Waterfall
 
     public void SetTextureScale(WaterfallMaterial targetMat, string propertyName, Vector2 value)
     {
-      foreach (var m in materials)
+      for (int matIndex = 0; matIndex < materials.Count; matIndex++)
       {
+        var m = materials[matIndex];
         if (m == targetMat)
         {
           m.SetTextureScale(propertyName, value);
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var rs = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
               {
+                var r = rs[rendererIndex];
                 if (r.name == m.transformName)
                 {
                   r.material.SetTextureScale(propertyName, value);
@@ -309,16 +329,20 @@ namespace Waterfall
 
     public void SetTextureOffset(WaterfallMaterial targetMat, string propertyName, Vector2 value)
     {
-      foreach (var m in materials)
+      for (int maxIndex = 0; maxIndex < materials.Count; maxIndex++)
       {
+        var m = materials[maxIndex];
         if (m == targetMat)
         {
           m.SetTextureOffset(propertyName, value);
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var rs = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
               {
+                var r = rs[rendererIndex];
                 if (r.name == m.transformName)
                 {
                   r.material.SetTextureOffset(propertyName, value);
@@ -331,17 +355,21 @@ namespace Waterfall
 
     public void SetColor(WaterfallMaterial targetMat, string propertyName, Color value)
     {
-      foreach (var m in materials)
+      for (int matIndex = 0; matIndex < materials.Count; matIndex++)
       {
+        var m = materials[matIndex];
         if (m == targetMat)
         {
           m.SetColor(propertyName, value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var r in t.GetComponentsInChildren<Renderer>())
+              var t  = modelTransforms[transformIndex];
+              var rs = t.GetComponentsInChildren<Renderer>();
+              for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
               {
+                var r = rs[rendererIndex];
                 if (r.name == m.transformName)
                 {
                   r.material.SetColor(propertyName, value);
@@ -354,17 +382,21 @@ namespace Waterfall
 
     public void SetLightRange(WaterfallLight targetLight, float value)
     {
-      foreach (var l in lights)
+      for (int lightIndex = 0; lightIndex < lights.Count; lightIndex++)
       {
+        var l = lights[lightIndex];
         if (l == targetLight)
         {
           l.SetRange(value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var li in t.GetComponentsInChildren<Light>())
+              var t   = modelTransforms[transformIndex];
+              var lis = t.GetComponentsInChildren<Light>();
+              for (int lightComponentIndex = 0; lightComponentIndex < lis.Length; lightComponentIndex++)
               {
+                var li = lis[lightComponentIndex];
                 li.range = value;
               }
             }
@@ -374,17 +406,21 @@ namespace Waterfall
 
     public void SetLightIntensity(WaterfallLight targetLight, float value)
     {
-      foreach (var l in lights)
+      for (int lightIndex = 0; lightIndex < lights.Count; lightIndex++)
       {
+        var l = lights[lightIndex];
         if (l == targetLight)
         {
           l.SetIntensity(value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var li in t.GetComponentsInChildren<Light>())
+              var t   = modelTransforms[transformIndex];
+              var lis = t.GetComponentsInChildren<Light>();
+              for (int lightComponentIndex = 0; lightComponentIndex < lis.Length; lightComponentIndex++)
               {
+                var li = lis[lightComponentIndex];
                 li.intensity = value;
               }
             }
@@ -394,17 +430,21 @@ namespace Waterfall
 
     public void SetLightAngle(WaterfallLight targetLight, float value)
     {
-      foreach (var l in lights)
+      for (int lightIndex = 0; lightIndex < lights.Count; lightIndex++)
       {
+        var l = lights[lightIndex];
         if (l == targetLight)
         {
           l.SetAngle(value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var li in t.GetComponentsInChildren<Light>())
+              var t   = modelTransforms[transformIndex];
+              var lis = t.GetComponentsInChildren<Light>();
+              for (int lightComponentIndex = 0; lightComponentIndex < lis.Length; lightComponentIndex++)
               {
+                var li = lis[lightComponentIndex];
                 li.spotAngle = value;
               }
             }
@@ -414,17 +454,21 @@ namespace Waterfall
 
     public void SetLightColor(WaterfallLight targetLight, Color value)
     {
-      foreach (var l in lights)
+      for (int lightIndex = 0; lightIndex < lights.Count; lightIndex++)
       {
+        var l = lights[lightIndex];
         if (l == targetLight)
         {
           l.SetColor(value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var li in t.GetComponentsInChildren<Light>())
+              var t   = modelTransforms[transformIndex];
+              var lis = t.GetComponentsInChildren<Light>();
+              for (int lightComponentIndex = 0; lightComponentIndex < lis.Length; lightComponentIndex++)
               {
+                var li = lis[lightComponentIndex];
                 li.color = value;
               }
             }
@@ -434,17 +478,21 @@ namespace Waterfall
 
     public void SetLightType(WaterfallLight targetLight, LightType value)
     {
-      foreach (var l in lights)
+      for (int lightIndex = 0; lightIndex < lights.Count; lightIndex++)
       {
+        var l = lights[lightIndex];
         if (l == targetLight)
         {
           l.SetLightType(value);
 
           if (modelTransforms.Count > 1)
-            foreach (var t in modelTransforms)
+            for (int transformIndex = 0; transformIndex < modelTransforms.Count; transformIndex++)
             {
-              foreach (var li in t.GetComponentsInChildren<Light>())
+              var t   = modelTransforms[transformIndex];
+              var lis = t.GetComponentsInChildren<Light>();
+              for (int lightComponentIndex = 0; lightComponentIndex < lis.Length; lightComponentIndex++)
               {
+                var li = lis[lightComponentIndex];
                 li.type = value;
               }
             }

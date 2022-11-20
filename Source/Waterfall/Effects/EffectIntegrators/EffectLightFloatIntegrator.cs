@@ -44,12 +44,13 @@ namespace Waterfall
 
       Array.Copy(initialValues, workingValues, l.Length);
 
-      foreach (var mod in handledModifiers)
+      for (int i = 0; i < handledModifiers.Count; i++)
       {
+        var mod = handledModifiers[i];
         if (mod.Controller != null)
         {
           float[] controllerData = mod.Controller.Get();
-          ((EffectLightFloatModifier)mod).Get(controllerData, modifierData);
+          ((EffectLightFloatModifier) mod).Get(controllerData, modifierData);
           Integrate(mod.effectMode, workingValues, modifierData);
         }
       }
