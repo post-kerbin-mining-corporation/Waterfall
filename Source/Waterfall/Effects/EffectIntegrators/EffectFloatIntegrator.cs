@@ -29,8 +29,9 @@ namespace Waterfall
       parentEffect = effect;
 
       var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
+      for (int i = 0; i < roots.Count; i++)
       {
+        var t = roots[i];
         if (t.FindDeepChild(transformName) is Transform t1 && t1 != null)
           xforms.Add(t1);
         else
@@ -152,19 +153,21 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      for (int i = 0; i < handledModifiers.Count; i++)
       {
+        var mod = handledModifiers[i];
         if (mod.Controller != null)
         {
           float[] controllerData = mod.Controller.Get();
 
-          ((EffectFloatModifier)mod).Get(controllerData, modifierData);
+          ((EffectFloatModifier) mod).Get(controllerData, modifierData);
 
           s_Integrate.Begin();
           Integrate(mod.effectMode, workingValues, modifierData);
           s_Integrate.End();
         }
       }
+
       s_Modifiers.End();
 
       s_Apply.Begin();

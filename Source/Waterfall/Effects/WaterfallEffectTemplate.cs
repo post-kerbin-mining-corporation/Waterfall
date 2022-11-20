@@ -34,8 +34,11 @@ namespace Waterfall
 
       template = WaterfallTemplates.GetTemplate(templateName);
       allFX.Clear();
-      foreach (var fx in template.allFX)
+      for (int i = 0; i < template.allFX.Count; i++)
+      {
+        var fx = template.allFX[i];
         allFX.Add(new(fx, this));
+      }
     }
 
     public ConfigNode Save()

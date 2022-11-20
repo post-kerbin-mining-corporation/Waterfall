@@ -68,18 +68,24 @@ namespace Waterfall
       Utils.Log(String.Format("[WaterfallMaterial]: Loading new material for {0} ", transformName), LogType.Effects);
 
       matProperties = new();
-      foreach (var subnode in node.GetNodes(WaterfallConstants.TextureNodeName))
+      var nodes = node.GetNodes(WaterfallConstants.TextureNodeName);
+      for (int i = 0; i < nodes.Length; i++)
       {
+        var subnode = nodes[i];
         matProperties.Add(new WaterfallMaterialTextureProperty(subnode));
       }
 
-      foreach (var subnode in node.GetNodes(WaterfallConstants.ColorNodeName))
+      var subnodes = node.GetNodes(WaterfallConstants.ColorNodeName);
+      for (int i = 0; i < subnodes.Length; i++)
       {
+        var subnode = subnodes[i];
         matProperties.Add(new WaterfallMaterialColorProperty(subnode));
       }
 
-      foreach (var subnode in node.GetNodes(WaterfallConstants.FloatNodeName))
+      var configNodes = node.GetNodes(WaterfallConstants.FloatNodeName);
+      for (int i = 0; i < configNodes.Length; i++)
       {
+        var subnode = configNodes[i];
         matProperties.Add(new WaterfallMaterialFloatProperty(subnode));
       }
     }
@@ -177,8 +183,9 @@ namespace Waterfall
     {
       if (skinnedMeshes != null)
       {
-        foreach (var smr in skinnedMeshes)
+        for (int i = 0; i < skinnedMeshes.Count; i++)
         {
+          var smr = skinnedMeshes[i];
           smr.Recalculate();
         }
       }
@@ -204,8 +211,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         if (propertyName == "_Seed" && useAutoRandomization) { }
         else
         {
@@ -234,8 +242,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         mat.SetFloatArray(propertyName, new[] { value.x, value.y, value.z, value.w });
       }
     }
@@ -262,8 +271,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         mat.SetTextureScale(propertyName, value);
       }
     }
@@ -291,8 +301,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         Utils.Log($"[WaterfallMaterial] Changing {propertyName} to {value} on {mat}", LogType.Effects);
         mat.SetTexture(propertyName, GameDatabase.Instance.GetTexture(value, false));
       }
@@ -319,8 +330,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         mat.SetTextureOffset(propertyName, value);
       }
     }
@@ -345,8 +357,9 @@ namespace Waterfall
         matProperties.Add(newProp);
       }
 
-      foreach (var mat in materials)
+      for (int i = 0; i < materials.Count; i++)
       {
+        var mat = materials[i];
         mat.SetColor(propertyName, value);
       }
     }

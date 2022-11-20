@@ -119,48 +119,57 @@ namespace Waterfall
       var lightFloatNodes = node.GetNodes(WaterfallConstants.LightFloatModifierNodeName);
       var lightColorNodes = node.GetNodes(WaterfallConstants.LightColorModifierNodeName);
 
-      foreach (var subNode in positionNodes)
+      for (int i = 0; i < positionNodes.Length; i++)
       {
+        var subNode = positionNodes[i];
         fxModifiers.Add(new EffectPositionModifier(subNode));
       }
 
-      foreach (var subNode in rotationNodes)
+      for (int i = 0; i < rotationNodes.Length; i++)
       {
+        var subNode = rotationNodes[i];
         fxModifiers.Add(new EffectRotationModifier(subNode));
       }
 
-      foreach (var subNode in scalingNodes)
+      for (int i = 0; i < scalingNodes.Length; i++)
       {
+        var subNode = scalingNodes[i];
         fxModifiers.Add(new EffectScaleModifier(subNode));
       }
 
-      foreach (var subNode in colorNodes)
+      for (int i = 0; i < colorNodes.Length; i++)
       {
+        var subNode = colorNodes[i];
         fxModifiers.Add(new EffectColorModifier(subNode));
       }
 
-      foreach (var subNode in uvOffsetNodes)
+      for (int i = 0; i < uvOffsetNodes.Length; i++)
       {
+        var subNode = uvOffsetNodes[i];
         fxModifiers.Add(new EffectUVScrollModifier(subNode));
       }
 
-      foreach (var subNode in floatNodes)
+      for (int i = 0; i < floatNodes.Length; i++)
       {
+        var subNode = floatNodes[i];
         fxModifiers.Add(new EffectFloatModifier(subNode));
       }
 
-      foreach (var subNode in colorLightNodes)
+      for (int i = 0; i < colorLightNodes.Length; i++)
       {
+        var subNode = colorLightNodes[i];
         fxModifiers.Add(new EffectColorFromLightModifier(subNode));
       }
 
-      foreach (var subNode in lightFloatNodes)
+      for (int i = 0; i < lightFloatNodes.Length; i++)
       {
+        var subNode = lightFloatNodes[i];
         fxModifiers.Add(new EffectLightFloatModifier(subNode));
       }
 
-      foreach (var subNode in lightColorNodes)
+      for (int i = 0; i < lightColorNodes.Length; i++)
       {
+        var subNode = lightColorNodes[i];
         fxModifiers.Add(new EffectLightColorModifier(subNode));
       }
     }
@@ -231,18 +240,22 @@ namespace Waterfall
         effectTransforms.Add(effectTransform);
       }
 
-      foreach (var fx in fxModifiers)
+      for (int j = 0; j < fxModifiers.Count; j++)
       {
+        var fx = fxModifiers[j];
         fx.Init(this);
       }
 
       effectRenderers.Clear();
       effectRendererMaterials.Clear();
       effectRendererTransforms.Clear();
-      foreach (var t in model.modelTransforms)
+      for (int transformIndex = 0; transformIndex < model.modelTransforms.Count; transformIndex++)
       {
-        foreach (var r in t.GetComponentsInChildren<Renderer>())
+        var t  = model.modelTransforms[transformIndex];
+        var rs = t.GetComponentsInChildren<Renderer>();
+        for (int rendererIndex = 0; rendererIndex < rs.Length; rendererIndex++)
         {
+          var r = rs[rendererIndex];
           effectRenderers.Add(r);
           effectRendererMaterials.Add(r.material);
           effectRendererTransforms.Add(r.transform);
@@ -262,15 +275,23 @@ namespace Waterfall
       lightFloatIntegrators.Clear();
       lightColorIntegrators.Clear();
 
-      foreach (var mod in fxModifiers)
+      for (int i = 0; i < fxModifiers.Count; i++)
       {
-        if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-        else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-        else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-        else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-        else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-        else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-        else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+        var mod = fxModifiers[i];
+        if (mod is EffectFloatModifier)
+          mod.CreateOrAttachToIntegrator(floatIntegrators);
+        else if (mod is EffectColorModifier)
+          mod.CreateOrAttachToIntegrator(colorIntegrators);
+        else if (mod is EffectPositionModifier)
+          mod.CreateOrAttachToIntegrator(positionIntegrators);
+        else if (mod is EffectRotationModifier)
+          mod.CreateOrAttachToIntegrator(rotationIntegrators);
+        else if (mod is EffectScaleModifier)
+          mod.CreateOrAttachToIntegrator(scaleIntegrators);
+        else if (mod is EffectLightFloatModifier)
+          mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
+        else if (mod is EffectLightColorModifier)
+          mod.CreateOrAttachToIntegrator(lightColorIntegrators);
       }
     }
 
@@ -313,21 +334,58 @@ namespace Waterfall
       if (effectVisible)
       {
         s_fxApply.Begin();
-        foreach (var fx in fxModifiers)
+        for (int i = 0; i < fxModifiers.Count; i++)
         {
+          var     fx             = fxModifiers[i];
           float[] controllerData = fx.Controller == null ? EmptyControllerValues : fx.Controller.Get();
           fx.Apply(controllerData);
         }
+
         s_fxApply.End();
 
         s_Integrators.Begin();
-        foreach (var integrator in floatIntegrators) integrator.Update();
-        foreach (var integrator in colorIntegrators) integrator.Update();
-        foreach (var integrator in positionIntegrators) integrator.Update();
-        foreach (var integrator in scaleIntegrators) integrator.Update();
-        foreach (var integrator in rotationIntegrators) integrator.Update();
-        foreach (var integrator in lightFloatIntegrators) integrator.Update();
-        foreach (var integrator in lightColorIntegrators) integrator.Update();
+        for (int i = 0; i < floatIntegrators.Count; i++)
+        {
+          var integrator = floatIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < colorIntegrators.Count; i++)
+        {
+          var integrator = colorIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < positionIntegrators.Count; i++)
+        {
+          var integrator = positionIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < scaleIntegrators.Count; i++)
+        {
+          var integrator = scaleIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < rotationIntegrators.Count; i++)
+        {
+          var integrator = rotationIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < lightFloatIntegrators.Count; i++)
+        {
+          var integrator = lightFloatIntegrators[i];
+          integrator.Update();
+        }
+
+        for (int i = 0; i < lightColorIntegrators.Count; i++)
+        {
+          var integrator = lightColorIntegrators[i];
+          integrator.Update();
+        }
+
         s_Integrators.End();
       }
       s_Update.End();
@@ -338,9 +396,11 @@ namespace Waterfall
     {
       camerasProf.Begin();
       var c = camera.transform;
-      foreach (var renderer in renderers)
+      for (int i = 0; i < renderers.Count; i++)
       {
-        if (!renderer.enabled) continue;
+        var renderer = renderers[i];
+        if (!renderer.enabled)
+          continue;
         Material mat = renderer.material;
 
         int qDelta;
@@ -348,14 +408,16 @@ namespace Waterfall
           qDelta = Settings.DistortQueue;
         else
         {
-          float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
+          float camDistBounds    = Vector3.Dot(renderer.bounds.center      - c.position, c.forward);
           float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
-          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
+          qDelta = Settings.QueueDepth - (int) Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
         }
+
         if (mat.HasProperty("_Intensity"))
           qDelta += 1;
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;
       }
+
       camerasProf.End();
     }
 
@@ -363,12 +425,13 @@ namespace Waterfall
     {
       float destMode = Settings.EnableLegacyBlendModes ? 6 : 1;
 
-      foreach (var mat in effectRendererMaterials)
+      for (int i = 0; i < effectRendererMaterials.Count; i++)
       {
+        var mat = effectRendererMaterials[i];
         if (mat.HasProperty("_DestMode"))
         {
-          mat.SetFloat("_DestMode", isHDR ? 1 : destMode);
-          mat.SetFloat("_ClipBrightness", isHDR ? 50: 1);
+          mat.SetFloat("_DestMode",       isHDR ? 1 : destMode);
+          mat.SetFloat("_ClipBrightness", isHDR ? 50 : 1);
         }
       }
     }
@@ -425,15 +488,18 @@ namespace Waterfall
         effectTransforms[i].localScale = state ? Vector3.Scale(baseScales[i], TemplateScaleOffset) : Vector3.one * 0.00001f;
       effectVisible = state;
 
-      foreach (var r in effectRenderers)
+      for (int i = 0; i < effectRenderers.Count; i++)
       {
+        var r = effectRenderers[i];
         r.enabled = state;
       }
 
-      foreach (var waterfallLight in model.lights)
+      for (int i = 0; i < model.lights.Count; i++)
       {
-        foreach (var light in waterfallLight.lights)
+        var waterfallLight = model.lights[i];
+        for (int j = 0; j < waterfallLight.lights.Count; j++)
         {
+          var light = waterfallLight.lights[j];
           light.enabled = state;
         }
       }

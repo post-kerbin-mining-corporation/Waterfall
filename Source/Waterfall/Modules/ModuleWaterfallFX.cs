@@ -73,8 +73,11 @@ namespace Waterfall
     private void GatherRenderers()
     {
       if (allRenderers.Count == 0)
-        foreach (var fx in allFX)
+        for (int i = 0; i < allFX.Count; i++)
+        {
+          var fx = allFX[i];
           allRenderers.AddUniqueRange(fx.effectRenderers);
+        }
     }
 
     private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
@@ -99,12 +102,14 @@ namespace Waterfall
         }
         luControllers.End();
         luEffects.Begin();
-        foreach (var fx in allFX)
+        for (int i = 0; i < allFX.Count; i++)
         {
+          var fx = allFX[i];
           fx.Update();
           if (changeHDR)
             fx.SetHDR(isHDR);
         }
+
         luEffects.End();
         WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
       }
