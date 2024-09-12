@@ -22,13 +22,10 @@ namespace Waterfall
 
     private readonly Renderer[] r;
 
-    private readonly bool testIntensity;
-
-    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod)
+    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
     {
       // float specific
       floatName        = floatMod.floatName;
-      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       r                  = new Renderer[xforms.Count];
 
@@ -52,10 +49,13 @@ namespace Waterfall
       }
     }
 
-    protected override void Apply()
+    protected override bool Apply_TestIntensity()
     {
+      bool anyActive;
+
       if (testIntensity)
       {
+        anyActive = false;
         for (int i = 0; i < r.Length; i++)
         {
           var rend = r[i];
@@ -67,11 +67,15 @@ namespace Waterfall
             rend.enabled = true;
 
           if (rend.enabled)
+          {
             rend.material.SetFloat(floatPropertyID, val);
+            anyActive = true;
+          }
         }
       }
       else
       {
+        anyActive = true;
         for (int i = 0; i < r.Length; i++)
         {
           var rend = r[i];
@@ -81,6 +85,8 @@ namespace Waterfall
             rend.material.SetFloat(floatPropertyID, val);
         }
       }
+
+      return anyActive;
     }
   }
 }
