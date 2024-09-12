@@ -6,84 +6,7 @@ using UnityEngine;
 
 namespace Waterfall
 {
-  public abstract class EffectIntegrator
-  {
-    public string transformName;
-    protected WaterfallEffect parentEffect;
-    protected List<Transform> xforms = new();
-    public List<EffectModifier> handledModifiers = new();
-    public virtual void AddModifier(EffectModifier mod)
-    {
-      handledModifiers.Add(mod);
-      if (mod.Controller != null)
-      {
-        mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
-      }
-    }
-    public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
-
-    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
-    {
-      Utils.Log($"[EffectIntegrator]: Initializing integrator for {effect.name} on modifier {mod.fxName}", LogType.Modifiers);
-      transformName = mod.transformName;
-      parentEffect = effect;
-
-      var roots = parentEffect.GetModelTransforms();
-      foreach (var t in roots)
-      {
-        if (t.FindDeepChild(transformName) is Transform t1 && t1 != null)
-          xforms.Add(t1);
-        else
-          Utils.LogError($"[EffectIntegrator]: Unable to find transform {mod.transformName} on modifier {mod.fxName}");
-      }
-
-      AddModifier(mod);
-    }
-
-    public abstract void Update();
-
-    public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
-    {
-      int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
-    }
-    public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
-    {
-      int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => Vector3.Scale(items[i], modifiers[i]),
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
-    }
-    public void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
-    {
-      int count = Math.Min(items.Length, modifiers.Length);
-      for (int i = 0; i < count; i++)
-        items[i] = mode switch
-        {
-          EffectModifierMode.REPLACE => modifiers[i],
-          EffectModifierMode.MULTIPLY => items[i] * modifiers[i],
-          EffectModifierMode.ADD => items[i] + modifiers[i],
-          EffectModifierMode.SUBTRACT => items[i] - modifiers[i],
-          _ => items[i]
-        };
-    }
-  }
-
-  public class EffectFloatIntegrator : EffectIntegrator
+  public class EffectFloatIntegrator : EffectIntegrator_Float
   {
     private string _floatName;
     private int floatPropertyID;
@@ -96,9 +19,6 @@ namespace Waterfall
         floatPropertyID = Shader.PropertyToID(_floatName);
       }
     }
-    protected readonly float[] modifierData;
-    protected readonly float[] initialValues;
-    protected readonly float[] workingValues;
 
     private readonly Renderer[] r;
 
@@ -111,9 +31,6 @@ namespace Waterfall
       testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       r                  = new Renderer[xforms.Count];
-      modifierData = new float[xforms.Count];
-      initialValues = new float[xforms.Count];
-      workingValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -135,39 +52,8 @@ namespace Waterfall
       }
     }
 
-    private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.FloatIntegrator.Update");
-    private static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.FloatIntegrator.ListPrep");
-    private static readonly ProfilerMarker s_Modifiers = new ProfilerMarker("Waterfall.FloatIntegrator.Modifiers");
-    private static readonly ProfilerMarker s_Integrate = new ProfilerMarker("Waterfall.FloatIntegrator.Integrate");
-    private static readonly ProfilerMarker s_Apply = new ProfilerMarker("Waterfall.FloatIntegrator.ApplyResult");
-
-    public override void Update()
+    protected override void Apply()
     {
-      if (handledModifiers.Count == 0)
-        return;
-      s_Update.Begin();
-
-      s_ListPrep.Begin();
-      Array.Copy(initialValues, workingValues, workingValues.Length);
-      s_ListPrep.End();
-
-      s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
-      {
-        if (mod.Controller != null)
-        {
-          float[] controllerData = mod.Controller.Get();
-
-          ((EffectFloatModifier)mod).Get(controllerData, modifierData);
-
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
-      }
-      s_Modifiers.End();
-
-      s_Apply.Begin();
       if (testIntensity)
       {
         for (int i = 0; i < r.Length; i++)
@@ -195,9 +81,6 @@ namespace Waterfall
             rend.material.SetFloat(floatPropertyID, val);
         }
       }
-      s_Apply.End();
-
-      s_Update.End();
     }
   }
 }

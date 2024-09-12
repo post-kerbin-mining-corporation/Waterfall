@@ -38,65 +38,62 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
+      <ReferencePath Condition="'$(ReferencePath)' == ''">\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\</ReferencePath>
+      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64.exe</KSPExecutable>
+      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app</KSPExecutable>
+      <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP.x86_64</KSPExecutable>
+      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64_Data\Managed</ManagedRelativePath>
+      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app\Contents\Resources\Data\Managed</ManagedRelativePath>
+      <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP_Data\Managed</ManagedRelativePath>
+      <ManagedPath>$(ReferencePath)\$(ManagedRelativePath)</ManagedPath>
+      <StartAction>Program</StartAction>
+      <StartProgram>$(ReferencePath)\$(KSPExecutable)</StartProgram>
+      <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="$(ManagedPath)\Assembly-CSharp.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="KSPAssets">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
+    <Reference Include="$(ManagedPath)\KSPAssets.dll">
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.AnimationModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.AssetBundleModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.CoreModule.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.ParticleSystemModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.TextRenderingModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.UI.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -125,6 +122,7 @@
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
@@ -199,7 +197,6 @@
     <Compile Include="WaterfallShaders.cs" />
     <Compile Include="AssetLibrary\WaterfallTemplates.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).*" "$(SolutionDir)\..\..\GameData\Waterfall\Plugins\"</PostBuildEvent>
   </PropertyGroup>
