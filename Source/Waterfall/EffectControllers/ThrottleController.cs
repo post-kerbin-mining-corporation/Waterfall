@@ -45,7 +45,7 @@ namespace Waterfall
       }
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
       if (engineController == null)
       {
@@ -63,6 +63,7 @@ namespace Waterfall
       }
       
       values[0] = currentThrottle;
+      return currentThrottle > 0f;
     }
 
     public override void UpgradeToCurrentVersion(Version loadedVersion)

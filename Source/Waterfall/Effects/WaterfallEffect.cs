@@ -350,14 +350,18 @@ namespace Waterfall
       }
     }
 
-    private void UpdateIntegratorArray_TestIntensity<T>(List<T> integrators) where T : EffectIntegrator_Float
+    private bool UpdateIntegratorArray_TestIntensity<T>(List<T> integrators) where T : EffectIntegrator_Float
     {
+      bool anyActive = false;
+
       for (int i=0; i < integrators.Count;)
       {
         var integrator = integrators[i];
         if (integrator.handledModifiers.Count == 0) continue;
 
         bool renderersActive = integrator.Update_TestIntensity();
+
+        anyActive = anyActive || renderersActive;
 
         // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
         if (integrator.testIntensity && !renderersActive)
@@ -376,11 +380,16 @@ namespace Waterfall
           ++i;
         }
       }
+
+      return anyActive;
     }
 
-    public void Update()
+    public bool Update()
     {
       s_Update.Begin();
+
+      bool anyActive = false;
+
       if (effectVisible)
       {
         s_fxApply.Begin();
@@ -393,7 +402,7 @@ namespace Waterfall
 
         s_Integrators.Begin();
         disabledTransformNames.Clear();
-        UpdateIntegratorArray_TestIntensity(floatIntegrators);
+        anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators);
         UpdateIntegratorArray(colorIntegrators);
         UpdateIntegratorArray(positionIntegrators);
         UpdateIntegratorArray(scaleIntegrators);
@@ -407,6 +416,8 @@ namespace Waterfall
         s_Integrators.End();
       }
       s_Update.End();
+
+      return anyActive;
     }
 
     private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
