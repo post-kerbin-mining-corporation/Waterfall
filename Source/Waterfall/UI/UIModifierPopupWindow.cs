@@ -164,7 +164,7 @@ namespace Waterfall.UI
         }
         else if (modifierTypes[modifierFlag].Contains("Particle"))
         {
-          List<WaterfallParticleEmitter> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<WaterfallParticleEmitter>().ToList();
+          List<WaterfallParticleSystem> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<WaterfallParticleSystem>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)

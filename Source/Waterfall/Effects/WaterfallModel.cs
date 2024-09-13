@@ -474,42 +474,30 @@ namespace Waterfall
         }
       }
     }
-    public void SetParticleValue(string propertyName, Vector2 value)
+    public void SetParticleValue(WaterfallParticle targetParticle, string propertyName, string systemName, Vector2 value)
     {
       foreach (var p in particles)
       {
-        p.SetParticleValue(propertyName, value);
-        foreach (var ps in p.systems)
-          ParticleUtils.SetParticleSystemValue(propertyName, ps.emitter, value);
+        if (p == targetParticle)
+        {
+          p.SetParticleValue(propertyName, systemName, value);
 
-        if (modelTransforms.Count > 1)
-          foreach (var t in modelTransforms)
-          {
-            foreach (var r in t.GetComponentsInChildren<ParticleSystem>())
-            {
-              ParticleUtils.SetParticleSystemValue(propertyName, r, value);
-            }
-          }
+          /// TODO: handle multiple transforms
+        }
       }
+
     }
-    public void SetParticleValue(string propertyName, float value)
+    public void SetParticleValue(WaterfallParticle targetParticle, string propertyName, string systemName, float value)
     {
       foreach (var p in particles)
       {
-        p.SetParticleValue(propertyName, value);
-        foreach (var ps in p.systems)
-          ParticleUtils.SetParticleSystemValue(propertyName, ps.emitter, value);
+        if (p == targetParticle)
+        {
+          p.SetParticleValue(propertyName, systemName, value);
 
-        if (modelTransforms.Count > 1)
-          foreach (var t in modelTransforms)
-          {
-            foreach (var r in t.GetComponentsInChildren<ParticleSystem>())
-            {
-              ParticleUtils.SetParticleSystemValue(propertyName, r, value);
-            }
-          }
+          /// TODO: handle multiple transforms
+        }
       }
     }
   }
-
 }

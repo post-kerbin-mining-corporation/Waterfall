@@ -148,6 +148,7 @@
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="Effects\WaterfallEffectTemplate.cs" />
+    <Compile Include="Effects\WaterfallParticleSystem.cs" />
     <Compile Include="Effects\WaterfallParticleProperty.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />

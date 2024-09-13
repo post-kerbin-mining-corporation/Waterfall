@@ -18,7 +18,7 @@ namespace Waterfall.EffectModifiers
     public FloatCurve bCurve = new();
     public FloatCurve aCurve = new();
 
-    private WaterfallParticleEmitter[] p;
+    private WaterfallParticleSystem[] p;
 
     public EffectParticleColorModifier() : base()
     {
@@ -55,10 +55,10 @@ namespace Waterfall.EffectModifiers
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      p = new WaterfallParticleEmitter[xforms.Count];
+      p = new WaterfallParticleSystem[xforms.Count];
       for (int i = 0; i < xforms.Count; i++)
       {
-        p[i] = xforms[i].GetComponent<WaterfallParticleEmitter>();
+        p[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
       }
 
     }
@@ -89,7 +89,7 @@ namespace Waterfall.EffectModifiers
           output[i] = vec;
       }
     }
-    public WaterfallParticleEmitter GetEmitter()
+    public WaterfallParticleSystem GetEmitter()
     {
       return p[0];
     }

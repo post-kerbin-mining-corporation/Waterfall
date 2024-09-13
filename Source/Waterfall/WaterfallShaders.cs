@@ -27,7 +27,7 @@ namespace Waterfall
     /// <returns></returns>
     public static Shader GetShader(string shaderName)
     {
-      Utils.Log("[ShaderLoader]: Getting shader " + shaderName);
+      Utils.Log("[ShaderLoader]: Getting shader " + shaderName, LogType.Effects);
       return ShaderDictionary.ContainsKey(shaderName) ? ShaderDictionary[shaderName] : null;
     }
 
@@ -45,11 +45,11 @@ namespace Waterfall
     /// </summary>
     public static void LoadShaders()
     {
-      
-      
+
+
       string path = Path.Combine(KSPUtil.ApplicationRootPath);
 
-      Utils.Log($"[ShaderLoader]: Loading Shaders");
+      Utils.Log($"[Shaders]: Loading Shaders", LogType.Loading);
 
       string pathSpec;
       if (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
@@ -69,7 +69,7 @@ namespace Waterfall
         pathSpec = "*-macos.waterfall";
       }
 
-      List<string> bundlePaths = Directory.GetFiles(path, pathSpec,SearchOption.AllDirectories).ToList();
+      List<string> bundlePaths = Directory.GetFiles(path, pathSpec, SearchOption.AllDirectories).ToList();
       List<string> orderedBundles = bundlePaths.OrderBy(x => Path.GetFileNameWithoutExtension(x)).ToList();
 
       foreach (string bundle in orderedBundles)
@@ -83,12 +83,12 @@ namespace Waterfall
     /// </summary>
     public static void LoadAssetBundleAtPath(string bundlePath)
     {
-      Utils.Log($"[ShaderLoader]: Loading shaders from {Path.GetFileNameWithoutExtension(bundlePath)}");
-      var bundle  = AssetBundle.LoadFromFile(bundlePath);
+      Utils.Log($"[Shaders]: Loading shaders from {Path.GetFileNameWithoutExtension(bundlePath)}", LogType.Loading);
+      var bundle = AssetBundle.LoadFromFile(bundlePath);
       var shaders = bundle.LoadAllAssets<Shader>();
       foreach (var shader in shaders)
       {
-        Utils.Log($"[ShaderLoader]: Adding {shader.name} ({Path.GetFileNameWithoutExtension(bundlePath)})");
+        Utils.Log($"[Shaders]: Adding {shader.name} ({Path.GetFileNameWithoutExtension(bundlePath)})", LogType.Loading);
         if (!ShaderDictionary.ContainsKey(shader.name))
         {
           ShaderDictionary.Add(shader.name, shader);
@@ -99,6 +99,7 @@ namespace Waterfall
           Utils.LogWarning($"[ShaderLoader]: A shader with {shader.name} already exists, replacing with new version");
         }
       }
+      Utils.Log($"[Shaders]: Loaded {ShaderDictionary.Count} shaders", LogType.Loading);
 
       bundle.Unload(false); // unload the raw asset bundle
     }
@@ -110,7 +111,7 @@ namespace Waterfall
         try
         {
           string propertyName = node.GetValue("name");
-          var    range        = Vector2.zero;
+          var range = Vector2.zero;
 
           node.TryGetValue("range", ref range);
           var t = WaterfallMaterialPropertyType.Float;
@@ -120,7 +121,7 @@ namespace Waterfall
         }
         catch
         {
-          Utils.LogError($"[ShaderLoader] Issue loading shader param from node: {node}");
+          Utils.LogError($"[Shaders] Issue loading shader param from node: {node}");
         }
       }
     }

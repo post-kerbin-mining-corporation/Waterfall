@@ -19,9 +19,8 @@ namespace Waterfall
       Models   = new();
       Textures = new();
       Shaders  = new();
-      Utils.Log("[Asset Library]: Started loading");
-      Utils.Log("[Asset Library]: Loading models");
-      foreach (var node in GameDatabase.Instance.GetConfigNodes("WATERFALL_MODEL"))
+      Utils.Log("[Asset Library]: Loading models", LogType.Loading);
+      foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.ModelAssetNodeName))
       {
         try
         {
@@ -33,9 +32,9 @@ namespace Waterfall
         }
       }
 
-      Utils.Log($"[Asset Library]: Loaded {Models.Count} models");
-      Utils.Log("[Asset Library]: Loading textures");
-      foreach (var node in GameDatabase.Instance.GetConfigNodes("WATERFALL_TEXTURE"))
+      Utils.Log($"[Asset Library]: Loaded {Models.Count} models", LogType.Loading);
+      Utils.Log("[Asset Library]: Loading textures", LogType.Loading);
+      foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.TextureAssetNodeName))
       {
         try
         {
@@ -47,10 +46,10 @@ namespace Waterfall
         }
       }
 
-      Utils.Log($"[Asset Library]: Loaded {Textures.Count} textures");
+      Utils.Log($"[Asset Library]: Loaded {Textures.Count} textures", LogType.Loading);
 
-      Utils.Log("[Asset Library]: Loading shaders");
-      foreach (var node in GameDatabase.Instance.GetConfigNodes("WATERFALL_SHADER"))
+      Utils.Log("[Asset Library]: Loading shaders", LogType.Loading);
+      foreach (var node in GameDatabase.Instance.GetConfigNodes(WaterfallConstants.ShaderAssetNodeName))
       {
         try
         {
@@ -62,8 +61,7 @@ namespace Waterfall
         }
       }
 
-      Utils.Log($"[Asset Library]: Loaded {Shaders.Count} shaders");
-      Utils.Log("[Asset Library]: Finished loading");
+      Utils.Log($"[Asset Library]: Loaded {Shaders.Count} shaders", LogType.Loading);
     }
 
     public static List<WaterfallAsset> GetModels(AssetWorkflow flow)

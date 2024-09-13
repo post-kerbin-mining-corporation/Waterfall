@@ -23,23 +23,23 @@ namespace Waterfall
     protected readonly Color[] initialValues;
     protected readonly Color[] workingValues;
 
-    private readonly WaterfallParticleEmitter[] emits;
+    private readonly WaterfallParticleSystem[] emits;
 
     public EffectParticleColorIntegrator(WaterfallEffect effect, EffectParticleColorModifier particleMod) : base(effect, particleMod)
     {
 
-      emits = new WaterfallParticleEmitter[xforms.Count];
+      emits = new WaterfallParticleSystem[xforms.Count];
 
       modifierData = new Color[xforms.Count];
       initialValues = new Color[xforms.Count];
       workingValues = new Color[xforms.Count];
 
       particleParamName = particleMod.paramName;
-      emits = new WaterfallParticleEmitter[xforms.Count];
+      emits = new WaterfallParticleSystem[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
-        emits[i] = xforms[i].GetComponent<WaterfallParticleEmitter>();
+        emits[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
         emits[i].Get(particleParamName, out initialValues[i]);
       }
     }

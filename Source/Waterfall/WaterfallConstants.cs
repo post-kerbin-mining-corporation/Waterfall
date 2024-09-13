@@ -35,8 +35,13 @@ namespace Waterfall
     public static string ParticleFloatModifierNodeName = "PARTICLEFLOATMODIFIER";
     public static string ParticleColorModifierNodeName = "PARTICLECOLORMODIFIER";
 
+
+    public static string ShaderAssetNodeName = "WATERFALL_SHADER";
+    public static string ModelAssetNodeName = "";
+    public static string TextureAssetNodeName = "WATERFALL_TEXTURE";
     public static string ShaderPropertyNodeName = "WATERFALL_SHADER_PARAM";
     public static string ParticlePropertyNodeName = "WATERFALL_PARTICLE_PARAM";
+
     public static string[] ShaderPropertyHideFloatNames = { "_Brightness", "_Intensity", "_Strength" };
 
     public static string ParticleParamNameStartSpeed = "StartSpeed";

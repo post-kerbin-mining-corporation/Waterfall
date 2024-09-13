@@ -26,16 +26,14 @@ namespace Waterfall
     /// <returns></returns>
     public static GameObject GetParticles(string particleName)
     {
-      Utils.Log("[WaterfallParticleLoader]: Getting particle " + particleName);
+      Utils.Log("[WaterfallParticleLoader]: Getting particle " + particleName, LogType.Effects);
       return ParticleDictionary.ContainsKey(particleName) ? ParticleDictionary[particleName] : null;
     }
 
-
     public static Dictionary<string, ParticleData> GetParticlePropertyMap() => ParticlePropertyMap;
 
-
     /// <summary>
-    ///   Requests a shader by name
+    /// 
     /// </summary>
     /// <returns></returns>
     public static List<string> GetAllParticlesNames() => ParticleDictionary.Keys.ToList();
@@ -45,14 +43,12 @@ namespace Waterfall
     /// </summary>
     public static void LoadParticles()
     {
-      Utils.Log("[WaterfallParticleLoader]: Loading shaders");
-      string path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/Waterfall/Particles/");
-      string pathSpec;
+      Utils.Log("[Particles]: Loading particle systems", LogType.Loading);
+      string pathSpec = "*.particle";
+      string path = Path.Combine(KSPUtil.ApplicationRootPath);
 
-      pathSpec = "*.particle";
-
-
-      string[] bundlePaths = Directory.GetFiles(path, pathSpec);
+      List<string> bundlePaths = Directory.GetFiles(path, pathSpec, SearchOption.AllDirectories).ToList();
+      List<string> orderedBundles = bundlePaths.OrderBy(x => Path.GetFileNameWithoutExtension(x)).ToList();
 
       foreach (string bundle in bundlePaths)
       {
@@ -65,34 +61,35 @@ namespace Waterfall
     /// </summary>
     public static void LoadAssetBundleAtPath(string bundlePath)
     {
-      Utils.Log($"[WaterfallParticleLoader]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}");
+      Utils.Log($"[Particles]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}", LogType.Loading);
       var bundle = AssetBundle.LoadFromFile(bundlePath);
       var systems = bundle.LoadAllAssets<GameObject>();
 
       foreach (var sys in systems)
       {
-        Utils.Log($"[WaterfallParticleLoader]: Adding {sys.name}");
+        Utils.Log($"[Particles]: Adding {sys.name}", LogType.Loading);
         if (!ParticleDictionary.ContainsKey(sys.name))
+        {
           ParticleDictionary.Add(sys.name, sys);
+        }
         else
-          Utils.LogWarning($"[WaterfallParticleLoader]: A particle with {sys.name} already exists");
+        {
+          Utils.LogWarning($"[Particles]: A particle with {sys.name} already exists");
+        }
       }
 
-      //bundle.Unload(false); // unload the raw asset bundle
+      Utils.Log($"[Particles]: Loaded {ParticleDictionary.Count} particle assets", LogType.Loading);
     }
     public static List<string> FindValidParticleProperties(WaterfallParticlePropertyType propType)
     {
       var validProps = new List<string>();
       foreach (var mProp in ParticlePropertyMap)
       {
-
         if (mProp.Value.type == propType)
         {
           validProps.Add(mProp.Key);
         }
       }
-
-
       return validProps;
     }
     public static void LoadParticleProperties()
@@ -108,12 +105,13 @@ namespace Waterfall
           var t = WaterfallParticlePropertyType.Range;
           node.TryGetEnum("type", ref t, WaterfallParticlePropertyType.Range);
           var m = new ParticleData(t, range);
-          Utils.Log($"[WaterfallParticleLoader]: Adding {propertyName} property");
+
+          Utils.Log($"[Particles]: Adding {propertyName} property", LogType.Loading);
           ParticlePropertyMap.Add(propertyName, m);
         }
         catch
         {
-          Utils.LogError($"[WaterfallParticleLoader] Issue loading particle param from node: {node}");
+          Utils.LogError($"[Particles] Issue loading particle property from node: {node}");
         }
       }
     }

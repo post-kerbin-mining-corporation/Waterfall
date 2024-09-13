@@ -16,7 +16,7 @@ namespace Waterfall
     public FloatCurve curve1 = new();
     public FloatCurve curve2 = new();
 
-    private WaterfallParticleEmitter[] p;
+    private WaterfallParticleSystem[] p;
 
     public EffectParticleRangeModifier() : base()
     {
@@ -48,10 +48,10 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      p = new WaterfallParticleEmitter[xforms.Count];
+      p = new WaterfallParticleSystem[xforms.Count];
       for (int i = 0; i < xforms.Count; i++)
       {
-        p[i] = xforms[i].GetComponent<WaterfallParticleEmitter>();
+        p[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
       }
 
     }
@@ -77,7 +77,7 @@ namespace Waterfall
           output[i] = vec;
       }
     }
-    public WaterfallParticleEmitter GetEmitter()
+    public WaterfallParticleSystem GetEmitter()
     {
       return p[0];
     }

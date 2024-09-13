@@ -1,6 +1,4 @@
-﻿// Utils
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +11,8 @@ namespace Waterfall
     Modules,
     Effects,
     Modifiers,
+    Particles,
+    Loading,
     Any
   }
 
@@ -39,8 +39,10 @@ namespace Waterfall
       return logType == LogType.Any
               || (logType == LogType.Settings && Settings.DebugSettings)
               || (logType == LogType.UI && Settings.DebugUIMode)
+              || (logType == LogType.Loading && Settings.DebugLoading)
               || (logType == LogType.Modules && Settings.DebugModules)
               || (logType == LogType.Effects && Settings.DebugEffects)
+              || (logType == LogType.Effects && Settings.DebugParticles)
               || (logType == LogType.Modifiers && Settings.DebugModifiers);
     }
 

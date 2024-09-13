@@ -17,9 +17,13 @@ namespace Waterfall
   public class WaterfallParticleProperty
   {
     public string propertyName;
+    public string linkedSystem;
     public WaterfallParticlePropertyType propertyType;
 
-    public virtual void Load(ConfigNode node) { }
+    public virtual void Load(ConfigNode node) 
+    { 
+      node.TryGetValue("systemName", ref linkedSystem);
+    }
 
     public virtual ConfigNode Save() => null;
 
@@ -44,6 +48,7 @@ namespace Waterfall
 
     public override void Load(ConfigNode node)
     {
+      base.Load(node);
       node.TryGetValue("rangeName", ref propertyName);
       node.TryGetValue("value", ref propertyValue);
     }
@@ -57,6 +62,7 @@ namespace Waterfall
     {
       var node = new ConfigNode();
       node.name = WaterfallConstants.RangeNodeName;
+      node.AddValue("linkedSystem", linkedSystem);      
       node.AddValue("rangeName", propertyName);
       node.AddValue("value", propertyValue);
 
@@ -82,6 +88,7 @@ namespace Waterfall
 
     public override void Load(ConfigNode node)
     {
+      base.Load(node);
       node.TryGetValue("floatName", ref propertyName);
       node.TryGetValue("value", ref propertyValue);
     }
@@ -95,6 +102,7 @@ namespace Waterfall
     {
       var node = new ConfigNode();
       node.name = WaterfallConstants.FloatNodeName;
+      node.AddValue("linkedSystem", linkedSystem);
       node.AddValue("floatName", propertyName);
       node.AddValue("value", propertyValue);
 
@@ -119,6 +127,7 @@ namespace Waterfall
 
     public override void Load(ConfigNode node)
     {
+      base.Load(node);
       node.TryGetValue("colorName", ref propertyName);
       node.TryGetValue("value", ref propertyValue);
     }
@@ -133,6 +142,7 @@ namespace Waterfall
       var node = new ConfigNode();
       node.name = WaterfallConstants.ColorNodeName;
       node.AddValue("colorName", propertyName);
+      node.AddValue("linkedSystem", linkedSystem);
       node.AddValue("value", propertyValue);
 
       return node;

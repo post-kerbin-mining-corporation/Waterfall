@@ -22,12 +22,12 @@ namespace Waterfall
     protected readonly Vector2[] initialValues;
     protected readonly Vector2[] workingValues;
 
-    private readonly WaterfallParticleEmitter[] emits;
+    private readonly WaterfallParticleSystem[] emits;
 
     public EffectParticleRangeIntegrator(WaterfallEffect effect, EffectParticleRangeModifier particleMod) : base(effect, particleMod)
     {
 
-      emits = new WaterfallParticleEmitter[xforms.Count];
+      emits = new WaterfallParticleSystem[xforms.Count];
 
       modifierData = new Vector2[xforms.Count];
       initialValues = new Vector2[xforms.Count];
@@ -36,11 +36,11 @@ namespace Waterfall
       particleParamName = particleMod.paramName;
 
 
-      emits = new WaterfallParticleEmitter[xforms.Count];
+      emits = new WaterfallParticleSystem[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
-        emits[i] = xforms[i].GetComponent<WaterfallParticleEmitter>();
+        emits[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
         emits[i].Get(particleParamName, out initialValues[i]);
       }
     }
