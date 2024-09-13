@@ -45,7 +45,7 @@ namespace Waterfall
     public List<WaterfallController> Controllers => allControllers.Values.ToList();
     public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
 
-    bool isAwake = true;
+    bool isAwake;
 
     /// <summary>
     /// Sets the value of a specific controller
@@ -462,6 +462,8 @@ namespace Waterfall
       InitializeEffects();
 
       UpgradeToCurrentVersion();
+
+      isAwake = true;
     }
 
     private void UpgradeToCurrentVersion()
