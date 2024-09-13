@@ -37,7 +37,7 @@ namespace Waterfall
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
       if (engineController == null)
       {
@@ -57,6 +57,7 @@ namespace Waterfall
       }
 
       values[0] = currentThrustFraction;
+      return currentThrustFraction > 0f;
     }
   }
 }

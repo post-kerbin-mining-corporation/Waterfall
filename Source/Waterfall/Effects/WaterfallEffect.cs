@@ -27,6 +27,7 @@ namespace Waterfall
     public readonly List<EffectParticleFloatIntegrator> particleFloatIntegrators = new();
     public readonly List<EffectParticleRangeIntegrator> particleRangeIntegrators = new();
     public readonly List<EffectParticleColorIntegrator> particleColorIntegrators = new();
+    private HashSet<string> disabledTransformNames = new();
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
@@ -298,6 +299,23 @@ namespace Waterfall
         else if (mod is EffectParticleRangeModifier) mod.CreateOrAttachToIntegrator(particleRangeIntegrators);
         else if (mod is EffectParticleColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
       }
+
+      Comparison<EffectFloatIntegrator> OrderByTransformAndTestIntensity = (EffectFloatIntegrator a, EffectFloatIntegrator b) =>
+      {
+        int ret = string.Compare(a.transformName, b.transformName);
+        if (ret != 0) return ret;
+
+        // we want integrators with TestIntensity==true to come before false, so note the inversion of comparison order here
+        return b.testIntensity.CompareTo(a.testIntensity);
+      };
+
+      Comparison<EffectIntegrator> OrderByTransform = (EffectIntegrator a, EffectIntegrator b) => string.Compare(a.transformName, b.transformName);
+
+      floatIntegrators.Sort(OrderByTransformAndTestIntensity);
+      colorIntegrators.Sort(OrderByTransform);
+      positionIntegrators.Sort(OrderByTransform);
+      rotationIntegrators.Sort(OrderByTransform);
+      scaleIntegrators.Sort(OrderByTransform);
     }
 
     public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
@@ -333,9 +351,71 @@ namespace Waterfall
 
     private static readonly float[] EmptyControllerValues = new float[1];
 
-    public void Update()
+    private void UpdateIntegratorArray<T>(List<T> integrators) where T : EffectIntegrator
+    {
+      for (int i = 0; i < integrators.Count;)
+      {
+        var integrator = integrators[i];
+        if (integrator.handledModifiers.Count == 0) continue;
+
+        if (disabledTransformNames.Contains(integrator.transformName))
+        {
+          // TODO: we could build a table that would let us jump to the next one immediately instead of looping
+          string transformName = integrator.transformName;
+          ++i;
+          while (i < integrators.Count && integrators[i].transformName == transformName)
+          {
+            ++i;
+          }
+        }
+        else
+        {
+          integrator.Update();
+          ++i;
+        }
+      }
+    }
+
+    private bool UpdateIntegratorArray_TestIntensity<T>(List<T> integrators) where T : EffectIntegrator_Float
+    {
+      bool anyActive = false;
+
+      for (int i=0; i < integrators.Count;)
+      {
+        var integrator = integrators[i];
+        if (integrator.handledModifiers.Count == 0) continue;
+
+        bool renderersActive = integrator.Update_TestIntensity();
+
+        anyActive = anyActive || renderersActive;
+
+        // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
+        if (integrator.testIntensity && !renderersActive)
+        {
+          // TODO: we could build a table that would let us jump to the next one immediately instead of looping
+          string transformName = integrator.transformName;
+          disabledTransformNames.Add(transformName);
+          ++i;
+          while (i < integrators.Count && integrators[i].transformName == transformName)
+          {
+            ++i;
+          }
+        }
+        else
+        {
+          ++i;
+        }
+      }
+
+      return anyActive;
+    }
+
+    public bool Update()
     {
       s_Update.Begin();
+
+      bool anyActive = false;
+
       if (effectVisible)
       {
         s_fxApply.Begin();
@@ -347,20 +427,32 @@ namespace Waterfall
         s_fxApply.End();
 
         s_Integrators.Begin();
-        foreach (var integrator in floatIntegrators) integrator.Update();
-        foreach (var integrator in colorIntegrators) integrator.Update();
-        foreach (var integrator in positionIntegrators) integrator.Update();
-        foreach (var integrator in scaleIntegrators) integrator.Update();
-        foreach (var integrator in rotationIntegrators) integrator.Update();
-        foreach (var integrator in lightFloatIntegrators) integrator.Update();
-        foreach (var integrator in lightColorIntegrators) integrator.Update();
+
+        
+
+        disabledTransformNames.Clear();
+        anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators);
+        UpdateIntegratorArray(colorIntegrators);
+        UpdateIntegratorArray(positionIntegrators);
+        UpdateIntegratorArray(scaleIntegrators);
+        UpdateIntegratorArray(rotationIntegrators);
+        /// TODO: PORT TO NEW PATTERN
         foreach (var integrator in particleFloatIntegrators) integrator.Update();
         foreach (var integrator in particleRangeIntegrators) integrator.Update();
         foreach (var integrator in particleColorIntegrators) integrator.Update();
+
+        if (Settings.EnableLights)
+        {
+          UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
+          UpdateIntegratorArray(lightColorIntegrators);
+        }
+
         s_Integrators.End();
 
       }
       s_Update.End();
+
+      return anyActive;
     }
 
     private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");

@@ -31,6 +31,7 @@ namespace Waterfall.UI
         Utils.Log("[UI]: OnDestroy Fired");
       // Remove the stock toolbar button
       GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+      GameEvents.onGUIApplicationLauncherDestroyed.Remove(OnGUIAppLauncherDestroyed);
       if (stockToolbarButton != null)
       {
         ApplicationLauncher.Instance.RemoveModApplication(stockToolbarButton);

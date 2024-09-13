@@ -22,17 +22,16 @@ namespace Waterfall
         Utils.LogError("[GimbalController] Could not find gimbal controller on Initialize");
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
-      if (gimbalController == null)
+      if (gimbalController != null)
       {
-        Utils.LogWarning("[GimbalController] Gimbal controller not assigned");
-        return;
+        if (axis == "x") values[0] = gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP;
+        else if (axis == "y") values[0] = gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP;
+        else if (axis == "z") values[0] = gimbalController.actuationLocal.z;
       }
 
-      if (axis == "x") values[0] = gimbalController.actuationLocal.x / gimbalController.gimbalRangeXP;
-      else if (axis == "y") values[0] = gimbalController.actuationLocal.y / gimbalController.gimbalRangeYP;
-      else if (axis == "z") values[0] = gimbalController.actuationLocal.z;
+      return false;
     }
   }
 }

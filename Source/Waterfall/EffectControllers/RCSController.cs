@@ -38,19 +38,21 @@ namespace Waterfall
       values = new float[rcsController.thrusterTransforms.Count];
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
-      if (rcsController == null)
+      bool awake = false;
+      if (rcsController != null)
       {
-        Utils.LogWarning("[RCSController] RCS controller not assigned");
-        return;
+        for (int i = 0; i < values.Length; i++)
+        {
+          float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
+          float responseRate = newThrottle > values[i] ? responseRateUp : responseRateDown;
+          values[i] = Mathf.MoveTowards(values[i], newThrottle, responseRate * TimeWarp.deltaTime);
+          awake = awake || newThrottle != 0;
+        }
       }
-      for (int i = 0; i < values.Length; i++)
-      {
-        float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
-        float responseRate = newThrottle > values[i] ? responseRateUp : responseRateDown;
-        values[i] = Mathf.MoveTowards(values[i], newThrottle, responseRate * TimeWarp.deltaTime);
-      }
+
+      return awake;
     }
 
     public override void UpgradeToCurrentVersion(Version loadedVersion)

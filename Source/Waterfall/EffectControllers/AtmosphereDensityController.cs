@@ -19,10 +19,11 @@ namespace Waterfall
       values = new float[1];
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
       //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
       values[0] = Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
+      return false;
     }
   }
 }
