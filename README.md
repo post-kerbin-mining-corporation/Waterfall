@@ -22,7 +22,7 @@ This is a framework mod and **does nothing by itself**. Pick up a mod that suppl
 
 ### Required
 These components are required for the mod to function and are bundled as part of any download:
-* [ModuleManager (4.1.4)](https://github.com/sarbian/ModuleManager)
+* [ModuleManager (4.2.3)](https://github.com/sarbian/ModuleManager)
 
 ## Installation
 

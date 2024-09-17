@@ -8,7 +8,7 @@ package:
     - changelog.txt
 dependencies:  # Configure dependencies
   ModuleManager:
-    version: 4.1.4
+    version: 4.2.3
     location: s3
 deploy:
   SpaceDock:
