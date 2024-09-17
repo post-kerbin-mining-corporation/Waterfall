@@ -85,7 +85,7 @@ namespace Waterfall
 
     public void SetParticleModuleState(string propertyName, bool state)
     {
-
+      /// TODO: This doesn't support color yet
       var prop = pProperties.Find(x => x.propertyName == propertyName);
       if (prop is WaterfallParticleNumericProperty t && prop != null)
       {
@@ -99,7 +99,6 @@ namespace Waterfall
           propertyName = propertyName,
           moduleEnabled = state
         };
-
         pProperties.Add(newProp);
       }
       foreach (var particle in systems)
@@ -107,9 +106,9 @@ namespace Waterfall
         ParticleUtils.SetParticleModuleState(propertyName, particle, state);
       }
     }
+    /// Numeric setters
     public void SetParticleValue(string propertyName, float value)
     {
-
       var prop = pProperties.Find(x => x.propertyName == propertyName);
       if (prop is WaterfallParticleNumericProperty t && prop != null)
       {
@@ -202,6 +201,109 @@ namespace Waterfall
           curveMode = ParticleSystemCurveMode.TwoCurves,
           curve1Value = value1,
           curve2Value = value2,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value1, value2);
+      }
+    }
+    /// Color setters
+    public void SetParticleValue(string propertyName, Color value)
+    {
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleColorProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemGradientMode.Color;
+        t.constant1Value = value;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleColorProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemGradientMode.Color,
+          constant1Value = value,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value);
+      }
+    }
+    public void SetParticleValue(string propertyName, Color value1, Color value2)
+    {
+
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleColorProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemGradientMode.TwoColors;
+        t.constant1Value = value1;
+        t.constant2Value = value2;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleColorProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemGradientMode.TwoColors,
+          constant1Value = value1,
+          constant2Value = value2,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value1, value2);
+      }
+    }
+    public void SetParticleValue(string propertyName, Gradient value)
+    {
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleColorProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemGradientMode.Gradient;
+        t.gradient1Value = value;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleColorProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemGradientMode.Gradient,
+          gradient1Value = value,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value);
+      }
+    }
+    public void SetParticleValue(string propertyName, Gradient value1, Gradient value2)
+    {
+
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleColorProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemGradientMode.TwoGradients;
+        t.gradient1Value = value1;
+        t.gradient2Value = value2;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleColorProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemGradientMode.TwoGradients,
+          gradient1Value = value1,
+          gradient2Value = value2,
         };
         pProperties.Add(newProp);
       }

@@ -104,7 +104,7 @@ namespace Waterfall
 
     public override ConfigNode Save()
     {
-      var node = new ConfigNode();
+      ConfigNode node = new();
       node.name = WaterfallConstants.FloatNodeName;
       node.AddValue("paramName", propertyName);
       node.AddValue("curveMode", curveMode);
@@ -114,10 +114,10 @@ namespace Waterfall
       {
         case ParticleSystemCurveMode.Constant:
           node.AddValue("constant1", constant1Value);
-          node.AddValue("constant2", constant2Value);
           break;
         case ParticleSystemCurveMode.TwoConstants:
           node.AddValue("constant1", constant1Value);
+          node.AddValue("constant2", constant2Value);
           break;
         case ParticleSystemCurveMode.Curve:
           node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
@@ -125,6 +125,108 @@ namespace Waterfall
         case ParticleSystemCurveMode.TwoCurves:
           node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
           node.AddNode(Utils.SerializeFloatCurve("curve2", curve2Value));
+          break;
+      }
+
+      return node;
+    }
+  }
+
+  public class WaterfallParticleColorProperty : WaterfallParticleProperty
+  {
+    public Color constant1Value;
+    public Color constant2Value;
+
+    public Gradient gradient1Value;
+    public Gradient gradient2Value;
+
+    public ParticleSystemGradientMode curveMode;
+
+    public WaterfallParticleColorProperty()
+    {
+      propertyType = WaterfallParticlePropertyType.Color;
+    }
+
+    public WaterfallParticleColorProperty(ConfigNode node)
+    {
+      Load(node);
+      propertyType = WaterfallParticlePropertyType.Color;
+    }
+
+    public override void Load(ConfigNode node)
+    {
+      gradient1Value = new();
+      gradient2Value = new();
+
+      base.Load(node);
+      node.TryGetValue("paramName", ref propertyName);
+      node.TryGetValue("moduleEnabled", ref moduleEnabled);
+      node.TryGetEnum("curveMode", ref curveMode, ParticleSystemGradientMode.Color);
+      // TODO: load gradients
+      switch (curveMode)
+      {
+        case ParticleSystemGradientMode.Color:
+          node.TryGetValue("constant1", ref constant1Value);
+          break;
+        case ParticleSystemGradientMode.TwoColors:
+          node.TryGetValue("constant1", ref constant1Value);
+          node.TryGetValue("constant2", ref constant2Value);
+          break;
+        case ParticleSystemGradientMode.Gradient:
+          //gradient1Value.Load(node.GetNode("gradient1Value"));
+          break;
+        case ParticleSystemGradientMode.TwoGradients:
+          //curve1Value.Load(node.GetNode("gradient1Value"));
+          break;
+      }
+    }
+
+    public override void Initialize(ParticleSystem s)
+    {
+      // TODO: Set the module enabled state
+      ParticleUtils.SetParticleSystemColorMode(propertyName, s, curveMode);
+      switch (curveMode)
+      {
+        case ParticleSystemGradientMode.Color:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          break;
+        case ParticleSystemGradientMode.TwoColors:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
+          break;
+        case ParticleSystemGradientMode.Gradient:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
+          break;
+        case ParticleSystemGradientMode.TwoGradients:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient2Value);
+          break;
+      }
+    }
+
+    public override ConfigNode Save()
+    {
+      ConfigNode node = new();
+      node.name = WaterfallConstants.FloatNodeName;
+      node.AddValue("paramName", propertyName);
+      node.AddValue("curveMode", curveMode);
+      node.AddValue("moduleEnabled", moduleEnabled);
+      // TODO: save gradients
+      switch (curveMode)
+      {
+        case ParticleSystemGradientMode.Color:
+          node.AddValue("constant1", constant1Value);
+          break;
+        case ParticleSystemGradientMode.TwoColors:
+          node.AddValue("constant1", constant1Value);
+          node.AddValue("constant2", constant2Value);
+          break;
+        case ParticleSystemGradientMode.Gradient:
+          //node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
+          break;
+        case ParticleSystemGradientMode.TwoGradients:
+          //node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
+          //node.AddNode(Utils.SerializeFloatCurve("curve2", curve2Value));
           break;
       }
 

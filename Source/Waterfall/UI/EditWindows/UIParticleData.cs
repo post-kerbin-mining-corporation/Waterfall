@@ -355,7 +355,6 @@ namespace Waterfall.UI
       if (colorMode == ParticleSystemGradientMode.TwoColors)
       {
         ParticleUtils.GetParticleSystemValue(name, particle.systems[0], out color1, out color2);
-
       }
       if (colorMode == ParticleSystemGradientMode.TwoGradients)
       {
