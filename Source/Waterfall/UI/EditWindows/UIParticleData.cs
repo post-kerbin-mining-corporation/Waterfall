@@ -442,7 +442,69 @@ namespace Waterfall.UI
     }
     void DrawTwoColorMode()
     {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label(name, GUILayout.Width(headerWidth));
+      GUILayout.FlexibleSpace();
 
+      GUILayout.Label("<b>Low:</b>");
+      // Button to set that we are toggling the color picker
+      if (GUILayout.Button("", GUILayout.Width(60)))
+      {
+        colorEditing = !colorEditing;
+        // if yes, open the window
+        if (colorEditing)
+        {
+          WaterfallUI.Instance.OpenColorEditWindow(color1);
+        }
+      }
+
+      // If picker open
+      if (colorEditing)
+      {
+        var c = WaterfallUI.Instance.GetColorFromPicker();
+        if (!c.IsEqualTo(color1))
+        {
+          color1 = c;
+          colorTexture1 = TextureUtils.GenerateColorTexture(64, 32, color1);
+          ParticleUtils.SetParticleSystemValue(name, particle.systems[0], color1, color2);
+        }
+      }
+
+      var tRect = GUILayoutUtility.GetLastRect();
+      tRect = new(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
+      GUI.DrawTexture(tRect, colorTexture1);
+
+
+      GUILayout.Label("<b>High:</b>");
+      // Button to set that we are toggling the color picker
+      if (GUILayout.Button("", GUILayout.Width(60)))
+      {
+        colorEditing = !colorEditing;
+        // if yes, open the window
+        if (colorEditing)
+        {
+          WaterfallUI.Instance.OpenColorEditWindow(color2);
+        }
+      }
+
+      // If picker open
+      if (colorEditing)
+      {
+        var c = WaterfallUI.Instance.GetColorFromPicker();
+        if (!c.IsEqualTo(color2))
+        {
+          color2 = c;
+          colorTexture2 = TextureUtils.GenerateColorTexture(64, 32, color2);
+          ParticleUtils.SetParticleSystemValue(name, particle.systems[0], color1, color2);
+        }
+      }
+
+      tRect = GUILayoutUtility.GetLastRect();
+      tRect = new(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
+      GUI.DrawTexture(tRect, colorTexture2);
+
+
+      GUILayout.EndHorizontal();
     }
 
     void DrawGradientMode()
