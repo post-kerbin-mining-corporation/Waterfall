@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -99,12 +100,26 @@ namespace Waterfall
         try
         {
           string propertyName = node.GetValue("name");
+          string categoryName = node.GetValue("categoryName");
           var range = Vector2.zero;
-
           node.TryGetValue("range", ref range);
+
+          string modeName = "";
+          node.TryGetValue("allowedModes", ref modeName);
+          string[] stringModes =  modeName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          List<WaterfallParticleParameterMode> paramModes = new();
+          foreach (string sm in stringModes)
+          {
+            if (Enum.TryParse(sm, out WaterfallParticleParameterMode parsed))
+            {
+              paramModes.Add(parsed);
+            }
+          }
+
           var t = WaterfallParticlePropertyType.Range;
           node.TryGetEnum("type", ref t, WaterfallParticlePropertyType.Range);
-          var m = new ParticleData(t, range);
+
+          var m = new ParticleData(propertyName, categoryName, t, paramModes, range);
 
           Utils.Log($"[Particles]: Adding {propertyName} property", LogType.Loading);
           ParticlePropertyMap.Add(propertyName, m);

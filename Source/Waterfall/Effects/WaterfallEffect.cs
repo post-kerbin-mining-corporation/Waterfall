@@ -436,10 +436,9 @@ namespace Waterfall
         UpdateIntegratorArray(positionIntegrators);
         UpdateIntegratorArray(scaleIntegrators);
         UpdateIntegratorArray(rotationIntegrators);
-        /// TODO: PORT TO NEW PATTERN
-        foreach (var integrator in particleFloatIntegrators) integrator.Update();
-        foreach (var integrator in particleRangeIntegrators) integrator.Update();
-        foreach (var integrator in particleColorIntegrators) integrator.Update();
+        UpdateIntegratorArray(particleFloatIntegrators);
+        UpdateIntegratorArray(particleRangeIntegrators);
+        UpdateIntegratorArray(particleColorIntegrators);
 
         if (Settings.EnableLights)
         {

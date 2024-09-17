@@ -7,8 +7,8 @@
     Billboards,
     Light,
     Volumetric,
+    MeshParticles,
     Particles,
-    Smoke,
     Other
   }
 

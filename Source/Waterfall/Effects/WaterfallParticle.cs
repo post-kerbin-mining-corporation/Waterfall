@@ -5,18 +5,21 @@ using UnityEngine;
 namespace Waterfall
 {
   /// <summary>
-  /// This manages a SET OF particle systems
+  /// This manages a particle system
   /// </summary>
   public class WaterfallParticle
   {
 
     public string transformName = "";
     public string baseTransformName = "";
-    public string assetName = "";
+    public bool worldSpaceAlternateSimulation = false;
+
+    protected ParticleSystem targetParticleSystem;
+
+    public List<ParticleSystem> systems;
+
 
     public List<WaterfallParticleProperty> pProperties;
-
-    public Dictionary<string, WaterfallParticleSystem> systems;
 
     public WaterfallParticle()
     {
@@ -32,135 +35,181 @@ namespace Waterfall
     {
       node.TryGetValue("transform", ref transformName);
       node.TryGetValue("baseTransform", ref baseTransformName);
-      node.TryGetValue("assetName", ref assetName);
-
-      Utils.Log(String.Format($"[WaterfallParticle]: Loading new particle {assetName} for {transformName}"), LogType.Particles);
-
+      node.TryGetValue("worldSpaceAlternateSimulation", ref worldSpaceAlternateSimulation);
       pProperties = new();
-      // TODO: Properties saving
-      //foreach (var subnode in node.GetNodes(WaterfallConstants.RangeNodeName))
-      //{
-      //  pProperties.Add(new WaterfallParticleRangeProperty(subnode));
-      //}
-      //foreach (var subnode in node.GetNodes(WaterfallConstants.FloatNodeName))
-      //{
-      //  pProperties.Add(new WaterfallParticleFloatProperty(subnode));
-      //}
+      foreach (var subnode in node.GetNodes(WaterfallConstants.FloatNodeName))
+      {
+        pProperties.Add(new WaterfallParticleNumericProperty(subnode));
+      }
     }
 
     public ConfigNode Save()
     {
       ConfigNode node = new ConfigNode();
       node.name = WaterfallConstants.ParticleNodeName;
-      node.AddValue("transform", transformName);
-      node.AddValue("assetName", assetName);
+      node.AddValue("worldSpaceAlternateSimulation", worldSpaceAlternateSimulation);
 
-      // TODO: Properties saving
-      //foreach (var p in pProperties)
-      //{
-      //  node.AddNode(p.Save());
-      //}
+      if (baseTransformName != "")
+        node.AddValue("baseTransform", baseTransformName);
+
+      if (transformName != "")
+        node.AddValue("transform", transformName);
+
+      foreach (var p in pProperties)
+      {
+        node.AddNode(p.Save());
+      }
 
       return node;
     }
 
     public void Initialize(Transform parentTransform)
     {
-      systems = new Dictionary<string, WaterfallParticleSystem>();
+      systems = new();
+
+      var particleTarget = parentTransform.FindDeepChild(transformName);
+      targetParticleSystem = particleTarget.GetComponent<ParticleSystem>();
+      systems.Add(targetParticleSystem);
 
 
-      GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(assetName),
-            Vector3.zero, Quaternion.identity) as GameObject;
-      go.transform.SetParent(parentTransform);
-      go.transform.localPosition = Vector3.zero;
-      go.transform.localScale = Vector3.one;
-      go.transform.localRotation = Quaternion.identity;
-
-      ParticleSystem[] systemsInAsset = go.GetComponentsInChildren<ParticleSystem>();
-      foreach (ParticleSystem system in systemsInAsset)
+      foreach (var p in pProperties)
       {
-        WaterfallParticleSystem wfSystem = new WaterfallParticleSystem(system);
-        systems.Add(system.name, wfSystem);
+        foreach (var sys in systems)
+        {
+          p.Initialize(sys);
+        }
       }
 
-      /// TODO: Properties apply on load
-      //foreach (var p in pProperties)
-      //{
-      //  foreach(var sys in systems)
-      //  {
-      //    p.Initialize(sys.emitter);
-      //  }
-        
-      //}
-
-      Utils.Log($"[WaterfallParticle]: Initialized Waterfall Particle at {parentTransform}, {systems.Count} Count", LogType.Particles);
+      Utils.Log($"[WaterfallParticle]: Initialized Waterfall Particle at {parentTransform}, tracking {transformName}", LogType.Particles);
     }
 
-    public void SetParticleValue(string propertyName, string systemName, Vector2 value)
-    {
-      //var prop = pProperties.Find(x => x.propertyName == propertyName);
-      //if (prop is WaterfallParticleRangeProperty t && prop != null)
-      //{
-      //  t.propertyValue = value;
-      //}
-      //else
-      //{
-      //  var newProp = new WaterfallParticleRangeProperty
-      //  {
-      //    propertyName = propertyName,
-      //    propertyValue = value
-      //  };
-      //  pProperties.Add(newProp);
-      //}
-
-      if (systems.ContainsKey(systemName))
-      {
-        ParticleUtils.SetParticleSystemValue(propertyName, systems[systemName].emitter, value);
-      }
-    }
-    public void SetParticleValue(string propertyName, string systemName, float value)
+    public void SetParticleModuleState(string propertyName, bool state)
     {
 
-      //var prop = pProperties.Find(x => x.propertyName == propertyName);
-      //if (prop is WaterfallParticleFloatProperty t && prop != null)
-      //  t.propertyValue = value;
-      //else
-      //{
-      //  var newProp = new WaterfallParticleFloatProperty
-      //  {
-      //    propertyName = propertyName,
-      //    propertyValue = value
-      //  };
-      //  pProperties.Add(newProp);
-      //}
-      if (systems.ContainsKey(systemName))
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleNumericProperty t && prop != null)
       {
-        ParticleUtils.SetParticleSystemValue(propertyName, systems[systemName].emitter, value);
+        t.propertyName = propertyName;
+        t.moduleEnabled = state;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleNumericProperty
+        {
+          propertyName = propertyName,
+          moduleEnabled = state
+        };
+
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleModuleState(propertyName, particle, state);
       }
     }
-
-    public void SetParticleValue(string propertyName, string systemName, Color value)
+    public void SetParticleValue(string propertyName, float value)
     {
-      //var prop = pProperties.Find(x => x.propertyName == propertyName);
-      //if (prop is WaterfallParticleColorProperty t && prop != null)
-      //{
-      //  t.propertyValue = value;
-      //}
-      //else
-      //{
-      //  var newProp = new WaterfallParticleColorProperty
-      //  {
-      //    propertyName = propertyName,
-      //    propertyValue = value
-      //  };
-      //  pProperties.Add(newProp);
-      //}
-      if (systems.ContainsKey(systemName))
+
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleNumericProperty t && prop != null)
       {
-        ParticleUtils.SetParticleSystemValue(propertyName, systems[systemName].emitter, value);
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemCurveMode.Constant;
+        t.constant1Value = value;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleNumericProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemCurveMode.Constant,
+          constant1Value = value,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value);
       }
     }
+    public void SetParticleValue(string propertyName, float value1, float value2)
+    {
 
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleNumericProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemCurveMode.TwoConstants;
+        t.constant1Value = value1;
+        t.constant2Value = value2;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleNumericProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemCurveMode.TwoConstants,
+          constant1Value = value1,
+          constant2Value = value2,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value1, value2);
+      }
+    }
+    public void SetParticleValue(string propertyName, FloatCurve value)
+    {
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleNumericProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemCurveMode.Curve;
+        t.curve1Value = value;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleNumericProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemCurveMode.Curve,
+          curve1Value = value,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value);
+      }
+    }
+    public void SetParticleValue(string propertyName, FloatCurve value1, FloatCurve value2)
+    {
+
+      var prop = pProperties.Find(x => x.propertyName == propertyName);
+      if (prop is WaterfallParticleNumericProperty t && prop != null)
+      {
+        t.propertyName = propertyName;
+        t.curveMode = ParticleSystemCurveMode.TwoCurves;
+        t.curve1Value = value1;
+        t.curve2Value = value2;
+      }
+      else
+      {
+        var newProp = new WaterfallParticleNumericProperty
+        {
+          propertyName = propertyName,
+          curveMode = ParticleSystemCurveMode.TwoCurves,
+          curve1Value = value1,
+          curve2Value = value2,
+        };
+        pProperties.Add(newProp);
+      }
+      foreach (var particle in systems)
+      {
+        ParticleUtils.SetParticleSystemValue(propertyName, particle, value1, value2);
+      }
+    }
   }
 
 }

@@ -8,13 +8,12 @@ namespace Waterfall
 {
 
   /// <summary>
-  /// Particle system modifier
+  /// Particle system range modifier
   /// </summary>
-  public class EffectParticleRangeModifier : EffectModifier
+  public class EffectParticleRangeModifier : EffectModifier_Vector2
   {
+    protected override string ConfigNodeName => WaterfallConstants.ParticleRangeModifierNodeName;
     public string paramName = "";
-    public FloatCurve curve1 = new();
-    public FloatCurve curve2 = new();
 
     private WaterfallParticleSystem[] p;
 
@@ -25,26 +24,6 @@ namespace Waterfall
 
     public EffectParticleRangeModifier(ConfigNode node) : base(node) { }
 
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-
-      node.TryGetValue("paramName", ref paramName);
-      curve1.Load(node.GetNode("curve1"));
-      curve2.Load(node.GetNode("curve2"));
-
-    }
-    public override ConfigNode Save()
-    {
-      ConfigNode node = base.Save();
-
-      node.name = WaterfallConstants.ParticleRangeModifierNodeName;
-      node.AddValue("paramName", paramName);
-
-      node.AddNode(Utils.SerializeFloatCurve("curve1", curve1));
-      node.AddNode(Utils.SerializeFloatCurve("curve2", curve2));
-      return node;
-    }
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -52,29 +31,6 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         p[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
-      }
-
-    }
-
-    public void Get(float[] input, Vector2[] output)
-    {
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < p.Length; i++)
-        {
-          float inValue = input[i];
-          output[i] = new(curve1.Evaluate(inValue) + randomValue,
-                          curve2.Evaluate(inValue) + randomValue);
-        }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        Vector2 vec = new Vector2(
-          curve1.Evaluate(inValue) + randomValue,
-          curve2.Evaluate(inValue) + randomValue);
-        for (int i = 0; i < p.Length; i++)
-          output[i] = vec;
       }
     }
     public WaterfallParticleSystem GetEmitter()

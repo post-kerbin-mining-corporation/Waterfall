@@ -1,71 +1,40 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
-using Waterfall.EffectModifiers;
+﻿using Waterfall.EffectModifiers;
 
 namespace Waterfall
 {
 
-  public class EffectParticleColorIntegrator : EffectIntegrator
+  public class EffectParticleColorIntegrator : EffectIntegrator_Color
   {
-
-    private string particleParamName;
-    public string paramName
+    private string _colorName;
+    public string colorName
     {
-      get { return particleParamName; }
+      get { return _colorName; }
       set
       {
-        particleParamName = value;
+        _colorName = value;
       }
     }
-    protected readonly Color[] modifierData;
-    protected readonly Color[] initialValues;
-    protected readonly Color[] workingValues;
 
     private readonly WaterfallParticleSystem[] emits;
 
-    public EffectParticleColorIntegrator(WaterfallEffect effect, EffectParticleColorModifier particleMod) : base(effect, particleMod)
+    public EffectParticleColorIntegrator(WaterfallEffect effect, EffectParticleColorModifier colorMod) : base(effect, colorMod)
     {
 
-      emits = new WaterfallParticleSystem[xforms.Count];
+      colorName = colorMod.colorName;
 
-      modifierData = new Color[xforms.Count];
-      initialValues = new Color[xforms.Count];
-      workingValues = new Color[xforms.Count];
-
-      particleParamName = particleMod.paramName;
       emits = new WaterfallParticleSystem[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
         emits[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
-        emits[i].Get(particleParamName, out initialValues[i]);
+        emits[i].Get(colorName, out initialValues[i]);
       }
     }
 
-    public override void Update()
+    protected override void Apply()
     {
-
-      if (handledModifiers.Count == 0)
-        return;
-
-      Array.Copy(initialValues, workingValues, emits.Length);
-
-      foreach (var mod in handledModifiers)
-      {
-        if (mod.Controller != null)
-        {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectParticleColorModifier)mod).Get(controllerData, modifierData);
-          Integrate(mod.effectMode, workingValues, modifierData);
-        }
-      }
-
       for (int i = 0; i < emits.Length; i++)
-      {
-        emits[i].Set(particleParamName, workingValues[i]);
-      }
+        emits[i].Set(colorName, workingValues[i]);
     }
   }
 }

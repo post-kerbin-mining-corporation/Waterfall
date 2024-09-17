@@ -10,12 +10,14 @@ namespace Waterfall
   /// <summary>
   /// Particle system modifier
   /// </summary>
-  public class EffectParticleFloatModifier : EffectModifier
+  public class EffectParticleFloatModifier : EffectModifier_Float
   {
+    protected override string ConfigNodeName => WaterfallConstants.ParticleFloatModifierNodeName;
     public string paramName = "";
-    public FloatCurve curve = new();
 
     private WaterfallParticleSystem[] p;
+
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(paramName);
 
     public EffectParticleFloatModifier() : base()
     {
@@ -24,24 +26,6 @@ namespace Waterfall
 
     public EffectParticleFloatModifier(ConfigNode node) : base(node) { }
 
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-
-      node.TryGetValue("paramName", ref paramName);
-      curve.Load(node.GetNode("curve1"));
-
-    }
-    public override ConfigNode Save()
-    {
-      ConfigNode node = base.Save();
-
-      node.name = WaterfallConstants.ParticleFloatModifierNodeName;
-      node.AddValue("paramName", paramName);
-
-      node.AddNode(Utils.SerializeFloatCurve("curve1", curve));
-      return node;
-    }
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -50,29 +34,7 @@ namespace Waterfall
       {
         p[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
       }
-
     }
-
-    public void Get(float[] input, float[] output)
-    {
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < p.Length; i++)
-        {
-          float inValue = input[i];
-          output[i] = curve.Evaluate(inValue) + randomValue;
-        }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        float f = curve.Evaluate(inValue) + randomValue;
-        for (int i = 0; i < p.Length; i++)
-          output[i] = f;
-      }
-    }
-
-
     public WaterfallParticleSystem GetEmitter()
     {
       return p[0];
@@ -82,7 +44,6 @@ namespace Waterfall
       paramName = newParamName;
       parentEffect.ModifierParameterChange(this);
     }
-    public override bool ValidForIntegrator => !string.IsNullOrEmpty(paramName);
     
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectParticleFloatIntegrator i && i.paramName == paramName && integrator.transformName == transformName;
 

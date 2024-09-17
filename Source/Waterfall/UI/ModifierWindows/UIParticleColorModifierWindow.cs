@@ -39,7 +39,7 @@ namespace Waterfall.UI
     {
       paramMod = mod;
       paramNames = WaterfallParticleLoader.FindValidParticleProperties(WaterfallParticlePropertyType.Color).ToArray();
-      paramIndex = paramNames.ToList().FindIndex(x => x == paramMod.paramName);
+      paramIndex = paramNames.ToList().FindIndex(x => x == paramMod.colorName);
       rCurveFunction = new CurveUpdateFunction(UpdateFloatCurveR);
       gCurveFunction = new CurveUpdateFunction(UpdateFloatCurveG);
       bCurveFunction = new CurveUpdateFunction(UpdateFloatCurveB);

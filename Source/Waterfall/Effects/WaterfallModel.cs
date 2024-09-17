@@ -41,17 +41,24 @@ namespace Waterfall
       randomized = randomizeSeed;
     }
 
-    public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, bool randomizeSeed)
+    public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, WaterfallAsset particleAsset, bool randomizeSeed)
     {
 
       modelTransforms = new();
       path = modelAsset.Path;
-      asset = modelAsset.Asset;
+      if (particleAsset != null)
+      {
+        asset = particleAsset.Asset;
+      }
 
       if (shaderAsset == null)
+      {
         overrideShader = null;
+      }
       else
+      {
         overrideShader = shaderAsset.Name;
+      }
       randomized = randomizeSeed;
     }
 
@@ -130,6 +137,7 @@ namespace Waterfall
 
       var renderers = modelTransform.GetComponentsInChildren<Renderer>();
       var lightObjs = modelTransform.GetComponentsInChildren<Light>();
+      var particleSystems = modelTransform.GetComponentsInChildren<ParticleSystem>();
 
       if (fromNothing)
       {
@@ -156,14 +164,26 @@ namespace Waterfall
           m.transformName = r.transform.name;
           materials.Add(m);
         }
-
+        // Need to reinstantiate
         if (asset != null && asset != "")
         {
-          WaterfallParticle p = new WaterfallParticle();
-          p.transformName = modelTransform.name;
-          p.assetName = asset;
+          GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(asset),
+            Vector3.zero, Quaternion.identity) as GameObject;
 
-          particles.Add(p);
+          go.transform.SetParent(modelTransform);
+          go.transform.localPosition = Vector3.zero;
+          go.transform.localScale = Vector3.one;
+          go.transform.localRotation = Quaternion.identity;
+
+          particleSystems = modelTransform.GetComponentsInChildren<ParticleSystem>();
+          Utils.Log(String.Format("[WaterfallModel]: Generating particle systems for {0} systems ", particleSystems), LogType.Effects);
+          foreach (var p in particleSystems)
+          {
+            WaterfallParticle wfP = new WaterfallParticle();
+            wfP.transformName = p.transform.name;
+            wfP.systems = new();
+            particles.Add(wfP);
+          }            
         }
       }
 
@@ -172,13 +192,13 @@ namespace Waterfall
         m.useAutoRandomization = randomized;
         m.Initialize(modelTransform);
       }
-
       foreach (var l in lights)
       {
         l.Initialize(modelTransform);
       }
       foreach (var p in particles)
       {
+        Utils.Log(String.Format("[WaterfallModel]: Initializing system {0} ", p.transformName), LogType.Effects);
         p.Initialize(modelTransform);
       }
 
@@ -474,30 +494,6 @@ namespace Waterfall
         }
       }
     }
-    public void SetParticleValue(WaterfallParticle targetParticle, string propertyName, string systemName, Vector2 value)
-    {
-      foreach (var p in particles)
-      {
-        if (p == targetParticle)
-        {
-          p.SetParticleValue(propertyName, systemName, value);
-
-          /// TODO: handle multiple transforms
-        }
-      }
-
-    }
-    public void SetParticleValue(WaterfallParticle targetParticle, string propertyName, string systemName, float value)
-    {
-      foreach (var p in particles)
-      {
-        if (p == targetParticle)
-        {
-          p.SetParticleValue(propertyName, systemName, value);
-
-          /// TODO: handle multiple transforms
-        }
-      }
-    }
+   
   }
 }

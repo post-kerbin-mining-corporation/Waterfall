@@ -69,8 +69,6 @@ namespace Waterfall
           emitter.SetParticles(particleBuffer, pc);
         }
       }
-
-
     }
 
     public void Get(string paramName, out Color result)

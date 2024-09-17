@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Waterfall
 {
 
-  public class EffectParticleFloatIntegrator : EffectIntegrator
+  public class EffectParticleFloatIntegrator : EffectIntegrator_Float
   {
 
     private string particleParamName;
@@ -18,21 +15,13 @@ namespace Waterfall
         particleParamName = value;
       }
     }
-    protected readonly float[] modifierData;
-    protected readonly float[] initialValues;
-    protected readonly float[] workingValues;
-
     private readonly WaterfallParticleSystem[] emits;
 
-    public EffectParticleFloatIntegrator(WaterfallEffect effect, EffectParticleFloatModifier particleMod): base (effect, particleMod)
+    /// TODO: Apply the testIntensity flow to this
+    public EffectParticleFloatIntegrator(WaterfallEffect effect, EffectParticleFloatModifier particleMod): base (effect, particleMod, false)
     {
 
       emits = new WaterfallParticleSystem[xforms.Count];
-
-      modifierData = new float[xforms.Count];
-      initialValues = new float[xforms.Count];
-      workingValues = new float[xforms.Count];
-
       particleParamName = particleMod.paramName;
 
 
@@ -43,6 +32,28 @@ namespace Waterfall
         emits[i] = xforms[i].GetComponent<WaterfallParticleSystem>();
         emits[i].Get(particleParamName, out initialValues[i]);
       }
+    }
+
+    protected override bool Apply_TestIntensity()
+    {
+      bool anyActive = true;
+
+      if (testIntensity)
+      {
+        anyActive = false;
+        for (int i = 0; i < emits.Length; i++)
+        {
+          emits[i].Set(particleParamName, workingValues[i]);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < emits.Length; i++)
+        {
+          emits[i].Set(particleParamName, workingValues[i]);
+        }
+      }
+      return anyActive;
     }
 
     public override void Update()

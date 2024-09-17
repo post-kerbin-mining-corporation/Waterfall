@@ -20,6 +20,7 @@ namespace Waterfall
     public static string TextureNodeName          = "TEXTURE";
     public static string ParticleNodeName         = "PARTICLE";
 
+    /// Modifiers
     public static string ColorModifierNodeName    = "COLORMODIFIER";
     public static string FloatModifierNodeName    = "FLOATMODIFIER";
     public static string UVScrollModifierNodeName = "UVOFFSETMODIFIER";
@@ -35,10 +36,11 @@ namespace Waterfall
     public static string ParticleFloatModifierNodeName = "PARTICLEFLOATMODIFIER";
     public static string ParticleColorModifierNodeName = "PARTICLECOLORMODIFIER";
 
-
+    /// Asset Library Nodes
     public static string ShaderAssetNodeName = "WATERFALL_SHADER";
-    public static string ModelAssetNodeName = "";
+    public static string ModelAssetNodeName = "WATERFALL_MODEL";
     public static string TextureAssetNodeName = "WATERFALL_TEXTURE";
+    public static string ParticleAssetNodeName = "WATERFALL_PARTICLE";
     public static string ShaderPropertyNodeName = "WATERFALL_SHADER_PARAM";
     public static string ParticlePropertyNodeName = "WATERFALL_PARTICLE_PARAM";
 
@@ -95,17 +97,7 @@ namespace Waterfall
       ["_Swirl"]            = new(WaterfallMaterialPropertyType.Float, new(0f, 5f))
     };
 
-    public static Dictionary<string, ParticleParameterData> ParticleParameterMap = new Dictionary<string, ParticleParameterData>
-    {
-      ["StartSize"] = new ParticleParameterData("StartSize", ParticleParameterType.Range),
-      ["StartLifetime"] = new ParticleParameterData("StartLifetime", ParticleParameterType.Range),
-      ["StartSpeed"] = new ParticleParameterData("StartSpeed", ParticleParameterType.Range),
-      ["EmissionRate"] = new ParticleParameterData("EmissionRate", ParticleParameterType.Range),
-      ["EmissionVolumeLength"] = new ParticleParameterData("EmissionVolumeLength", ParticleParameterType.Value),
-      ["EmissionVolumeRadius"] = new ParticleParameterData("EmissionVolumeRadius", ParticleParameterType.Value),
-      ["MaxParticles"] = new ParticleParameterData("MaxParticles", ParticleParameterType.Value),
-      
-    };
+    
 
 
   }

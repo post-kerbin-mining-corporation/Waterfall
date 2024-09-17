@@ -21,13 +21,14 @@ namespace Waterfall
       base.Initialize(host);
       values = new float[1];
     }
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
       if (mode == 0)
         values[0] =  (float)parentModule.vessel.srf_velocity.magnitude ;
       else
         values[0] =  (float)parentModule.vessel.obt_velocity.magnitude ;
 
+      return true;
     }
   }
 }

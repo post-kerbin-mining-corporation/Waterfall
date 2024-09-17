@@ -146,8 +146,9 @@
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="Effects\WaterfallEffectTemplate.cs" />
-    <Compile Include="Effects\WaterfallParticleSystem.cs" />
     <Compile Include="Effects\WaterfallParticleProperty.cs" />
+    <Compile Include="Effects\WaterfallParticleSystem.cs" />
+    <Compile Include="Effects\OLDWaterfallParticleProperty.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Effects\WaterfallParticle.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ColorHSV.cs" />
+    <Compile Include="UI\EditWindows\UIParticleData.cs" />
     <Compile Include="UI\EffectControllersUI\CustomPullControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs" />
@@ -178,7 +180,7 @@
     <Compile Include="UI\TextureUtils.cs" />
     <Compile Include="UI\UIColorPickerWindow.cs" />
     <Compile Include="UI\UICopy.cs" />
-    <Compile Include="UI\UILightEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UILightEditWindow.cs" />
     <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIFloatModifierWindow.cs" />
@@ -191,12 +193,12 @@
     <Compile Include="UI\UIBaseWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIColorModifierWindow.cs" />
     <Compile Include="UI\UIConstants.cs" />
-    <Compile Include="UI\UICurveEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UICurveEditWindow.cs" />
     <Compile Include="UI\UIEffectWidget.cs" />
     <Compile Include="UI\ModifierWindows\UIModifierWindow.cs" />
-    <Compile Include="UI\UIMaterialEditWindow.cs" />
-    <Compile Include="UI\UIModelEditWindow.cs" />
-    <Compile Include="UI\UIParticleEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIMaterialEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIModelEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIParticleEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
     <Compile Include="UI\UITexturePickerWindow.cs" />

@@ -7,22 +7,22 @@ using UnityEngine;
 
 namespace Waterfall
 {
+
   public enum WaterfallParticlePropertyType
   {
     Range,
     Float,
-    Color
+    Numeric,
+    Color,
   }
-
   public class WaterfallParticleProperty
   {
     public string propertyName;
-    public string linkedSystem;
+    public bool moduleEnabled;
     public WaterfallParticlePropertyType propertyType;
 
-    public virtual void Load(ConfigNode node) 
-    { 
-      node.TryGetValue("systemName", ref linkedSystem);
+    public virtual void Load(ConfigNode node)
+    {
     }
 
     public virtual ConfigNode Save() => null;
@@ -30,120 +30,103 @@ namespace Waterfall
     public virtual void Initialize(ParticleSystem p) { }
   }
 
-  public class WaterfallParticleRangeProperty : WaterfallParticleProperty
+  public class WaterfallParticleNumericProperty : WaterfallParticleProperty
   {
-    public Vector2 propertyValue;
+    public float constant1Value;
+    public float constant2Value;
 
+    public FloatCurve curve1Value;
+    public FloatCurve curve2Value;
 
-    public WaterfallParticleRangeProperty()
+    public ParticleSystemCurveMode curveMode;
+
+    public WaterfallParticleNumericProperty()
     {
-      propertyType = WaterfallParticlePropertyType.Range;
+      propertyType = WaterfallParticlePropertyType.Numeric;
     }
 
-    public WaterfallParticleRangeProperty(ConfigNode node)
+    public WaterfallParticleNumericProperty(ConfigNode node)
     {
       Load(node);
-      propertyType = WaterfallParticlePropertyType.Range;
+      propertyType = WaterfallParticlePropertyType.Numeric;
     }
 
     public override void Load(ConfigNode node)
     {
+      curve1Value = new();
+      curve2Value = new();
+
       base.Load(node);
-      node.TryGetValue("rangeName", ref propertyName);
-      node.TryGetValue("value", ref propertyValue);
+      node.TryGetValue("paramName", ref propertyName);
+      node.TryGetValue("moduleEnabled", ref moduleEnabled);
+      node.TryGetEnum("curveMode", ref curveMode, ParticleSystemCurveMode.Constant);
+      switch (curveMode)
+      {
+        case ParticleSystemCurveMode.Constant:
+          node.TryGetValue("constant1", ref constant1Value);
+          break;
+        case ParticleSystemCurveMode.TwoConstants:
+          node.TryGetValue("constant1", ref constant1Value);
+          node.TryGetValue("constant2", ref constant2Value);
+          break;
+        case ParticleSystemCurveMode.Curve:
+          curve1Value.Load(node.GetNode("curve1"));
+          break;
+        case ParticleSystemCurveMode.TwoCurves:
+          curve1Value.Load(node.GetNode("curve1"));
+          curve1Value.Load(node.GetNode("curve2"));
+          break;
+      }
     }
 
     public override void Initialize(ParticleSystem s)
     {
-      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = new ConfigNode();
-      node.name = WaterfallConstants.RangeNodeName;
-      node.AddValue("linkedSystem", linkedSystem);      
-      node.AddValue("rangeName", propertyName);
-      node.AddValue("value", propertyValue);
-
-      return node;
-    }
-  }
-
-
-  public class WaterfallParticleFloatProperty : WaterfallParticleProperty
-  {
-    public float propertyValue;
-
-    public WaterfallParticleFloatProperty()
-    {
-      propertyType = WaterfallParticlePropertyType.Float;
-    }
-
-    public WaterfallParticleFloatProperty(ConfigNode node)
-    {
-      Load(node);
-      propertyType = WaterfallParticlePropertyType.Float;
-    }
-
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-      node.TryGetValue("floatName", ref propertyName);
-      node.TryGetValue("value", ref propertyValue);
-    }
-
-    public override void Initialize(ParticleSystem s)
-    {
-      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
+      // TODO: Set the module enabled state
+      ParticleUtils.SetParticleSystemMode(propertyName, s, curveMode); 
+      switch (curveMode)
+      {
+        case ParticleSystemCurveMode.Constant:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          break;
+        case ParticleSystemCurveMode.TwoConstants:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
+          break;
+        case ParticleSystemCurveMode.Curve:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
+          break;
+        case ParticleSystemCurveMode.TwoCurves:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve2Value);
+          break;
+      }
     }
 
     public override ConfigNode Save()
     {
       var node = new ConfigNode();
       node.name = WaterfallConstants.FloatNodeName;
-      node.AddValue("linkedSystem", linkedSystem);
-      node.AddValue("floatName", propertyName);
-      node.AddValue("value", propertyValue);
+      node.AddValue("paramName", propertyName);
+      node.AddValue("curveMode", curveMode);
+      node.AddValue("moduleEnabled", moduleEnabled);
 
-      return node;
-    }
-  }
-
-  public class WaterfallParticleColorProperty : WaterfallParticleProperty
-  {
-    public Color propertyValue;
-
-    public WaterfallParticleColorProperty()
-    {
-      propertyType = WaterfallParticlePropertyType.Color;
-    }
-
-    public WaterfallParticleColorProperty(ConfigNode node)
-    {
-      Load(node);
-      propertyType = WaterfallParticlePropertyType.Color;
-    }
-
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-      node.TryGetValue("colorName", ref propertyName);
-      node.TryGetValue("value", ref propertyValue);
-    }
-
-    public override void Initialize(ParticleSystem s)
-    {
-      ParticleUtils.SetParticleSystemValue(propertyName, s, propertyValue);
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = new ConfigNode();
-      node.name = WaterfallConstants.ColorNodeName;
-      node.AddValue("colorName", propertyName);
-      node.AddValue("linkedSystem", linkedSystem);
-      node.AddValue("value", propertyValue);
+      switch (curveMode)
+      {
+        case ParticleSystemCurveMode.Constant:
+          node.AddValue("constant1", constant1Value);
+          node.AddValue("constant2", constant2Value);
+          break;
+        case ParticleSystemCurveMode.TwoConstants:
+          node.AddValue("constant1", constant1Value);
+          break;
+        case ParticleSystemCurveMode.Curve:
+          node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
+          break;
+        case ParticleSystemCurveMode.TwoCurves:
+          node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
+          node.AddNode(Utils.SerializeFloatCurve("curve2", curve2Value));
+          break;
+      }
 
       return node;
     }
