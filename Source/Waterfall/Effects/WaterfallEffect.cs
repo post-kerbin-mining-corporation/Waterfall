@@ -25,7 +25,6 @@ namespace Waterfall
     public readonly List<EffectScaleIntegrator>      scaleIntegrators = new();
     public readonly List<EffectColorIntegrator>      colorIntegrators = new();
     public readonly List<EffectParticleFloatIntegrator> particleFloatIntegrators = new();
-    public readonly List<EffectParticleRangeIntegrator> particleRangeIntegrators = new();
     public readonly List<EffectParticleColorIntegrator> particleColorIntegrators = new();
     private HashSet<string> disabledTransformNames = new();
 
@@ -173,10 +172,6 @@ namespace Waterfall
       {
         fxModifiers.Add(new EffectLightColorModifier(subNode));
       }
-      foreach (ConfigNode subNode in particleRangeNodes)
-      {
-        fxModifiers.Add(new EffectParticleRangeModifier(subNode));
-      }
       foreach (ConfigNode subNode in particleFloatNodes)
       {
         fxModifiers.Add(new EffectParticleFloatModifier(subNode));
@@ -283,7 +278,6 @@ namespace Waterfall
       lightFloatIntegrators.Clear();
       lightColorIntegrators.Clear();
       particleFloatIntegrators.Clear();
-      particleRangeIntegrators.Clear();
       particleColorIntegrators.Clear();
 
       foreach (var mod in fxModifiers)
@@ -296,7 +290,6 @@ namespace Waterfall
         else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
         else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
         else if (mod is EffectParticleFloatModifier) mod.CreateOrAttachToIntegrator(particleFloatIntegrators);
-        else if (mod is EffectParticleRangeModifier) mod.CreateOrAttachToIntegrator(particleRangeIntegrators);
         else if (mod is EffectParticleColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
       }
 
@@ -437,7 +430,6 @@ namespace Waterfall
         UpdateIntegratorArray(scaleIntegrators);
         UpdateIntegratorArray(rotationIntegrators);
         UpdateIntegratorArray(particleFloatIntegrators);
-        UpdateIntegratorArray(particleRangeIntegrators);
         UpdateIntegratorArray(particleColorIntegrators);
 
         if (Settings.EnableLights)
@@ -506,7 +498,6 @@ namespace Waterfall
       else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
       else if (mod is EffectParticleFloatModifier) mod.RemoveFromIntegrator(particleFloatIntegrators);
-      else if (mod is EffectParticleRangeModifier) mod.RemoveFromIntegrator(particleRangeIntegrators);
       else if (mod is EffectParticleColorModifier) mod.RemoveFromIntegrator(particleColorIntegrators);
     }
 
@@ -528,7 +519,6 @@ namespace Waterfall
       else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
       else if (mod is EffectParticleFloatModifier) mod.CreateOrAttachToIntegrator(particleFloatIntegrators);
-      else if (mod is EffectParticleRangeModifier) mod.CreateOrAttachToIntegrator(particleRangeIntegrators);
       else if (mod is EffectParticleColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
     }
 

@@ -116,7 +116,7 @@ namespace Waterfall
           node.TryGetValue("range", ref range);
           var t = WaterfallMaterialPropertyType.Float;
           node.TryGetEnum("type", ref t, WaterfallMaterialPropertyType.Float);
-          var m = new MaterialData(t, range);
+          var m = new MaterialData(propertyName, t, range);
           ShaderPropertyMap.Add(propertyName, m);
         }
         catch

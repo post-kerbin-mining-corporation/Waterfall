@@ -140,5 +140,60 @@ namespace Waterfall.UI
         GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon(buttonIconName).iconAtlas, UIResources.GetIcon(buttonIconName).iconRect);
       return state;
     }
+
+
+   
+
+  }
+  public class UILabelledFloatSlider
+  {
+    public delegate void SliderUpdateFunction(float value);
+
+    internal float value;
+    internal string stringValue;
+
+    internal float sliderVal_temp;
+    internal string textVal_temp;
+
+    internal float labelSize;
+    internal string labelText;
+    internal Vector2 range;
+    internal SliderUpdateFunction updateFunction;
+    public UILabelledFloatSlider(string label, float startValue, Vector2 sliderRange, SliderUpdateFunction function, float headerSize = 140f)
+    {
+      labelSize = headerSize;
+      labelText = label;
+      range = sliderRange;
+      updateFunction = function;
+      value = startValue;
+      stringValue = value.ToString();
+    }
+    public void Draw()
+    {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label(labelText, GUILayout.Width(labelSize));
+
+      sliderVal_temp = GUILayout.HorizontalSlider(value, range.x, range.y);
+
+      if (sliderVal_temp != value)
+      {
+        value = sliderVal_temp;
+        stringValue = sliderVal_temp.ToString();
+        updateFunction(value);
+      }
+      textVal_temp = GUILayout.TextArea(stringValue, GUILayout.Width(90f));
+
+      if (textVal_temp != stringValue)
+      {
+        float outVal;
+        if (Single.TryParse(textVal_temp, out outVal))
+        {
+          value = outVal;
+          updateFunction(value);
+        }
+        stringValue = textVal_temp;
+      }
+      GUILayout.EndHorizontal();
+    }
   }
 }

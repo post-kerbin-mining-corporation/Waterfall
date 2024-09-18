@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
+  public delegate void CurveUpdateFunction(FloatCurve curve);
+
   public class UICurveEditWindow : UIPopupWindow
   {
     private const int                GraphLabels = 4;

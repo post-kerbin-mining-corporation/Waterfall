@@ -95,7 +95,10 @@ namespace Waterfall.UI
       {
         curveEditWindow.Draw();
       }
-
+      if (gradientEditWindow != null)
+      {
+        gradientEditWindow.Draw();
+      }
       if (materialEditWindow != null)
       {
         materialEditWindow.Draw();
@@ -541,7 +544,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIColorModifierWindow(colMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -551,7 +554,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIScaleModifierWindow(scaleMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -561,7 +564,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIUVScrollModifierWindow(scrollMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -571,7 +574,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIFloatModifierWindow(floatMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -581,7 +584,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIPositionModifierWindow(posMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -591,7 +594,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIRotationModifierWindow(rotMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -601,7 +604,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIColorFromLightModifierWindow(colMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -611,7 +614,7 @@ namespace Waterfall.UI
           editWindows.Add(new UILightFloatModifierWindow(colMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
 
       try
       {
@@ -621,7 +624,7 @@ namespace Waterfall.UI
           editWindows.Add(new UILightColorModifierWindow(colMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
       try
       {
         EffectParticleFloatModifier psMod = (EffectParticleFloatModifier)fxMod;
@@ -630,16 +633,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIParticleFloatModifierWindow(psMod, true));
         }
       }
-      catch (InvalidCastException e) { }
-      try
-      {
-        EffectParticleRangeModifier psMod = (EffectParticleRangeModifier)fxMod;
-        if (psMod != null)
-        {
-          editWindows.Add(new UIParticleRangeModifierWindow(psMod, true));
-        }
-      }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
       try
       {
         EffectParticleColorModifier psMod = (EffectParticleColorModifier)fxMod;
@@ -648,7 +642,7 @@ namespace Waterfall.UI
           editWindows.Add(new UIParticleColorModifierWindow(psMod, true));
         }
       }
-      catch (InvalidCastException e) { }
+      catch (InvalidCastException) { }
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)
@@ -677,6 +671,19 @@ namespace Waterfall.UI
       }
 
       return curveEditWindow;
+    }
+    public UIGradientEditWindow OpenGradientEditor(Gradient toEdit, GradientUpdateFunction gradFun)
+    {
+      if (gradientEditWindow != null)
+      {
+        gradientEditWindow.ChangeGradient(toEdit, gradFun);
+      }
+      else
+      {
+        gradientEditWindow = new(toEdit, gradFun, true);
+      }
+
+      return gradientEditWindow;
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
@@ -735,33 +742,33 @@ namespace Waterfall.UI
 
       return particleEditWindow;
     }
-    public UIColorPickerWindow OpenColorEditWindow(Color c)
+    public UIColorPickerWindow OpenColorEditWindow(Color c, ColorUpdateFunction fun)
     {
       if (colorPickWindow != null)
       {
         Utils.Log("[WaterfallUI] Changing Color Picker target", LogType.UI);
-        colorPickWindow.ChangeColor(c, true);
+        colorPickWindow.ChangeColor(c, fun, true);
       }
       else
       {
         Utils.Log("[WaterfallUI] Opening Color Picker", LogType.UI);
-        colorPickWindow = new(c, true);
+        colorPickWindow = new(c, true, fun);
       }
 
       return colorPickWindow;
     }
 
-    public UITexturePickerWindow OpenTextureEditWindow(string t, string current)
+    public UITexturePickerWindow OpenTextureEditWindow(string current, TextureUpdateFunction fun)
     {
       if (texturePickWindow != null)
       {
         Utils.Log("[WaterfallUI] Changing Texture Picker target", LogType.UI);
-        texturePickWindow.ChangeTexture(t, current);
+        texturePickWindow.ChangeTexture(current, fun);
       }
       else
       {
         Utils.Log("[WaterfallUI] Opening Texture Picker", LogType.UI);
-        texturePickWindow = new(t, current, true);
+        texturePickWindow = new(current, true, fun);
       }
 
       return texturePickWindow;
@@ -775,16 +782,6 @@ namespace Waterfall.UI
       }
 
       return "";
-    }
-
-    public Color GetColorFromPicker()
-    {
-      if (colorPickWindow != null)
-      {
-        return colorPickWindow.GetColor();
-      }
-
-      return Color.black;
     }
 
     public void CopyEffect(WaterfallEffect toCopy)
@@ -896,6 +893,7 @@ namespace Waterfall.UI
     #region GUI Widgets
 
     private UICurveEditWindow       curveEditWindow;
+    private UIGradientEditWindow    gradientEditWindow;
     private UIModifierPopupWindow   modifierPopupWindow;
     private UIAddEffectWindow       effectAddWindow;
     private UIControllerPopupWindow controlAddWindow;

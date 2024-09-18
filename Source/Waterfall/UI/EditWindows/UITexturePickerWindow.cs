@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
+
+  public delegate void TextureUpdateFunction(string texturePath);
+
   public class UITexturePickerWindow : UIPopupWindow
   {
     protected string                      windowTitle        = "";
@@ -10,22 +13,22 @@ namespace Waterfall.UI
     protected Dictionary<string, Texture> texThumbs;
     protected Vector2                     scrollPos;
 
-    public UITexturePickerWindow(string texToEdit, string currentTexture, bool show) : base(show)
+    internal TextureUpdateFunction function;
+
+    public UITexturePickerWindow(string currentTexture, bool show, TextureUpdateFunction fun) : base(show)
     {
-      currentTexturePath = currentTexture;
-      GenerateTextures();
+      ChangeTexture(currentTexture, fun);
 
       if (!showWindow)
         WindowPosition = new(Screen.width / 2 - 175, Screen.height / 2f, 350, 100);
     }
 
 
-    public void ChangeTexture(string texToEdit, string currentTexture)
+    public void ChangeTexture(string currentTexture, TextureUpdateFunction fun)
     {
       currentTexturePath = currentTexture;
+      function = fun;
       GenerateTextures();
-
-
       showWindow = true;
       GUI.BringWindowToFront(windowID);
     }
@@ -70,7 +73,7 @@ namespace Waterfall.UI
       {
         ToggleWindow();
       }
-
+      buttonRect = new Rect(buttonRect.x+5, buttonRect.y+5, buttonRect.width-10, buttonRect.height-10);
       GUI.DrawTextureWithTexCoords(buttonRect, UIResources.GetIcon("cancel").iconAtlas, UIResources.GetIcon("cancel").iconRect);
       GUI.color = Color.white;
       GUILayout.EndHorizontal();
@@ -78,39 +81,49 @@ namespace Waterfall.UI
 
     protected void DrawTextures()
     {
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("<b>Selected Texture</b>");
+      GUILayout.BeginHorizontal(GUI.skin.textArea);
+      GUILayout.Label("<b>SELECTED</b>");
       var bRect = GUILayoutUtility.GetRect(64f, 64f);
       if (texThumbs != null && currentTexturePath != null)
         GUI.DrawTexture(bRect, texThumbs[currentTexturePath]);
+      GUILayout.BeginVertical();
+      GUILayout.FlexibleSpace();
       GUILayout.Label(currentTexturePath);
       GUILayout.FlexibleSpace();
+      GUILayout.EndVertical();
       GUILayout.EndHorizontal();
 
       GUILayout.BeginVertical();
-      GUILayout.Label("<b>Available Textures</b>");
+      GUILayout.Label("<b>LOADED TEXTURES</b>");
       scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(600));
       foreach (var asset in WaterfallAssets.Textures)
       {
         DrawTextureButton(asset);
       }
-
       GUILayout.EndScrollView();
       GUILayout.EndVertical();
     }
 
     protected void DrawTextureButton(WaterfallAsset texture)
     {
-      GUILayout.BeginHorizontal();
+      GUILayout.BeginHorizontal(GUI.skin.textArea);
       if (GUILayout.Button("", GUILayout.Width(64), GUILayout.Height(64)))
       {
         currentTexturePath = texture.Path;
+        function(currentTexturePath);
       }
 
-      var bRect = GUILayoutUtility.GetLastRect();
+      var buttonRect = GUILayoutUtility.GetLastRect();
+      buttonRect = new Rect(buttonRect.x + 5, buttonRect.y + 5, buttonRect.width - 10, buttonRect.height - 10);
       if (texThumbs != null)
-        GUI.DrawTexture(bRect, texThumbs[texture.Path]);
-      GUILayout.Label(texture.Name);
+      {
+        GUI.DrawTexture(buttonRect, texThumbs[texture.Path]);
+      }
+      GUILayout.BeginVertical();
+      GUILayout.Label($"<b>{texture.Name}</b>");
+      GUILayout.Label(texture.Path);
+      GUILayout.Label(texture.Description);
+      GUILayout.EndVertical();
       GUILayout.EndHorizontal();
     }
   }

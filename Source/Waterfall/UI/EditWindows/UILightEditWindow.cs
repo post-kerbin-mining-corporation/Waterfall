@@ -8,22 +8,22 @@ namespace Waterfall.UI
   {
     protected string windowTitle = "";
 
-    private readonly string[]       typeOptions = new string[2] { "Spot", "Point" };
-    private          WaterfallModel model;
-    private          WaterfallLight light;
+    private readonly string[] typeOptions = new string[2] { "Spot", "Point" };
+    private WaterfallModel model;
+    private WaterfallLight light;
 
     private float intensityValue;
     private float rangeValue;
     private float angleValue;
 
     private Color colorValue;
-    private bool  colorEdit;
+    private bool colorEdit;
 
-    private string   intensityString;
-    private string   rangeString;
-    private string   angleString;
+    private string intensityString;
+    private string rangeString;
+    private string angleString;
     private string[] colorString;
-    private int      typeFlag;
+    private int typeFlag;
 
     private Texture2D colorTexture;
 
@@ -45,14 +45,7 @@ namespace Waterfall.UI
       Utils.Log($"[UILightEditWindow]: Started editing lights on {modelToEdit}", LogType.UI);
 
       light = modelToEdit.lights.First();
-      if (colorEdit)
-      {
-        WaterfallUI.Instance.OpenColorEditWindow(light.color);
-      }
-
       GetLightValues();
-
-
       showWindow = true;
       GUI.BringWindowToFront(windowID);
     }
@@ -92,9 +85,9 @@ namespace Waterfall.UI
 
     protected void DrawLightEdit()
     {
-      float  headerWidth = 120f;
-      bool   delta       = false;
-      float  sliderVal;
+      float headerWidth = 120f;
+      bool delta = false;
+      float sliderVal;
       string textVal;
 
       GUILayout.Label("<b>Light Parameters</b>");
@@ -106,36 +99,9 @@ namespace Waterfall.UI
       // Button to set that we are toggling the color picker
       if (GUILayout.Button("", GUILayout.Width(60)))
       {
-        colorEdit = !colorEdit;
-        Utils.Log($"[CP] Edit flag state {colorEdit}", LogType.UI);
-        // if yes, open the window
-        if (colorEdit)
-        {
-          WaterfallUI.Instance.OpenColorEditWindow(colorValue);
-          Utils.Log("[CP] Open Window", LogType.UI);
-        }
+        WaterfallUI.Instance.OpenColorEditWindow(colorValue, UpdateColor);
+        Utils.Log("[CP] Open Window", LogType.UI);
       }
-
-      // If picker open
-      if (colorEdit)
-      {
-        // Close all other pickers
-
-
-        var c = WaterfallUI.Instance.GetColorFromPicker();
-        if (!c.IsEqualTo(colorValue))
-        {
-          colorValue = c;
-          delta      = true;
-        }
-
-        if (delta)
-        {
-          colorTexture = TextureUtils.GenerateColorTexture(64, 32, colorValue);
-          model.SetLightColor(light, colorValue);
-        }
-      }
-
 
       var tRect = GUILayoutUtility.GetLastRect();
       tRect = new(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
@@ -148,7 +114,6 @@ namespace Waterfall.UI
                                             typeOptions,
                                             2,
                                             UIResources.GetStyle("radio_text_button"));
-
 
       if (newFlag != typeFlag)
       {
@@ -166,7 +131,7 @@ namespace Waterfall.UI
       sliderVal = GUILayout.HorizontalSlider(intensityValue, 0f, 10f);
       if (sliderVal != intensityValue)
       {
-        intensityValue  = sliderVal;
+        intensityValue = sliderVal;
         intensityString = sliderVal.ToString();
         model.SetLightIntensity(light, intensityValue);
       }
@@ -190,7 +155,7 @@ namespace Waterfall.UI
       sliderVal = GUILayout.HorizontalSlider(rangeValue, 0f, 100f);
       if (sliderVal != rangeValue)
       {
-        rangeValue  = sliderVal;
+        rangeValue = sliderVal;
         rangeString = sliderVal.ToString();
         model.SetLightRange(light, rangeValue);
       }
@@ -216,7 +181,7 @@ namespace Waterfall.UI
         sliderVal = GUILayout.HorizontalSlider(angleValue, 0f, 100f);
         if (sliderVal != angleValue)
         {
-          angleValue  = sliderVal;
+          angleValue = sliderVal;
           angleString = sliderVal.ToString();
           model.SetLightAngle(light, angleValue);
         }
@@ -238,19 +203,25 @@ namespace Waterfall.UI
       }
     }
 
+    public void UpdateColor(Color c)
+    {
+      colorValue = c;
+      colorTexture = TextureUtils.GenerateColorTexture(64, 32, colorValue);
+      model.SetLightColor(light, colorValue);
+    }
     private void GetLightValues()
     {
-      intensityValue  = light.intensity;
+      intensityValue = light.intensity;
       intensityString = light.intensity.ToString();
 
       rangeString = light.range.ToString();
-      rangeValue  = light.range;
+      rangeValue = light.range;
 
       angleString = light.angle.ToString();
-      angleValue  = light.angle;
+      angleValue = light.angle;
 
-      colorValue   = light.color;
-      colorString  = MaterialUtils.ColorToStringArray(colorValue);
+      colorValue = light.color;
+      colorString = MaterialUtils.ColorToStringArray(colorValue);
       colorTexture = TextureUtils.GenerateColorTexture(32, 32, colorValue);
 
       if (light.lightType == LightType.Point)

@@ -850,7 +850,7 @@ namespace Waterfall
     }
     public static bool GetParticleModuleState(string paramName, ParticleSystem system)
     {
-      if (system = null)
+      if (system == null)
         return false;
 
       switch (paramName)

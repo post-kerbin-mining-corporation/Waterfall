@@ -198,41 +198,41 @@ namespace Waterfall.UI
     }
     public void Draw()
     {
+      GUILayout.BeginVertical(GUI.skin.textArea);
       if (shown)
-      {
-        GUILayout.BeginHorizontal(GUI.skin.textArea);
+      { 
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("[-]", GUILayout.ExpandHeight(false), GUILayout.Width(20f)))
         {
           shown = !shown;
         }
-        GUILayout.BeginVertical();
-        GUILayout.BeginHorizontal();
+        
         GUILayout.Label($"<b>{name} Parameters</b>");
         GUILayout.FlexibleSpace();
-        on = GUILayout.Toggle(on, "Enabled");
+        on = GUILayout.Toggle(on, "Enabled", GUILayout.Width(100f));
         GUILayout.EndHorizontal();
+
+        GUILayout.BeginVertical();
         foreach (var control in particleData)
         {
           control.Draw();
 
         }
         GUILayout.EndVertical();
-        GUILayout.EndHorizontal();
       }
       else
       {
         GUILayout.BeginHorizontal(GUI.skin.textArea);
-        if (GUILayout.Button("[-]", GUILayout.ExpandHeight(false), GUILayout.Width(20f)))
+        if (GUILayout.Button("[+]", GUILayout.ExpandHeight(false), GUILayout.Width(20f)))
         {
           shown = !shown;
         }
-        GUILayout.BeginVertical();
         GUILayout.Label($"<b>{name} Parameters</b>");
         GUILayout.FlexibleSpace();
-        on = GUILayout.Toggle(on, "Enabled");
-        GUILayout.EndVertical();
+        on = GUILayout.Toggle(on, "Enabled", GUILayout.Width(100f));
         GUILayout.EndHorizontal();
       }
+      GUILayout.EndVertical();
       if (on != savedOn)
       {
         savedOn = on;

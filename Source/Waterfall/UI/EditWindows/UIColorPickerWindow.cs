@@ -2,6 +2,8 @@
 
 namespace Waterfall.UI
 {
+  public delegate void ColorUpdateFunction(Color color);
+
   public class UIColorPickerWindow : UIPopupWindow
   {
     internal const int colorFieldSize = 330;
@@ -27,6 +29,8 @@ namespace Waterfall.UI
     internal readonly Texture[] sliderTextures = new Texture[4];
     internal readonly Rect[] sliderBarRects = new Rect[4];
 
+    protected ColorUpdateFunction updateFunction;
+
     private Color color_;
     internal Color color
     {
@@ -50,6 +54,7 @@ namespace Waterfall.UI
         ColorHSV hsv = new(color);
         hsv.h = value;
         color = hsv.ToRGB();
+        UpdateColor();
       }
     }
 
@@ -74,17 +79,24 @@ namespace Waterfall.UI
       {
         color = new ColorHSV(rawValues.x, rawValues.y, rawValues.z, rawValues.w).ToRGB();
       }
+      UpdateColor();
+    }
+    internal void UpdateColor()
+    {
+      updateFunction(color);
     }
 
-    public UIColorPickerWindow(Color colorToEdit, bool show) : base(show)
+    public UIColorPickerWindow(Color colorToEdit, bool show, ColorUpdateFunction function) : base(show)
     {
-      ChangeColor(colorToEdit);
+      updateFunction = function;
+      ChangeColor(colorToEdit, updateFunction);
       WindowPosition = new Rect(Screen.width / 2 - 100, Screen.height / 2f, 300, 100);
     }
 
-    public void ChangeColor(Color colorToEdit, bool forceShow = false)
+    public void ChangeColor(Color colorToEdit, ColorUpdateFunction function, bool forceShow = false)
     {
       color = colorToEdit;
+      updateFunction = function;
 
       if (forceShow)
         showWindow = true;
@@ -151,6 +163,7 @@ namespace Waterfall.UI
         if (GUI.Button(btnRect, ""))
         {
           color = swatchSlot.swatchColor;
+          UpdateColor();
         }
         if (swatchSlot.swatchTexture != null)
         {
@@ -310,6 +323,7 @@ namespace Waterfall.UI
       if (TryGetRectTextureColor(mPos, colorFieldRect, (Texture2D)colorField, out Color colorFieldSample))
       {
         color = new(colorFieldSample.r, colorFieldSample.g, colorFieldSample.b, color.a);
+        UpdateColor();
       }
     }
     protected void HandleHueBarClick(Vector2 mPos)

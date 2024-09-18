@@ -4,11 +4,27 @@ namespace Waterfall.UI
 {
   /// <summary>
   /// Utilities to generate useful UI textures
+  /// TODO: ALL OF THESE FUNCTIONS COULD BE OPTIMIZED
   /// </summary>
   public static class TextureUtils
   {
     internal static TextureFormat texFormat = TextureFormat.ARGB32;
 
+    public static Texture2D GenerateFlatColorTexture(int texWidth, int texHeight, Color color)
+    {
+      Texture2D tex = new (texWidth, texHeight, texFormat, false, false);
+      Color c = new (color.r, color.g, color.b, 1.0f);
+
+      for (int x = 0; x < texWidth; x++)
+      {
+        for (int y = 0; y < texHeight; y++)
+        {
+          tex.SetPixel(x, y, c);
+        }
+      }
+      tex.Apply();
+      return tex;
+    }
     public static Texture2D GenerateSliderCarat(int texWidth,
       int   texHeight,
       Color caratColor,
@@ -62,6 +78,46 @@ namespace Waterfall.UI
 
       tex.SetPixel(centerX, centerY, caratBorderColor);
 
+      tex.Apply();
+      return tex;
+    }
+
+    public static Texture2D GenerateCheckerboard(int texWidth, int texHeight, Color background, Color foreground, int gridSize)
+    {
+      Texture2D tex = new Texture2D(texWidth, texHeight, texFormat, false, false);
+      for (int x = 0; x < texWidth; x++)
+      {
+        int xID = x / gridSize;
+        for (int y = 0; y < texHeight; y++)
+        {
+          int yID = y / gridSize;
+
+          if (yID % 2 == 0)
+          {
+            if (xID % 2 == 1)
+            {
+              tex.SetPixel(x, y, background);
+            }
+
+            else
+            {
+              tex.SetPixel(x, y, foreground);
+            }
+          }
+          if (yID % 2 == 1)
+          {
+            if (xID % 2 == 0)
+            {
+              tex.SetPixel(x, y, background);
+            }
+
+            else
+            {
+              tex.SetPixel(x, y, foreground);
+            }
+          }
+        }
+      }
       tex.Apply();
       return tex;
     }
@@ -140,6 +196,34 @@ namespace Waterfall.UI
       tex.Apply();
       return tex;
     }
+
+
+    public static Texture2D GenerateGradientTexture(int texWidth, int texHeight, Gradient g)
+    {
+      Texture2D tex = GenerateCheckerboard(texWidth, texHeight, Color.white, Color.grey, 8);
+
+      float mTime = g.colorKeys[g.colorKeys.Length - 1].time;
+      Color c;
+
+      for (int x = 0; x < texWidth; x++)
+      {
+        c = g.Evaluate(x / (float)texWidth * mTime);
+        for (int y = 0; y < texHeight; y++)
+        {
+
+          Color baseCol = tex.GetPixel(x, y);
+          Color cN = new Color(
+            baseCol.r * (1f - c.a) + c.r * c.a,
+            baseCol.g * (1f - c.a) + c.g * c.a,
+            baseCol.b * (1f - c.a) + c.b * c.a,
+            1f);
+          tex.SetPixel(x, y, cN);
+        }
+      }
+      tex.Apply();
+      return tex;
+    }
+
     public static Texture2D GenerateRainbowGradient(int texWidth, int texHeight)
     {
       Texture2D tex = new Texture2D(texWidth, texHeight, texFormat, false, false);
@@ -159,8 +243,6 @@ namespace Waterfall.UI
     }
     public static Texture2D GenerateColorField(int texWidth, int texHeight, Color targetColor)
     {
-      Vector3 hsv;
-
       return GenerateColorField(texWidth, texHeight, new ColorHSV(targetColor));
     }
     public static Texture2D GenerateColorField(int texWidth, int texHeight, ColorHSV hsv)

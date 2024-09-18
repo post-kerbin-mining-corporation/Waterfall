@@ -294,14 +294,6 @@ namespace Waterfall.UI
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-      if (modifierTypes[modifierFlag] == "Particle Range")
-      {
-        var newMod = new EffectParticleRangeModifier();
-        newMod.fxName = newModifierName;
-        newMod.transformName = transformOptions[transformFlag];
-        newMod.controllerName = controllerTypes[controllerFlag];
-        return newMod;
-      }
       if (modifierTypes[modifierFlag] == "Particle Color")
       {
         var newMod = new EffectParticleColorModifier();

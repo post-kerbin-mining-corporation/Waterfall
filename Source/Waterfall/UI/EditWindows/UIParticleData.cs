@@ -12,6 +12,7 @@ namespace Waterfall.UI
     public WaterfallParticle particle;
 
     protected UICurveEditWindow curveEditor;
+    protected UIGradientEditWindow gradientEditor;
 
     protected readonly Vector2 curveButtonDims = new(100f, 50f);
     protected readonly float headerWidth = 200f;
@@ -233,7 +234,6 @@ namespace Waterfall.UI
     {
       GUILayout.BeginHorizontal();
       GUILayout.FlexibleSpace();
-      GUILayout.Label("<b>Low:</b>");
 
       var buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y, GUILayout.Width(125));
       var imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
@@ -314,13 +314,15 @@ namespace Waterfall.UI
     public Gradient gradient2;
     protected ParticleSystemGradientMode colorMode;
 
-    protected readonly CurveUpdateFunction curve1Function;
-    protected readonly CurveUpdateFunction curve2Function;
-
-    protected bool colorEditing = false;
+    protected readonly GradientUpdateFunction gradient1Function;
+    protected readonly GradientUpdateFunction gradient2Function;
 
     private Texture2D colorTexture1;
     private Texture2D colorTexture2;
+
+
+    private Texture2D gradientTexture1;
+    private Texture2D gradientTexture2;
 
     public UIColorParticleData(ParticleData data, WaterfallParticle system) : base(data, system)
     {
@@ -334,8 +336,11 @@ namespace Waterfall.UI
 
       colorTexture1 = TextureUtils.GenerateColorTexture(64, 32, color1);
       colorTexture2 = TextureUtils.GenerateColorTexture(64, 32, color2);
-      //curve1Function = UpdateCurve1;
-      //curve2Function = UpdateCurve2;
+      gradientTexture1 = TextureUtils.GenerateGradientTexture(curveTexWidth, curveTexHeight, Color.clear, Color.white);
+      gradientTexture2 = TextureUtils.GenerateGradientTexture(curveTexWidth, curveTexHeight, Color.clear, Color.white);
+
+      gradient1Function = UpdateGradient1;
+      gradient2Function = UpdateGradient2;
     }
 
     protected void InitParticleData()
@@ -407,31 +412,7 @@ namespace Waterfall.UI
       // Button to set that we are toggling the color picker
       if (GUILayout.Button("", GUILayout.Width(60)))
       {
-        colorEditing = !colorEditing;
-        // if yes, open the window
-        if (colorEditing)
-        {
-          WaterfallUI.Instance.OpenColorEditWindow(color1);
-        }
-      }
-
-      // If picker open
-      if (colorEditing)
-      {
-        // Close all other pickers
-        //foreach (var kvp2 in colorEdits.ToList())
-        //{
-        //  if (kvp2.Key != kvp.Key)
-        //    colorEdits[kvp2.Key] = false;
-        //}
-
-        var c = WaterfallUI.Instance.GetColorFromPicker();
-        if (!c.IsEqualTo(color1))
-        {
-          color1 = c;
-          colorTexture1 = TextureUtils.GenerateColorTexture(64, 32, color1);
-          ParticleUtils.SetParticleSystemValue(name, particle.systems[0], color1);
-        }
+        WaterfallUI.Instance.OpenColorEditWindow(color1, UpdateColor1);
       }
 
       var tRect = GUILayoutUtility.GetLastRect();
@@ -450,24 +431,7 @@ namespace Waterfall.UI
       // Button to set that we are toggling the color picker
       if (GUILayout.Button("", GUILayout.Width(60)))
       {
-        colorEditing = !colorEditing;
-        // if yes, open the window
-        if (colorEditing)
-        {
-          WaterfallUI.Instance.OpenColorEditWindow(color1);
-        }
-      }
-
-      // If picker open
-      if (colorEditing)
-      {
-        var c = WaterfallUI.Instance.GetColorFromPicker();
-        if (!c.IsEqualTo(color1))
-        {
-          color1 = c;
-          colorTexture1 = TextureUtils.GenerateColorTexture(64, 32, color1);
-          ParticleUtils.SetParticleSystemValue(name, particle.systems[0], color1, color2);
-        }
+        WaterfallUI.Instance.OpenColorEditWindow(color1, UpdateColor1);
       }
 
       var tRect = GUILayoutUtility.GetLastRect();
@@ -479,42 +443,104 @@ namespace Waterfall.UI
       // Button to set that we are toggling the color picker
       if (GUILayout.Button("", GUILayout.Width(60)))
       {
-        colorEditing = !colorEditing;
-        // if yes, open the window
-        if (colorEditing)
-        {
-          WaterfallUI.Instance.OpenColorEditWindow(color2);
-        }
-      }
-
-      // If picker open
-      if (colorEditing)
-      {
-        var c = WaterfallUI.Instance.GetColorFromPicker();
-        if (!c.IsEqualTo(color2))
-        {
-          color2 = c;
-          colorTexture2 = TextureUtils.GenerateColorTexture(64, 32, color2);
-          ParticleUtils.SetParticleSystemValue(name, particle.systems[0], color1, color2);
-        }
+        WaterfallUI.Instance.OpenColorEditWindow(color2, UpdateColor2);
       }
 
       tRect = GUILayoutUtility.GetLastRect();
       tRect = new(tRect.x + 3, tRect.y + 3, tRect.width - 6, tRect.height - 6);
       GUI.DrawTexture(tRect, colorTexture2);
-
-
       GUILayout.EndHorizontal();
     }
 
     void DrawGradientMode()
     {
+      GUILayout.BeginHorizontal();
+      GUILayout.FlexibleSpace();
 
+      var buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y, GUILayout.Width(125));
+      var imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
+      if (GUI.Button(buttonRect, ""))
+      {
+        EditGradient(gradient1, gradient1Function);
+      }
+      GUI.DrawTexture(imageRect, gradientTexture1);
+      GUILayout.EndHorizontal();
     }
 
     void DrawTwoGradientMode()
     {
 
+    }
+    protected void UpdateColor1(Color color)
+    {
+      color1 = color;
+      if (colorMode == ParticleSystemGradientMode.Color)
+      {
+        particle.SetParticleValue(name, color1);
+      }
+      else if (colorMode == ParticleSystemGradientMode.TwoColors)
+      {
+        particle.SetParticleValue(name, color1, color2);
+      }
+      GenerateColorThumbs();
+    }
+    protected void UpdateColor2(Color color)
+    {
+      color2 = color;
+      if (colorMode == ParticleSystemGradientMode.TwoColors)
+      {
+        particle.SetParticleValue(name, color1, color2);
+      }
+      GenerateColorThumbs();
+    }
+    protected void UpdateGradient1(Gradient curve)
+    {
+      gradient1 = curve;
+      if (colorMode == ParticleSystemGradientMode.Gradient)
+      {
+        particle.SetParticleValue(name, gradient1);
+      }
+      else if (colorMode == ParticleSystemGradientMode.TwoGradients)
+      {
+        particle.SetParticleValue(name, gradient1, gradient2);
+      }
+      GenerateGradientThumbs();
+    }
+    protected void UpdateGradient2(Gradient grad)
+    {
+      gradient2 = grad;
+      if (colorMode == ParticleSystemGradientMode.TwoGradients)
+      {
+        particle.SetParticleValue(name, gradient1, gradient2);
+      }
+      GenerateGradientThumbs();
+    }
+    protected void EditGradient(Gradient toEdit, GradientUpdateFunction updateFunction)
+    {
+      Utils.Log($"Started editing gradient {toEdit}", LogType.UI);
+      gradientEditor = WaterfallUI.Instance.OpenGradientEditor(toEdit, updateFunction);
+    }
+    protected void GenerateGradientThumbs()
+    {
+      if (gradient1 != null)
+      {
+        gradientTexture1 = TextureUtils.GenerateGradientTexture(curveTexWidth, curveTexHeight, gradient1);
+      }
+      if (gradient2 != null)
+      {
+        gradientTexture2 = TextureUtils.GenerateGradientTexture(curveTexWidth, curveTexHeight, gradient2);
+      }
+    }
+    protected void GenerateColorThumbs()
+    {
+      if (color1 != null)
+      {
+        colorTexture1 = TextureUtils.GenerateColorTexture(64, 32, color1);
+      }
+      if (color2 != null)
+      {
+        colorTexture2 = TextureUtils.GenerateColorTexture(64, 32, color2);
+      }
     }
   }
 
