@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Waterfall.EffectModifiers;
 using Waterfall.UI.EffectControllersUI;
 
 namespace Waterfall.UI
@@ -622,24 +621,6 @@ namespace Waterfall.UI
         if (colMod != null)
         {
           editWindows.Add(new UILightColorModifierWindow(colMod, true));
-        }
-      }
-      catch (InvalidCastException) { }
-      try
-      {
-        EffectParticleFloatModifier psMod = (EffectParticleFloatModifier)fxMod;
-        if (psMod != null)
-        {
-          editWindows.Add(new UIParticleFloatModifierWindow(psMod, true));
-        }
-      }
-      catch (InvalidCastException) { }
-      try
-      {
-        EffectParticleColorModifier psMod = (EffectParticleColorModifier)fxMod;
-        if (psMod != null)
-        {
-          editWindows.Add(new UIParticleColorModifierWindow(psMod, true));
         }
       }
       catch (InvalidCastException) { }

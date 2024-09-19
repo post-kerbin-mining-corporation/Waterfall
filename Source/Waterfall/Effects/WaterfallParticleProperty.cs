@@ -10,8 +10,6 @@ namespace Waterfall
 
   public enum WaterfallParticlePropertyType
   {
-    Range,
-    Float,
     Numeric,
     Color,
   }
@@ -82,7 +80,7 @@ namespace Waterfall
     public override void Initialize(ParticleSystem s)
     {
       // TODO: Set the module enabled state
-      ParticleUtils.SetParticleSystemMode(propertyName, s, curveMode); 
+      ParticleUtils.SetParticleSystemMode(propertyName, s, curveMode);
       switch (curveMode)
       {
         case ParticleSystemCurveMode.Constant:
@@ -157,6 +155,7 @@ namespace Waterfall
     {
       gradient1Value = new();
       gradient2Value = new();
+      ConfigNode gradientNode = new();
 
       base.Load(node);
       node.TryGetValue("paramName", ref propertyName);
@@ -173,10 +172,20 @@ namespace Waterfall
           node.TryGetValue("constant2", ref constant2Value);
           break;
         case ParticleSystemGradientMode.Gradient:
-          //gradient1Value.Load(node.GetNode("gradient1Value"));
+          if (node.TryGetNode("gradient1", ref gradientNode))
+          {
+            gradientNode.TryParseGradient(ref gradient1Value);
+          }
           break;
         case ParticleSystemGradientMode.TwoGradients:
-          //curve1Value.Load(node.GetNode("gradient1Value"));
+          if (node.TryGetNode("gradient1", ref gradientNode))
+          {
+            gradientNode.TryParseGradient(ref gradient1Value);
+          }
+          if (node.TryGetNode("gradient2", ref gradientNode))
+          {
+            gradientNode.TryParseGradient(ref gradient2Value);
+          }
           break;
       }
     }
@@ -207,11 +216,10 @@ namespace Waterfall
     public override ConfigNode Save()
     {
       ConfigNode node = new();
-      node.name = WaterfallConstants.FloatNodeName;
+      node.name = WaterfallConstants.ColorNodeName;
       node.AddValue("paramName", propertyName);
       node.AddValue("curveMode", curveMode);
       node.AddValue("moduleEnabled", moduleEnabled);
-      // TODO: save gradients
       switch (curveMode)
       {
         case ParticleSystemGradientMode.Color:
@@ -222,11 +230,11 @@ namespace Waterfall
           node.AddValue("constant2", constant2Value);
           break;
         case ParticleSystemGradientMode.Gradient:
-          //node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
+          node.AddNode(Utils.SerializeGradient("gradient1", gradient1Value, 1f));
           break;
         case ParticleSystemGradientMode.TwoGradients:
-          //node.AddNode(Utils.SerializeFloatCurve("curve1", curve1Value));
-          //node.AddNode(Utils.SerializeFloatCurve("curve2", curve2Value));
+          node.AddNode(Utils.SerializeGradient("gradient1", gradient1Value, 1f));
+          node.AddNode(Utils.SerializeGradient("gradient2", gradient2Value, 1f));
           break;
       }
 

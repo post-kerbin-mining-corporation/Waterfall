@@ -134,7 +134,7 @@ namespace Waterfall.UI
       UIColorParticleData colorData;
       foreach (var pProp in WaterfallParticleLoader.GetParticlePropertyMap())
       {
-        if (pProp.Value.type == WaterfallParticlePropertyType.Float)
+        if (pProp.Value.type == WaterfallParticlePropertyType.Numeric)
         {
           floatData = new UIFloatParticleData(pProp.Value, p);
 

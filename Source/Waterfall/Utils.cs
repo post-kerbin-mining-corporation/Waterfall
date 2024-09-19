@@ -206,7 +206,7 @@ namespace Waterfall
       result = ConfigNode.ParseVector3(theNode.GetValue(valueName));
       return true;
     }
-    public static bool TryParseGradient(ConfigNode node, ref Gradient result)
+    public static bool TryParseGradient(this ConfigNode node, ref Gradient result)
     {
       float timeScale = 1f;
       node.TryGetValue("timeScale", ref timeScale);

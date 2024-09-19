@@ -82,7 +82,11 @@ namespace Waterfall.UI
     protected void DrawTextures()
     {
       GUILayout.BeginHorizontal(GUI.skin.textArea);
+      GUILayout.BeginVertical();
+      GUILayout.FlexibleSpace();
       GUILayout.Label("<b>SELECTED</b>");
+      GUILayout.FlexibleSpace();
+      GUILayout.EndVertical();
       var bRect = GUILayoutUtility.GetRect(64f, 64f);
       if (texThumbs != null && currentTexturePath != null)
         GUI.DrawTexture(bRect, texThumbs[currentTexturePath]);

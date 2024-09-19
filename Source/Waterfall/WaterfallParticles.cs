@@ -116,8 +116,8 @@ namespace Waterfall
             }
           }
 
-          var t = WaterfallParticlePropertyType.Range;
-          node.TryGetEnum("type", ref t, WaterfallParticlePropertyType.Range);
+          var t = WaterfallParticlePropertyType.Numeric;
+          node.TryGetEnum("type", ref t, WaterfallParticlePropertyType.Numeric);
 
           var m = new ParticleData(propertyName, categoryName, t, paramModes, range);
 
