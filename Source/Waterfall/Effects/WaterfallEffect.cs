@@ -120,7 +120,12 @@ namespace Waterfall
       var lightFloatNodes = node.GetNodes(WaterfallConstants.LightFloatModifierNodeName);
       var lightColorNodes = node.GetNodes(WaterfallConstants.LightColorModifierNodeName);
 
+      var particleFloatNodes = node.GetNodes(WaterfallConstants.ParticleFloatModifierNodeName);
+      var particleRangeNodes = node.GetNodes(WaterfallConstants.ParticleRangeModifierNodeName);
+      var particleColorNodes = node.GetNodes(WaterfallConstants.ParticleColorModifierNodeName);
+
       foreach (var subNode in positionNodes)
+
       {
         fxModifiers.Add(new EffectPositionModifier(subNode));
       }
@@ -252,7 +257,6 @@ namespace Waterfall
 
       InitializeIntegrators();
     }
-
     public void InitializeIntegrators()
     {
       floatIntegrators.Clear();
@@ -401,6 +405,9 @@ namespace Waterfall
         s_fxApply.End();
 
         s_Integrators.Begin();
+
+        
+
         disabledTransformNames.Clear();
         anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators);
         UpdateIntegratorArray(colorIntegrators);
@@ -413,7 +420,9 @@ namespace Waterfall
           UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
           UpdateIntegratorArray(lightColorIntegrators);
         }
+
         s_Integrators.End();
+
       }
       s_Update.End();
 
@@ -463,6 +472,7 @@ namespace Waterfall
     public void RemoveModifier(EffectModifier mod)
     {
       fxModifiers.Remove(mod);
+
       if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
       else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
       else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);

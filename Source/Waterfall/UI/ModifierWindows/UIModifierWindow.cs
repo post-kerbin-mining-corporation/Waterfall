@@ -3,8 +3,6 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
-  public delegate void CurveUpdateFunction(FloatCurve curve);
-
   public class UIModifierWindow : UIPopupWindow
   {
     public UIModifierWindow(EffectModifier mod, bool show) : base(show)
@@ -180,8 +178,6 @@ namespace Waterfall.UI
     #region GUI Widgets
 
     protected UICurveEditWindow curveEditor;
-
-    private CurveUpdateFunction curveFunc;
 
     #endregion
 

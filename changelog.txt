@@ -1,3 +1,10 @@
+v0.10.0
+-------
+- Updated bundled ModuleManger to 4.2.3
+- Performance updates (placeholder)
+- Fixed engine light layers targeting IVA layers (#130)
+- Various logging cleanups and improvements
+
 v0.9.0
 ------
 - Significant stack of performance updates that should increase performane significantly on ships/templates with lots of effects (big thanks to Al2Me6, DRVeyl, JohnnyOThan)

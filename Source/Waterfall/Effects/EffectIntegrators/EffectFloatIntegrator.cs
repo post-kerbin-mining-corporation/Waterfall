@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Waterfall
 {
+
   public class EffectFloatIntegrator : EffectIntegrator_Float
   {
     private string _floatName;

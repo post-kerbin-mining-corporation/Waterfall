@@ -69,9 +69,9 @@ namespace Waterfall.UI
       if (!initUI)
         InitUI();
 
+      GUI.skin = HighLogic.Skin;
       if (showWindow)
       {
-        GUI.skin = HighLogic.Skin;
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
         windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), 
           UIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));

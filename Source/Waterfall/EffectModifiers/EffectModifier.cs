@@ -245,7 +245,51 @@ namespace Waterfall
       }
     }
   }
+  public abstract class EffectModifier_Vector2 : EffectModifier
+  {
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
 
+    public EffectModifier_Vector2() : base() { }
+    public EffectModifier_Vector2(ConfigNode node) : base(node) { }
+
+    public override void Load(ConfigNode node)
+    {
+      base.Load(node);
+      xCurve.Load(node.GetNode("xCurve"));
+      yCurve.Load(node.GetNode("yCurve"));
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = base.Save();
+
+      node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
+      node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
+      return node;
+    }
+    public void Get(float[] input, Vector2[] output)
+    {
+      if (input.Length > 1)
+      {
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          float inValue = input[i];
+          output[i] = new(xCurve.Evaluate(inValue) + randomValue,
+                          yCurve.Evaluate(inValue) + randomValue);
+        }
+      }
+      else if (input.Length == 1)
+      {
+        float inValue = input[0];
+        Vector2 vec = new(
+          xCurve.Evaluate(inValue) + randomValue,
+          yCurve.Evaluate(inValue) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+          output[i] = vec;
+      }
+    }
+  }
   public abstract class EffectModifier_Vector3 : EffectModifier
   {
     public FloatCurve xCurve = new();
