@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Waterfall.UI;
 
 namespace Waterfall
 {
   public static class ParticleUtils
   {
+    // GETTERS
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, out float result)
     {
       if (system == null)
@@ -33,9 +33,6 @@ namespace Waterfall
         case "EmissionRateTime":
           result = system.emission.rateOverTime.constant;
           break;
-        //case "EmissionRateBurst":
-        //  result =  ParticleSystemCurveMode.Constant;
-        //  break;
         case "EmissionVolumeLength":
           result = system.shape.length;
           break;
@@ -77,7 +74,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, out float result1, out float result2)
     {
       if (system == null)
@@ -142,7 +138,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FloatCurve result)
     {
       if (system == null)
@@ -191,7 +186,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FloatCurve result1, ref FloatCurve result2)
     {
       if (system == null)
@@ -344,7 +338,101 @@ namespace Waterfall
           break;
       }
     }
+    public static bool GetParticleModuleState(string paramName, ParticleSystem system)
+    {
+      if (system == null)
+        return false;
 
+      switch (paramName)
+      {
+        case "LimitVelocityMaxSpeed":
+          return system.limitVelocityOverLifetime.enabled;
+        case "LimitVelocityDamping":
+          return system.limitVelocityOverLifetime.enabled;
+        case "LimitVelocityDrag":
+          return system.limitVelocityOverLifetime.enabled;
+        case "ForceX":
+          return system.forceOverLifetime.enabled;
+        case "ForceY":
+          return system.forceOverLifetime.enabled;
+        case "ForceZ":
+          return system.forceOverLifetime.enabled;
+        case "Size":
+          return system.sizeOverLifetime.enabled;
+        case "AngularVelocity":
+          return system.rotationOverLifetime.enabled;
+        case "Color":
+          return system.colorOverLifetime.enabled;
+        default:
+          return true;
+      }
+    }
+    public static ParticleSystemCurveMode GetParticleSystemMode(string paramName, ParticleSystem system)
+    {
+      if (system == null)
+        return ParticleSystemCurveMode.Constant;
+
+      switch (paramName)
+      {
+        case "MaxParticles":
+          return ParticleSystemCurveMode.Constant;
+        case "StartSpeed":
+          return system.main.startSpeed.mode;
+        case "StartSize":
+          return system.main.startSize.mode;
+        case "StartLifetime":
+          return system.main.startLifetime.mode;
+        case "StartRotation":
+          return system.main.startRotation.mode;
+        case "EmissionRateTime":
+          return system.emission.rateOverTime.mode;
+        case "EmissionRateBurst":
+          return ParticleSystemCurveMode.Constant;
+        case "EmissionVolumeLength":
+          return ParticleSystemCurveMode.Constant;
+        case "EmissionVolumeRadius":
+          return ParticleSystemCurveMode.Constant;
+        case "EmissionArc":
+          return ParticleSystemCurveMode.Constant;
+        case "EmissionVolumeRadiusAlternate":
+          return ParticleSystemCurveMode.Constant;
+        case "LimitVelocityMaxSpeed":
+          return system.limitVelocityOverLifetime.limit.mode;
+        case "LimitVelocityDamping":
+          return ParticleSystemCurveMode.Constant;
+        case "LimitVelocityDrag":
+          return system.limitVelocityOverLifetime.drag.mode; ;
+        case "ForceX":
+          return system.forceOverLifetime.x.mode;
+        case "ForceY":
+          return system.forceOverLifetime.y.mode;
+        case "ForceZ":
+          return system.forceOverLifetime.z.mode;
+        case "Size":
+          return system.sizeOverLifetime.size.mode;
+        case "AngularVelocity":
+          return system.rotationOverLifetime.x.mode;
+        default:
+          return ParticleSystemCurveMode.Constant;
+      }
+    }
+    public static ParticleSystemGradientMode GetParticleSystemColorMode(string paramName, ParticleSystem system)
+    {
+      if (system == null)
+        return ParticleSystemGradientMode.Color;
+
+      switch (paramName)
+      {
+        case "StartColor":
+          return system.main.startColor.mode;
+        case "Color":
+          return system.colorOverLifetime.color.mode;
+        default:
+          return ParticleSystemGradientMode.Color;
+      }
+    }
+
+    // SETTERS
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, float paramValue)
     {
       if (system == null)
@@ -421,7 +509,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, float paramValue, float paramValue2)
     {
       if (system == null)
@@ -532,7 +619,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, FloatCurve curve1, FloatCurve curve2)
     {
       if (system == null)
@@ -588,7 +674,6 @@ namespace Waterfall
           break;
       }
     }
-
     public static void SetParticleSystemValue(string paramName, ParticleSystem system, Color color)
     {
       if (system == null)
@@ -677,57 +762,6 @@ namespace Waterfall
           break;
       }
     }
-    public static ParticleSystemCurveMode GetParticleSystemMode(string paramName, ParticleSystem system)
-    {
-      if (system == null)
-        return ParticleSystemCurveMode.Constant;
-
-      switch (paramName)
-      {
-        case "MaxParticles":
-          return ParticleSystemCurveMode.Constant;
-        case "StartSpeed":
-          return system.main.startSpeed.mode;
-        case "StartSize":
-          return system.main.startSize.mode;
-        case "StartLifetime":
-          return system.main.startLifetime.mode;
-        case "StartRotation":
-          return system.main.startRotation.mode;
-        case "EmissionRateTime":
-          return system.emission.rateOverTime.mode;
-        case "EmissionRateBurst":
-          return ParticleSystemCurveMode.Constant;
-        case "EmissionVolumeLength":
-          return ParticleSystemCurveMode.Constant;
-        case "EmissionVolumeRadius":
-          return ParticleSystemCurveMode.Constant;
-        case "EmissionArc":
-          return ParticleSystemCurveMode.Constant;
-        case "EmissionVolumeRadiusAlternate":
-          return ParticleSystemCurveMode.Constant;
-        case "LimitVelocityMaxSpeed":
-          return system.limitVelocityOverLifetime.limit.mode;
-        case "LimitVelocityDamping":
-          return ParticleSystemCurveMode.Constant;
-        case "LimitVelocityDrag":
-          return system.limitVelocityOverLifetime.drag.mode; ;
-        case "ForceX":
-          return system.forceOverLifetime.x.mode;
-        case "ForceY":
-          return system.forceOverLifetime.y.mode;
-        case "ForceZ":
-          return system.forceOverLifetime.z.mode;
-        case "Size":
-          return system.sizeOverLifetime.size.mode;
-        case "AngularVelocity":
-          return system.rotationOverLifetime.x.mode;
-        default:
-          return ParticleSystemCurveMode.Constant;
-      }
-
-    }
-
     public static void SetParticleSystemMode(string paramName, ParticleSystem system, ParticleSystemCurveMode newMode)
     {
       if (system == null)
@@ -810,22 +844,6 @@ namespace Waterfall
       }
 
     }
-
-    public static ParticleSystemGradientMode GetParticleSystemColorMode(string paramName, ParticleSystem system)
-    {
-      if (system == null)
-        return ParticleSystemGradientMode.Color;
-
-      switch (paramName)
-      {
-        case "StartColor":
-          return system.main.startColor.mode;
-        case "Color":
-          return system.colorOverLifetime.color.mode;
-        default:
-          return ParticleSystemGradientMode.Color;
-      }
-    }
     public static void SetParticleSystemColorMode(string paramName, ParticleSystem system, ParticleSystemGradientMode newMode)
     {
       if (system == null)
@@ -848,69 +866,50 @@ namespace Waterfall
           break;
       }
     }
-    public static bool GetParticleModuleState(string paramName, ParticleSystem system)
-    {
-      if (system == null)
-        return false;
-
-      switch (paramName)
-      {
-        case "Main":
-          return true;
-        case "Emission":
-          return true;
-        case "Emitter Shape":
-          return system.shape.enabled;
-        case "Limit Velocity over Lifetime":
-          return system.limitVelocityOverLifetime.enabled;
-        case "Color vs Lifetime":
-          return system.colorOverLifetime.enabled;
-        case "Size vs Lifetime":
-          return system.sizeOverLifetime.enabled;
-        case "Rotation vs Lifetime":
-          return system.rotationOverLifetime.enabled;
-        default: return false;
-      }
-    }
     public static void SetParticleModuleState(string paramName, ParticleSystem system, bool state)
     {
       if (system == null)
         return;
 
-      ParticleSystem.EmissionModule particleEmit = system.emission;
-      ParticleSystem.ShapeModule particleShape = system.shape;
+      ParticleSystem.ForceOverLifetimeModule particleForce = system.forceOverLifetime;
       ParticleSystem.RotationOverLifetimeModule particleRotation = system.rotationOverLifetime;
       ParticleSystem.SizeOverLifetimeModule particleSize = system.sizeOverLifetime;
       ParticleSystem.LimitVelocityOverLifetimeModule particleLimitVelocity = system.limitVelocityOverLifetime;
       ParticleSystem.ColorOverLifetimeModule particleColor = system.colorOverLifetime;
-
       switch (paramName)
       {
-        case "Emission": 
-          particleEmit.enabled = state;
+        case "LimitVelocityMaxSpeed":
+          particleLimitVelocity.enabled = state;
           break;
-        case "Emitter Shape": 
-          particleShape.enabled = state;
+        case "LimitVelocityDamping":
+          particleLimitVelocity.enabled = state;
           break;
-        case "Limit Velocity over Lifetime":
-          particleLimitVelocity.enabled = state; 
+        case "LimitVelocityDrag":
+          particleLimitVelocity.enabled = state;
           break;
-        case "Color vs Lifetime":
-          particleColor.enabled = state; 
+        case "ForceX":
+          particleForce.enabled = state;
           break;
-        case "Size vs Lifetime":
-          particleSize.enabled = state; 
+        case "ForceY":
+          particleForce.enabled = state;
           break;
-        case "Rotation vs Lifetime":
-          particleRotation.enabled = state; 
+        case "ForceZ":
+          particleForce.enabled = state;
           break;
-        default: break;
-
+        case "Size":
+          particleSize.enabled = state;
+          break;
+        case "AngularVelocity":
+          particleRotation.enabled = state;
+          break;
+        case "Color":
+          particleColor.enabled = state;
+          break;
+        default:
+          break;
       }
     }
   }
-
-
 
   public enum WaterfallParticleParameterMode
   {
@@ -922,14 +921,6 @@ namespace Waterfall
     TwoColors,
     Gradient,
     TwoGradients
-  }
-  public enum ParticleParameterType
-  {
-    Value,
-    Vector2,
-    Vector3,
-    Bool,
-    Enum
   }
 
   public class ParticleData
@@ -948,7 +939,5 @@ namespace Waterfall
       validModes = modes;
       floatRange = range;
     }
-
   }
-
 }

@@ -11,20 +11,13 @@ namespace Waterfall.UI
     public ParticleData parameterData;
     public WaterfallParticle particle;
 
-    protected UICurveEditWindow curveEditor;
-    protected UIGradientEditWindow gradientEditor;
-
     protected readonly Vector2 curveButtonDims = new(100f, 50f);
     protected readonly float headerWidth = 200f;
     protected int curveTexWidth = 80;
     protected int curveTexHeight = 30;
-
-
     protected int modeID;
     protected string[] modeList;
     protected int savedModeID;
-
-
     public UIParticleData(ParticleData data, WaterfallParticle system)
     {
       name = data.name;
@@ -135,7 +128,7 @@ namespace Waterfall.UI
 
         curveMode = (ParticleSystemCurveMode)Enum.Parse(typeof(ParticleSystemCurveMode), modeList[modeID]);
         ParticleUtils.SetParticleSystemMode(name, particle.systems[0], curveMode);
-
+        particle.SetParticleCurveMode(name, curveMode);
         if (modeList[savedModeID] == "Curve" || modeList[savedModeID] == "CurveRange")
         {
           GenerateCurveThumbs();
@@ -180,6 +173,7 @@ namespace Waterfall.UI
 
       // Low End
       GUILayout.BeginHorizontal();
+      GUILayout.Label("<b>Low:</b>");
       sliderValX = GUILayout.HorizontalSlider(constant1,
                                              parameterData.floatRange.x,
                                              parameterData.floatRange.y);
@@ -202,7 +196,6 @@ namespace Waterfall.UI
         constant1String = textValX;
       }
       GUILayout.EndHorizontal();
-      GUILayout.Label("<b>Low:</b>");
       // High end
       GUILayout.BeginHorizontal();
       GUILayout.Label("<b>High:</b>");
@@ -269,7 +262,7 @@ namespace Waterfall.UI
     protected void EditCurve(FloatCurve toEdit, CurveUpdateFunction updateFunction)
     {
       Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
-      curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, updateFunction);
+      WaterfallUI.Instance.OpenCurveEditor(toEdit, updateFunction);
     }
     protected void UpdateCurve1(FloatCurve curve)
     {
@@ -399,7 +392,9 @@ namespace Waterfall.UI
       {
         savedModeID = modeID;
         colorMode = (ParticleSystemGradientMode)Enum.Parse(typeof(ParticleSystemGradientMode), modeList[modeID]);
-        ParticleUtils.SetParticleSystemColorMode(name, particle.systems[0], colorMode);
+        particle.SetParticleColorMode(name, colorMode);
+        GenerateColorThumbs();
+        GenerateGradientThumbs();        
       }
       GUILayout.EndHorizontal();
     }
@@ -518,7 +513,7 @@ namespace Waterfall.UI
     protected void EditGradient(Gradient toEdit, GradientUpdateFunction updateFunction)
     {
       Utils.Log($"Started editing gradient {toEdit}", LogType.UI);
-      gradientEditor = WaterfallUI.Instance.OpenGradientEditor(toEdit, updateFunction);
+      WaterfallUI.Instance.OpenGradientEditor(toEdit, updateFunction);
     }
     protected void GenerateGradientThumbs()
     {

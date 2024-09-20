@@ -192,7 +192,7 @@ namespace Waterfall.UI
     {
       if (particleData.Count > 0)
       {
-        savedOn = ParticleUtils.GetParticleModuleState(name, particleData[0].particle.systems[0]);
+        savedOn = ParticleUtils.GetParticleModuleState(particleData[0].name, particleData[0].particle.systems[0]);
         on = savedOn;
       }
     }
@@ -238,7 +238,7 @@ namespace Waterfall.UI
         savedOn = on;
         if (particleData.Count > 0)
         {
-          particleData[0].particle.SetParticleModuleState(name, savedOn);
+          particleData[0].particle.SetParticleModuleState(particleData[0].name, savedOn);
         }
       }
     }

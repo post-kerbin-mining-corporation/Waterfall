@@ -1,33 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Waterfall
 {
-
   public enum WaterfallParticlePropertyType
   {
     Numeric,
     Color,
   }
-  public class WaterfallParticleProperty
+  public abstract class WaterfallParticleProperty
   {
     public string propertyName;
     public bool moduleEnabled;
     public WaterfallParticlePropertyType propertyType;
 
-    public virtual void Load(ConfigNode node)
-    {
-    }
+    public virtual void Load(ConfigNode node) {}
 
     public virtual ConfigNode Save() => null;
 
     public virtual void Initialize(ParticleSystem p) { }
   }
 
+  /// <summary>
+  /// A serializable particle numeric property, which can be a constant, pair of constants, curve or pair of curves
+  /// </summary>
   public class WaterfallParticleNumericProperty : WaterfallParticleProperty
   {
     public float constant1Value;
@@ -49,6 +44,10 @@ namespace Waterfall
       propertyType = WaterfallParticlePropertyType.Numeric;
     }
 
+    /// <summary>
+    /// Deserialize from ConfigNode
+    /// </summary>
+    /// <param name="node"></param>
     public override void Load(ConfigNode node)
     {
       curve1Value = new();
@@ -77,33 +76,13 @@ namespace Waterfall
       }
     }
 
-    public override void Initialize(ParticleSystem s)
-    {
-      // TODO: Set the module enabled state
-      ParticleUtils.SetParticleSystemMode(propertyName, s, curveMode);
-      switch (curveMode)
-      {
-        case ParticleSystemCurveMode.Constant:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
-          break;
-        case ParticleSystemCurveMode.TwoConstants:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
-          break;
-        case ParticleSystemCurveMode.Curve:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
-          break;
-        case ParticleSystemCurveMode.TwoCurves:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
-          ParticleUtils.SetParticleSystemValue(propertyName, s, curve2Value);
-          break;
-      }
-    }
-
+    /// <summary>
+    /// Serialize to ConfigNode
+    /// </summary>
     public override ConfigNode Save()
     {
       ConfigNode node = new();
-      node.name = WaterfallConstants.FloatNodeName;
+      node.name = WaterfallConstants.NumericParticleNodeName;
       node.AddValue("paramName", propertyName);
       node.AddValue("curveMode", curveMode);
       node.AddValue("moduleEnabled", moduleEnabled);
@@ -125,11 +104,40 @@ namespace Waterfall
           node.AddNode(Utils.SerializeFloatCurve("curve2", curve2Value));
           break;
       }
-
       return node;
     }
+    /// <summary>
+    /// Apply the property data to the attached ParticleSystem
+    /// </summary>
+    /// <param name="s"></param>
+    public override void Initialize(ParticleSystem s)
+    {
+      ParticleUtils.SetParticleModuleState(propertyName, s, moduleEnabled);
+      ParticleUtils.SetParticleSystemMode(propertyName, s, curveMode);
+      switch (curveMode)
+      {
+        case ParticleSystemCurveMode.Constant:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          break;
+        case ParticleSystemCurveMode.TwoConstants:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
+          break;
+        case ParticleSystemCurveMode.Curve:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
+          break;
+        case ParticleSystemCurveMode.TwoCurves:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, curve2Value);
+          break;
+      }
+    }
+
   }
 
+  /// <summary>
+  /// A serializable particle color property, which can be a color, pair of colors, gradient or pair of gradient
+  /// </summary>
   public class WaterfallParticleColorProperty : WaterfallParticleProperty
   {
     public Color constant1Value;
@@ -150,7 +158,10 @@ namespace Waterfall
       Load(node);
       propertyType = WaterfallParticlePropertyType.Color;
     }
-
+    /// <summary>
+    /// Deserialize from ConfigNode
+    /// </summary>
+    /// <param name="node"></param>
     public override void Load(ConfigNode node)
     {
       gradient1Value = new();
@@ -161,7 +172,6 @@ namespace Waterfall
       node.TryGetValue("paramName", ref propertyName);
       node.TryGetValue("moduleEnabled", ref moduleEnabled);
       node.TryGetEnum("curveMode", ref curveMode, ParticleSystemGradientMode.Color);
-      // TODO: load gradients
       switch (curveMode)
       {
         case ParticleSystemGradientMode.Color:
@@ -189,34 +199,13 @@ namespace Waterfall
           break;
       }
     }
-
-    public override void Initialize(ParticleSystem s)
-    {
-      // TODO: Set the module enabled state
-      ParticleUtils.SetParticleSystemColorMode(propertyName, s, curveMode);
-      switch (curveMode)
-      {
-        case ParticleSystemGradientMode.Color:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
-          break;
-        case ParticleSystemGradientMode.TwoColors:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
-          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
-          break;
-        case ParticleSystemGradientMode.Gradient:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
-          break;
-        case ParticleSystemGradientMode.TwoGradients:
-          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
-          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient2Value);
-          break;
-      }
-    }
-
+    /// <summary>
+    /// Serialize to ConfigNode
+    /// </summary>
     public override ConfigNode Save()
     {
       ConfigNode node = new();
-      node.name = WaterfallConstants.ColorNodeName;
+      node.name = WaterfallConstants.ColorParticleNodeName;
       node.AddValue("paramName", propertyName);
       node.AddValue("curveMode", curveMode);
       node.AddValue("moduleEnabled", moduleEnabled);
@@ -237,8 +226,34 @@ namespace Waterfall
           node.AddNode(Utils.SerializeGradient("gradient2", gradient2Value, 1f));
           break;
       }
-
       return node;
     }
+    /// <summary>
+    /// Apply the property data to the attached ParticleSystem
+    /// </summary>
+    /// <param name="s"></param>
+    public override void Initialize(ParticleSystem s)
+    {
+      ParticleUtils.SetParticleModuleState(propertyName, s, moduleEnabled);
+      ParticleUtils.SetParticleSystemColorMode(propertyName, s, curveMode);
+      switch (curveMode)
+      {
+        case ParticleSystemGradientMode.Color:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          break;
+        case ParticleSystemGradientMode.TwoColors:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, constant2Value);
+          break;
+        case ParticleSystemGradientMode.Gradient:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
+          break;
+        case ParticleSystemGradientMode.TwoGradients:
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient1Value);
+          ParticleUtils.SetParticleSystemValue(propertyName, s, gradient2Value);
+          break;
+      }
+    }
+
   }
 }
