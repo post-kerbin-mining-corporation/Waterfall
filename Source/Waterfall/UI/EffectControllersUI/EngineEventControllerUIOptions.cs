@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UniLinq;
 
 namespace Waterfall.UI.EffectControllersUI
 {
@@ -7,8 +9,10 @@ namespace Waterfall.UI.EffectControllersUI
   {
 
     private readonly string[] eventTypes      = { "ignition", "flameout" };
-    private readonly Vector2  curveButtonDims = new(100f, 50f);
+    private string[] engineIDOptions;
+    private int engineIndex;
 
+    private readonly Vector2  curveButtonDims = new(100f, 50f);
     private readonly int               texWidth  = 80;
     private readonly int               texHeight = 30;
     private          int               eventFlag;
@@ -30,6 +34,16 @@ namespace Waterfall.UI.EffectControllersUI
 
     public override void DrawOptions()
     {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Engine ID", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      if (engineIDOptions != null && engineIDOptions.Length != 0)
+      {
+        engineIndex = GUILayout.SelectionGrid(engineIndex, engineIDOptions, 2);
+      }
+      else
+      {
+        GUILayout.Label("0");
+      }
       GUILayout.Label("Event name");
       int eventFlagChanged = GUILayout.SelectionGrid(eventFlag, eventTypes, Mathf.Min(eventTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
 
@@ -60,8 +74,19 @@ namespace Waterfall.UI.EffectControllersUI
       eventCurve          = controller.eventCurve;
       eventDuration       = controller.eventDuration;
       eventDurationString = controller.eventDuration.ToString();
+      List<ModuleEngines> engineOptions = controller.ParentModule.part.FindModulesImplementing<ModuleEngines>();
+      engineIDOptions = engineOptions.Select(x => x.engineID).ToArray();
+      engineIndex = engineIDOptions.ToList().IndexOf(controller.engineID);
+      engineIndex = engineIndex == -1 ? 0 : engineIndex;
 
       GenerateCurveThumbs();
+    }
+    
+    public override void DefaultOptions(ModuleWaterfallFX parentModule)
+    {
+      List<ModuleEngines> engineOptions = parentModule.part.FindModulesImplementing<ModuleEngines>();
+      engineIDOptions = engineOptions.Select(x => x.engineID).ToArray();
+      engineIndex = 0;
     }
 
     protected override EngineEventController CreateControllerInternal() =>
@@ -69,7 +94,8 @@ namespace Waterfall.UI.EffectControllersUI
       {
         eventName     = eventTypes[eventFlag],
         eventCurve    = eventCurve,
-        eventDuration = eventDuration
+        eventDuration = eventDuration,
+        engineID = engineIDOptions[engineIndex]
       };
 
     private void EditCurve(FloatCurve toEdit, CurveUpdateFunction function)

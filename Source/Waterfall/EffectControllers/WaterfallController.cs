@@ -14,6 +14,9 @@ namespace Waterfall
     public const string LegacyControllerTypeNodeName = "linkedTo";
 
     [Persistent] public string name = "unnamedController";
+
+    public ModuleWaterfallFX ParentModule => parentModule;
+
     public bool overridden
     {
       get { return _overridden; }

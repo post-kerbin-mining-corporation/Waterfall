@@ -19,6 +19,12 @@ namespace Waterfall.UI.EffectControllersUI
     void LoadOptions(WaterfallController controller);
 
     /// <summary>
+    /// Can be used to initialized default options from the base module
+    /// </summary>
+    /// <param name="fx"></param>
+    void DefaultOptions(ModuleWaterfallFX fx);
+
+    /// <summary>
     ///   Create new effect controller with options from UI state.
     /// </summary>
     WaterfallController CreateController();
@@ -43,7 +49,8 @@ namespace Waterfall.UI.EffectControllersUI
         throw new ArgumentException(nameof(controller));
       }
     }
-
+    public virtual void DefaultOptions(ModuleWaterfallFX fx) { }
+    
     public WaterfallController CreateController() => CreateControllerInternal();
 
     /// <summary>

@@ -12,10 +12,12 @@ namespace Waterfall
   public class EngineEventController : WaterfallController
   {
     [Persistent] public string eventName;
+    [Persistent] public string engineID;
 
     public FloatCurve eventCurve = new();
     [Persistent] public float eventDuration = 1f;
     private ModuleEngines engineModule;
+    private MultiModeEngine multiEngine;
 
     private Func<ModuleEngines, bool> getEngineStateFunc; // when the result of this function transitions from false -> true, the event should fire
     private bool  eventPlaying;
@@ -47,12 +49,17 @@ namespace Waterfall
 
       values = new float[1];
 
-      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
-      if (engineModule == null)
-        engineModule = host.part.FindModuleImplementing<ModuleEngines>();
 
+      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineModule == null)
-        Utils.LogError($"[EngineEventController] Could not find engine module for waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}' on Initialize");
+      {
+        Utils.Log($"[EngineEventController] Could not find engine ID {engineID}, using first module");
+        engineModule = host.part.FindModuleImplementing<ModuleEngines>();
+      }
+      multiEngine = host.GetComponent<MultiModeEngine>();
+      if (multiEngine == null)
+      {
+      }
 
       EngineStateFuncs.TryGetValue(eventName, out getEngineStateFunc);
 
