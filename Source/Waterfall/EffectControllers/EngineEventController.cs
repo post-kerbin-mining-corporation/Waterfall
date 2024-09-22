@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace Waterfall
 {
-  /// <summary>
-  /// </summary>
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
@@ -27,7 +25,7 @@ namespace Waterfall
     private static readonly Dictionary<string, Func<ModuleEngines, bool>> EngineStateFuncs = new()
     {
       { "flameout", (engineModule) => engineModule.flameout || !engineModule.EngineIgnited},
-      { "ignition", (engineModule) => engineModule.EngineIgnited},
+      { "ignition", (engineModule) => engineModule.EngineIgnited}
     };
 
     public EngineEventController() : base() { }
@@ -49,11 +47,10 @@ namespace Waterfall
 
       values = new float[1];
 
-
       engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineModule == null)
       {
-        Utils.Log($"[EngineEventController] Could not find engine ID {engineID}, using first module");
+        Utils.Log($"[EngineEventController] Could not find engine ID {engineID}, using first module", LogType.Effects);
         engineModule = host.part.FindModuleImplementing<ModuleEngines>();
       }
       multiEngine = host.GetComponent<MultiModeEngine>();
@@ -90,7 +87,7 @@ namespace Waterfall
         /// Check if engine state flipped
         if (getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} fired on {engineID}", LogType.Effects);
           eventReady   = false;
           eventPlaying = true;
           eventTime    = TimeWarp.deltaTime;
@@ -108,7 +105,7 @@ namespace Waterfall
         // Check to see if event can be reset
         if (!getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} ready on {engineID}", LogType.Effects);
           eventReady = true;
         }
       }

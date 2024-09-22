@@ -5,6 +5,7 @@ v0.10.0
 - Fixed engine light layers targeting IVA layers (#130)
 - Thrust and Throttle controllers can now have their EngineID set in the UI (#125)
 - Added a UI option for Perlin noise to have its seed to an option that will randomize it on effect startup (#127)
+- It is now possible to set Engine ID in Engine Event Controllers, and those controllers will only fire on events asocaited with that engine ID (#126)
 - Various logging cleanups and improvements
 - Reworked most Editor window UIs to look cleaner and work better
 - Refactored a lot of UI code for more coherency

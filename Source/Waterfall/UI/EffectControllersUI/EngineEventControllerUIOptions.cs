@@ -8,7 +8,7 @@ namespace Waterfall.UI.EffectControllersUI
   public class EngineEventControllerUIOptions : DefaultEffectControllerUIOptions<EngineEventController>
   {
 
-    private readonly string[] eventTypes      = { "ignition", "flameout" };
+    private readonly string[] eventTypes = { "ignition", "flameout"};
     private string[] engineIDOptions;
     private int engineIndex;
 
@@ -20,7 +20,6 @@ namespace Waterfall.UI.EffectControllersUI
     private          float             eventDuration = 2f;
     private          string            eventDurationString;
     private          Texture2D         miniCurve;
-    private          UICurveEditWindow curveEditor;
 
     public EngineEventControllerUIOptions()
     {
@@ -44,7 +43,8 @@ namespace Waterfall.UI.EffectControllersUI
       {
         GUILayout.Label("0");
       }
-      GUILayout.Label("Event name");
+      GUILayout.EndHorizontal();
+      GUILayout.Label("Event Name");
       int eventFlagChanged = GUILayout.SelectionGrid(eventFlag, eventTypes, Mathf.Min(eventTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
 
       eventFlag = eventFlagChanged;
@@ -74,6 +74,7 @@ namespace Waterfall.UI.EffectControllersUI
       eventCurve          = controller.eventCurve;
       eventDuration       = controller.eventDuration;
       eventDurationString = controller.eventDuration.ToString();
+
       List<ModuleEngines> engineOptions = controller.ParentModule.part.FindModulesImplementing<ModuleEngines>();
       engineIDOptions = engineOptions.Select(x => x.engineID).ToArray();
       engineIndex = engineIDOptions.ToList().IndexOf(controller.engineID);
@@ -101,7 +102,7 @@ namespace Waterfall.UI.EffectControllersUI
     private void EditCurve(FloatCurve toEdit, CurveUpdateFunction function)
     {
       Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
-      curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
+      WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
     }
 
     private void GenerateCurveThumbs()
