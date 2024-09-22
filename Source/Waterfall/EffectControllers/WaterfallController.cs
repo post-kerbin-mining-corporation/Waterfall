@@ -121,15 +121,6 @@ namespace Waterfall
       overridden = mode;
     }
 
-    /// <summary>
-    ///   Sets the override value, not controlled by the game, likely an editor UI
-    /// </summary>
-    /// <param name="value"></param>
-    public void SetOverrideValue(float value)
-    {
-      overrideValue = value;
-    }
-
     public virtual void UpgradeToCurrentVersion(Version loadedVersion)
     {
 

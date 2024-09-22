@@ -71,7 +71,7 @@ namespace Waterfall
       Controller = parentEffect.parentModule.AllControllersDict.TryGetValue(controllerName, out var controller) ? controller : null;
       if (Controller == null)
       {
-        Utils.LogError($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
+        Utils.LogWarning($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
       }
       else
       {
@@ -167,15 +167,21 @@ namespace Waterfall
 
     public virtual void CreateOrAttachToIntegrator<T>(List<T> integrators) where T : EffectIntegrator
     {
-      if (integrators == null || !ValidForIntegrator) return;
-      T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
-      if (target == null)
+      if (Controller != null)
       {
-        target = CreateIntegrator() as T;
-        integrators.Add(target);
+        if (integrators == null || !ValidForIntegrator) return;
+        T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
+        if (target == null)
+        {
+          target = CreateIntegrator() as T;
+          integrators.Add(target);
+        }
+        else target.AddModifier(this);
+        integrator = target;
+      } else 
+      {
+        Utils.LogWarning($"[EffectModifier]: Controller {controllerName} is null and will not be added to the integrator list");
       }
-      else target.AddModifier(this);
-      integrator = target;
     }
 
     public virtual void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
