@@ -11,7 +11,7 @@ namespace Waterfall
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms = new();
     public List<EffectModifier> handledModifiers = new();
-    public virtual void AddModifier(EffectModifier mod)
+    public void AddModifier(EffectModifier mod)
     {
       handledModifiers.Add(mod);
       if (mod.Controller != null)
@@ -19,7 +19,16 @@ namespace Waterfall
         mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
       }
     }
-    public virtual void RemoveModifier(EffectModifier mod) => handledModifiers.Remove(mod);
+    public void RemoveModifier(EffectModifier mod)
+    {
+      // if this was the last modifier, then this integrator will end up being removed.  Do a final update so that we get the initial values applied again.
+      // NOTE this isn't really guaranteed to do anything useful, and we're not currently removing empty integrators anyway
+      // see EffectModifier.RemoveFromIntegrator
+      if (handledModifiers.Remove(mod) && handledModifiers.Count == 0)
+      {
+        Update();
+      }
+    }
 
     public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
     {
@@ -49,7 +58,7 @@ namespace Waterfall
     public abstract void Update();
     protected abstract void Apply();
 
-    public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)
@@ -118,7 +127,7 @@ namespace Waterfall
       }
     }
 
-    public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)
@@ -153,7 +162,7 @@ namespace Waterfall
       }
     }
 
-    public void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)

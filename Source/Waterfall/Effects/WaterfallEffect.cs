@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniLinq;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -269,14 +270,29 @@ namespace Waterfall
 
       foreach (var mod in fxModifiers)
       {
-        if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-        else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-        else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-        else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-        else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-        else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-        else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+        AddModifierToIntegratorList(mod);
       }
+
+      SortIntegrators();
+    }
+
+    void AddModifierToIntegratorList(EffectModifier mod)
+    {
+      if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
+      else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
+      else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
+      else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
+      else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
+      else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
+      else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+    }
+
+    void SortIntegrators()
+    {
+      // Integrators need to be sorted such that:
+      // 1. integrators are grouped by transform (so once we hit one on a disabled transform, we skip all of the ones on that transform)
+      //    TODO: maybe we should sort by whether the transform is disabled?  Might have to re-sort as transforms enable/disable
+      // 2. integrators that test intensity come before those that don't (this is only applicable to EffectFloatIntegrator right now)
 
       Comparison<EffectFloatIntegrator> OrderByTransformAndTestIntensity = (EffectFloatIntegrator a, EffectFloatIntegrator b) =>
       {
@@ -334,7 +350,6 @@ namespace Waterfall
       for (int i = 0; i < integrators.Count;)
       {
         var integrator = integrators[i];
-        if (integrator.handledModifiers.Count == 0) continue;
 
         if (disabledTransformNames.Contains(integrator.transformName))
         {
@@ -361,7 +376,6 @@ namespace Waterfall
       for (int i=0; i < integrators.Count;)
       {
         var integrator = integrators[i];
-        if (integrator.handledModifiers.Count == 0) continue;
 
         bool renderersActive = integrator.Update_TestIntensity();
 
@@ -492,13 +506,8 @@ namespace Waterfall
     {
       mod.Init(this);
       fxModifiers.Add(mod);
-      if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-      else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-      else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-      else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-      else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-      else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+      AddModifierToIntegratorList(mod);
+      SortIntegrators();
     }
 
     public void MoveModifierFromTo(int oldIndex, int newIndex)
@@ -510,7 +519,9 @@ namespace Waterfall
       fxModifiers.RemoveAt(oldIndex);
       fxModifiers.Insert(newIndex, item);
 
-      InitializeIntegrators();
+      // make sure the integrator's modifier ordering matches
+      // this is overkill, we only really need to check its neighbors in the list - but this is editor-only code
+      item.integrator.handledModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
     }
 
     public void MoveModifierUp(int index) => MoveModifierFromTo(index, index - 1);
