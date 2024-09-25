@@ -222,6 +222,7 @@ namespace Waterfall.UI
 
       if (ctrl.overridden)
       {
+        Debug.Log($"Controller is override to {ctrl.overrideValue}");
         ctrl.overrideValue = GUILayout.HorizontalSlider(ctrl.overrideValue, sliderMin, sliderMax, GUILayout.MaxWidth(100f));
       }
       else
@@ -624,6 +625,17 @@ namespace Waterfall.UI
         }
       }
       catch (InvalidCastException) { }
+
+      try
+      {
+        var pMod = (EffectParticleMultiNumericModifier)fxMod;
+        if (pMod != null)
+        {
+          editWindows.Add(new UIParticleMultiNumericModifierWindow(pMod, true));
+        }
+      }
+      catch (InvalidCastException) { }
+
     }
 
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)
