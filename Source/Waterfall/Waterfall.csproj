@@ -170,6 +170,7 @@
     <Compile Include="UI\EffectControllersUI\VelocityControllerUIOptions.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleMultiNumericModifierWindow.cs" />
     <Compile Include="UI\TextureUtils.cs" />
     <Compile Include="UI\EditWindows\UIColorPickerWindow.cs" />
     <Compile Include="UI\UICopy.cs" />
