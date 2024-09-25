@@ -165,7 +165,7 @@ namespace Waterfall
 
     public abstract EffectIntegrator CreateIntegrator();
 
-    public virtual void CreateOrAttachToIntegrator<T>(List<T> integrators) where T : EffectIntegrator
+    public void CreateOrAttachToIntegrator<T>(List<T> integrators) where T : EffectIntegrator
     {
       if (integrators == null || !ValidForIntegrator) return;
       T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
@@ -178,13 +178,14 @@ namespace Waterfall
       integrator = target;
     }
 
-    public virtual void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
+    public void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
     {
-      if (integrators?.FirstOrDefault(x => x.handledModifiers.Contains(this)) is T integrator)
-      {
-        integrator.RemoveModifier(this);
-        integrator = null;
-      }
+      integrator.RemoveModifier(this);
+      // It would be nice to remove the integrator from the list if it no longer has any modifiers.
+      // However, that might leave weird values in the effect/light/transform that could get picked up as the initial values if the integrator gets recreated.
+      // We could try and force a final update on the integrator when removing it, but some of them have no effect if the renderer is disabled.
+      // It's a lot of complexity to manage and this only ever happens in the editor, so we don't really care about the performance impact of leaving useless integrators in the list
+      integrator = null;
     }
   }
 
