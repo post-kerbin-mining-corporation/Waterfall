@@ -49,7 +49,7 @@ namespace Waterfall
     public abstract void Update();
     protected abstract void Apply();
 
-    public void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, float[] items, float[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)
@@ -84,7 +84,7 @@ namespace Waterfall
       }
     }
 
-    public void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)
@@ -119,7 +119,7 @@ namespace Waterfall
       }
     }
 
-    public void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
+    protected static void Integrate(EffectModifierMode mode, Color[] items, Color[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)
