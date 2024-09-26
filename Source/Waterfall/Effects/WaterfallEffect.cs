@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UniLinq;
 using Unity.Profiling;
 using UnityEngine;
@@ -461,7 +460,6 @@ namespace Waterfall
     }
 
     private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
-
     public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
     {
       camerasProf.Begin();
