@@ -521,6 +521,7 @@ namespace Waterfall
       // make sure the integrator's modifier ordering matches
       // this is overkill, we only really need to check its neighbors in the list - but this is editor-only code
       item.integrator.handledModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
+      directModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
     }
 
     public void MoveModifierUp(int index) => MoveModifierFromTo(index, index - 1);
