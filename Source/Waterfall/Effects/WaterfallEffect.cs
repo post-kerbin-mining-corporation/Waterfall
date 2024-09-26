@@ -28,6 +28,7 @@ namespace Waterfall
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
+    protected readonly  List<DirectModifier> directModifiers = new();
     protected           Transform            parentTransform;
     protected           ConfigNode           savedNode;
     protected           bool                 effectVisible = true;
@@ -251,11 +252,6 @@ namespace Waterfall
         }
       }
 
-      InitializeIntegrators();
-    }
-
-    public void InitializeIntegrators()
-    {
       floatIntegrators.Clear();
       positionIntegrators.Clear();
       colorIntegrators.Clear();
@@ -281,6 +277,7 @@ namespace Waterfall
       else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
       else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+      else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
     }
 
     void SortIntegrators()
@@ -407,7 +404,7 @@ namespace Waterfall
       if (effectVisible)
       {
         s_fxApply.Begin();
-        foreach (var fx in fxModifiers)
+        foreach (var fx in directModifiers)
         {
           float[] controllerData = fx.Controller == null ? EmptyControllerValues : fx.Controller.Get();
           fx.Apply(controllerData);
@@ -484,6 +481,7 @@ namespace Waterfall
       else if (mod is EffectScaleModifier) mod.RemoveFromIntegrator(scaleIntegrators);
       else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
+      else if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
     }
 
     public void ModifierParameterChange(EffectModifier mod)

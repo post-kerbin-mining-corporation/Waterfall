@@ -6,7 +6,7 @@ namespace Waterfall
   /// <summary>
   ///   Material UV scrolling modifier
   /// </summary>
-  public class EffectUVScrollModifier : EffectModifier
+  public class EffectUVScrollModifier : DirectModifier
   {
     protected override string ConfigNodeName => WaterfallConstants.UVScrollModifierNodeName;
 
@@ -63,12 +63,6 @@ namespace Waterfall
           y = 0f;
         m[i].SetTextureOffset(textureName, new(x, y));
       }
-    }
-
-    public override EffectIntegrator CreateIntegrator()
-    {
-      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
-      return null;
     }
   }
 }
