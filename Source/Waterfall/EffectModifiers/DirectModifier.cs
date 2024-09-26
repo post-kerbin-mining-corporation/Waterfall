@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace Waterfall
 {
-	public abstract class DirectModifier : EffectModifier
-	{
-
+  public abstract class DirectModifier : EffectModifier
+  {
     protected DirectModifier() { }
 
     protected DirectModifier(ConfigNode node) : base(node) { }
 
-		/// <summary>
-		///   Apply the effect with the various combine modes
-		/// </summary>
-		/// <param name="strength"></param>
-		public virtual void Apply(float[] strength)
+    /// <summary>
+    ///   Apply the effect with the various combine modes
+    /// </summary>
+    /// <param name="strength"></param>
+    public virtual void Apply(float[] strength)
     {
       if (useRandomness && randomController != null)
       {
