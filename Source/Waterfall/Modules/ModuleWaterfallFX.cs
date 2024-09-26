@@ -76,7 +76,7 @@ namespace Waterfall
     private void GatherRenderers()
     {
       if (allRenderers.Count == 0)
-        foreach (var fx in allFX)
+        foreach (var fx in activeFX)
           allRenderers.AddUniqueRange(fx.effectRenderers);
     }
 
@@ -109,8 +109,9 @@ namespace Waterfall
         {
           bool effectsAwake = false;
           luEffects.Begin();
-          foreach (var fx in activeFX)
+          for (int fxIndex = 0; fxIndex < activeFX.Count; ++fxIndex)
           {
+            var fx = activeFX[fxIndex];
             effectsAwake = fx.Update() || effectsAwake;
             if (changeHDR)
               fx.SetHDR(isHDR);
