@@ -7,7 +7,7 @@ namespace Waterfall
   /// <summary>
   ///   Material color modifier
   /// </summary>
-  public class EffectColorFromLightModifier : EffectModifier
+  public class EffectColorFromLightModifier : DirectModifier
   {
     protected override string ConfigNodeName => WaterfallConstants.ColorFromLightNodeName;
 
@@ -64,12 +64,6 @@ namespace Waterfall
         else if (lights != null && lights.Length > 0)
           m[i].SetColor(colorPropertyID, lights[0].color * colorBlend + Color.white * (1f - colorBlend));
       }
-    }
-
-    public override EffectIntegrator CreateIntegrator()
-    {
-      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
-      return null;
     }
   }
 }

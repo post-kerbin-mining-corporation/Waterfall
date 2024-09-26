@@ -30,6 +30,7 @@ namespace Waterfall
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
+    protected readonly  List<DirectModifier> directModifiers = new();
     protected           ConfigNode           savedNode;
     protected           bool                 effectVisible = true;
     protected           Vector3              savedScale;
@@ -270,12 +271,6 @@ namespace Waterfall
         }
       }
 
-      InitializeIntegrators();
-
-      return true;
-    }
-    public void InitializeIntegrators()
-    {
       floatIntegrators.Clear();
       positionIntegrators.Clear();
       colorIntegrators.Clear();
@@ -291,6 +286,8 @@ namespace Waterfall
       }
 
       SortIntegrators();
+      
+      return true;
     }
 
     void AddModifierToIntegratorList(EffectModifier mod)
@@ -303,6 +300,7 @@ namespace Waterfall
       else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
       else if (mod is EffectParticleMultiNumericModifier) mod.CreateOrAttachToIntegrator(particleNumericIntegrators);
+      else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
     }
 
     void SortIntegrators()
@@ -430,7 +428,7 @@ namespace Waterfall
       if (effectVisible)
       {
         s_fxApply.Begin();
-        foreach (var fx in fxModifiers)
+        foreach (var fx in directModifiers)
         {
           float[] controllerData = fx.Controller == null ? EmptyControllerValues : fx.Controller.Get();
           fx.Apply(controllerData);
@@ -513,6 +511,7 @@ namespace Waterfall
       else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
       else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
       else if (mod is EffectParticleMultiNumericModifier) mod.RemoveFromIntegrator(particleNumericIntegrators);
+      else if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -541,6 +540,7 @@ namespace Waterfall
       // make sure the integrator's modifier ordering matches
       // this is overkill, we only really need to check its neighbors in the list - but this is editor-only code
       item.integrator.handledModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
+      directModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
     }
 
     public void MoveModifierUp(int index) => MoveModifierFromTo(index, index - 1);

@@ -92,7 +92,8 @@ namespace Waterfall
           break;
       }
     }
-    public void Integrate(EffectModifierMode mode, Vector2[] items, Vector2[] modifiers)
+
+    protected static void Integrate(EffectModifierMode mode, Vector2[] items, Vector2[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
       switch (mode)

@@ -41,7 +41,7 @@ namespace Waterfall
 
     public EffectIntegrator integrator;
     public WaterfallController Controller { get; private set; }
-    private WaterfallController randomController;
+    protected WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
 
     public EffectModifier()
@@ -118,43 +118,6 @@ namespace Waterfall
 
       return node;
     }
-
-    /// <summary>
-    ///   Apply the effect with the various combine modes
-    /// </summary>
-    /// <param name="strength"></param>
-    public virtual void Apply(float[] strength)
-    {
-      if (useRandomness && randomController != null)
-      {
-        float[] controllerData = randomController.Get();
-        randomValue = controllerData[0] * randomnessScale;
-      }
-
-      switch (effectMode)
-      {
-        case EffectModifierMode.REPLACE:
-          ApplyReplace(strength);
-          break;
-        case EffectModifierMode.ADD:
-          ApplyAdd(strength);
-          break;
-        case EffectModifierMode.MULTIPLY:
-          ApplyMultiply(strength);
-          break;
-        case EffectModifierMode.SUBTRACT:
-          ApplySubtract(strength);
-          break;
-      }
-    }
-
-    protected virtual void ApplyReplace(float[] strength) { }
-
-    protected virtual void ApplyAdd(float[] strength) { }
-
-    protected virtual void ApplyMultiply(float[] strength) { }
-
-    protected virtual void ApplySubtract(float[] strength) { }
 
     /// <summary>
     /// Returns true if this specific integrator is ideal for this modifier (ie EffectFloatIntegrator for an EffectFloatModifier and the associated transform matches
