@@ -27,7 +27,6 @@ namespace Waterfall
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
-    protected           Transform            parentTransform;
     protected           ConfigNode           savedNode;
     protected           bool                 effectVisible = true;
     protected           Vector3              savedScale;
@@ -195,7 +194,7 @@ namespace Waterfall
       }
     }
 
-    public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
+    public bool InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
     {
       parentModule = host;
       var parents = parentModule.part.FindModelTransforms(parentName);
@@ -206,14 +205,20 @@ namespace Waterfall
 
       for (int i = 0; i < parents.Length; i++)
       {
-        var effect          = new GameObject($"Waterfall_FX_{name}_{i}");
-        var effectTransform = effect.transform;
-
         if (parents[i] == null)
         {
           Utils.LogError($"[WaterfallEffect]: Trying to attach effect to null parent transform {parentName} on model");
           continue;
         }
+        else if (!parents[i].gameObject.activeInHierarchy)
+        {
+          // The stock ModulePartVariants will deactivate transforms that shouldn't exist on the current variant
+          // This assumes that we can respond to any changes in activation state by reinitializing the effects
+          continue;
+        }
+
+        var effect          = new GameObject($"Waterfall_FX_{name}_{i}");
+        var effectTransform = effect.transform;
 
         effectTransform.SetParent(parents[i], true);
         effectTransform.localPosition    = Vector3.zero;
@@ -237,6 +242,11 @@ namespace Waterfall
         effectTransforms.Add(effectTransform);
       }
 
+      if (effectTransforms.Count == 0)
+      {
+        return false;
+      }
+
       foreach (var fx in fxModifiers)
       {
         fx.Init(this);
@@ -256,6 +266,8 @@ namespace Waterfall
       }
 
       InitializeIntegrators();
+
+      return true;
     }
     public void InitializeIntegrators()
     {
