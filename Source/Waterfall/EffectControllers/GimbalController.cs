@@ -14,7 +14,6 @@ namespace Waterfall
     public override void Initialize(ModuleWaterfallFX host)
     {
       base.Initialize(host);
-
       values = new float[1];
 
       gimbalController = host.part.FindModuleImplementing<ModuleGimbal>();

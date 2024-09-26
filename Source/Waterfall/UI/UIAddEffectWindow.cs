@@ -24,8 +24,13 @@ namespace Waterfall.UI
 
     private int                  modelFlag;
     private string[]             modelOptions;
+
+    private int particleFlag;
+    private string[] particleOptions;
+
     private List<WaterfallAsset> models;
     private List<WaterfallAsset> shaders;
+    private List<WaterfallAsset> particles;
 
     private bool randomizeSeed = true;
 
@@ -69,6 +74,15 @@ namespace Waterfall.UI
       }
 
       shaderOptions  = shaderOpts.ToArray();
+
+      var particleOpts = new List<string>();
+      particles = WaterfallAssets.GetParticles((AssetWorkflow)Enum.Parse(typeof(AssetWorkflow), workflowOptions[workflowFlag]));
+      foreach (var w in particles)
+      {
+        particleOpts.Add($"<b>{w.Name}</b>\n{w.Description}");
+      }
+      particleOptions = particleOpts.ToArray();
+
       WindowPosition = new(Screen.width / 2, Screen.height / 2f, 750, 400);
     }
 
@@ -182,9 +196,17 @@ namespace Waterfall.UI
         }
 
         shaderOptions = shaderOpts.ToArray();
+        var particleOpts = new List<string>();
+        particles = WaterfallAssets.GetParticles((AssetWorkflow)Enum.Parse(typeof(AssetWorkflow), workflowOptions[workflowFlag]));
+        foreach (var w in particles)
+        {
+          particleOpts.Add($"<b>{w.Name}</b>\n{w.Description}");
+        }
+        particleOptions = particleOpts.ToArray();
 
         modelFlag  = 0;
         shaderFlag = 0;
+        particleFlag = 0;
       }
 
       GUILayout.BeginVertical(GUI.skin.textArea);
@@ -196,15 +218,26 @@ namespace Waterfall.UI
                                           Mathf.Min(modelOptions.Length, 2),
                                           UIResources.GetStyle("radio_text_button"));
       GUILayout.EndHorizontal();
-
-      GUILayout.BeginHorizontal();
-      GUILayout.Label("<b>Shader</b>", GUILayout.Width(120f));
-      shaderFlag = GUILayout.SelectionGrid(shaderFlag,
-                                           shaderOptions,
-                                           Mathf.Min(shaderOptions.Length, 2),
-                                           UIResources.GetStyle("radio_text_button"));
-      GUILayout.EndHorizontal();
-
+      if (shaderOptions.Length > 0)
+      {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("<b>Shader</b>", GUILayout.Width(120f));
+        shaderFlag = GUILayout.SelectionGrid(shaderFlag,
+                                             shaderOptions,
+                                             Mathf.Min(shaderOptions.Length, 2),
+                                             UIResources.GetStyle("radio_text_button"));
+        GUILayout.EndHorizontal();
+      }
+      if (particleOptions.Length > 0)
+      {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("<b>Particle</b>", GUILayout.Width(120f));
+        particleFlag = GUILayout.SelectionGrid(particleFlag,
+                                             particleOptions,
+                                             Mathf.Min(particleOptions.Length, 2),
+                                             UIResources.GetStyle("radio_text_button"));
+        GUILayout.EndHorizontal();
+      }
       GUILayout.EndVertical();
       GUILayout.BeginHorizontal();
 
@@ -240,17 +273,27 @@ namespace Waterfall.UI
 
     private WaterfallEffect CreateNewEffect()
     {
-      WaterfallModel model;
-      if (shaders.Count == 0)
+      WaterfallModel model;      
+
+      if (shaders.Count == 0 && particles.Count == 0)
       {
         model = new(models[modelFlag],
                     null,
+                    null,
                     randomizeSeed);
       }
-      else
+      else if (particles.Count > 0)
+      {
+        model = new(models[modelFlag],
+                    null,
+                    particles[particleFlag],
+                    randomizeSeed);
+      }
+      else 
       {
         model = new(models[modelFlag],
                     shaders[shaderFlag],
+                    null,
                     randomizeSeed);
       }
 

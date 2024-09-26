@@ -71,7 +71,7 @@ namespace Waterfall
       Controller = parentEffect.parentModule.AllControllersDict.TryGetValue(controllerName, out var controller) ? controller : null;
       if (Controller == null)
       {
-        Utils.LogError($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
+        Utils.LogWarning($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
       }
       else
       {
@@ -130,15 +130,21 @@ namespace Waterfall
 
     public void CreateOrAttachToIntegrator<T>(List<T> integrators) where T : EffectIntegrator
     {
-      if (integrators == null || !ValidForIntegrator) return;
-      T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
-      if (target == null)
+      if (Controller != null)
       {
-        target = CreateIntegrator() as T;
-        integrators.Add(target);
+        if (integrators == null || !ValidForIntegrator) return;
+        T target = integrators.FirstOrDefault(x => IntegratorSuitable(x));
+        if (target == null)
+        {
+          target = CreateIntegrator() as T;
+          integrators.Add(target);
+        }
+        else target.AddModifier(this);
+        integrator = target;
+      } else 
+      {
+        Utils.LogWarning($"[EffectModifier]: Controller {controllerName} is null and will not be added to the integrator list");
       }
-      else target.AddModifier(this);
-      integrator = target;
     }
 
     public void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
@@ -209,7 +215,51 @@ namespace Waterfall
       }
     }
   }
+  public abstract class EffectModifier_Vector2 : EffectModifier
+  {
+    public FloatCurve xCurve = new();
+    public FloatCurve yCurve = new();
 
+    public EffectModifier_Vector2() : base() { }
+    public EffectModifier_Vector2(ConfigNode node) : base(node) { }
+
+    public override void Load(ConfigNode node)
+    {
+      base.Load(node);
+      xCurve.Load(node.GetNode("xCurve"));
+      yCurve.Load(node.GetNode("yCurve"));
+    }
+
+    public override ConfigNode Save()
+    {
+      var node = base.Save();
+
+      node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
+      node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
+      return node;
+    }
+    public void Get(float[] input, Vector2[] output)
+    {
+      if (input.Length > 1)
+      {
+        for (int i = 0; i < xforms.Count; i++)
+        {
+          float inValue = input[i];
+          output[i] = new(xCurve.Evaluate(inValue) + randomValue,
+                          yCurve.Evaluate(inValue) + randomValue);
+        }
+      }
+      else if (input.Length == 1)
+      {
+        float inValue = input[0];
+        Vector2 vec = new(
+          xCurve.Evaluate(inValue) + randomValue,
+          yCurve.Evaluate(inValue) + randomValue);
+        for (int i = 0; i < xforms.Count; i++)
+          output[i] = vec;
+      }
+    }
+  }
   public abstract class EffectModifier_Vector3 : EffectModifier
   {
     public FloatCurve xCurve = new();

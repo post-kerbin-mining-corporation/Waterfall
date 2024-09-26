@@ -109,6 +109,7 @@ namespace Waterfall
 
   public class MaterialData
   {
+    public string name;
     public Vector2                       floatRange;
     public WaterfallMaterialPropertyType type;
 
@@ -117,7 +118,12 @@ namespace Waterfall
       type       = theType;
       floatRange = range;
     }
-
+    public MaterialData(string propertyName, WaterfallMaterialPropertyType theType, Vector2 range)
+    {
+      name = propertyName;
+      type = theType;
+      floatRange = range;
+    }
     public MaterialData(WaterfallMaterialPropertyType theType)
     {
       type = theType;

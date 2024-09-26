@@ -73,14 +73,6 @@ namespace Waterfall.UI
     /// </summary>
     protected override void UpdateModifierPanel() { }
 
-    #region GUI Variables
-
-    private Vector2 curveButtonDims = new(100f, 50f);
-
-    private Texture2D miniCurve;
-
-    #endregion
-
     #region GUI Widgets
 
     #endregion

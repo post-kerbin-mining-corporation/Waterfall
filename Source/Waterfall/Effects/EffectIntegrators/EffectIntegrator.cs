@@ -93,6 +93,41 @@ namespace Waterfall
       }
     }
 
+    protected static void Integrate(EffectModifierMode mode, Vector2[] items, Vector2[] modifiers)
+    {
+      int count = Math.Min(items.Length, modifiers.Length);
+      switch (mode)
+      {
+        case EffectModifierMode.REPLACE:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.MULTIPLY:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = Vector2.Scale(items[i], modifiers[i]);
+          }
+          break;
+
+        case EffectModifierMode.ADD:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] += modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.SUBTRACT:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] -= modifiers[i];
+          }
+          break;
+      }
+    }
+
     protected static void Integrate(EffectModifierMode mode, Vector3[] items, Vector3[] modifiers)
     {
       int count = Math.Min(items.Length, modifiers.Length);
@@ -162,6 +197,8 @@ namespace Waterfall
           break;
       }
     }
+
+   
 
     protected static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.Integrator.ListPrep");
     protected static readonly ProfilerMarker s_Modifiers = new ProfilerMarker("Waterfall.Integrator.Modifiers");
@@ -273,6 +310,41 @@ namespace Waterfall
       s_Update.End();
     }
   }
+  public abstract class EffectIntegrator_Vector2 : EffectIntegratorTyped<Vector2>
+  {
+    public EffectIntegrator_Vector2(WaterfallEffect effect, EffectModifier_Vector2 mod) : base(effect, mod) { }
+
+    protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Vector2.Update");
+
+    public override void Update()
+    {
+      s_Update.Begin();
+
+      s_ListPrep.Begin();
+      Array.Copy(initialValues, workingValues, initialValues.Length);
+      s_ListPrep.End();
+
+      s_Modifiers.Begin();
+      foreach (var mod in handledModifiers)
+      {
+        if (mod.Controller != null)
+        {
+          float[] controllerData = mod.Controller.Get();
+          ((EffectModifier_Vector2)mod).Get(controllerData, modifierData);
+          s_Integrate.Begin();
+          Integrate(mod.effectMode, workingValues, modifierData);
+          s_Integrate.End();
+        }
+      }
+      s_Modifiers.End();
+
+      s_Apply.Begin();
+      Apply();
+      s_Apply.End();
+
+      s_Update.End();
+    }
+  }
 
   public abstract class EffectIntegrator_Vector3 : EffectIntegratorTyped<Vector3>
   {
@@ -309,4 +381,5 @@ namespace Waterfall
       s_Update.End();
     }
   }
+
 }

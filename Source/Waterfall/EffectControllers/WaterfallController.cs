@@ -14,6 +14,9 @@ namespace Waterfall
     public const string LegacyControllerTypeNodeName = "linkedTo";
 
     [Persistent] public string name = "unnamedController";
+
+    public ModuleWaterfallFX ParentModule => parentModule;
+
     public bool overridden
     {
       get { return _overridden; }
@@ -116,15 +119,6 @@ namespace Waterfall
     public void SetOverride(bool mode)
     {
       overridden = mode;
-    }
-
-    /// <summary>
-    ///   Sets the override value, not controlled by the game, likely an editor UI
-    /// </summary>
-    /// <param name="value"></param>
-    public void SetOverrideValue(float value)
-    {
-      overrideValue = value;
     }
 
     public virtual void UpgradeToCurrentVersion(Version loadedVersion)

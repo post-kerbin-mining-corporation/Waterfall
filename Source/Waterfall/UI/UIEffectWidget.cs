@@ -9,6 +9,7 @@ namespace Waterfall.UI
 
     private readonly bool     showMaterialEdit;
     private readonly bool     showLightEdit;
+    private readonly bool     showParticleEdit;
     private readonly string[] modelOffsetString;
     private readonly string[] modelRotationString;
     private readonly string[] modelScaleString;
@@ -36,11 +37,19 @@ namespace Waterfall.UI
         if (t.GetComponentsInChildren<Light>().Length > 0)
           showLightEdit = true;
       }
-
+      
       foreach (var t in fx.FXModel.modelTransforms)
       {
         if (t.GetComponentsInChildren<Renderer>().Length > 0)
           showMaterialEdit = true;
+      }
+      foreach (var t in fx.FXModel.modelTransforms)
+      {
+        if (t.GetComponentsInChildren<ParticleSystem>().Length > 0)
+        {
+          showParticleEdit = true;
+          showMaterialEdit = false;
+        }
       }
     }
 
@@ -120,7 +129,13 @@ namespace Waterfall.UI
             parent.OpenLightEditWindow(fx.FXModel);
           }
         }
-
+        if (showParticleEdit)
+        {
+          if (GUILayout.Button("EDIT PARTICLES"))
+          {
+            parent.OpenParticleEditWindow(fx.FXModel);
+          }
+        }
         GUILayout.EndHorizontal();
         GUILayout.Label("Position Offset");
         modelOffset = UIUtils.Vector3InputField(GUILayoutUtility.GetRect(180f, 30f), modelOffset, modelOffsetString, GUI.skin.label, GUI.skin.textArea);

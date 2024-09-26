@@ -21,29 +21,19 @@ namespace Waterfall
     [Persistent] public Vector2 range;
     [Persistent] public string noiseType = RandomNoiseName;
 
-    public int seed;
+    [Persistent] public bool randomSeed;
+    [Persistent] public int seed;
     [Persistent] public float scale = 1f;
     [Persistent] public float minimum;
     [Persistent] public float speed = 1f;
+
     private NoiseFunction noiseFunc;
 
     public RandomnessController() : base() { }
     public RandomnessController(ConfigNode node) : base(node)
     {
-      // Randomize seed if not specified
-      if (!node.TryGetValue(nameof(seed), ref seed))
-      {
-        seed = Random.Range(0, 10000);
-      }
     }
 
-    public override ConfigNode Save()
-    {
-      var c = base.Save();
-      if (noiseType == PerlinNoiseName)
-        c.AddValue(nameof(seed), seed);
-      return c;
-    }
 
     public override void Initialize(ModuleWaterfallFX host)
     {
@@ -52,9 +42,17 @@ namespace Waterfall
       values = new float[1];
 
       if (noiseType == PerlinNoiseName)
+      {
         noiseFunc = PerlinNoise;
+        if (randomSeed)
+        { 
+          seed = Random.Range(0, int.MaxValue); 
+        }
+      }
       else if (noiseType == RandomNoiseName)
+      {
         noiseFunc = RandomNoise;
+      }
       else
         noiseFunc = RandomNoise;
     }

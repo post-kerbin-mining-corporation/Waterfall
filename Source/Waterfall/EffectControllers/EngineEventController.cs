@@ -6,16 +6,16 @@ using UnityEngine;
 
 namespace Waterfall
 {
-  /// <summary>
-  /// </summary>
   [DisplayName("Engine Event")]
   public class EngineEventController : WaterfallController
   {
     [Persistent] public string eventName;
+    [Persistent] public string engineID;
 
     public FloatCurve eventCurve = new();
     [Persistent] public float eventDuration = 1f;
     private ModuleEngines engineModule;
+    private MultiModeEngine multiEngine;
 
     private Func<ModuleEngines, bool> getEngineStateFunc; // when the result of this function transitions from false -> true, the event should fire
     private bool  eventPlaying;
@@ -25,7 +25,7 @@ namespace Waterfall
     private static readonly Dictionary<string, Func<ModuleEngines, bool>> EngineStateFuncs = new()
     {
       { "flameout", (engineModule) => engineModule.flameout || !engineModule.EngineIgnited},
-      { "ignition", (engineModule) => engineModule.EngineIgnited},
+      { "ignition", (engineModule) => engineModule.EngineIgnited}
     };
 
     public EngineEventController() : base() { }
@@ -47,12 +47,16 @@ namespace Waterfall
 
       values = new float[1];
 
-      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == host.engineID);
+      engineModule = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineModule == null)
+      {
+        Utils.Log($"[EngineEventController] Could not find engine ID {engineID}, using first module", LogType.Effects);
         engineModule = host.part.FindModuleImplementing<ModuleEngines>();
-
-      if (engineModule == null)
-        Utils.LogError($"[EngineEventController] Could not find engine module for waterfall moduleID '{host.moduleID}' engine '{host.engineID}' in part '{host.part.name}' on Initialize");
+      }
+      multiEngine = host.GetComponent<MultiModeEngine>();
+      if (multiEngine == null)
+      {
+      }
 
       EngineStateFuncs.TryGetValue(eventName, out getEngineStateFunc);
 
@@ -83,7 +87,7 @@ namespace Waterfall
         /// Check if engine state flipped
         if (getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} fired", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} fired on {engineID}", LogType.Effects);
           eventReady   = false;
           eventPlaying = true;
           eventTime    = TimeWarp.deltaTime;
@@ -101,7 +105,7 @@ namespace Waterfall
         // Check to see if event can be reset
         if (!getEngineStateFunc(engineModule))
         {
-          Utils.Log($"[EngineEventController] {eventName} ready", LogType.Modifiers);
+          Utils.Log($"[EngineEventController] {eventName} ready on {engineID}", LogType.Effects);
           eventReady = true;
         }
       }

@@ -4,6 +4,7 @@ namespace Waterfall
 {
   public static class WaterfallConstants
   {
+
     public static string LegacyControllerNodeName = "CONTROLLER";
     public static string TemplateLibraryNodeName  = "EFFECTTEMPLATE";
     public static string TemplateNodeName         = "TEMPLATE";
@@ -13,10 +14,15 @@ namespace Waterfall
     public static string LightNodeName            = "LIGHT";
     public static string FloatNodeName            = "FLOAT";
     public static string ColorNodeName            = "COLOR";
+    public static string Vector2NodeName          = "VECTOR2";
+    public static string RangeNodeName            = "RANGE";
     public static string Vector4NodeName          = "VECTOR4";
     public static string TextureNodeName          = "TEXTURE";
+    public static string ParticleNodeName         = "PARTICLE";
+    public static string NumericParticleNodeName  = "PARTICLE_NUMERIC";
+    public static string ColorParticleNodeName    = "PARTICLE_COLOR";
 
-
+    /// Modifiers
     public static string ColorModifierNodeName    = "COLORMODIFIER";
     public static string FloatModifierNodeName    = "FLOATMODIFIER";
     public static string UVScrollModifierNodeName = "UVOFFSETMODIFIER";
@@ -28,7 +34,27 @@ namespace Waterfall
     public static string LightFloatModifierNodeName = "LIGHTFLOATMODIFIER";
     public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
 
+    public static string ParticleRangeModifierNodeName = "PARTICLERANGEMODIFIER";
+    public static string ParticleFloatModifierNodeName = "PARTICLEFLOATMODIFIER";
+    public static string ParticleColorModifierNodeName = "PARTICLECOLORMODIFIER";
+
+    /// Asset Library Nodes
+    public static string ShaderAssetNodeName = "WATERFALL_SHADER";
+    public static string ModelAssetNodeName = "WATERFALL_MODEL";
+    public static string TextureAssetNodeName = "WATERFALL_TEXTURE";
+    public static string ParticleAssetNodeName = "WATERFALL_PARTICLE";
+    public static string ShaderPropertyNodeName = "WATERFALL_SHADER_PARAM";
+    public static string ParticlePropertyNodeName = "WATERFALL_PARTICLE_PARAM";
+
     public static string[] ShaderPropertyHideFloatNames = { "_Brightness", "_Intensity", "_Strength" };
+
+    public static string ParticleParamNameStartSpeed = "StartSpeed";
+    public static string ParticleParamNameStartSize = "StartSize";
+    public static string ParticleParamNameStartLifetime = "StartLifetime";
+    public static string ParticleParamNameEmissionRate = "EmissionRate";
+    public static string ParticleParamNameMaxParticles = "MaxParticles";
+    public static string ParticleParamNameEmissionVolumeLength = "EmissionVolumeLength";
+    public static string ParticleParamNameEmissionVolumeRadius = "EmissionVolumeRadius";
 
     public static Dictionary<string, MaterialData> ShaderPropertyMapOlfd = new()
     {
@@ -72,5 +98,9 @@ namespace Waterfall
       ["_Blur"]             = new(WaterfallMaterialPropertyType.Float, new(0f, 5f)),
       ["_Swirl"]            = new(WaterfallMaterialPropertyType.Float, new(0f, 5f))
     };
+
+    
+
+
   }
 }

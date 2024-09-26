@@ -7,20 +7,24 @@ namespace Waterfall
 {
   public class WaterfallModel
   {
+
     public string path;
+    public string asset;
     public string positionOffsetString;
     public string rotationOffestString;
     public string scaleOffsetString;
 
-    public string                  overrideShader = "";
+
+    public string overrideShader = "";
     public List<WaterfallMaterial> materials;
-    public List<WaterfallLight>    lights;
+    public List<WaterfallLight> lights;
+    public List<WaterfallParticle> particles;
 
 
     public List<Transform> modelTransforms;
-    public Vector3         modelPositionOffset = Vector3.zero;
-    public Vector3         modelRotationOffset = Vector3.zero;
-    public Vector3         modelScaleOffset    = Vector3.one;
+    public Vector3 modelPositionOffset = Vector3.zero;
+    public Vector3 modelRotationOffset = Vector3.zero;
+    public Vector3 modelScaleOffset = Vector3.one;
 
     protected bool randomized = true;
 
@@ -32,19 +36,29 @@ namespace Waterfall
     public WaterfallModel(string modelPath, string shader, bool randomizeSeed)
     {
       modelTransforms = new();
-      path            = modelPath;
-      overrideShader  = shader;
-      randomized      = randomizeSeed;
+      path = modelPath;
+      overrideShader = shader;
+      randomized = randomizeSeed;
     }
 
-    public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, bool randomizeSeed)
+    public WaterfallModel(WaterfallAsset modelAsset, WaterfallAsset shaderAsset, WaterfallAsset particleAsset, bool randomizeSeed)
     {
+
       modelTransforms = new();
-      path            = modelAsset.Path;
+      path = modelAsset.Path;
+      if (particleAsset != null)
+      {
+        asset = particleAsset.Asset;
+      }
+
       if (shaderAsset == null)
+      {
         overrideShader = null;
+      }
       else
+      {
         overrideShader = shaderAsset.Name;
+      }
       randomized = randomizeSeed;
     }
 
@@ -59,7 +73,7 @@ namespace Waterfall
         Utils.LogError("[WaterfallModel]: Unabled to find required path string in MODEL node");
       node.TryGetValue("positionOffset", ref modelPositionOffset);
       node.TryGetValue("rotationOffset", ref modelRotationOffset);
-      node.TryGetValue("scaleOffset",    ref modelScaleOffset);
+      node.TryGetValue("scaleOffset", ref modelScaleOffset);
 
       materials = new();
       foreach (var materialNode in node.GetNodes(WaterfallConstants.MaterialNodeName))
@@ -72,26 +86,34 @@ namespace Waterfall
       {
         lights.Add(new(lightNode));
       }
+
+      particles = new List<WaterfallParticle>();
+      foreach (ConfigNode pNode in node.GetNodes(WaterfallConstants.ParticleNodeName))
+      {
+        particles.Add(new WaterfallParticle(pNode));
+      }
     }
 
     public ConfigNode Save()
     {
       var node = new ConfigNode();
       node.name = WaterfallConstants.ModelNodeName;
-      node.AddValue("path",           path);
+      node.AddValue("path", path);
       node.AddValue("positionOffset", modelPositionOffset);
       node.AddValue("rotationOffset", modelRotationOffset);
-      node.AddValue("scaleOffset",    modelScaleOffset);
+      node.AddValue("scaleOffset", modelScaleOffset);
       foreach (var m in materials)
       {
         node.AddNode(m.Save());
       }
-
       foreach (var l in lights)
       {
         node.AddNode(l.Save());
       }
-
+      foreach (var p in particles)
+      {
+        node.AddNode(p.Save());
+      }
       return node;
     }
 
@@ -109,29 +131,25 @@ namespace Waterfall
 
       modelTransform.SetParent(parent, true);
 
-      //modelTransform.localScale = modelScaleOffset;
-      //modelTransform.localPosition = modelPositionOffset;
-
-      //if (modelRotationOffset == Vector3.zero)
-      //  modelTransform.localRotation = Quaternion.identity;
-      //else
-      //  modelTransform.localEulerAngles = modelRotationOffset;
-      //Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
+      // Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
 
       modelTransforms.Add(modelTransform);
 
       var renderers = modelTransform.GetComponentsInChildren<Renderer>();
       var lightObjs = modelTransform.GetComponentsInChildren<Light>();
+      var particleSystems = modelTransform.GetComponentsInChildren<ParticleSystem>();
 
       if (fromNothing)
       {
         materials = new();
-        lights    = new();
+        lights = new();
+        particles = new();
+
 
         if (lightObjs.Length > 0)
         {
           var l = new WaterfallLight();
-          l.lights        = new();
+          l.lights = new();
           l.transformName = lightObjs[0].name;
           lights.Add(l);
         }
@@ -142,9 +160,30 @@ namespace Waterfall
           if (overrideShader != null)
             m.shaderName = overrideShader;
           m.useAutoRandomization = randomized;
-          m.materials            = new();
-          m.transformName        = r.transform.name;
+          m.materials = new();
+          m.transformName = r.transform.name;
           materials.Add(m);
+        }
+        // Need to reinstantiate
+        if (asset != null && asset != "")
+        {
+          GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(asset),
+            Vector3.zero, Quaternion.identity) as GameObject;
+
+          go.transform.SetParent(modelTransform);
+          go.transform.localPosition = Vector3.zero;
+          go.transform.localScale = Vector3.one;
+          go.transform.localRotation = Quaternion.identity;
+
+          particleSystems = modelTransform.GetComponentsInChildren<ParticleSystem>();
+          Utils.Log(String.Format("[WaterfallModel]: Generating particle systems for {0} systems ", particleSystems), LogType.Effects);
+          foreach (var p in particleSystems)
+          {
+            WaterfallParticle wfP = new WaterfallParticle();
+            wfP.transformName = p.transform.name;
+            wfP.systems = new();
+            particles.Add(wfP);
+          }            
         }
       }
 
@@ -153,10 +192,14 @@ namespace Waterfall
         m.useAutoRandomization = randomized;
         m.Initialize(modelTransform);
       }
-
       foreach (var l in lights)
       {
         l.Initialize(modelTransform);
+      }
+      foreach (var p in particles)
+      {
+        Utils.Log(String.Format("[WaterfallModel]: Initializing system {0} ", p.transformName), LogType.Effects);
+        p.Initialize(modelTransform);
       }
 
       ApplyOffsets(modelPositionOffset, modelRotationOffset, modelScaleOffset);
@@ -174,18 +217,18 @@ namespace Waterfall
     {
       modelPositionOffset = position;
       modelRotationOffset = rotation;
-      modelScaleOffset    = scale;
+      modelScaleOffset = scale;
 
       Utils.Log($"[WaterfallModel] Applying model offsets {position}, {rotation}, {scale}", LogType.Effects);
 
       positionOffsetString = $"{position.x}, {position.y}, {position.z}";
       rotationOffestString = $"{rotation.x}, {rotation.y}, {rotation.z}";
-      scaleOffsetString    = $"{scale.x}, {scale.y}, {scale.z}";
+      scaleOffsetString = $"{scale.x}, {scale.y}, {scale.z}";
 
       foreach (var modelTransform in modelTransforms)
       {
         modelTransform.localPosition = modelPositionOffset;
-        modelTransform.localScale    = modelScaleOffset;
+        modelTransform.localScale = modelScaleOffset;
 
         if (modelRotationOffset == Vector3.zero)
         {
@@ -207,8 +250,8 @@ namespace Waterfall
         {
           renderer.enabled = state;
         }
-
         var renderers = modelTransform.GetComponentsInChildren<Renderer>();
+
       }
     }
 
@@ -451,5 +494,6 @@ namespace Waterfall
         }
       }
     }
+   
   }
 }

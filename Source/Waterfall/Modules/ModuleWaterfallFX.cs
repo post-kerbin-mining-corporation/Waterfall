@@ -337,24 +337,6 @@ namespace Waterfall
     public string GetModuleTitle() => "";
 
     public override string GetInfo() => "";
-
-    private static readonly float[] EmptyControllerResult = new float[1];
-
-    /// <summary>
-    ///   Gets the value of the requested controller by name
-    /// </summary>
-    /// <param name="controllerName"></param>
-    /// <returns></returns>
-    public float[] GetControllerValues(string controllerName)
-    {
-      if (allControllers.TryGetValue(controllerName, out var controller))
-        return controller.Get();
-      else
-      {
-        return EmptyControllerResult;
-      }
-    }
-
     /// <summary>
     ///   Gets the list of controllers
     /// </summary>

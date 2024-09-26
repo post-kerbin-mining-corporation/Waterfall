@@ -191,7 +191,13 @@ namespace Waterfall.UI.EffectControllersUI
 
     private void UpdateControllerSelection()
     {
-      selectedControllerIndex = GUILayout.SelectionGrid(selectedControllerIndex, controllersGridValues, Mathf.Min(controllersGridValues.Length, 4), UIResources.GetStyle("radio_text_button"));
+      int newControllerIndex = GUILayout.SelectionGrid(selectedControllerIndex, controllersGridValues, Mathf.Min(controllersGridValues.Length, 4), UIResources.GetStyle("radio_text_button"));
+      if (newControllerIndex != selectedControllerIndex)
+      {
+        selectedControllerIndex = newControllerIndex;
+        var options = controllerOptions[selectedControllerIndex];
+        options.DefaultOptions(fxMod);
+      }
     }
 
     private WaterfallController CreateNewController()
