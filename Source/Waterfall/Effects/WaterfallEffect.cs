@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UniLinq;
 using Unity.Profiling;
 using UnityEngine;
@@ -460,10 +461,14 @@ namespace Waterfall
     }
 
     private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
+
     public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
     {
       camerasProf.Begin();
       var c = camera.transform;
+      Vector3 cameraForward = c.forward;
+      Vector3 cameraPosition = c.position;
+      float queueScalar = Settings.QueueDepth / Settings.SortedDepth;
       foreach (var renderer in renderers)
       {
         if (!renderer.enabled) continue;
@@ -474,9 +479,10 @@ namespace Waterfall
           qDelta = Settings.DistortQueue;
         else
         {
-          float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
-          float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
-          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
+          Vector3 closestPoint = renderer.bounds.ClosestPoint(cameraPosition);
+          Vector3 toClosestPoint = closestPoint - cameraPosition;
+          float camDist = Vector3.Dot(toClosestPoint, cameraForward);
+          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(camDist * queueScalar, 0, Settings.QueueDepth);
         }
         if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
