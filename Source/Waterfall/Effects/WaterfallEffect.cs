@@ -474,16 +474,11 @@ namespace Waterfall
         if (!renderer.enabled) continue;
         Material mat = renderer.material;
 
-        int qDelta;
-        if (mat.HasProperty(ShaderPropertyID._Strength))
-          qDelta = Settings.DistortQueue;
-        else
-        {
-          Vector3 closestPoint = renderer.bounds.ClosestPoint(cameraPosition);
-          Vector3 toClosestPoint = closestPoint - cameraPosition;
-          float camDist = Vector3.Dot(toClosestPoint, cameraForward);
-          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(camDist * queueScalar, 0, Settings.QueueDepth);
-        }
+        Vector3 closestPoint = renderer.bounds.ClosestPoint(cameraPosition);
+        Vector3 toClosestPoint = closestPoint - cameraPosition;
+        float camDist = Vector3.Dot(toClosestPoint, cameraForward);
+        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(camDist * queueScalar, 0, Settings.QueueDepth);
+
         if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;

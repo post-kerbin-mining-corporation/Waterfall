@@ -32,6 +32,7 @@ namespace Waterfall
     protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
     protected readonly List<Renderer> allRenderers = new(128);
+    protected bool refreshRenderers = true;
 
     protected bool started;
     private bool isHDR;
@@ -75,9 +76,32 @@ namespace Waterfall
 
     private void GatherRenderers()
     {
-      if (allRenderers.Count == 0)
+      if (refreshRenderers)
+      {
+        allRenderers.Clear();
         foreach (var fx in activeFX)
-          allRenderers.AddUniqueRange(fx.effectRenderers);
+        {
+          foreach (var renderer in fx.effectRenderers)
+          {
+            Material mat = renderer.material;
+            int qDelta;
+            // distortion effects get a constant renderqueue value, so they don't need to be sorted
+            if (mat.HasProperty(ShaderPropertyID._Strength))
+            {
+              qDelta = Settings.DistortQueue;
+              if (mat.HasProperty(ShaderPropertyID._Intensity))
+                qDelta += 1;
+              mat.renderQueue = Settings.TransparentQueueBase + qDelta;
+            }
+            else
+            {
+              allRenderers.AddUnique(renderer);
+            }
+          }
+        }
+
+        refreshRenderers = false;
+      }
     }
 
     private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
@@ -358,7 +382,7 @@ namespace Waterfall
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting controller", LogType.Modules);
       allControllers.Remove(toRemove.name);
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     public void AddEffect(WaterfallEffect newEffect)
@@ -389,7 +413,7 @@ namespace Waterfall
       {
         activeFX.Add(effect);
       }
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     public void RemoveEffect(WaterfallEffect toRemove)
@@ -409,7 +433,7 @@ namespace Waterfall
       }
 
       allFX.Remove(toRemove);
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     /// <summary>
@@ -493,7 +517,7 @@ namespace Waterfall
           activeFX.Add(fx);
         }
       }
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     protected void CleanupEffects()
