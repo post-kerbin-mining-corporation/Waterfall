@@ -909,7 +909,29 @@ namespace Waterfall
           break;
       }
     }
+    /// <summary>
+    /// Get a list of all the valid particle properties on a type. Properties must belong to an ENABLED module
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="propType"></param>
+    /// <returns></returns>
+    public static List<string> FindValidParticlePropeties(ParticleSystem s, WaterfallParticlePropertyType propType)
+    {
+      List<string> validProps = new();
+      foreach (var mProp in WaterfallParticleLoader.GetParticlePropertyMap())
+      {
+        if (mProp.Value.type == propType)
+        {
+          if (GetParticleModuleState(mProp.Value.name, s))
+          {
+            validProps.Add(mProp.Key);
+          }
+        }        
+      }
+      return validProps;
+    }
   }
+
 
   public enum WaterfallParticleParameterMode
   {

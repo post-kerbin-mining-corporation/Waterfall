@@ -26,6 +26,23 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Awake fired");
+
+      gameObject.layer = 5;
+      gameObject.AddComponent<RectTransform>();
+
+			var canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
+      canvasRenderer.cullTransparentMesh = true;
+      var image = gameObject.AddComponent<UnityEngine.UI.Image>();
+      image.color = new Color(0, 0, 0, 0);
+      image.raycastTarget = true;
+
+      gameObject.transform.SetParent(MainCanvasUtil.MainCanvas.transform, false);
+
+      // Ensure the RectTransform is anchored to the top-left of the screen
+      var rectTransform = transform as RectTransform;
+      rectTransform.anchorMin = new Vector2(0, 0);
+      rectTransform.anchorMax = new Vector2(0, 0);
+      rectTransform.pivot = new Vector2(0, 0);
     }
 
     protected virtual void Start()
@@ -39,6 +56,10 @@ namespace Waterfall.UI
       if (Event.current.type == EventType.Repaint || Event.current.isMouse) { }
 
       Draw();
+
+      var rectTransform = transform as RectTransform;
+      rectTransform.anchoredPosition = new Vector2(windowPos.x, Screen.height - windowPos.y - windowPos.height);
+      rectTransform.sizeDelta = new Vector2(windowPos.width, windowPos.height);
     }
 
     /// <summary>

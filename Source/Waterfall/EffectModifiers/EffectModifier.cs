@@ -141,6 +141,8 @@ namespace Waterfall
         }
         else target.AddModifier(this);
         integrator = target;
+
+
       } else 
       {
         Utils.LogWarning($"[EffectModifier]: Controller {controllerName} is null and will not be added to the integrator list");
@@ -149,7 +151,10 @@ namespace Waterfall
 
     public void RemoveFromIntegrator<T>(List<T> integrators) where T : EffectIntegrator
     {
-      integrator.RemoveModifier(this);
+      if (integrator != null)
+      {
+        integrator.RemoveModifier(this);
+      }
       // It would be nice to remove the integrator from the list if it no longer has any modifiers.
       // However, that might leave weird values in the effect/light/transform that could get picked up as the initial values if the integrator gets recreated.
       // We could try and force a final update on the integrator when removing it, but some of them have no effect if the renderer is disabled.

@@ -16,7 +16,7 @@ namespace Waterfall
     [Persistent] public string name = "unnamedController";
 
     public ModuleWaterfallFX ParentModule => parentModule;
-
+    public bool Sleeping { get; private set; }
     public bool overridden
     {
       get { return _overridden; }
@@ -41,6 +41,7 @@ namespace Waterfall
         }
       }
     }
+    
     protected bool _overridden;
     protected float _overrideValue;
 

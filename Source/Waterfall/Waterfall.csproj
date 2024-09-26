@@ -96,6 +96,9 @@
     <Reference Include="$(ManagedPath)\UnityEngine.UI.dll">
       <Private>False</Private>
     </Reference>
+    <Reference Include="$(ManagedPath)\UnityEngine.UIModule.dll">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetLibrary\AssetLibraries.cs" />
@@ -171,6 +174,7 @@
     <Compile Include="UI\EffectControllersUI\VelocityControllerUIOptions.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleMultiNumericModifierWindow.cs" />
     <Compile Include="UI\TextureUtils.cs" />
     <Compile Include="UI\EditWindows\UIColorPickerWindow.cs" />
     <Compile Include="UI\UICopy.cs" />

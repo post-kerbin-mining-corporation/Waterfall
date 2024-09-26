@@ -198,7 +198,42 @@ namespace Waterfall
       }
     }
 
-   
+    protected static void Integrate(EffectModifierMode mode, MultiNumericData[] items, MultiNumericData[] modifiers)
+    {
+      int count = Math.Min(items.Length, modifiers.Length);
+      switch (mode)
+      {
+        case EffectModifierMode.REPLACE:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] = modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.MULTIPLY:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] *= modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.ADD:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] += modifiers[i];
+          }
+          break;
+
+        case EffectModifierMode.SUBTRACT:
+          for (int i = 0; i < count; i++)
+          {
+            items[i] -= modifiers[i];
+          }
+          break;
+
+      }
+    }
+
 
     protected static readonly ProfilerMarker s_ListPrep = new ProfilerMarker("Waterfall.Integrator.ListPrep");
     protected static readonly ProfilerMarker s_Modifiers = new ProfilerMarker("Waterfall.Integrator.Modifiers");
