@@ -470,7 +470,7 @@ namespace Waterfall
         Material mat = renderer.material;
 
         int qDelta;
-        if (mat.HasProperty("_Strength"))
+        if (mat.HasProperty(ShaderPropertyID._Strength))
           qDelta = Settings.DistortQueue;
         else
         {
@@ -478,7 +478,7 @@ namespace Waterfall
           float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
           qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
         }
-        if (mat.HasProperty("_Intensity"))
+        if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;
       }
@@ -491,10 +491,10 @@ namespace Waterfall
 
       foreach (var mat in effectRendererMaterials)
       {
-        if (mat.HasProperty("_DestMode"))
+        if (mat.HasProperty(ShaderPropertyID._DestMode))
         {
-          mat.SetFloat("_DestMode", isHDR ? 1 : destMode);
-          mat.SetFloat("_ClipBrightness", isHDR ? 50: 1);
+          mat.SetFloat(ShaderPropertyID._DestMode, isHDR ? 1 : destMode);
+          mat.SetFloat(ShaderPropertyID._ClipBrightness, isHDR ? 50: 1);
         }
       }
     }

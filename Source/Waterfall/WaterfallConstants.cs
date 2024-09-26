@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Waterfall
 {
@@ -100,5 +101,14 @@ namespace Waterfall
     
 
 
+  }
+
+  public static class ShaderPropertyID
+  {
+    public static readonly int _Strength = Shader.PropertyToID(nameof(_Strength));
+    public static readonly int _Intensity = Shader.PropertyToID(nameof(_Intensity));
+    public static readonly int _DestMode = Shader.PropertyToID(nameof(_DestMode));
+    public static readonly int _ClipBrightness = Shader.PropertyToID(nameof(_ClipBrightness));
+    public static readonly int _Seed = Shader.PropertyToID(nameof(_Seed));
   }
 }
