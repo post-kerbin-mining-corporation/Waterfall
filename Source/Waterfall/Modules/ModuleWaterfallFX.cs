@@ -29,6 +29,7 @@ namespace Waterfall
 
     protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
     protected readonly List<WaterfallEffect> allFX = new(16);
+    protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
     protected readonly List<Renderer> allRenderers = new(128);
 
@@ -75,7 +76,7 @@ namespace Waterfall
     private void GatherRenderers()
     {
       if (allRenderers.Count == 0)
-        foreach (var fx in allFX)
+        foreach (var fx in activeFX)
           allRenderers.AddUniqueRange(fx.effectRenderers);
     }
 
@@ -108,8 +109,9 @@ namespace Waterfall
         {
           bool effectsAwake = false;
           luEffects.Begin();
-          foreach (var fx in allFX)
+          for (int fxIndex = 0; fxIndex < activeFX.Count; ++fxIndex)
           {
+            var fx = activeFX[fxIndex];
             effectsAwake = fx.Update() || effectsAwake;
             if (changeHDR)
               fx.SetHDR(isHDR);
@@ -383,7 +385,10 @@ namespace Waterfall
       }
 
       allFX.Add(effect);
-      effect.InitializeEffect(this, fromNothing, useRelativeScaling);
+      if (effect.InitializeEffect(this, fromNothing, useRelativeScaling))
+      {
+        activeFX.Add(effect);
+      }
       allRenderers.Clear();
     }
 
@@ -479,10 +484,14 @@ namespace Waterfall
     protected void InitializeEffects()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing Effects", LogType.Modules);
+      activeFX.Clear();
       foreach (var fx in allFX)
       {
         Utils.Log($"[ModuleWaterfallFX]: Initializing effect {fx.name}");
-        fx.InitializeEffect(this, false, useRelativeScaling);
+        if (fx.InitializeEffect(this, false, useRelativeScaling))
+        {
+          activeFX.Add(fx);
+        }
       }
       allRenderers.Clear();
     }
