@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Waterfall
 {
+  // TODO: Refactor all of this to be faster. Can get it down in a lot of ways probably
+  // Also there's tons of boilerplate and switch statements
   public static class ParticleUtils
   {
     // GETTERS
@@ -13,6 +15,7 @@ namespace Waterfall
         result = 0f;
         return;
       }
+      result = 0f;
       switch (paramName)
       {
         case "MaxParticles":
@@ -32,6 +35,12 @@ namespace Waterfall
           break;
         case "EmissionRateTime":
           result = system.emission.rateOverTime.constant;
+          break;
+        case "EmissionRateBurst":
+          if (system.emission.burstCount > 0)
+          {
+            result = system.emission.GetBurst(0).count.constant;
+          }
           break;
         case "EmissionVolumeLength":
           result = system.shape.length;
@@ -345,6 +354,10 @@ namespace Waterfall
 
       switch (paramName)
       {
+        case "EmissionRateBurst":
+          return system.emission.enabled;
+        case "EmissionRateTime":
+          return system.emission.enabled;
         case "LimitVelocityMaxSpeed":
           return system.limitVelocityOverLifetime.enabled;
         case "LimitVelocityDamping":
@@ -447,7 +460,7 @@ namespace Waterfall
       ParticleSystem.VelocityOverLifetimeModule particleVelocity = system.velocityOverLifetime;
       ParticleSystem.LimitVelocityOverLifetimeModule particleLimitVelocity = system.limitVelocityOverLifetime;
 
-      ParticleSystem.MinMaxCurve paramCurve = new ParticleSystem.MinMaxCurve(paramValue);
+      ParticleSystem.MinMaxCurve paramCurve = new(paramValue);
 
       switch (paramName)
       {
@@ -468,6 +481,12 @@ namespace Waterfall
           break;
         case "EmissionRateTime":
           particleEmit.rateOverTime = paramCurve;
+          break;
+        case "EmissionRateBurst":
+          if (particleEmit.burstCount > 0)
+          {
+            particleEmit.SetBursts(new ParticleSystem.Burst[] { new (0.0f, paramValue)});
+          }
           break;
         case "EmissionVolumeLength":
           particleShape.length = paramValue;
@@ -871,6 +890,8 @@ namespace Waterfall
       if (system == null)
         return;
 
+      ParticleSystem.EmissionModule particleEmit = system.emission;
+
       ParticleSystem.ForceOverLifetimeModule particleForce = system.forceOverLifetime;
       ParticleSystem.RotationOverLifetimeModule particleRotation = system.rotationOverLifetime;
       ParticleSystem.SizeOverLifetimeModule particleSize = system.sizeOverLifetime;
@@ -878,6 +899,12 @@ namespace Waterfall
       ParticleSystem.ColorOverLifetimeModule particleColor = system.colorOverLifetime;
       switch (paramName)
       {
+        case "EmissionRateBurst":
+          particleEmit.enabled = state;
+          break;
+        case "EmissionRateTime":
+          particleEmit.enabled = state;
+          break;
         case "LimitVelocityMaxSpeed":
           particleLimitVelocity.enabled = state;
           break;

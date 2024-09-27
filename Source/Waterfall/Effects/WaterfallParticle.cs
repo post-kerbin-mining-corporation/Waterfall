@@ -75,6 +75,7 @@ namespace Waterfall
         if (targetParticleSystem != null)
         {
           systems.Add(targetParticleSystem);
+          targetParticleSystem.Play();
         }
       }
       foreach (var p in pProperties)

@@ -15,7 +15,10 @@ namespace Waterfall.UI
     private Gradient currentGradient1 = new();
     private float lower1 = 0f;
     private float upper1 = 1f;
-    float gain2;
+
+    private Gradient currentGradient2 = new();
+    private float lower2 = 0f;
+    private float upper2 = 1f;
 
     public string paramName = "_TintColor";
     private int paramIndex;
@@ -23,6 +26,7 @@ namespace Waterfall.UI
     public EffectParticleMultiColorModifier particleMod;
 
     protected readonly GradientUpdateFunction gradient1Function;
+    protected readonly GradientUpdateFunction gradient2Function;
     public UIParticleMultiColorModifierWindow(EffectParticleMultiColorModifier mod, bool show) : base(mod, show)
     {
       particleMod = mod;
@@ -30,8 +34,10 @@ namespace Waterfall.UI
       paramNames = ParticleUtils.FindValidParticlePropeties(particleMod.GetParticleSystem(), WaterfallParticlePropertyType.Color).ToArray();
       paramIndex = paramNames.ToList().FindIndex(x => x == particleMod.paramName);
       gradient1Function = UpdateGradient1;
+      gradient2Function = UpdateGradient2;
 
       currentGradient1 = Utils.CreateGradientFromCurves(particleMod.c1RedCurve, particleMod.c1GreenCurve, particleMod.c1BlueCurve, particleMod.c1AlphaCurve, out lower1, out upper1);
+      currentGradient2 = Utils.CreateGradientFromCurves(particleMod.c2RedCurve, particleMod.c2GreenCurve, particleMod.c2BlueCurve, particleMod.c2AlphaCurve, out lower2, out upper2);
       GenerateThumbs(mod);
     }
 
@@ -86,7 +92,31 @@ namespace Waterfall.UI
       }
       if (particleMod.curveMode == ParticleSystemGradientMode.TwoColors)
       {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Controller Value vs Low Color", GUILayout.Width(hdrWidth));
+        GUILayout.FlexibleSpace();
 
+        var buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y, GUILayout.Width(125));
+        var imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
+        if (GUI.Button(buttonRect, ""))
+        {
+          EditGradient(currentGradient1, gradient1Function, lower1, upper1);
+        }
+        GUI.DrawTexture(imageRect, gradientTexture1);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Controller Value vs High Color", GUILayout.Width(hdrWidth));
+        GUILayout.FlexibleSpace();
+
+        buttonRect = GUILayoutUtility.GetRect(curveButtonDims.x, curveButtonDims.y, GUILayout.Width(125));
+        imageRect = new Rect(buttonRect.xMin + 10f, buttonRect.yMin + 10, buttonRect.width - 20, buttonRect.height - 20);
+        if (GUI.Button(buttonRect, ""))
+        {
+          EditGradient(currentGradient2, gradient2Function, lower2, upper2);
+        }
+        GUI.DrawTexture(imageRect, gradientTexture2);
+        GUILayout.EndHorizontal();
       }
       if (particleMod.curveMode == ParticleSystemGradientMode.Gradient)
       {
@@ -115,7 +145,14 @@ namespace Waterfall.UI
       Utils.CreateCurvesFromGradient(g, out particleMod.c1RedCurve, out particleMod.c1GreenCurve, out particleMod.c1BlueCurve, out particleMod.c1AlphaCurve, lower1, upper1);
       UpdateModifierPanel();
     }
-
+    protected void UpdateGradient2(Gradient g, float lower, float upper)
+    {
+      currentGradient2 = g;
+      lower2 = lower;
+      upper2 = upper;
+      Utils.CreateCurvesFromGradient(g, out particleMod.c2RedCurve, out particleMod.c2GreenCurve, out particleMod.c2BlueCurve, out particleMod.c2AlphaCurve, lower2, upper2);
+      UpdateModifierPanel();
+    }
 
     protected void GenerateThumbs(EffectParticleMultiColorModifier pMod)
     {
@@ -124,6 +161,12 @@ namespace Waterfall.UI
         texWidth,
         texHeight,
         currentGradient1);
+
+      gradientTexture2 = TextureUtils.GenerateGradientTexture(
+        texWidth,
+        texHeight,
+        currentGradient2);
+
 
     }
   }
