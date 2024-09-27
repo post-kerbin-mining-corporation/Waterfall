@@ -104,6 +104,32 @@ namespace Waterfall
       }
     }
 
+    private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
+    public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
+    {
+      camerasProf.Begin();
+      var c = camera.transform;
+      Vector3 cameraForward = c.forward;
+      Vector3 cameraPosition = c.position;
+      float queueScalar = Settings.QueueDepth / Settings.SortedDepth;
+      foreach (var renderer in renderers)
+      {
+        if (!renderer.enabled) continue;
+        Material mat = renderer.material;
+
+        // TODO: maybe use bounds.ClosestPoint here?
+        float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
+        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
+        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
+
+        // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
+        if (mat.HasProperty(ShaderPropertyID._Intensity))
+          qDelta += 1;
+        mat.renderQueue = Settings.TransparentQueueBase + qDelta;
+      }
+      camerasProf.End();
+    }
+
     private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
     private static readonly ProfilerMarker luControllers = new ProfilerMarker("Waterfall.LateUpdate.Controllers");
     private static readonly ProfilerMarker luEffects = new ProfilerMarker("Waterfall.LateUpdate.Effects");
@@ -147,7 +173,7 @@ namespace Waterfall
           }
 
           luEffects.End();
-          WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
+          SetupRenderersForCamera(camera, allRenderers);
         }
       }
     }
