@@ -46,6 +46,7 @@ namespace Waterfall
         {
           x_modulesWithAlphaBlendedShaders += value ? 1 : -1;
         }
+        _hasAlphaBlendedShaders = value;
       }
     }
 
@@ -122,7 +123,7 @@ namespace Waterfall
                 hasAdditiveShaders = true;
               }
 
-              allRenderers.AddUnique(renderer);
+              renderers.AddUnique(renderer);
             }
           }
         }
