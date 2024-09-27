@@ -64,6 +64,7 @@ namespace Waterfall
     {
       Utils.Log($"[Particles]: Loading {Path.GetFileNameWithoutExtension(bundlePath)}", LogType.Loading);
       var bundle = AssetBundle.LoadFromFile(bundlePath);
+      if (bundle == null) return;
       var systems = bundle.LoadAllAssets<GameObject>();
 
       foreach (var sys in systems)

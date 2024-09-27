@@ -85,6 +85,7 @@ namespace Waterfall
     {
       Utils.Log($"[Shaders]: Loading shaders from {Path.GetFileNameWithoutExtension(bundlePath)}", LogType.Loading);
       var bundle = AssetBundle.LoadFromFile(bundlePath);
+      if (bundle == null) return;
       var shaders = bundle.LoadAllAssets<Shader>();
       foreach (var shader in shaders)
       {

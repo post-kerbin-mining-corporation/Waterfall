@@ -34,6 +34,9 @@ namespace Waterfall
 
       template = WaterfallTemplates.GetTemplate(templateName);
       allFX.Clear();
+
+      if (template == null) return;
+
       foreach (var fx in template.allFX)
         allFX.Add(new(fx, this));
     }
