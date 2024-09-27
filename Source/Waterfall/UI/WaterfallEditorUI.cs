@@ -7,8 +7,7 @@ using Waterfall.UI.EffectControllersUI;
 
 namespace Waterfall.UI
 {
-  [KSPAddon(KSPAddon.Startup.Flight, false)]
-  public class WaterfallUI : UIAppToolbarWindow
+  public class WaterfallUI : UIBaseWindow
   {
     protected List<UIModifierWindow> editWindows = new();
     protected bool exportsOpen;

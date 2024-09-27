@@ -6,7 +6,7 @@ namespace Waterfall.UI
   public class UIBaseWindow : MonoBehaviour
   {
     // Control Vars
-    protected static bool showWindow;
+    public static bool showWindow;
     public           Rect windowPos = new(200f, 200f, 1000f, 400f);
     protected        bool initUI;
 
@@ -15,6 +15,7 @@ namespace Waterfall.UI
     private   Vector2     scrollPosition = Vector2.zero;
     protected int         windowID       = new Random(13123).Next();
 
+    UnityEngine.UI.Image image;
 
     public Rect WindowPosition
     {
@@ -30,9 +31,9 @@ namespace Waterfall.UI
       gameObject.layer = 5;
       gameObject.AddComponent<RectTransform>();
 
-			var canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
+      var canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
       canvasRenderer.cullTransparentMesh = true;
-      var image = gameObject.AddComponent<UnityEngine.UI.Image>();
+      image = gameObject.AddComponent<UnityEngine.UI.Image>();
       image.color = new Color(0, 0, 0, 0);
       image.raycastTarget = true;
 
@@ -60,6 +61,8 @@ namespace Waterfall.UI
       var rectTransform = transform as RectTransform;
       rectTransform.anchoredPosition = new Vector2(windowPos.x, Screen.height - windowPos.y - windowPos.height);
       rectTransform.sizeDelta = new Vector2(windowPos.width, windowPos.height);
+
+      image.enabled = showWindow;
     }
 
     /// <summary>

@@ -1,31 +1,38 @@
 ﻿using KSP.UI.Screens;
+using UnityEngine;
 
 namespace Waterfall.UI
 {
-  public class UIAppToolbarWindow : UIBaseWindow
+  [KSPAddon(KSPAddon.Startup.Flight, false)]
+  public class UIAppToolbarWindow : MonoBehaviour
   {
     // Stock toolbar button
-    protected static ApplicationLauncherButton stockToolbarButton;
+    protected ApplicationLauncherButton stockToolbarButton;
+    private Texture2D activeTexture;
+    private Texture2D inactiveTexture;
 
-    protected override void Awake()
+    private WaterfallUI waterfallUI;
+
+    void Awake()
     {
-      base.Awake();
       if (Settings.ShowEffectEditor)
       {
         GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
         GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGUIAppLauncherDestroyed);
+
+        activeTexture = GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_On, false);
+        inactiveTexture = GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false);
+
+        waterfallUI = new GameObject(nameof(WaterfallUI)).AddComponent<WaterfallUI>();
+      }
+      else
+      {
+        GameObject.Destroy(gameObject);
       }
     }
 
-    protected override void Start()
-    {
-      base.Start();
-      if (Settings.ShowEffectEditor && ApplicationLauncher.Ready)
-        OnGUIAppLauncherReady();
-    }
-
     // Stock toolbar handling methods
-    public void OnDestroy()
+    void OnDestroy()
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: OnDestroy Fired");
@@ -36,14 +43,18 @@ namespace Waterfall.UI
       {
         ApplicationLauncher.Instance.RemoveModApplication(stockToolbarButton);
       }
-    }
 
+      if (waterfallUI != null)
+      {
+        GameObject.Destroy(waterfallUI.gameObject.gameObject);
+      }
+    }
     protected void OnToolbarButtonToggle()
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Toolbar Button Toggled");
-      ToggleWindow();
-      stockToolbarButton.SetTexture(GameDatabase.Instance.GetTexture(showWindow ? UIConstants.UIApplicationButton_On : UIConstants.UIApplicationButton_Off, false));
+      UIBaseWindow.ToggleWindow();
+      stockToolbarButton.SetTexture(UIBaseWindow.showWindow ? activeTexture : inactiveTexture);
     }
 
 
@@ -61,7 +72,7 @@ namespace Waterfall.UI
                                                                             DummyVoid,
                                                                             DummyVoid,
                                                                             ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.FLIGHT,
-                                                                            GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
+                                                                            inactiveTexture);
       }
     }
 
@@ -80,7 +91,7 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: App Launcher Toggle Off");
-      stockToolbarButton.SetTexture(GameDatabase.Instance.GetTexture(UIConstants.UIApplicationButton_Off, false));
+      stockToolbarButton.SetTexture(inactiveTexture);
     }
 
     protected void DummyVoid() { }
