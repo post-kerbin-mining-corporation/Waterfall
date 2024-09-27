@@ -35,6 +35,7 @@ namespace Waterfall
     public static string LightColorModifierNodeName = "LIGHTCOLORMODIFIER";
 
     public static string ParticleNumericModifierNodeName = "PARTICLENUMERICMODIFIER";
+    public static string ParticleColorModifierNodeName = "PARTICLECOLORMODIFIER";
 
     /// Asset Library Nodes
     public static string ShaderAssetNodeName = "WATERFALL_SHADER";

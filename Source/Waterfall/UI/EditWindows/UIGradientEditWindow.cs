@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
-  public delegate void GradientUpdateFunction(Gradient gradient);
+  public delegate void GradientUpdateFunction(Gradient gradient, float lower, float upper);
 
   public class UIGradientEditWindow : UIPopupWindow
   {
@@ -56,12 +56,12 @@ namespace Waterfall.UI
     protected Vector2 keySize = new(10f, 20f);
 
 
-    public UIGradientEditWindow(Gradient gradToEdit, bool show) : base(show)
+    public UIGradientEditWindow(Gradient gradToEdit, float lower, float upper, bool show) : base(show)
     {
-      Utils.Log($"Started editing curve {gradToEdit}");
+      Utils.Log($"Started editing gradient {gradToEdit} with low={lower}, upper={upper}", LogType.UI);
 
-
-
+      lowerBound = lower;
+      upperBound = upper;
       WindowPosition = new(Screen.width / 2, Screen.height / 2, 500, 200);
       gradient = gradToEdit;
       CreateUIKeysFromGradient(gradient);
@@ -69,11 +69,14 @@ namespace Waterfall.UI
       UpdateGradient(out gradient);
     }
 
-    public UIGradientEditWindow(Gradient gradToEdit, GradientUpdateFunction gradientFun, bool show) : base(show)
+    public UIGradientEditWindow(Gradient gradToEdit, GradientUpdateFunction gradientFun, float lower, float upper, bool show) : base(show)
     {
       gradientUpdateFun = gradientFun;
-      Utils.Log($"Started editing curve {gradToEdit}");
+      Utils.Log($"Started editing gradient {gradToEdit} with low={lower}, upper={upper}", LogType.UI);
 
+
+      lowerBound = lower;
+      upperBound = upper;
       WindowPosition = new(Screen.width / 2, Screen.height / 2, 200, 200);
       gradient = gradToEdit;
 
@@ -95,10 +98,12 @@ namespace Waterfall.UI
         uiColorKeys.Add(new UIGradientColorKey(gradient.colorKeys[i], keySize, this));
       }
     }
-    public void ChangeGradient(Gradient gradientToEdit, GradientUpdateFunction gradFun)
+    public void ChangeGradient(Gradient gradientToEdit, GradientUpdateFunction gradFun, float lower, float upper)
     {
       gradientUpdateFun = gradFun;
-      Utils.Log($"Started editing gradient {gradientToEdit}", LogType.UI);
+      lowerBound = lower;
+      upperBound = upper;
+      Utils.Log($"Started editing gradient {gradientToEdit} with low={lower}, upper={upper}", LogType.UI);
       gradient = gradientToEdit;
       CreateUIKeysFromGradient(gradient);
       UpdateGradient(out gradient);
@@ -112,7 +117,8 @@ namespace Waterfall.UI
       theGradient = new();
       //theCurve.FindMinMaxValue(out minY, out maxY);
       gradient = theGradient;
-      gradientUpdateFun(gradient);
+      
+      gradientUpdateFun(gradient, lowerBound, upperBound);
       GenerateGradientTextures();
     }
 
@@ -478,7 +484,7 @@ namespace Waterfall.UI
         alphaKeys[i] = new GradientAlphaKey(uiAlphaKeys[i].alpha, uiAlphaKeys[i].time);
       }
       gradient.SetKeys(colorKeys, alphaKeys);
-      gradientUpdateFun(gradient);
+      gradientUpdateFun(gradient, lowerBound, upperBound);
       GenerateGradientTextures();
     }
     protected void DrawColorEditor()

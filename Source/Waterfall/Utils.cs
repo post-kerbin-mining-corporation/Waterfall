@@ -74,28 +74,51 @@ namespace Waterfall
       Debug.LogWarning(String.Format("[{0}]{1}", ModName, str));
     }
 
-    
-    public static Gradient CreateGradientFromCurves(FloatCurve r, FloatCurve g, FloatCurve b, FloatCurve a, float timeMergeTolerance = 0.01f)
+
+    public static Gradient CreateGradientFromCurves(FloatCurve r, FloatCurve g, FloatCurve b, FloatCurve a, out float lower, out float upper, float timeMergeTolerance = 0.01f)
     {
+
+      // Need to convert real space keys into gradient space keys (0-1)
       Keyframe[] redKeys = r.Curve.keys;
       Keyframe[] greenKeys = g.Curve.keys;
       Keyframe[] blueKeys = b.Curve.keys;
       Keyframe[] alphaKeys = a.Curve.keys;
 
-      float rCurveMax = redKeys[redKeys.Length - 1].time;
-      float rCurveMin = redKeys[0].time;
-      float gCurveMax = greenKeys[greenKeys.Length - 1].time;
-      float gCurveMin = greenKeys[0].time;
-      float bCurveMax = blueKeys[blueKeys.Length - 1].time;
-      float bCurveMin = blueKeys[0].time;
-      float aCurveMax = alphaKeys[alphaKeys.Length - 1].time;
-      float aCurveMin = alphaKeys[0].time;
+      float rCurveMax = 1f;
+      float rCurveMin = 0f;
+      float gCurveMax = 1f;
+      float gCurveMin = 0f;
+      float bCurveMax = 1f;
+      float bCurveMin = 0f;
+      float aCurveMax = 1f;
+      float aCurveMin = 0f;
 
-      float cMin = Mathf.Min(rCurveMin, gCurveMin, bCurveMin, aCurveMin);
-      float cMax = Mathf.Max(rCurveMax, gCurveMax, bCurveMax, aCurveMax);
+      if (r.Curve.length > 0)
+      {
+        rCurveMax = redKeys[redKeys.Length - 1].time;
+        rCurveMin = redKeys[0].time;
+      }
+      if (g.Curve.length > 0)
+      {
+        gCurveMax = greenKeys[greenKeys.Length - 1].time;
+        gCurveMin = greenKeys[0].time;
+      }
+      if (b.Curve.length > 0)
+      {
+        bCurveMax = blueKeys[blueKeys.Length - 1].time;
+        bCurveMin = blueKeys[0].time;
+      }
+      if (a.Curve.length > 0)
+      {
+        aCurveMax = alphaKeys[alphaKeys.Length - 1].time;
+        aCurveMin = alphaKeys[0].time;
+      }
 
-      float offset = 0 - cMin;
-      float gain = 1f / (cMax - offset);
+      lower = Mathf.Min(rCurveMin, gCurveMin, bCurveMin, aCurveMin);
+      upper = Mathf.Max(rCurveMax, gCurveMax, bCurveMax, aCurveMax);
+
+      float offset = 0 - lower;
+      float gain = 1f / (upper - offset);
 
       Gradient grad = new();
       List<GradientColorKey> gradientColorKeys = new List<GradientColorKey>();
@@ -104,7 +127,7 @@ namespace Waterfall
       for (int i = 0; i < redKeys.Length; i++)
       {
         float adjTime = (redKeys[i].time - offset) * gain;
-        GradientColorKey newKey = new (
+        GradientColorKey newKey = new(
           new Color(redKeys[i].value, g.Evaluate(redKeys[i].time), b.Evaluate(redKeys[i].time)),
           adjTime
           );
@@ -144,7 +167,7 @@ namespace Waterfall
 
         if (!skip)
         {
-          GradientColorKey newKey = new (
+          GradientColorKey newKey = new(
             new Color(r.Evaluate(blueKeys[i].time), g.Evaluate(blueKeys[i].time), blueKeys[i].value),
             adjTime
             );
@@ -153,12 +176,31 @@ namespace Waterfall
       }
       for (int i = 0; i < alphaKeys.Length; i++)
       {
-        gradientAlphaKeys[i] = new (alphaKeys[i].value, (alphaKeys[i].time - offset) * gain);
+        gradientAlphaKeys[i] = new(alphaKeys[i].value, (alphaKeys[i].time - offset) * gain);
       }
       grad.SetKeys(gradientColorKeys.ToArray(), gradientAlphaKeys);
       return grad;
     }
-
+    public static void CreateCurvesFromGradient(Gradient gradient, out FloatCurve r, out FloatCurve g, out FloatCurve b, out FloatCurve a, float lower = 0f, float upper = 1f)
+    {
+      /// Put 0-1 gradient keys into real space
+      float offset = 0 - lower;
+      float gain = 1f / (upper - offset);
+      r = new();
+      g = new();
+      b = new();
+      a = new();
+      foreach (GradientColorKey key in gradient.colorKeys)
+      {
+        r.Add(key.time * gain + offset, key.color.r);
+        g.Add(key.time * gain + offset, key.color.g);
+        b.Add(key.time * gain + offset, key.color.b);
+      }
+      foreach (GradientAlphaKey key in gradient.alphaKeys)
+      {
+        a.Add(key.time * gain + offset, key.alpha);
+      }
+    }
     public static ConfigNode SerializeFloatCurve(string name, FloatCurve curve)
     {
       ConfigNode node = new();
@@ -166,26 +208,13 @@ namespace Waterfall
       node.name = name;
       return node;
     }
-    public static ConfigNode SerializeGradient(string name, Gradient gradient, float scale)
+    public static ConfigNode SerializeGradient(string name, Gradient gradient, float lower = 0f, float upper = 1f)
     {
-      ConfigNode node = new();
-      FloatCurve r = new();
-      FloatCurve g = new();
-      FloatCurve b = new();
-      FloatCurve a = new();
-      node.name = name;
-      node.AddValue("timeScale", scale);
+      CreateCurvesFromGradient(gradient, out FloatCurve r, out FloatCurve g, out FloatCurve b, out FloatCurve a, lower, upper);
 
-      foreach (GradientColorKey key in gradient.colorKeys)
-      {
-        r.Add(key.time * scale, key.color.r);
-        g.Add(key.time * scale, key.color.g);
-        b.Add(key.time * scale, key.color.b);
-      }
-      foreach (GradientAlphaKey key in gradient.alphaKeys)
-      {
-        a.Add(key.time * scale, key.alpha);
-      }
+      ConfigNode node = new();
+      node.name = name;
+
       node.AddNode(SerializeFloatCurve("red", r));
       node.AddNode(SerializeFloatCurve("green", g));
       node.AddNode(SerializeFloatCurve("blue", b));
@@ -208,9 +237,6 @@ namespace Waterfall
     }
     public static bool TryParseGradient(this ConfigNode node, ref Gradient result)
     {
-      float timeScale = 1f;
-      node.TryGetValue("timeScale", ref timeScale);
-
       FloatCurve rCurve = new();
       FloatCurve gCurve = new();
       FloatCurve bCurve = new();
@@ -252,7 +278,7 @@ namespace Waterfall
       }
       if (!failed)
       {
-        result = Utils.CreateGradientFromCurves(rCurve, gCurve, bCurve, aCurve);
+        result = Utils.CreateGradientFromCurves(rCurve, gCurve, bCurve, aCurve, out float l, out float u); ;
       }
 
       return failed;

@@ -37,27 +37,31 @@ namespace Waterfall
     }
     public static MultiNumericData operator +(MultiNumericData a, MultiNumericData b)
     {
-      switch (a.mode)
+      return a.mode switch
       {
-        case ParticleSystemCurveMode.Constant:
-          return new(a.const1 + b.const1);
-        case ParticleSystemCurveMode.TwoConstants:
-          return new(a.const1 + b.const1, a.const2 + b.const2);
-        case ParticleSystemCurveMode.Curve:
-          return new(a.const1 + b.const1);
-        case ParticleSystemCurveMode.TwoCurves:
-          return new(a.const1 + b.const1);
-      }
-      return a;
+        ParticleSystemCurveMode.Constant => new(a.const1 + b.const1),
+        ParticleSystemCurveMode.TwoConstants => new(a.const1 + b.const1, a.const2 + b.const2),
+        _ => a,
+      };
     }
     public static MultiNumericData operator -(MultiNumericData a, MultiNumericData b)
     {
-      return new(a.const1 - b.const1);
+      return a.mode switch
+      {
+        ParticleSystemCurveMode.Constant => new(a.const1 - b.const1),
+        ParticleSystemCurveMode.TwoConstants => new(a.const1 - b.const1, a.const2 - b.const2),
+        _ => a,
+      };
     }
 
     public static MultiNumericData operator *(MultiNumericData a, MultiNumericData b)
     {
-      return new(a.const1 - b.const1);
+      return a.mode switch
+      {
+        ParticleSystemCurveMode.Constant => new(a.const1 * b.const1),
+        ParticleSystemCurveMode.TwoConstants => new(a.const1 * b.const1, a.const2 * b.const2),
+        _ => a,
+      };
     }
   }
   public class EffectParticleMultiNumericIntegrator : EffectIntegrator

@@ -22,7 +22,8 @@ namespace Waterfall.UI
       "Light Material Color", 
       "Light Float", 
       "Light Color", 
-      "Particle Numeric"
+      "Particle Numeric",
+      "Particle Color"
     };
     private          ModifierPopupMode windowMode;
     private          EffectModifier    modifier;
@@ -286,6 +287,14 @@ namespace Waterfall.UI
       if (modifierTypes[modifierFlag] == "Particle Numeric")
       {
         var newMod = new EffectParticleMultiNumericModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      if (modifierTypes[modifierFlag] == "Particle Color")
+      {
+        var newMod = new EffectParticleMultiColorModifier();
         newMod.fxName = newModifierName;
         newMod.transformName = transformOptions[transformFlag];
         newMod.controllerName = controllerTypes[controllerFlag];

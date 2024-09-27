@@ -11,12 +11,12 @@ namespace Waterfall.UI
   public class WaterfallUI : UIAppToolbarWindow
   {
     protected List<UIModifierWindow> editWindows = new();
-    protected bool                   exportsOpen;
+    protected bool exportsOpen;
 
     private string[] modulesString;
 
-    protected     bool        templatesOpen = false;
-    private       string[]    templatesString;
+    protected bool templatesOpen = false;
+    private string[] templatesString;
     public static WaterfallUI Instance { get; private set; }
 
     protected override void Awake()
@@ -28,10 +28,10 @@ namespace Waterfall.UI
     protected override void Start()
     {
       base.Start();
-      windowPos           = new(200f, 200f, 800f, 600f);
-      modelOffsetString   = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+      windowPos = new(200f, 200f, 800f, 600f);
+      modelOffsetString = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
       modelRotationString = new[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
-      modelScaleString    = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
+      modelScaleString = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       StartCoroutine(DelayedStart());
     }
 
@@ -59,7 +59,7 @@ namespace Waterfall.UI
         {
           selectedTemplate.position = modelOffset;
           selectedTemplate.rotation = modelRotation;
-          selectedTemplate.scale    = modelScale;
+          selectedTemplate.scale = modelScale;
         }
       }
     }
@@ -102,7 +102,7 @@ namespace Waterfall.UI
       {
         materialEditWindow.Draw();
       }
-      
+
       if (particleEditWindow != null)
       {
         particleEditWindow.Draw();
@@ -255,7 +255,7 @@ namespace Waterfall.UI
       {
         GUILayout.BeginHorizontal();
         GUILayout.Label("<b>Override</b>", GUILayout.Width(60));
-        GUILayout.Label("  <b>Name</b>",   GUILayout.Width(120));
+        GUILayout.Label("  <b>Name</b>", GUILayout.Width(120));
         GUILayout.FlexibleSpace();
         GUILayout.Space(140);
         if (GUILayout.Button("Add New"))
@@ -456,12 +456,12 @@ namespace Waterfall.UI
       {
         effectUIWidgets.Add(new(this, fx));
 
-        modelRotation       = fx.TemplateRotationOffset;
-        modelScale          = fx.TemplateScaleOffset;
-        modelOffset         = fx.TemplatePositionOffset;
-        modelOffsetString   = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+        modelRotation = fx.TemplateRotationOffset;
+        modelScale = fx.TemplateScaleOffset;
+        modelOffset = fx.TemplatePositionOffset;
+        modelOffsetString = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
         modelRotationString = new[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
-        modelScaleString    = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
+        modelScaleString = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
       }
     }
 
@@ -489,19 +489,19 @@ namespace Waterfall.UI
         {
           effectUIWidgets.Add(new(this, fx));
 
-          modelRotation       = fx.TemplateRotationOffset;
-          modelScale          = fx.TemplateScaleOffset;
-          modelOffset         = fx.TemplatePositionOffset;
-          modelOffsetString   = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
+          modelRotation = fx.TemplateRotationOffset;
+          modelScale = fx.TemplateScaleOffset;
+          modelOffset = fx.TemplatePositionOffset;
+          modelOffsetString = new[] { modelOffset.x.ToString(), modelOffset.y.ToString(), modelOffset.z.ToString() };
           modelRotationString = new[] { modelRotation.x.ToString(), modelRotation.y.ToString(), modelRotation.z.ToString() };
-          modelScaleString    = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
+          modelScaleString = new[] { modelScale.x.ToString(), modelScale.y.ToString(), modelScale.z.ToString() };
         }
       }
     }
 
     public void GetVesselData()
     {
-      vessel         = FlightGlobals.ActiveVessel;
+      vessel = FlightGlobals.ActiveVessel;
       effectsModules = new();
       if (vessel != null)
       {
@@ -634,6 +634,16 @@ namespace Waterfall.UI
         }
       }
       catch (InvalidCastException) { }
+      try
+      {
+        var pMod = (EffectParticleMultiColorModifier)fxMod;
+        if (pMod != null)
+        {
+          editWindows.Add(new UIParticleMultiColorModifierWindow(pMod, true));
+        }
+      }
+      catch (InvalidCastException) { }
+
 
     }
 
@@ -664,15 +674,15 @@ namespace Waterfall.UI
 
       return curveEditWindow;
     }
-    public UIGradientEditWindow OpenGradientEditor(Gradient toEdit, GradientUpdateFunction gradFun)
+    public UIGradientEditWindow OpenGradientEditor(Gradient toEdit, GradientUpdateFunction gradFun, float lower = 1f, float upper = 0f)
     {
       if (gradientEditWindow != null)
       {
-        gradientEditWindow.ChangeGradient(toEdit, gradFun);
+        gradientEditWindow.ChangeGradient(toEdit, gradFun, lower, upper);
       }
       else
       {
-        gradientEditWindow = new(toEdit, gradFun, true);
+        gradientEditWindow = new(toEdit, gradFun, lower, upper, true);
       }
 
       return gradientEditWindow;
@@ -681,7 +691,7 @@ namespace Waterfall.UI
     public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
     {
       currentModWinForCurve = modWin;
-      currentCurveTag       = tag;
+      currentCurveTag = tag;
       if (curveEditWindow != null)
       {
         curveEditWindow.ChangeCurve(toEdit, modWin, tag);
@@ -861,15 +871,15 @@ namespace Waterfall.UI
 
     #region GUI Variables
 
-    private string  windowTitle               = "";
+    private string windowTitle = "";
     private Vector2 effectsScrollListPosition = Vector2.zero;
-    private Vector2 partsScrollListPosition   = Vector2.zero;
+    private Vector2 partsScrollListPosition = Vector2.zero;
 
 
-    public  Vector3  modelRotation;
-    public  Vector3  modelOffset;
-    public  Vector3  modelScale   = Vector3.one;
-    private string   templateName = "";
+    public Vector3 modelRotation;
+    public Vector3 modelOffset;
+    public Vector3 modelScale = Vector3.one;
+    private string templateName = "";
     private string[] modelOffsetString;
     private string[] modelRotationString;
     private string[] modelScaleString;
@@ -884,27 +894,27 @@ namespace Waterfall.UI
 
     #region GUI Widgets
 
-    private UICurveEditWindow       curveEditWindow;
-    private UIGradientEditWindow    gradientEditWindow;
-    private UIModifierPopupWindow   modifierPopupWindow;
-    private UIAddEffectWindow       effectAddWindow;
+    private UICurveEditWindow curveEditWindow;
+    private UIGradientEditWindow gradientEditWindow;
+    private UIModifierPopupWindow modifierPopupWindow;
+    private UIAddEffectWindow effectAddWindow;
     private UIControllerPopupWindow controlAddWindow;
-    private UIModifierWindow        currentModWinForCurve;
-    private UIMaterialEditWindow    materialEditWindow;
-    private UIParticleEditWindow    particleEditWindow;
-    private UILightEditWindow       lightEditWindow;
-    private UIColorPickerWindow     colorPickWindow;
-    private UITexturePickerWindow   texturePickWindow;
-    private string                  currentCurveTag;
+    private UIModifierWindow currentModWinForCurve;
+    private UIMaterialEditWindow materialEditWindow;
+    private UIParticleEditWindow particleEditWindow;
+    private UILightEditWindow lightEditWindow;
+    private UIColorPickerWindow colorPickWindow;
+    private UITexturePickerWindow texturePickWindow;
+    private string currentCurveTag;
 
     #endregion
 
     #region Vessel Data
 
-    private          Vessel                  vessel;
-    private          List<ModuleWaterfallFX> effectsModules = new();
-    private          ModuleWaterfallFX       selectedModule;
-    private readonly List<UIEffectWidget>    effectUIWidgets = new();
+    private Vessel vessel;
+    private List<ModuleWaterfallFX> effectsModules = new();
+    private ModuleWaterfallFX selectedModule;
+    private readonly List<UIEffectWidget> effectUIWidgets = new();
 
     #endregion
   }

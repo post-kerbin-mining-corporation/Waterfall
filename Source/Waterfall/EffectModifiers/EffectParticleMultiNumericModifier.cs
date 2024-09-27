@@ -5,6 +5,8 @@ namespace Waterfall
 {
   public class EffectParticleMultiNumericModifier : EffectModifier
   {
+    [Persistent] public string paramName = "_TintColor";
+
     public FloatCurve curve1 = new();
     public FloatCurve curve2 = new();
 
@@ -14,7 +16,6 @@ namespace Waterfall
     private float _c2 = 0f;
 
     protected override string ConfigNodeName => WaterfallConstants.ParticleNumericModifierNodeName;
-    public string paramName = "";
 
     private ParticleSystem[] sys;
 

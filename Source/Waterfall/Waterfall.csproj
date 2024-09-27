@@ -124,12 +124,14 @@
     <Compile Include="EffectModifiers\EffectColorFromLightModifier.cs" />
     <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectModifier.cs" />
+    <Compile Include="EffectModifiers\EffectParticleMultiColorModifier.cs" />
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectParticleMultiColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectParticleMultiNumericIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectScaleIntegrator.cs" />
@@ -174,6 +176,7 @@
     <Compile Include="UI\EffectControllersUI\VelocityControllerUIOptions.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleMultiColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIParticleMultiNumericModifierWindow.cs" />
     <Compile Include="UI\TextureUtils.cs" />
     <Compile Include="UI\EditWindows\UIColorPickerWindow.cs" />

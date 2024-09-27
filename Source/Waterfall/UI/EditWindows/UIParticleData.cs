@@ -488,7 +488,7 @@ namespace Waterfall.UI
       }
       GenerateColorThumbs();
     }
-    protected void UpdateGradient1(Gradient curve)
+    protected void UpdateGradient1(Gradient curve, float lower, float upper)
     {
       gradient1 = curve;
       if (colorMode == ParticleSystemGradientMode.Gradient)
@@ -501,7 +501,7 @@ namespace Waterfall.UI
       }
       GenerateGradientThumbs();
     }
-    protected void UpdateGradient2(Gradient grad)
+    protected void UpdateGradient2(Gradient grad, float lower, float upper)
     {
       gradient2 = grad;
       if (colorMode == ParticleSystemGradientMode.TwoGradients)

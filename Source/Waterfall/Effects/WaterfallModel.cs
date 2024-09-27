@@ -74,6 +74,7 @@ namespace Waterfall
       node.TryGetValue("positionOffset", ref modelPositionOffset);
       node.TryGetValue("rotationOffset", ref modelRotationOffset);
       node.TryGetValue("scaleOffset", ref modelScaleOffset);
+      node.TryGetValue("asset", ref asset);
 
       materials = new();
       foreach (var materialNode in node.GetNodes(WaterfallConstants.MaterialNodeName))
@@ -99,9 +100,15 @@ namespace Waterfall
       var node = new ConfigNode();
       node.name = WaterfallConstants.ModelNodeName;
       node.AddValue("path", path);
+      if (asset != null)
+      {
+        node.AddValue("asset", asset);
+      }
+
       node.AddValue("positionOffset", modelPositionOffset);
       node.AddValue("rotationOffset", modelRotationOffset);
       node.AddValue("scaleOffset", modelScaleOffset);
+
       foreach (var m in materials)
       {
         node.AddNode(m.Save());
@@ -128,12 +135,20 @@ namespace Waterfall
       inst.SetActive(true);
 
       var modelTransform = inst.GetComponent<Transform>();
-
       modelTransform.SetParent(parent, true);
-
-      // Utils.Log(String.Format("[WaterfallModel]: Instantiated model at {0} with {1}, {2}", modelPositionOffset, modelRotationOffset, modelScaleOffset));
-
       modelTransforms.Add(modelTransform);
+
+      if (asset != null && asset != "")
+      {
+        Utils.Log($"[WaterfallModel]: Instantiating particle asset from{asset} ", LogType.Effects);
+        GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(asset),
+          Vector3.zero, Quaternion.identity) as GameObject;
+
+        go.transform.SetParent(modelTransform);
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localScale = Vector3.one;
+        go.transform.localRotation = Quaternion.identity;
+      }
 
       var renderers = modelTransform.GetComponentsInChildren<Renderer>();
       var lightObjs = modelTransform.GetComponentsInChildren<Light>();
@@ -164,26 +179,12 @@ namespace Waterfall
           m.transformName = r.transform.name;
           materials.Add(m);
         }
-        // Need to reinstantiate
-        if (asset != null && asset != "")
+        foreach (var p in particleSystems)
         {
-          GameObject go = GameObject.Instantiate(WaterfallParticleLoader.GetParticles(asset),
-            Vector3.zero, Quaternion.identity) as GameObject;
-
-          go.transform.SetParent(modelTransform);
-          go.transform.localPosition = Vector3.zero;
-          go.transform.localScale = Vector3.one;
-          go.transform.localRotation = Quaternion.identity;
-
-          particleSystems = modelTransform.GetComponentsInChildren<ParticleSystem>();
-          Utils.Log(String.Format("[WaterfallModel]: Generating particle systems for {0} systems ", particleSystems), LogType.Effects);
-          foreach (var p in particleSystems)
-          {
-            WaterfallParticle wfP = new WaterfallParticle();
-            wfP.transformName = p.transform.name;
-            wfP.systems = new();
-            particles.Add(wfP);
-          }            
+          WaterfallParticle wfP = new WaterfallParticle();
+          wfP.transformName = p.transform.name;
+          wfP.systems = new();
+          particles.Add(wfP);
         }
       }
 
@@ -494,6 +495,6 @@ namespace Waterfall
         }
       }
     }
-   
+
   }
 }
