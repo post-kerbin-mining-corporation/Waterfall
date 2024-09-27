@@ -473,21 +473,21 @@ namespace Waterfall
     {
       camerasProf.Begin();
       var c = camera.transform;
+      Vector3 cameraForward = c.forward;
+      Vector3 cameraPosition = c.position;
+      float queueScalar = Settings.QueueDepth / Settings.SortedDepth;
       foreach (var renderer in renderers)
       {
         if (!renderer.enabled) continue;
         Material mat = renderer.material;
 
-        int qDelta;
-        if (mat.HasProperty("_Strength"))
-          qDelta = Settings.DistortQueue;
-        else
-        {
-          float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
-          float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
-          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
-        }
-        if (mat.HasProperty("_Intensity"))
+        // TODO: maybe use bounds.ClosestPoint here?
+        float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
+        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
+        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
+
+        // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
+        if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;
       }
@@ -500,10 +500,10 @@ namespace Waterfall
 
       foreach (var mat in effectRendererMaterials)
       {
-        if (mat.HasProperty("_DestMode"))
+        if (mat.HasProperty(ShaderPropertyID._DestMode))
         {
-          mat.SetFloat("_DestMode", isHDR ? 1 : destMode);
-          mat.SetFloat("_ClipBrightness", isHDR ? 50: 1);
+          mat.SetFloat(ShaderPropertyID._DestMode, isHDR ? 1 : destMode);
+          mat.SetFloat(ShaderPropertyID._ClipBrightness, isHDR ? 50: 1);
         }
       }
     }
