@@ -6,7 +6,7 @@ namespace Waterfall.UI
   public class UIBaseWindow : MonoBehaviour
   {
     // Control Vars
-    protected static bool showWindow;
+    public static bool showWindow;
     public           Rect windowPos = new(200f, 200f, 1000f, 400f);
     protected        bool initUI;
 
