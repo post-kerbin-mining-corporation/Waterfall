@@ -474,7 +474,7 @@ namespace Waterfall
 
         // TODO: maybe use bounds.ClosestPoint here?
         float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
-        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraposition, cameraForward);
+        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
         int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
 
         // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
