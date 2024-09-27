@@ -2,22 +2,6 @@
 
 namespace Waterfall
 {
-  [KSPAddon(KSPAddon.Startup.EveryScene, false)]
-  public class Waterfall : MonoBehaviour
-  {
-    public static Waterfall Instance { get; private set; }
-
-    protected void Awake()
-    {
-      Instance = this;
-    }
-
-    protected void Start()
-    {
-      WaterfallAssets.Load();
-    }
-  }
-
   /// <summary>
   ///   Static class to hold settings and configuration
   /// </summary>

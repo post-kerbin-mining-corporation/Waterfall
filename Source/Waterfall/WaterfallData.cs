@@ -20,6 +20,7 @@ namespace Waterfall
     public static void ModuleManagerPostLoad()
     {
       Settings.Load();
+      WaterfallAssets.Load();
       WaterfallParticleLoader.LoadParticles();
       WaterfallParticleLoader.LoadParticleProperties();
       ShaderLoader.LoadShaders();
