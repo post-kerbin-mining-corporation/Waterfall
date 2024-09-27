@@ -477,6 +477,7 @@ namespace Waterfall
         float camDistTransform = Vector3.Dot(renderer.transform.position - cameraposition, cameraForward);
         int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
 
+        // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
         if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;
