@@ -31,8 +31,25 @@ namespace Waterfall
     protected readonly List<WaterfallEffect> allFX = new(16);
     protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
-    protected readonly List<Renderer> allRenderers = new(128);
+    protected Renderer[] allRenderers;
     protected bool refreshRenderers = true;
+    private bool dynamicSortRenderers = false;
+
+    private bool hasAdditiveShaders;
+    private bool _hasAlphaBlendedShaders;
+    private bool hasAlphaBlendedShaders
+    {
+      get => _hasAlphaBlendedShaders;
+      set
+      {
+        if (value != _hasAlphaBlendedShaders)
+        {
+          x_modulesWithAlphaBlendedShaders += value ? 1 : -1;
+        }
+      }
+    }
+
+    private static int x_modulesWithAlphaBlendedShaders = 0;
 
     protected bool started;
     private bool isHDR;
@@ -60,9 +77,10 @@ namespace Waterfall
       allControllers[controllerID].Set(value);
     }
 
-    public override void OnAwake()
+    private void OnDestroy()
     {
-      base.OnAwake();
+      hasAdditiveShaders = false;
+      hasAlphaBlendedShaders = false;
     }
 
     public void Start()
@@ -78,7 +96,10 @@ namespace Waterfall
     {
       if (refreshRenderers)
       {
-        allRenderers.Clear();
+        List<Renderer> renderers = new List<Renderer>();
+        hasAdditiveShaders = false;
+        hasAlphaBlendedShaders = false;
+
         foreach (var fx in activeFX)
         {
           foreach (var renderer in fx.effectRenderers)
@@ -88,43 +109,85 @@ namespace Waterfall
             // distortion effects get a constant renderqueue value, so they don't need to be sorted
             if (mat.HasProperty(ShaderPropertyID._Strength))
             {
-              int qDelta = Settings.DistortQueue;
-              if (mat.HasProperty(ShaderPropertyID._Intensity))
-                qDelta += 1;
-              mat.renderQueue = Settings.TransparentQueueBase + qDelta;
+              mat.renderQueue = Settings.DistortQueue;
             }
             else
             {
+              if (mat.HasProperty(ShaderPropertyID._Intensity))
+              {
+                hasAlphaBlendedShaders = true;
+              }
+              else
+              {
+                hasAdditiveShaders = true;
+              }
+
               allRenderers.AddUnique(renderer);
             }
           }
         }
 
+        allRenderers = renderers.ToArray();
         refreshRenderers = false;
       }
     }
 
     private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
-    public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
+    private void SetupRenderersForCamera(Camera camera)
     {
+      // if there are no alpha blended effects in the world, we don't need dynamic sorting
+      if (x_modulesWithAlphaBlendedShaders == 0)
+      {
+        // if we were previously dynamically sorted, reset everything to default.
+        if (dynamicSortRenderers)
+        {
+          foreach (var renderer in allRenderers)
+          {
+            renderer.material.renderQueue = -1;
+          }
+          dynamicSortRenderers = false;
+        }
+
+        return;
+      }
+
       camerasProf.Begin();
+
+      dynamicSortRenderers = true;
+
       var c = camera.transform;
       Vector3 cameraForward = c.forward;
       Vector3 cameraPosition = c.position;
       float queueScalar = Settings.QueueDepth / Settings.SortedDepth;
-      foreach (var renderer in renderers)
+      int firstQueueDelta = -1;
+      bool allShadersAreSameType = !(hasAdditiveShaders && _hasAlphaBlendedShaders);
+
+      for (int i = allRenderers.Length; i-- > 0;)
       {
-        if (!renderer.enabled) continue;
+        var renderer = allRenderers[i];
+        if (!renderer.enabled) continue; // TODO: not sure how much time this takes but we could sort disabled renderers to the end (but would need a way to re-sort on changes)
         Material mat = renderer.material;
 
-        // TODO: maybe use bounds.ClosestPoint here?
-        float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
-        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
-        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
+        int qDelta;
 
-        // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
-        if (mat.HasProperty(ShaderPropertyID._Intensity))
-          qDelta += 1;
+        // if all of the shaders are the same type, we can calculate a single queue value for the whole module
+        if (allShadersAreSameType && firstQueueDelta >= 0)
+        {
+          qDelta = firstQueueDelta;
+        }
+        else
+        {
+          float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
+          float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
+          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
+
+          firstQueueDelta = qDelta;
+
+          // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
+          if (!hasAdditiveShaders || mat.HasProperty(ShaderPropertyID._Intensity)) // alpha blended shaders go later
+            qDelta += 1;
+        }
+
         mat.renderQueue = Settings.TransparentQueueBase + qDelta;
       }
       camerasProf.End();
@@ -173,7 +236,7 @@ namespace Waterfall
           }
 
           luEffects.End();
-          SetupRenderersForCamera(camera, allRenderers);
+          SetupRenderersForCamera(camera);
         }
       }
     }
