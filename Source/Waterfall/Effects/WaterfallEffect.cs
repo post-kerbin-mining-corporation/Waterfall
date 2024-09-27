@@ -472,10 +472,10 @@ namespace Waterfall
         if (!renderer.enabled) continue;
         Material mat = renderer.material;
 
-        Vector3 closestPoint = renderer.bounds.ClosestPoint(cameraPosition);
-        Vector3 toClosestPoint = closestPoint - cameraPosition;
-        float camDist = Vector3.Dot(toClosestPoint, cameraForward);
-        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(camDist * queueScalar, 0, Settings.QueueDepth);
+        // TODO: maybe use bounds.ClosestPoint here?
+        float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
+        float camDistTransform = Vector3.Dot(renderer.transform.position - cameraposition, cameraForward);
+        int qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
 
         if (mat.HasProperty(ShaderPropertyID._Intensity))
           qDelta += 1;
