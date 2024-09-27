@@ -84,11 +84,11 @@ namespace Waterfall
           foreach (var renderer in fx.effectRenderers)
           {
             Material mat = renderer.material;
-            int qDelta;
+
             // distortion effects get a constant renderqueue value, so they don't need to be sorted
             if (mat.HasProperty(ShaderPropertyID._Strength))
             {
-              qDelta = Settings.DistortQueue;
+              int qDelta = Settings.DistortQueue;
               if (mat.HasProperty(ShaderPropertyID._Intensity))
                 qDelta += 1;
               mat.renderQueue = Settings.TransparentQueueBase + qDelta;
