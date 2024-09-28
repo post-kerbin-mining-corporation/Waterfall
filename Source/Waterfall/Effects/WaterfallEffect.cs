@@ -200,10 +200,7 @@ namespace Waterfall
     public void CleanupEffect()
     {
       Utils.Log($"[WaterfallEffect]: Deleting effect {name}", LogType.Effects);
-      for (int i = model.modelTransforms.Count - 1; i >= 0; i--)
-      {
-        Object.Destroy(model.modelTransforms[i].gameObject);
-      }
+      model.Cleanup();
     }
 
     public bool InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
