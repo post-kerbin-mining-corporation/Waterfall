@@ -17,6 +17,7 @@ namespace Waterfall
     [Persistent] public float responseRateDown       = 100f;
     [Persistent] public string thrusterTransformName = String.Empty;
     private ModuleRCSFX rcsController;
+    int[] activeTransformIndices;
 
     public RCSController() : base() { }
     public RCSController(ConfigNode node) : base(node) { }
@@ -35,7 +36,19 @@ namespace Waterfall
         return;
       }
 
-      values = new float[rcsController.thrusterTransforms.Count];
+      List<int> transformIndices = new List<int>();
+
+      for (int i = 0; i < rcsController.thrusterTransforms.Count; ++i)
+      {
+        Transform t = rcsController.thrusterTransforms[i];
+        if (t.gameObject.activeInHierarchy)
+        {
+          transformIndices.Add(i);
+        }
+      }
+
+      activeTransformIndices = transformIndices.ToArray();
+      values = new float[activeTransformIndices.Length];
     }
 
     protected override bool UpdateInternal()
@@ -43,11 +56,12 @@ namespace Waterfall
       bool awake = false;
       if (rcsController != null)
       {
-        for (int i = 0; i < values.Length; i++)
+        for (int valueIndex = 0; valueIndex < values.Length; valueIndex++)
         {
-          float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
-          float responseRate = newThrottle > values[i] ? responseRateUp : responseRateDown;
-          values[i] = Mathf.MoveTowards(values[i], newThrottle, responseRate * TimeWarp.deltaTime);
+          int transformIndex = activeTransformIndices[valueIndex];
+          float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
+          float responseRate = newThrottle > values[valueIndex] ? responseRateUp : responseRateDown;
+          values[valueIndex] = Mathf.MoveTowards(values[valueIndex], newThrottle, responseRate * TimeWarp.deltaTime);
           awake = awake || newThrottle != 0;
         }
       }
