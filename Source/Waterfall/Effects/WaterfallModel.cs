@@ -124,6 +124,14 @@ namespace Waterfall
       return node;
     }
 
+    public void Cleanup()
+    {
+      for (int i = modelTransforms.Count - 1; i >= 0; i--)
+      {
+        Object.Destroy(modelTransforms[i].gameObject);
+      }
+      modelTransforms.Clear();
+    }
 
     public void Initialize(Transform parent, bool fromNothing)
     {

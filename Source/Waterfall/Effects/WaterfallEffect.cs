@@ -200,10 +200,7 @@ namespace Waterfall
     public void CleanupEffect()
     {
       Utils.Log($"[WaterfallEffect]: Deleting effect {name}", LogType.Effects);
-      for (int i = model.modelTransforms.Count - 1; i >= 0; i--)
-      {
-        Object.Destroy(model.modelTransforms[i].gameObject);
-      }
+      model.Cleanup();
     }
 
     public bool InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
@@ -215,24 +212,26 @@ namespace Waterfall
       effectTransforms.Clear();
       baseScales.Clear();
 
-      for (int i = 0; i < parents.Length; i++)
+      foreach (var parent in parents)
       {
-        if (parents[i] == null)
+        if (parents == null)
         {
           Utils.LogError($"[WaterfallEffect]: Trying to attach effect to null parent transform {parentName} on model");
           continue;
         }
-        else if (!parents[i].gameObject.activeInHierarchy)
+        else if (!parent.gameObject.activeInHierarchy)
         {
           // The stock ModulePartVariants will deactivate transforms that shouldn't exist on the current variant
           // This assumes that we can respond to any changes in activation state by reinitializing the effects
           continue;
         }
 
+        int i = effectTransforms.Count;
+
         var effect          = new GameObject($"Waterfall_FX_{name}_{i}");
         var effectTransform = effect.transform;
 
-        effectTransform.SetParent(parents[i], true);
+        effectTransform.SetParent(parent, true);
         effectTransform.localPosition    = Vector3.zero;
         effectTransform.localEulerAngles = Vector3.zero;
         if (useRelativeScaling)
