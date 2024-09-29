@@ -45,7 +45,7 @@ namespace Waterfall
       }
     }
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
       if (engineController == null)
       {
@@ -61,9 +61,8 @@ namespace Waterfall
           currentThrottle = Mathf.MoveTowards(currentThrottle, targetThrottle, rampRate * TimeWarp.deltaTime);
         }
       }
-      
-      values[0] = currentThrottle;
-      return currentThrottle > 0f;
+
+      return currentThrottle;
     }
 
     public override void UpgradeToCurrentVersion(Version loadedVersion)

@@ -61,10 +61,9 @@ namespace Waterfall
 
     public float PerlinNoise() => Mathf.PerlinNoise(seed + Time.time * speed, seed + Time.time * speed) * (scale - minimum) + minimum;
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
-      values[0] = noiseFunc();
-      return false;
+      return noiseFunc();
     }
   }
 }

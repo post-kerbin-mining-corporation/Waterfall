@@ -37,7 +37,7 @@ namespace Waterfall
         Utils.LogError("[ThrustController] Could not find engine controller on Initialize");
     }
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
       if (engineController == null)
       {
@@ -56,8 +56,7 @@ namespace Waterfall
                               * engineController.multIsp;
       }
 
-      values[0] = currentThrustFraction;
-      return currentThrustFraction > 0f;
+      return currentThrustFraction;
     }
   }
 }

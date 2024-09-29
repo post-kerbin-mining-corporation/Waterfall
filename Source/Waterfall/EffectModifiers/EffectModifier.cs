@@ -205,29 +205,32 @@ namespace Waterfall
 
     public Color[] Get()
     {
-      float[] input = Controller.Get();
+      if (Controller.awake)
+      {
+        float[] input = Controller.Get();
 
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < output.Length; i++)
+        if (input.Length > 1)
         {
-          float inValue = input[i];
-          output[i] = new(rCurve.Evaluate(inValue) + randomValue,
-                          gCurve.Evaluate(inValue) + randomValue,
-                          bCurve.Evaluate(inValue) + randomValue,
-                          aCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < output.Length; i++)
+          {
+            float inValue = input[i];
+            output[i] = new(rCurve.Evaluate(inValue) + randomValue,
+                            gCurve.Evaluate(inValue) + randomValue,
+                            bCurve.Evaluate(inValue) + randomValue,
+                            aCurve.Evaluate(inValue) + randomValue);
+          }
         }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        Color color = new Color(
-          rCurve.Evaluate(inValue) + randomValue,
-          gCurve.Evaluate(inValue) + randomValue,
-          bCurve.Evaluate(inValue) + randomValue,
-          aCurve.Evaluate(inValue) + randomValue);
-        for (int i = 0; i < output.Length; i++)
-          output[i] = color;
+        else if (input.Length == 1)
+        {
+          float inValue = input[0];
+          Color color = new Color(
+            rCurve.Evaluate(inValue) + randomValue,
+            gCurve.Evaluate(inValue) + randomValue,
+            bCurve.Evaluate(inValue) + randomValue,
+            aCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < output.Length; i++)
+            output[i] = color;
+        }
       }
       return output;
     }
@@ -266,25 +269,28 @@ namespace Waterfall
 
     public Vector2[] Get()
     {
-      float[] input = Controller.Get();
+      if (Controller.awake)
+      {
+        float[] input = Controller.Get();
 
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < xforms.Count; i++)
+        if (input.Length > 1)
         {
-          float inValue = input[i];
-          output[i] = new(xCurve.Evaluate(inValue) + randomValue,
-                          yCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < xforms.Count; i++)
+          {
+            float inValue = input[i];
+            output[i] = new(xCurve.Evaluate(inValue) + randomValue,
+                            yCurve.Evaluate(inValue) + randomValue);
+          }
         }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        Vector2 vec = new(
-          xCurve.Evaluate(inValue) + randomValue,
-          yCurve.Evaluate(inValue) + randomValue);
-        for (int i = 0; i < xforms.Count; i++)
-          output[i] = vec;
+        else if (input.Length == 1)
+        {
+          float inValue = input[0];
+          Vector2 vec = new(
+            xCurve.Evaluate(inValue) + randomValue,
+            yCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < xforms.Count; i++)
+            output[i] = vec;
+        }
       }
       return output;
     }
@@ -325,27 +331,30 @@ namespace Waterfall
 
     public Vector3[] Get()
     {
-      float[] input = Controller.Get();
+      if (Controller.awake)
+      {
+        float[] input = Controller.Get();
 
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < xforms.Count; i++)
+        if (input.Length > 1)
         {
-          float inValue = input[i];
-          output[i] = new(xCurve.Evaluate(inValue) + randomValue,
-                          yCurve.Evaluate(inValue) + randomValue,
-                          zCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < xforms.Count; i++)
+          {
+            float inValue = input[i];
+            output[i] = new(xCurve.Evaluate(inValue) + randomValue,
+                            yCurve.Evaluate(inValue) + randomValue,
+                            zCurve.Evaluate(inValue) + randomValue);
+          }
         }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        Vector3 vec = new(
-          xCurve.Evaluate(inValue) + randomValue,
-          yCurve.Evaluate(inValue) + randomValue,
-          zCurve.Evaluate(inValue) + randomValue);
-        for (int i = 0; i < xforms.Count; i++)
-          output[i] = vec;
+        else if (input.Length == 1)
+        {
+          float inValue = input[0];
+          Vector3 vec = new(
+            xCurve.Evaluate(inValue) + randomValue,
+            yCurve.Evaluate(inValue) + randomValue,
+            zCurve.Evaluate(inValue) + randomValue);
+          for (int i = 0; i < xforms.Count; i++)
+            output[i] = vec;
+        }
       }
 
       return output;
@@ -380,17 +389,20 @@ namespace Waterfall
 
     public float[] Get()
     {
-      float[] input = Controller.Get();
-      if (input.Length > 1)
+      if (Controller.awake)
       {
-        for (int i = 0; i < output.Length; i++)
-          output[i] = curve.Evaluate(input[i]) + randomValue;
-      }
-      else if (input.Length == 1)
-      {
-        float data = curve.Evaluate(input[0]) + randomValue;
-        for (int i = 0; i < output.Length; i++)
-          output[i] = data;
+        float[] input = Controller.Get();
+        if (input.Length > 1)
+        {
+          for (int i = 0; i < output.Length; i++)
+            output[i] = curve.Evaluate(input[i]) + randomValue;
+        }
+        else if (input.Length == 1)
+        {
+          float data = curve.Evaluate(input[0]) + randomValue;
+          for (int i = 0; i < output.Length; i++)
+            output[i] = data;
+        }
       }
 
       return output;

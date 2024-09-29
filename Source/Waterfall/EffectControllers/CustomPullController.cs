@@ -85,7 +85,7 @@ namespace Waterfall
       return () => 0;
     }
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
       float newValue = Mathf.InverseLerp(minInputValue, maxInputValue, GetValue());
       float responseRate = newValue > currentValue
@@ -95,9 +95,8 @@ namespace Waterfall
       currentValue = responseRate > 0
         ? Mathf.MoveTowards(currentValue, newValue, responseRate * TimeWarp.deltaTime)
         : newValue;
-      values[0] = currentValue;
 
-      return currentValue != 0f;
+      return currentValue;
     }
 
     private float GetValue()

@@ -33,16 +33,14 @@ namespace Waterfall
         Utils.LogError("[LightController] Could not find any lights on Initialize");
     }
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
-      bool awake = false;
       if (lightController != null)
       {
-        values[0] = lightController.intensity;
-        awake = values[0] > 0;
+        return lightController.intensity;
       }
 
-      return awake;
+      return 0;
     }
   }
 }

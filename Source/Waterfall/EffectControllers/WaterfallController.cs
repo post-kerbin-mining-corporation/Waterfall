@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using Waterfall.EffectControllers;
 
 namespace Waterfall
@@ -16,7 +17,9 @@ namespace Waterfall
     [Persistent] public string name = "unnamedController";
 
     public ModuleWaterfallFX ParentModule => parentModule;
-    public bool Sleeping { get; private set; }
+
+    public bool awake { get; protected set; }
+
     public bool overridden
     {
       get { return _overridden; }
@@ -57,7 +60,7 @@ namespace Waterfall
 
     public bool Update()
     {
-      bool awake = overridden;
+      awake = overridden;
       
       if (!overridden)
       {
@@ -67,10 +70,21 @@ namespace Waterfall
       return awake;
     }
 
+    protected virtual float UpdateSingleValue() { return values[0]; }
+
     /// <summary>
     /// Get and store the value of the controller.  Consumers should call Get() to retrieve the data.
     /// </summary>
-    protected abstract bool UpdateInternal();
+    protected virtual bool UpdateInternal()
+    {
+      float newValue = UpdateSingleValue();
+      if (Mathf.Approximately(newValue, values[0]))
+      {
+        return false;
+      }
+      values[0] = newValue;
+      return true;
+    }
 
     /// <summary>
     ///   Get the value of the controller.
