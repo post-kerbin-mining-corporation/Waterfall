@@ -280,13 +280,11 @@ namespace Waterfall
 
   public abstract class EffectIntegratorTyped<T_Value> : EffectIntegrator
   {
-    protected readonly T_Value[] modifierData;
     protected readonly T_Value[] initialValues;
     protected readonly T_Value[] workingValues;
 
     public EffectIntegratorTyped(WaterfallEffect effect, EffectModifier mod) : base(effect, mod)
     {
-      modifierData = new T_Value[xforms.Count];
       initialValues = new T_Value[xforms.Count];
       workingValues = new T_Value[xforms.Count];
     }
@@ -327,8 +325,7 @@ namespace Waterfall
       {
         if (mod.Controller != null)
         {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectModifier_Float)mod).Get(controllerData, modifierData);
+          float[] modifierData = ((EffectModifier_Float)mod).Get();
           s_Integrate.Begin();
           Integrate(mod.effectMode, workingValues, modifierData);
           s_Integrate.End();
@@ -365,8 +362,7 @@ namespace Waterfall
       {
         if (mod.Controller != null)
         {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectModifier_Color)mod).Get(controllerData, modifierData);
+          Color[] modifierData = ((EffectModifier_Color)mod).Get();
           s_Integrate.Begin();
           Integrate(mod.effectMode, workingValues, modifierData);
           s_Integrate.End();
@@ -400,8 +396,7 @@ namespace Waterfall
       {
         if (mod.Controller != null)
         {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectModifier_Vector2)mod).Get(controllerData, modifierData);
+          Vector2[] modifierData = ((EffectModifier_Vector2)mod).Get();
           s_Integrate.Begin();
           Integrate(mod.effectMode, workingValues, modifierData);
           s_Integrate.End();
@@ -436,8 +431,7 @@ namespace Waterfall
       {
         if (mod.Controller != null)
         {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectModifier_Vector3)mod).Get(controllerData, modifierData);
+          Vector3[] modifierData = ((EffectModifier_Vector3)mod).Get();
           s_Integrate.Begin();
           Integrate(mod.effectMode, workingValues, modifierData);
           s_Integrate.End();

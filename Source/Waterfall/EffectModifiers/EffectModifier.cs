@@ -170,6 +170,8 @@ namespace Waterfall
     public FloatCurve bCurve = new();
     public FloatCurve aCurve = new();
 
+    Color[] output;
+
     public EffectModifier_Color() : base() { }
     public EffectModifier_Color(ConfigNode node) : base(node) { }
 
@@ -194,8 +196,17 @@ namespace Waterfall
       return node;
     }
 
-    public void Get(float[] input, Color[] output)
+    public override void Init(WaterfallEffect effect)
     {
+      base.Init(effect);
+
+      output = new Color[xforms.Count];
+    }
+
+    public Color[] Get()
+    {
+      float[] input = Controller.Get();
+
       if (input.Length > 1)
       {
         for (int i = 0; i < output.Length; i++)
@@ -218,12 +229,15 @@ namespace Waterfall
         for (int i = 0; i < output.Length; i++)
           output[i] = color;
       }
+      return output;
     }
   }
+
   public abstract class EffectModifier_Vector2 : EffectModifier
   {
     public FloatCurve xCurve = new();
     public FloatCurve yCurve = new();
+    Vector2[] output;
 
     public EffectModifier_Vector2() : base() { }
     public EffectModifier_Vector2(ConfigNode node) : base(node) { }
@@ -243,8 +257,17 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
       return node;
     }
-    public void Get(float[] input, Vector2[] output)
+
+    public override void Init(WaterfallEffect effect)
     {
+      base.Init(effect);
+      output = new Vector2[xforms.Count];
+    }
+
+    public Vector2[] Get()
+    {
+      float[] input = Controller.Get();
+
       if (input.Length > 1)
       {
         for (int i = 0; i < xforms.Count; i++)
@@ -263,6 +286,7 @@ namespace Waterfall
         for (int i = 0; i < xforms.Count; i++)
           output[i] = vec;
       }
+      return output;
     }
   }
   public abstract class EffectModifier_Vector3 : EffectModifier
@@ -270,6 +294,7 @@ namespace Waterfall
     public FloatCurve xCurve = new();
     public FloatCurve yCurve = new();
     public FloatCurve zCurve = new();
+    Vector3[] output;
 
     public EffectModifier_Vector3() : base() { }
     public EffectModifier_Vector3(ConfigNode node) : base(node) { }
@@ -291,8 +316,17 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("zCurve", zCurve));
       return node;
     }
-    public void Get(float[] input, Vector3[] output)
+
+    public override void Init(WaterfallEffect effect)
     {
+      base.Init(effect);
+      output = new Vector3[xforms.Count];
+    }
+
+    public Vector3[] Get()
+    {
+      float[] input = Controller.Get();
+
       if (input.Length > 1)
       {
         for (int i = 0; i < xforms.Count; i++)
@@ -313,12 +347,15 @@ namespace Waterfall
         for (int i = 0; i < xforms.Count; i++)
           output[i] = vec;
       }
+
+      return output;
     }
   }
 
   public abstract class EffectModifier_Float : EffectModifier
   {
     public FloatCurve curve = new();
+    float[] output;
 
     public EffectModifier_Float() : base() { }
     public EffectModifier_Float(ConfigNode node) : base(node) { }
@@ -335,8 +372,15 @@ namespace Waterfall
       return node;
     }
 
-    public void Get(float[] input, float[] output)
+    public override void Init(WaterfallEffect effect)
     {
+      base.Init(effect);
+      output = new float[xforms.Count];
+    }
+
+    public float[] Get()
+    {
+      float[] input = Controller.Get();
       if (input.Length > 1)
       {
         for (int i = 0; i < output.Length; i++)
@@ -348,6 +392,8 @@ namespace Waterfall
         for (int i = 0; i < output.Length; i++)
           output[i] = data;
       }
+
+      return output;
     }
   }
 }
