@@ -39,10 +39,12 @@ namespace Waterfall
         float value = workingValues[i] * lightBaseScale;
         if (testIntensity)
         {
-          if (light.enabled && value < Settings.MinimumLightIntensity)
-            light.enabled = false;
-          else if (!light.enabled && value >= Settings.MinimumLightIntensity)
-            light.enabled = true;
+          bool shouldBeVisible = value >= Settings.MinimumLightIntensity;
+
+          if (light.enabled != shouldBeVisible)
+          {
+            light.enabled = shouldBeVisible;
+          }
         }
         if (light.enabled)
         {

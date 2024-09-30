@@ -61,13 +61,14 @@ namespace Waterfall
         {
           var rend = r[i];
           float val = workingValues[i];
-          
-          if (rend.enabled && val < Settings.MinimumEffectIntensity)
-            rend.enabled = false;
-          else if (!rend.enabled && val >= Settings.MinimumEffectIntensity)
-            rend.enabled = true;
+          bool shouldBeVisible = val >= Settings.MinimumEffectIntensity;
 
-          if (rend.enabled)
+          if (rend.enabled != shouldBeVisible)
+          {
+            rend.enabled = shouldBeVisible;
+          }
+
+          if (shouldBeVisible)
           {
             rend.material.SetFloat(floatPropertyID, val);
             anyActive = true;
