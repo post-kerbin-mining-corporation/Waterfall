@@ -22,7 +22,7 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      baseScale = xforms[0].localScale;
+      baseScale = xforms.Count == 0 ? Vector3.one : xforms[0].localScale;
     }
 
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectScaleIntegrator && integrator.transformName == transformName;
