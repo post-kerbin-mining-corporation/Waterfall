@@ -161,6 +161,15 @@ namespace Waterfall
       // It's a lot of complexity to manage and this only ever happens in the editor, so we don't really care about the performance impact of leaving useless integrators in the list
       integrator = null;
     }
+
+    protected void UpdateRandomValue()
+    {
+      if (useRandomness && randomController != null)
+      {
+        float[] controllerData = randomController.Get();
+        randomValue = controllerData[0] * randomnessScale;
+      }
+    }
   }
 
   public abstract class EffectModifier_Color : EffectModifier
