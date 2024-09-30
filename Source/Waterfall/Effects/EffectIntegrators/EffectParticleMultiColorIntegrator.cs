@@ -149,14 +149,11 @@ namespace Waterfall
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        if (mod.Controller != null)
-        {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectParticleMultiColorModifier)mod).Get(controllerData, modifierData);
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
+        float[] controllerData = mod.Controller.Get();
+        ((EffectParticleMultiColorModifier)mod).Get(controllerData, modifierData);
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modifierData);
+        s_Integrate.End();
       }
       s_Modifiers.End();
 

@@ -13,9 +13,9 @@ namespace Waterfall
     public List<EffectModifier> handledModifiers = new();
     public void AddModifier(EffectModifier mod)
     {
-      handledModifiers.Add(mod);
       if (mod.Controller != null)
       {
+        handledModifiers.Add(mod);
         mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
       }
     }
@@ -323,13 +323,10 @@ namespace Waterfall
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        if (mod.Controller != null)
-        {
-          float[] modifierData = ((EffectModifier_Float)mod).Get();
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
+        float[] modifierData = ((EffectModifier_Float)mod).Get();
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modifierData);
+        s_Integrate.End();
       }
       s_Modifiers.End();
 
@@ -360,13 +357,10 @@ namespace Waterfall
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        if (mod.Controller != null)
-        {
-          Color[] modifierData = ((EffectModifier_Color)mod).Get();
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
+        Color[] modifierData = ((EffectModifier_Color)mod).Get();
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modifierData);
+        s_Integrate.End();
       }
       s_Modifiers.End();
 
@@ -394,13 +388,10 @@ namespace Waterfall
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        if (mod.Controller != null)
-        {
-          Vector2[] modifierData = ((EffectModifier_Vector2)mod).Get();
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
+        Vector2[] modifierData = ((EffectModifier_Vector2)mod).Get();
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modifierData);
+        s_Integrate.End();        
       }
       s_Modifiers.End();
 
@@ -429,13 +420,10 @@ namespace Waterfall
       s_Modifiers.Begin();
       foreach (var mod in handledModifiers)
       {
-        if (mod.Controller != null)
-        {
-          Vector3[] modifierData = ((EffectModifier_Vector3)mod).Get();
-          s_Integrate.Begin();
-          Integrate(mod.effectMode, workingValues, modifierData);
-          s_Integrate.End();
-        }
+        Vector3[] modifierData = ((EffectModifier_Vector3)mod).Get();
+        s_Integrate.Begin();
+        Integrate(mod.effectMode, workingValues, modifierData);
+        s_Integrate.End();
       }
       s_Modifiers.End();
 
