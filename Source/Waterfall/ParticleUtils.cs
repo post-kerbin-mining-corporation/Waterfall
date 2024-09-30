@@ -597,7 +597,7 @@ namespace Waterfall
       ParticleSystem.VelocityOverLifetimeModule particleVelocity = system.velocityOverLifetime;
       ParticleSystem.LimitVelocityOverLifetimeModule particleLimitVelocity = system.limitVelocityOverLifetime;
 
-      ParticleSystem.MinMaxCurve paramCurve = new ParticleSystem.MinMaxCurve(1f, curve.Curve);
+      ParticleSystem.MinMaxCurve paramCurve = new ParticleSystem.MinMaxCurve(1f, curve.ToAnimationCurve());
 
       switch (paramName)
       {
@@ -652,7 +652,7 @@ namespace Waterfall
       ParticleSystem.VelocityOverLifetimeModule particleVelocity = system.velocityOverLifetime;
       ParticleSystem.LimitVelocityOverLifetimeModule particleLimitVelocity = system.limitVelocityOverLifetime;
 
-      ParticleSystem.MinMaxCurve paramCurve = new ParticleSystem.MinMaxCurve(1f, curve1.Curve, curve2.Curve);
+      ParticleSystem.MinMaxCurve paramCurve = new ParticleSystem.MinMaxCurve(1f, curve1.ToAnimationCurve(), curve2.ToAnimationCurve());
 
       switch (paramName)
       {

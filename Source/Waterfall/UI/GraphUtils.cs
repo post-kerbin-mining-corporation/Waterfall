@@ -100,7 +100,7 @@ namespace Waterfall.UI
           }
         }
 
-        float fY = curve.Evaluate(curve.minTime + curve.maxTime * x / (texWidth - 1));
+        float fY = curve.Evaluate(curve.FirstTime + curve.LastTime * x / (texWidth - 1));
         minY = Mathf.Min(minY, fY);
         maxY = Mathf.Max(maxY, fY);
       }
@@ -116,8 +116,8 @@ namespace Waterfall.UI
 
       for (int x = 1; x < texWidth - 1; x++)
       {
-        float fY = curve.Evaluate(curve.minTime + curve.maxTime * x / (texWidth - 1));
-        tex.SetPixel(x, Mathf.RoundToInt((fY                                    - minY) / (maxY - minY) * (texHeight - 1)), curveColor);
+        float fY = curve.Evaluate(curve.FirstTime + curve.LastTime * x / (texWidth - 1));
+        tex.SetPixel(x, Mathf.RoundToInt((fY - minY) / (maxY - minY) * (texHeight - 1)), curveColor);
       }
 
       tex.Apply();

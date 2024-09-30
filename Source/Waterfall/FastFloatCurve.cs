@@ -154,7 +154,7 @@ public class FastFloatCurve : IEnumerable<FastFloatCurve.Key>, IConfigNode
 
     /// <summary> Create a new curve with the same keys as a KSP FastFloatCurve. </summary>
     /// <param name="kspFastFloatCurve">The FastFloatCurve to copy keys from.</param>
-    public FastFloatCurve(FastFloatCurve kspFastFloatCurve) : this(kspFastFloatCurve.fCurve) { }
+    public FastFloatCurve(FloatCurve kspFastFloatCurve) : this(kspFastFloatCurve.Curve) { }
 
     /// <summary> Create a copy of this curve instance. </summary>
     /// <returns>A newly instantiated clone of this curve.</returns>
@@ -201,6 +201,19 @@ public class FastFloatCurve : IEnumerable<FastFloatCurve.Key>, IConfigNode
         {
             _isCompiled = false;
         }
+    }
+
+    public AnimationCurve ToAnimationCurve()
+    {
+        var keys = new Keyframe[_keys.Count];
+
+        for (int i = 0; i < _keys.Count; ++i)
+        {
+            var key = _keys[i];
+            keys[i] = new Keyframe(key.time, key.value, key.inTangent, key.outTangent);
+        }
+
+        return new AnimationCurve(keys);
     }
 
     /// <summary>When true, the curve keys tangents will be automatically adjusted according to the tangent mode defined in each key.</summary>
@@ -851,6 +864,8 @@ public class FastFloatCurve : IEnumerable<FastFloatCurve.Key>, IConfigNode
 
     public override string ToString() => $"{_keys.Count} keys, range = [{FirstTime}, {LastTime}], values = [{FirstValue}, {LastValue}]";
 
+    static readonly char[] delimiters = new char[] { ' ' };
+
     /// <summary> Set the keys of this curve from a serialized list of keys. Any existing keys will be overriden.</summary>
     /// <param name="node">A ConfigNode with a list of keys formatted as "<c>key = time value inTangent outTangent</c>". The tangent parameters are optional.</param>
     public void Load(ConfigNode node)
@@ -864,7 +879,7 @@ public class FastFloatCurve : IEnumerable<FastFloatCurve.Key>, IConfigNode
             if (nodeValue.name != "key")
                 continue;
 
-            string[] keyValues = nodeValue.value.Split(FastFloatCurve.delimiters, StringSplitOptions.RemoveEmptyEntries);
+            string[] keyValues = nodeValue.value.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             if (keyValues.Length < 2)
             {
                 Debug.LogError($"Invalid FastFloatCurve key : \"{nodeValue.value}\"");
