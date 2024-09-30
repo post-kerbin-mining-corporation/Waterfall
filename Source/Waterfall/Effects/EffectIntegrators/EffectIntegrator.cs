@@ -293,6 +293,7 @@ namespace Waterfall
   public abstract class EffectIntegrator_Float : EffectIntegratorTyped<float>
   {
     public readonly bool testIntensity;
+    bool wasActive;
 
     public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity_) : base(effect, mod)
     {
@@ -334,12 +335,25 @@ namespace Waterfall
       s_Modifiers.End();
 
       s_Apply.Begin();
-      bool result = Apply_TestIntensity();
+      bool active = Apply_TestIntensity();
+
+      // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
+      // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
+      // This shouldn't happen very often, only during engine ignition etc.
+      if (testIntensity && active && !wasActive)
+      {
+        foreach (var controller in parentEffect.parentModule.Controllers)
+        {
+          controller.awake = true;
+        }
+      }
+      wasActive = active;
+
       s_Apply.End();
 
       s_Update.End();
 
-      return result;
+      return active;
     }
   }
 
