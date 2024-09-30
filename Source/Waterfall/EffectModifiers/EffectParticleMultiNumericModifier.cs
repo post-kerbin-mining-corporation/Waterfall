@@ -7,8 +7,8 @@ namespace Waterfall
   {
     [Persistent] public string paramName = "_TintColor";
 
-    public FloatCurve curve1 = new();
-    public FloatCurve curve2 = new();
+    public FastFloatCurve curve1 = new();
+    public FastFloatCurve curve2 = new();
 
     public ParticleSystemCurveMode curveMode;
 

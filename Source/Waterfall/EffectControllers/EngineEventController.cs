@@ -12,7 +12,7 @@ namespace Waterfall
     [Persistent] public string eventName;
     [Persistent] public string engineID;
 
-    public FloatCurve eventCurve = new();
+    public FastFloatCurve eventCurve = new();
     [Persistent] public float eventDuration = 1f;
     private ModuleEngines engineModule;
     private MultiModeEngine multiEngine;
@@ -120,21 +120,19 @@ namespace Waterfall
         float scaleFactor = 1.0f / Math.Max(1, referencingModifierCount);
 
         eventDuration *= scaleFactor;
-
-        var keys = eventCurve.Curve.keys;
         
-        for (int i = 0; i < keys.Length; ++i)
+        for (int i = 0; i < eventCurve.KeyCount; ++i)
         {
-          Keyframe key = keys[i];
+          var key = eventCurve[i];
 
           key.time *= scaleFactor;
           key.inTangent /= scaleFactor;
           key.outTangent /= scaleFactor;
 
-          keys[i] = key;
+          eventCurve[i] = key;
         }
 
-        eventCurve = new FloatCurve(keys);
+        eventCurve.Compile();
       }
     }
   }

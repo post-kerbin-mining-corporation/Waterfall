@@ -18,7 +18,7 @@ namespace Waterfall.UI
       GenerateCurveThumbs(mod);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag)
     {
       base.UpdateCurves(newCurve, tag);
     }
@@ -127,19 +127,19 @@ namespace Waterfall.UI
       GenerateCurveThumbs(posMod);
     }
 
-    protected void UpdateXCurve(FloatCurve curve)
+    protected void UpdateXCurve(FastFloatCurve curve)
     {
       posMod.xCurve = curve;
       UpdateModifierPanel();
     }
 
-    protected void UpdateYCurve(FloatCurve curve)
+    protected void UpdateYCurve(FastFloatCurve curve)
     {
       posMod.yCurve = curve;
       UpdateModifierPanel();
     }
 
-    protected void UpdateZCurve(FloatCurve curve)
+    protected void UpdateZCurve(FastFloatCurve curve)
     {
       posMod.zCurve = curve;
       UpdateModifierPanel();

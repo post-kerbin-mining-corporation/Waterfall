@@ -147,7 +147,7 @@ namespace Waterfall
           break;
       }
     }
-    public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FloatCurve result)
+    public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FastFloatCurve result)
     {
       if (system == null)
       {
@@ -156,46 +156,46 @@ namespace Waterfall
       switch (paramName)
       {
         case "StartSpeed":
-          result.Curve = system.main.startSpeed.curve;
+          result = new FastFloatCurve(system.main.startSpeed.curve);
           break;
         case "StartSize":
-          result.Curve = system.main.startSize.curve;
+          result = new FastFloatCurve(system.main.startSize.curve);
           break;
         case "StartLifetime":
-          result.Curve = system.main.startLifetime.curve;
+          result = new FastFloatCurve(system.main.startLifetime.curve);
           break;
         case "StartRotation":
-          result.Curve = system.main.startRotation.curve;
+          result = new FastFloatCurve(system.main.startRotation.curve);
           break;
         case "EmissionRateTime":
-          result.Curve = system.emission.rateOverTime.curve;
+          result = new FastFloatCurve(system.emission.rateOverTime.curve);
           break;
         case "LimitVelocityMaxSpeed":
-          result.Curve = system.limitVelocityOverLifetime.limit.curve;
+          result = new FastFloatCurve(system.limitVelocityOverLifetime.limit.curve);
           break;
         case "LimitVelocityDrag":
-          result.Curve = system.limitVelocityOverLifetime.drag.curve;
+          result = new FastFloatCurve(system.limitVelocityOverLifetime.drag.curve);
           break;
         case "ForceX":
-          result.Curve = system.forceOverLifetime.x.curve;
+          result = new FastFloatCurve(system.forceOverLifetime.x.curve);
           break;
         case "ForceY":
-          result.Curve = system.forceOverLifetime.y.curve;
+          result = new FastFloatCurve(system.forceOverLifetime.y.curve);
           break;
         case "ForceZ":
-          result.Curve = system.forceOverLifetime.z.curve;
+          result = new FastFloatCurve(system.forceOverLifetime.z.curve);
           break;
         case "Size":
-          result.Curve = system.sizeOverLifetime.size.curve;
+          result = new FastFloatCurve(system.sizeOverLifetime.size.curve);
           break;
         case "AngularVelocity":
-          result.Curve = system.rotationOverLifetime.x.curve;
+          result = new FastFloatCurve(system.rotationOverLifetime.x.curve);
           break;
         default:
           break;
       }
     }
-    public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FloatCurve result1, ref FloatCurve result2)
+    public static void GetParticleSystemValue(string paramName, ParticleSystem system, ref FastFloatCurve result1, ref FastFloatCurve result2)
     {
       if (system == null)
       {
@@ -204,52 +204,52 @@ namespace Waterfall
       switch (paramName)
       {
         case "StartSpeed":
-          result1.Curve = system.main.startSpeed.curveMin;
-          result2.Curve = system.main.startSpeed.curveMax;
+          result1 = new FastFloatCurve(system.main.startSpeed.curveMin);
+          result2 = new FastFloatCurve(system.main.startSpeed.curveMax);
           break;
         case "StartSize":
-          result1.Curve = system.main.startSize.curveMin;
-          result2.Curve = system.main.startSize.curveMax;
+          result1 = new FastFloatCurve(system.main.startSize.curveMin);
+          result2 = new FastFloatCurve(system.main.startSize.curveMax);
           break;
         case "StartLifetime":
-          result1.Curve = system.main.startLifetime.curveMin;
-          result2.Curve = system.main.startLifetime.curveMax;
+          result1 = new FastFloatCurve(system.main.startLifetime.curveMin);
+          result2 = new FastFloatCurve(system.main.startLifetime.curveMax);
           break;
         case "StartRotation":
-          result1.Curve = system.main.startRotation.curveMin;
-          result2.Curve = system.main.startRotation.curveMax;
+          result1 = new FastFloatCurve(system.main.startRotation.curveMin);
+          result2 = new FastFloatCurve(system.main.startRotation.curveMax);
           break;
         case "EmissionRateTime":
-          result1.Curve = system.emission.rateOverTime.curveMin;
-          result2.Curve = system.emission.rateOverTime.curveMax;
+          result1 = new FastFloatCurve(system.emission.rateOverTime.curveMin);
+          result2 = new FastFloatCurve(system.emission.rateOverTime.curveMax);
           break;
         case "LimitVelocityMaxSpeed":
-          result1.Curve = system.limitVelocityOverLifetime.limit.curveMin;
-          result2.Curve = system.limitVelocityOverLifetime.limit.curve;
+          result1 = new FastFloatCurve(system.limitVelocityOverLifetime.limit.curveMin);
+          result2 = new FastFloatCurve(system.limitVelocityOverLifetime.limit.curveMax);
           break;
         case "LimitVelocityDrag":
-          result1.Curve = system.limitVelocityOverLifetime.drag.curveMin;
-          result2.Curve = system.limitVelocityOverLifetime.drag.curveMax;
+          result1 = new FastFloatCurve(system.limitVelocityOverLifetime.drag.curveMin);
+          result2 = new FastFloatCurve(system.limitVelocityOverLifetime.drag.curveMax);
           break;
         case "ForceX":
-          result1.Curve = system.forceOverLifetime.x.curveMin;
-          result2.Curve = system.forceOverLifetime.x.curveMax;
+          result1 = new FastFloatCurve(system.forceOverLifetime.x.curveMin);
+          result2 = new FastFloatCurve(system.forceOverLifetime.x.curveMax);
           break;
         case "ForceY":
-          result1.Curve = system.forceOverLifetime.y.curveMin;
-          result2.Curve = system.forceOverLifetime.y.curveMax;
+          result1 = new FastFloatCurve(system.forceOverLifetime.y.curveMin);
+          result2 = new FastFloatCurve(system.forceOverLifetime.y.curveMax);
           break;
         case "ForceZ":
-          result1.Curve = system.forceOverLifetime.z.curveMin;
-          result2.Curve = system.forceOverLifetime.z.curveMax;
+          result1 = new FastFloatCurve(system.forceOverLifetime.z.curveMin);
+          result2 = new FastFloatCurve(system.forceOverLifetime.z.curveMax);
           break;
         case "Size":
-          result1.Curve = system.sizeOverLifetime.size.curveMin;
-          result2.Curve = system.sizeOverLifetime.size.curveMax;
+          result1 = new FastFloatCurve(system.sizeOverLifetime.size.curveMin);
+          result2 = new FastFloatCurve(system.sizeOverLifetime.size.curveMax);
           break;
         case "AngularVelocity":
-          result1.Curve = system.rotationOverLifetime.x.curveMin;
-          result2.Curve = system.rotationOverLifetime.x.curveMax;
+          result1 = new FastFloatCurve(system.rotationOverLifetime.x.curveMin);
+          result2 = new FastFloatCurve(system.rotationOverLifetime.x.curveMax);
           break;
         default:
           break;
@@ -583,7 +583,7 @@ namespace Waterfall
           break;
       }
     }
-    public static void SetParticleSystemValue(string paramName, ParticleSystem system, FloatCurve curve)
+    public static void SetParticleSystemValue(string paramName, ParticleSystem system, FastFloatCurve curve)
     {
       if (system == null)
         return;
@@ -638,7 +638,7 @@ namespace Waterfall
           break;
       }
     }
-    public static void SetParticleSystemValue(string paramName, ParticleSystem system, FloatCurve curve1, FloatCurve curve2)
+    public static void SetParticleSystemValue(string paramName, ParticleSystem system, FastFloatCurve curve1, FastFloatCurve curve2)
     {
       if (system == null)
         return;

@@ -16,7 +16,7 @@ namespace Waterfall.UI.EffectControllersUI
     private readonly int               texWidth  = 80;
     private readonly int               texHeight = 30;
     private          int               eventFlag;
-    private          FloatCurve        eventCurve;
+    private          FastFloatCurve        eventCurve;
     private          float             eventDuration = 2f;
     private          string            eventDurationString;
     private          Texture2D         miniCurve;
@@ -99,9 +99,9 @@ namespace Waterfall.UI.EffectControllersUI
         engineID = engineIDOptions[engineIndex]
       };
 
-    private void EditCurve(FloatCurve toEdit, CurveUpdateFunction function)
+    private void EditCurve(FastFloatCurve toEdit, CurveUpdateFunction function)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
+      Utils.Log($"Started editing curve {toEdit}", LogType.UI);
       WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
     }
 
@@ -110,7 +110,7 @@ namespace Waterfall.UI.EffectControllersUI
       miniCurve = GraphUtils.GenerateCurveTexture(texWidth, texHeight, eventCurve, Color.green);
     }
 
-    private void UpdateEventCurve(FloatCurve curve)
+    private void UpdateEventCurve(FastFloatCurve curve)
     {
       eventCurve = curve;
       GenerateCurveThumbs();

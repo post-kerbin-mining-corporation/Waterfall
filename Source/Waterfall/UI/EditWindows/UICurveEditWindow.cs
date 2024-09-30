@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
-  public delegate void CurveUpdateFunction(FloatCurve curve);
+  public delegate void CurveUpdateFunction(FastFloatCurve curve);
 
   public class UICurveEditWindow : UIPopupWindow
   {
@@ -16,7 +16,7 @@ namespace Waterfall.UI
     private       List<FloatString4> points = new();
 
 
-    public UICurveEditWindow(FloatCurve curveToEdit, bool show) : base(show)
+    public UICurveEditWindow(FastFloatCurve curveToEdit, bool show) : base(show)
     {
       Utils.Log($"Started editing curve {curveToEdit}");
 
@@ -25,11 +25,11 @@ namespace Waterfall.UI
         WindowPosition = new(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
 
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
     }
 
-    public UICurveEditWindow(FloatCurve curveToEdit, CurveUpdateFunction curveFun, bool show) : base(show)
+    public UICurveEditWindow(FastFloatCurve curveToEdit, CurveUpdateFunction curveFun, bool show) : base(show)
     {
       curveUpdateFun = curveFun;
       Utils.Log($"Started editing curve {curveToEdit}");
@@ -38,11 +38,11 @@ namespace Waterfall.UI
         WindowPosition = new(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
 
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
     }
 
-    public UICurveEditWindow(FloatCurve curveToEdit, UIModifierWindow modWin, string tag, bool show) : base(show)
+    public UICurveEditWindow(FastFloatCurve curveToEdit, UIModifierWindow modWin, string tag, bool show) : base(show)
     {
       modifier    = modWin;
       modifierTag = tag;
@@ -52,44 +52,44 @@ namespace Waterfall.UI
         WindowPosition = new(Screen.width / 2, Screen.height / 2, 678, 600);
       curve = curveToEdit;
 
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
     }
 
-    public void ChangeCurve(FloatCurve curveToEdit)
+    public void ChangeCurve(FastFloatCurve curveToEdit)
     {
       Utils.Log($"Started editing curve {curveToEdit}", LogType.UI);
       curve  = curveToEdit;
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
       GUI.BringWindowToFront(windowID);
     }
 
-    public void ChangeCurve(FloatCurve curveToEdit, CurveUpdateFunction curveFun)
+    public void ChangeCurve(FastFloatCurve curveToEdit, CurveUpdateFunction curveFun)
     {
       curveUpdateFun = curveFun;
       Utils.Log($"Started editing curve {curveToEdit}", LogType.UI);
       curve  = curveToEdit;
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
       GUI.BringWindowToFront(windowID);
     }
 
-    public void ChangeCurve(FloatCurve curveToEdit, UIModifierWindow modWin, string tag)
+    public void ChangeCurve(FastFloatCurve curveToEdit, UIModifierWindow modWin, string tag)
     {
       modifier    = modWin;
       modifierTag = tag;
       Utils.Log($"Started editing curve {curveToEdit}", LogType.UI);
       curve  = curveToEdit;
-      points = GraphUtils.FloatCurveToPoints(curveToEdit);
+      points = GraphUtils.FastFloatCurveToPoints(curveToEdit);
       UpdateCurve(out curve);
       showWindow = true;
       GUI.BringWindowToFront(windowID);
     }
 
-    public void UpdateCurve(out FloatCurve theCurve)
+    public void UpdateCurve(out FastFloatCurve theCurve)
     {
       theCurve = new();
       foreach (var v in points)
@@ -97,7 +97,7 @@ namespace Waterfall.UI
         theCurve.Add(v.floats.x, v.floats.y, v.floats.z, v.floats.w);
       }
 
-      theCurve.FindMinMaxValue(out minY, out maxY);
+      theCurve.FindMinMax(out float minTime, out minY, out float maxTime, out maxY);
       curve = theCurve;
       curveUpdateFun(curve);
       //WaterfallUI.Instance.UpdateCurve(curve);
@@ -107,9 +107,9 @@ namespace Waterfall.UI
 
 
     //
-    public bool Compare(FloatCurve toCompare)
+    public bool Compare(FastFloatCurve toCompare)
     {
-      if (GraphUtils.FloatCurveToPoints(toCompare) != points)
+      if (GraphUtils.FastFloatCurveToPoints(toCompare) != points)
       {
         return false;
       }
@@ -117,7 +117,7 @@ namespace Waterfall.UI
       return true;
     }
 
-    public FloatCurve GetCurve() => curve;
+    public FastFloatCurve GetCurve() => curve;
 
     protected virtual void DrawHeader()
     {
@@ -327,7 +327,7 @@ namespace Waterfall.UI
 
     #region Data
 
-    private   FloatCurve          curve;
+    private   FastFloatCurve          curve;
     protected UIModifierWindow    modifier;
     protected string              modifierTag;
     protected CurveUpdateFunction curveUpdateFun;

@@ -10,7 +10,7 @@ namespace Waterfall
   public class RemapController : WaterfallController
   {
     [Persistent] public string sourceController = "";
-    public FloatCurve mappingCurve = new();
+    public FastFloatCurve mappingCurve = new();
 
     private WaterfallController source;
 

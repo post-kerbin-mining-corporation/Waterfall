@@ -15,7 +15,7 @@ namespace Waterfall.UI
       lightIndex = lightNames.ToList().FindIndex(x => x == colorMod.lightTransformName);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag) { }
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag) { }
 
     /// <summary>
     ///   Initialize the UI widgets, do localization, set up styles

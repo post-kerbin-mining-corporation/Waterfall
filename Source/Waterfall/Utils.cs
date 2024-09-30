@@ -75,14 +75,10 @@ namespace Waterfall
     }
 
 
-    public static Gradient CreateGradientFromCurves(FloatCurve r, FloatCurve g, FloatCurve b, FloatCurve a, out float lower, out float upper, float timeMergeTolerance = 0.01f)
+    public static Gradient CreateGradientFromCurves(FastFloatCurve r, FastFloatCurve g, FastFloatCurve b, FastFloatCurve a, out float lower, out float upper, float timeMergeTolerance = 0.01f)
     {
 
       // Need to convert real space keys into gradient space keys (0-1)
-      Keyframe[] redKeys = r.Curve.keys;
-      Keyframe[] greenKeys = g.Curve.keys;
-      Keyframe[] blueKeys = b.Curve.keys;
-      Keyframe[] alphaKeys = a.Curve.keys;
 
       float rCurveMax = 1f;
       float rCurveMin = 0f;
@@ -93,25 +89,25 @@ namespace Waterfall
       float aCurveMax = 1f;
       float aCurveMin = 0f;
 
-      if (r.Curve.length > 0)
+      if (r.KeyCount > 0)
       {
-        rCurveMax = redKeys[redKeys.Length - 1].time;
-        rCurveMin = redKeys[0].time;
+        rCurveMax = r[r.KeyCount - 1].time;
+        rCurveMin = r[0].time;
       }
-      if (g.Curve.length > 0)
+      if (g.KeyCount > 0)
       {
-        gCurveMax = greenKeys[greenKeys.Length - 1].time;
-        gCurveMin = greenKeys[0].time;
+        gCurveMax = g[g.KeyCount - 1].time;
+        gCurveMin = g[0].time;
       }
-      if (b.Curve.length > 0)
+      if (b.KeyCount > 0)
       {
-        bCurveMax = blueKeys[blueKeys.Length - 1].time;
-        bCurveMin = blueKeys[0].time;
+        bCurveMax = b[b.KeyCount - 1].time;
+        bCurveMin = b[0].time;
       }
-      if (a.Curve.length > 0)
+      if (a.KeyCount > 0)
       {
-        aCurveMax = alphaKeys[alphaKeys.Length - 1].time;
-        aCurveMin = alphaKeys[0].time;
+        aCurveMax = a[a.KeyCount - 1].time;
+        aCurveMin = a[0].time;
       }
 
       lower = Mathf.Min(rCurveMin, gCurveMin, bCurveMin, aCurveMin);
@@ -122,21 +118,21 @@ namespace Waterfall
 
       Gradient grad = new();
       List<GradientColorKey> gradientColorKeys = new List<GradientColorKey>();
-      GradientAlphaKey[] gradientAlphaKeys = new GradientAlphaKey[alphaKeys.Length];
+      GradientAlphaKey[] gradientAlphaKeys = new GradientAlphaKey[a.KeyCount];
 
-      for (int i = 0; i < redKeys.Length; i++)
+      for (int i = 0; i < r.KeyCount; i++)
       {
-        float adjTime = (redKeys[i].time - offset) * gain;
+        float adjTime = (r[i].time - offset) * gain;
         GradientColorKey newKey = new(
-          new Color(redKeys[i].value, g.Evaluate(redKeys[i].time), b.Evaluate(redKeys[i].time)),
+          new Color(r[i].value, g.Evaluate(r[i].time), b.Evaluate(r[i].time)),
           adjTime
           );
         gradientColorKeys.Add(newKey);
       }
 
-      for (int i = 0; i < greenKeys.Length; i++)
+      for (int i = 0; i < g.KeyCount; i++)
       {
-        float adjTime = (greenKeys[i].time - offset) * gain;
+        float adjTime = (g[i].time - offset) * gain;
 
         bool skip = false;
         foreach (GradientColorKey checkKey in gradientColorKeys)
@@ -148,15 +144,15 @@ namespace Waterfall
         if (!skip)
         {
           GradientColorKey newKey = new(
-            new Color(r.Evaluate(greenKeys[i].time), greenKeys[i].value, b.Evaluate(greenKeys[i].time)),
+            new Color(r.Evaluate(g[i].time), g[i].value, b.Evaluate(g[i].time)),
             adjTime
             );
           gradientColorKeys.Add(newKey);
         }
       }
-      for (int i = 0; i < blueKeys.Length; i++)
+      for (int i = 0; i < b.KeyCount; i++)
       {
-        float adjTime = (blueKeys[i].time - offset) * gain;
+        float adjTime = (b[i].time - offset) * gain;
 
         bool skip = false;
         foreach (GradientColorKey checkKey in gradientColorKeys)
@@ -168,20 +164,20 @@ namespace Waterfall
         if (!skip)
         {
           GradientColorKey newKey = new(
-            new Color(r.Evaluate(blueKeys[i].time), g.Evaluate(blueKeys[i].time), blueKeys[i].value),
+            new Color(r.Evaluate(b[i].time), g.Evaluate(b[i].time), b[i].value),
             adjTime
             );
           gradientColorKeys.Add(newKey);
         }
       }
-      for (int i = 0; i < alphaKeys.Length; i++)
+      for (int i = 0; i < a.KeyCount; i++)
       {
-        gradientAlphaKeys[i] = new(alphaKeys[i].value, (alphaKeys[i].time - offset) * gain);
+        gradientAlphaKeys[i] = new(a[i].value, (a[i].time - offset) * gain);
       }
       grad.SetKeys(gradientColorKeys.ToArray(), gradientAlphaKeys);
       return grad;
     }
-    public static void CreateCurvesFromGradient(Gradient gradient, out FloatCurve r, out FloatCurve g, out FloatCurve b, out FloatCurve a, float lower = 0f, float upper = 1f)
+    public static void CreateCurvesFromGradient(Gradient gradient, out FastFloatCurve r, out FastFloatCurve g, out FastFloatCurve b, out FastFloatCurve a, float lower = 0f, float upper = 1f)
     {
       /// Put 0-1 gradient keys into real space
       float offset = 0 - lower;
@@ -201,7 +197,7 @@ namespace Waterfall
         a.Add(key.time * gain + offset, key.alpha);
       }
     }
-    public static ConfigNode SerializeFloatCurve(string name, FloatCurve curve)
+    public static ConfigNode SerializeFloatCurve(string name, FastFloatCurve curve)
     {
       ConfigNode node = new();
       curve.Save(node);
@@ -210,7 +206,7 @@ namespace Waterfall
     }
     public static ConfigNode SerializeGradient(string name, Gradient gradient, float lower = 0f, float upper = 1f)
     {
-      CreateCurvesFromGradient(gradient, out FloatCurve r, out FloatCurve g, out FloatCurve b, out FloatCurve a, lower, upper);
+      CreateCurvesFromGradient(gradient, out FastFloatCurve r, out FastFloatCurve g, out FastFloatCurve b, out FastFloatCurve a, lower, upper);
 
       ConfigNode node = new();
       node.name = name;
@@ -237,10 +233,10 @@ namespace Waterfall
     }
     public static bool TryParseGradient(this ConfigNode node, ref Gradient result)
     {
-      FloatCurve rCurve = new();
-      FloatCurve gCurve = new();
-      FloatCurve bCurve = new();
-      FloatCurve aCurve = new();
+      FastFloatCurve rCurve = new();
+      FastFloatCurve gCurve = new();
+      FastFloatCurve bCurve = new();
+      FastFloatCurve aCurve = new();
       ConfigNode curveNode = new();
 
       bool failed = false;

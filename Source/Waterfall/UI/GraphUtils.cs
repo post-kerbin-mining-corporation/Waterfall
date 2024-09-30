@@ -7,14 +7,14 @@ namespace Waterfall.UI
   public static class GraphUtils
   {
     /// <summary>
-    ///   Convertes a FloatCurve into a list of FloatString points
+    ///   Convertes a FastFloatCurve into a list of FloatString points
     /// </summary>
     /// <param name="inCurve"></param>
     /// <returns></returns>
-    public static List<FloatString4> FloatCurveToPoints(FloatCurve inCurve)
+    public static List<FloatString4> FastFloatCurveToPoints(FastFloatCurve inCurve)
     {
       var outPoints = new List<FloatString4>();
-      foreach (var kf in inCurve.Curve.keys)
+      foreach (var kf in inCurve)
       {
         outPoints.Add(new(kf.time, kf.value, kf.inTangent, kf.outTangent));
       }
@@ -71,7 +71,7 @@ namespace Waterfall.UI
       return newPoints;
     }
 
-    public static Texture2D GenerateCurveTexture(int texWidth, int texHeight, FloatCurve curve, Color curveColor)
+    public static Texture2D GenerateCurveTexture(int texWidth, int texHeight, FastFloatCurve curve, Color curveColor)
     {
       var   tex  = new Texture2D(texWidth, texHeight, TextureFormat.ARGB32, false, true);
       float minY = Single.MaxValue;

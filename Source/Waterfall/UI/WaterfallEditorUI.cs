@@ -646,7 +646,7 @@ namespace Waterfall.UI
 
     }
 
-    public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit)
+    public UICurveEditWindow OpenCurveEditor(FastFloatCurve toEdit)
     {
       if (curveEditWindow != null)
       {
@@ -660,7 +660,7 @@ namespace Waterfall.UI
       return curveEditWindow;
     }
 
-    public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, CurveUpdateFunction curveFun)
+    public UICurveEditWindow OpenCurveEditor(FastFloatCurve toEdit, CurveUpdateFunction curveFun)
     {
       if (curveEditWindow != null)
       {
@@ -687,7 +687,7 @@ namespace Waterfall.UI
       return gradientEditWindow;
     }
 
-    public UICurveEditWindow OpenCurveEditor(FloatCurve toEdit, UIModifierWindow modWin, string tag)
+    public UICurveEditWindow OpenCurveEditor(FastFloatCurve toEdit, UIModifierWindow modWin, string tag)
     {
       currentModWinForCurve = modWin;
       currentCurveTag = tag;
@@ -862,7 +862,7 @@ namespace Waterfall.UI
     }
 
 
-    public void UpdateCurve(FloatCurve curve)
+    public void UpdateCurve(FastFloatCurve curve)
     {
       // update the curve
       currentModWinForCurve.UpdateCurves(curve, currentCurveTag);

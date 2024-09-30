@@ -19,7 +19,7 @@ namespace Waterfall.UI
       GenerateCurveThumbs(mod);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag)
     {
       base.UpdateCurves(newCurve, tag);
     }
@@ -140,13 +140,13 @@ namespace Waterfall.UI
       GenerateCurveThumbs(particleMod);
     }
 
-    protected void UpdateCurve1(FloatCurve curve)
+    protected void UpdateCurve1(FastFloatCurve curve)
     {
       particleMod.curve1 = curve;
       UpdateModifierPanel();
     }
 
-    protected void UpdateCurve2(FloatCurve curve)
+    protected void UpdateCurve2(FastFloatCurve curve)
     {
       particleMod.curve2 = curve;
       UpdateModifierPanel();

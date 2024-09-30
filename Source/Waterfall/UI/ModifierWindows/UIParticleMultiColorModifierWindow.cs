@@ -41,7 +41,7 @@ namespace Waterfall.UI
       GenerateThumbs(mod);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag)
     {
       base.UpdateCurves(newCurve, tag);
     }

@@ -10,8 +10,8 @@ namespace Waterfall
   {
     protected override string ConfigNodeName => WaterfallConstants.UVScrollModifierNodeName;
 
-    public FloatCurve scrollCurveX = new();
-    public FloatCurve scrollCurveY = new();
+    public FastFloatCurve scrollCurveX = new();
+    public FastFloatCurve scrollCurveY = new();
     [Persistent] public string textureName;
     private Material[] m;
     public override bool ValidForIntegrator => false;

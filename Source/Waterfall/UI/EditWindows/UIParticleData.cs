@@ -38,8 +38,8 @@ namespace Waterfall.UI
     public string constant1String;
     public string constant2String;
 
-    public FloatCurve curve1;
-    public FloatCurve curve2;
+    public FastFloatCurve curve1;
+    public FastFloatCurve curve2;
 
     protected ParticleSystemCurveMode curveMode;
 
@@ -69,8 +69,8 @@ namespace Waterfall.UI
 
     protected void InitParticleData()
     {
-      curve1 = new FloatCurve();
-      curve2 = new FloatCurve();
+      curve1 = new FastFloatCurve();
+      curve2 = new FastFloatCurve();
       if (curveMode == ParticleSystemCurveMode.Constant)
       {
         ParticleUtils.GetParticleSystemValue(name, particle.systems[0], out constant1);
@@ -259,12 +259,12 @@ namespace Waterfall.UI
       GUI.DrawTexture(imageRect, miniCurve2);
       GUILayout.EndHorizontal();
     }
-    protected void EditCurve(FloatCurve toEdit, CurveUpdateFunction updateFunction)
+    protected void EditCurve(FastFloatCurve toEdit, CurveUpdateFunction updateFunction)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
+      Utils.Log($"Started editing curve {toEdit}", LogType.UI);
       WaterfallUI.Instance.OpenCurveEditor(toEdit, updateFunction);
     }
-    protected void UpdateCurve1(FloatCurve curve)
+    protected void UpdateCurve1(FastFloatCurve curve)
     {
       curve1 = curve;
       if (curveMode == ParticleSystemCurveMode.Curve)
@@ -277,7 +277,7 @@ namespace Waterfall.UI
       }
       GenerateCurveThumbs();
     }
-    protected void UpdateCurve2(FloatCurve curve)
+    protected void UpdateCurve2(FastFloatCurve curve)
     {
       curve2 = curve;
       if (curveMode == ParticleSystemCurveMode.TwoCurves)
