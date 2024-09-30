@@ -22,7 +22,7 @@ namespace Waterfall
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      baseRotation = xforms[0].localEulerAngles;
+      baseRotation = xforms.Count == 0 ? Vector3.zero : xforms[0].localEulerAngles;
     }
 
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectRotationIntegrator && integrator.transformName == transformName;

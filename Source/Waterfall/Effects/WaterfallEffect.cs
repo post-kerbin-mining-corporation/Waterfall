@@ -253,14 +253,14 @@ namespace Waterfall
         effectTransforms.Add(effectTransform);
       }
 
-      if (effectTransforms.Count == 0)
-      {
-        return false;
-      }
-
       foreach (var fx in fxModifiers)
       {
         fx.Init(this);
+      }
+
+      if (effectTransforms.Count == 0)
+      {
+        return false;
       }
 
       effectRenderers.Clear();
