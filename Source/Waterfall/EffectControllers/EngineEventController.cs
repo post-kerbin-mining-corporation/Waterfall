@@ -70,14 +70,12 @@ namespace Waterfall
       }
     }
 
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
-      values[0] = 0;
       if (engineModule != null && getEngineStateFunc != null)
-        values[0] = eventCurve.Evaluate(CheckStateChange());
-      //Utils.Log($"{eventName} =>_ Ready: {eventReady}, prestate {enginePreState}, time {eventTime}, playing {eventPlaying}");
+        return eventCurve.Evaluate(CheckStateChange());
 
-      return values[0] > 0;
+      return 0;
     }
 
     public float CheckStateChange()
