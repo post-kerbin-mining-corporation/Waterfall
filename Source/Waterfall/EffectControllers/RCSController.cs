@@ -60,9 +60,14 @@ namespace Waterfall
         {
           int transformIndex = activeTransformIndices[valueIndex];
           float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
-          float responseRate = newThrottle > values[valueIndex] ? responseRateUp : responseRateDown;
-          values[valueIndex] = Mathf.MoveTowards(values[valueIndex], newThrottle, responseRate * TimeWarp.deltaTime);
-          awake = awake || newThrottle != 0;
+          float oldValue = values[valueIndex];
+          
+          if (!ApproximatelyEqual(oldValue, newThrottle))
+          {
+            float responseRate = newThrottle > oldValue ? responseRateUp : responseRateDown;
+            values[valueIndex] = Mathf.MoveTowards(oldValue, newThrottle, responseRate * TimeWarp.deltaTime);
+            awake = true;
+          }
         }
       }
 

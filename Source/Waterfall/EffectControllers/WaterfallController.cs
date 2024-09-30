@@ -18,7 +18,7 @@ namespace Waterfall
 
     public ModuleWaterfallFX ParentModule => parentModule;
 
-    public bool awake { get; protected set; }
+    public bool awake;
 
     public bool overridden
     {
@@ -72,13 +72,18 @@ namespace Waterfall
 
     protected virtual float UpdateSingleValue() { return values[0]; }
 
+    protected static bool ApproximatelyEqual(float a, float b)
+    {
+      return Mathf.Abs(a - b) < 1e-4f;
+    }
+
     /// <summary>
     /// Get and store the value of the controller.  Consumers should call Get() to retrieve the data.
     /// </summary>
     protected virtual bool UpdateInternal()
     {
       float newValue = UpdateSingleValue();
-      if (Mathf.Approximately(newValue, values[0]))
+      if (ApproximatelyEqual(newValue, values[0]))
       {
         return false;
       }
