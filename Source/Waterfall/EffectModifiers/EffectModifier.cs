@@ -162,13 +162,15 @@ namespace Waterfall
       integrator = null;
     }
 
-    protected void UpdateRandomValue()
+    protected bool UpdateRandomValue()
     {
       if (useRandomness && randomController != null)
       {
         float[] controllerData = randomController.Get();
         randomValue = controllerData[0] * randomnessScale;
+        return true;
       }
+      return false;
     }
   }
 
@@ -180,6 +182,7 @@ namespace Waterfall
     public FloatCurve aCurve = new();
 
     Color[] output;
+    Color[] outputWithRandom;
 
     public EffectModifier_Color() : base() { }
     public EffectModifier_Color(ConfigNode node) : base(node) { }
@@ -210,6 +213,7 @@ namespace Waterfall
       base.Init(effect);
 
       output = new Color[xforms.Count];
+      outputWithRandom = new Color[xforms.Count];
     }
 
     public Color[] Get()
@@ -223,24 +227,36 @@ namespace Waterfall
           for (int i = 0; i < output.Length; i++)
           {
             float inValue = input[i];
-            output[i] = new(rCurve.Evaluate(inValue) + randomValue,
-                            gCurve.Evaluate(inValue) + randomValue,
-                            bCurve.Evaluate(inValue) + randomValue,
-                            aCurve.Evaluate(inValue) + randomValue);
+            output[i] = new(rCurve.Evaluate(inValue),
+                            gCurve.Evaluate(inValue),
+                            bCurve.Evaluate(inValue),
+                            aCurve.Evaluate(inValue));
           }
         }
         else if (input.Length == 1)
         {
           float inValue = input[0];
           Color color = new Color(
-            rCurve.Evaluate(inValue) + randomValue,
-            gCurve.Evaluate(inValue) + randomValue,
-            bCurve.Evaluate(inValue) + randomValue,
-            aCurve.Evaluate(inValue) + randomValue);
+            rCurve.Evaluate(inValue),
+            gCurve.Evaluate(inValue),
+            bCurve.Evaluate(inValue),
+            aCurve.Evaluate(inValue));
           for (int i = 0; i < output.Length; i++)
             output[i] = color;
         }
       }
+
+      if (UpdateRandomValue())
+      {
+        Color randomColor = new Color(randomValue, randomValue, randomValue, randomValue);
+
+        for (int i = output.Length; i-- > 0;)
+        {
+          outputWithRandom[i] = output[i] + randomColor;
+        }
+        return outputWithRandom;
+      }
+
       return output;
     }
   }
@@ -250,6 +266,7 @@ namespace Waterfall
     public FloatCurve xCurve = new();
     public FloatCurve yCurve = new();
     Vector2[] output;
+    Vector2[] outputWithRandom;
 
     public EffectModifier_Vector2() : base() { }
     public EffectModifier_Vector2(ConfigNode node) : base(node) { }
@@ -274,6 +291,7 @@ namespace Waterfall
     {
       base.Init(effect);
       output = new Vector2[xforms.Count];
+      outputWithRandom = new Vector2[xforms.Count];
     }
 
     public Vector2[] Get()
@@ -287,20 +305,31 @@ namespace Waterfall
           for (int i = 0; i < xforms.Count; i++)
           {
             float inValue = input[i];
-            output[i] = new(xCurve.Evaluate(inValue) + randomValue,
-                            yCurve.Evaluate(inValue) + randomValue);
+            output[i] = new(xCurve.Evaluate(inValue),
+                            yCurve.Evaluate(inValue));
           }
         }
         else if (input.Length == 1)
         {
           float inValue = input[0];
           Vector2 vec = new(
-            xCurve.Evaluate(inValue) + randomValue,
-            yCurve.Evaluate(inValue) + randomValue);
+            xCurve.Evaluate(inValue),
+            yCurve.Evaluate(inValue));
           for (int i = 0; i < xforms.Count; i++)
             output[i] = vec;
         }
       }
+
+      if (UpdateRandomValue())
+      {
+        Vector2 randomVector = new Vector2(randomValue, randomValue); // pretty suspect, but this is what it did before...
+        for (int i = output.Length; i-- > 0;)
+        {
+          outputWithRandom[i] = output[i] + randomVector;
+        }
+        return outputWithRandom;
+      }
+
       return output;
     }
   }
@@ -310,6 +339,7 @@ namespace Waterfall
     public FloatCurve yCurve = new();
     public FloatCurve zCurve = new();
     Vector3[] output;
+    Vector3[] outputWithRandom;
 
     public EffectModifier_Vector3() : base() { }
     public EffectModifier_Vector3(ConfigNode node) : base(node) { }
@@ -336,12 +366,14 @@ namespace Waterfall
     {
       base.Init(effect);
       output = new Vector3[xforms.Count];
+      outputWithRandom = new Vector3[xforms.Count];
     }
 
     public Vector3[] Get()
     {
       if (Controller.awake)
       {
+        UpdateRandomValue();
         float[] input = Controller.Get();
 
         if (input.Length > 1)
@@ -349,21 +381,32 @@ namespace Waterfall
           for (int i = 0; i < xforms.Count; i++)
           {
             float inValue = input[i];
-            output[i] = new(xCurve.Evaluate(inValue) + randomValue,
-                            yCurve.Evaluate(inValue) + randomValue,
-                            zCurve.Evaluate(inValue) + randomValue);
+            output[i] = new(xCurve.Evaluate(inValue),
+                            yCurve.Evaluate(inValue),
+                            zCurve.Evaluate(inValue));
           }
         }
         else if (input.Length == 1)
         {
           float inValue = input[0];
           Vector3 vec = new(
-            xCurve.Evaluate(inValue) + randomValue,
-            yCurve.Evaluate(inValue) + randomValue,
-            zCurve.Evaluate(inValue) + randomValue);
+            xCurve.Evaluate(inValue),
+            yCurve.Evaluate(inValue),
+            zCurve.Evaluate(inValue));
           for (int i = 0; i < xforms.Count; i++)
             output[i] = vec;
         }
+      }
+
+      if (UpdateRandomValue())
+      {
+        // this sure will be terrible if used for a position....
+        Vector3 randomVector = new Vector3(randomValue, randomValue, randomValue);
+        for (int i = output.Length; i-- > 0;)
+        {
+          outputWithRandom[i] = output[i] + randomVector;
+        }
+        return outputWithRandom;
       }
 
       return output;
@@ -374,6 +417,7 @@ namespace Waterfall
   {
     public FloatCurve curve = new();
     float[] output;
+    float[] outputWithRandom;
 
     public EffectModifier_Float() : base() { }
     public EffectModifier_Float(ConfigNode node) : base(node) { }
@@ -394,6 +438,7 @@ namespace Waterfall
     {
       base.Init(effect);
       output = new float[xforms.Count];
+      outputWithRandom = new float[xforms.Count];
     }
 
     public float[] Get()
@@ -404,14 +449,23 @@ namespace Waterfall
         if (input.Length > 1)
         {
           for (int i = 0; i < output.Length; i++)
-            output[i] = curve.Evaluate(input[i]) + randomValue;
+            output[i] = curve.Evaluate(input[i]);
         }
         else if (input.Length == 1)
         {
-          float data = curve.Evaluate(input[0]) + randomValue;
+          float data = curve.Evaluate(input[0]);
           for (int i = 0; i < output.Length; i++)
             output[i] = data;
         }
+      }
+
+      if (UpdateRandomValue())
+      {
+        for (int i = output.Length; i-- > 0;)
+        {
+          outputWithRandom[i] = output[i] + randomValue;
+        }
+        return outputWithRandom;
       }
 
       return output;
