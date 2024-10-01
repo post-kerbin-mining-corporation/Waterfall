@@ -10,8 +10,8 @@ namespace Waterfall
     public float const1 = 0f;
     public float const2 = 0f;
 
-    public FloatCurve curve1 = new();
-    public FloatCurve curve2 = new();
+    public FastFloatCurve curve1 = new();
+    public FastFloatCurve curve2 = new();
     public MultiNumericData() { }
     public MultiNumericData(float c1)
     {
@@ -24,12 +24,12 @@ namespace Waterfall
       const1 = c1;
       const2 = c2;
     }
-    public MultiNumericData(FloatCurve c1)
+    public MultiNumericData(FastFloatCurve c1)
     {
       mode = ParticleSystemCurveMode.Curve;
       curve1 = c1;
     }
-    public MultiNumericData(FloatCurve c1, FloatCurve c2)
+    public MultiNumericData(FastFloatCurve c1, FastFloatCurve c2)
     {
       mode = ParticleSystemCurveMode.TwoCurves;
       curve1 = c1;
@@ -130,15 +130,15 @@ namespace Waterfall
       }
       if (curveMode == ParticleSystemCurveMode.Curve)
       {
-        FloatCurve c1 = new();
-        FloatCurve c2 = new();
+        FastFloatCurve c1 = new();
+        FastFloatCurve c2 = new();
         ParticleUtils.GetParticleSystemValue(paramName, sys, ref c1);
         valueStruct = new(c1, c2);
       }
       if (curveMode == ParticleSystemCurveMode.TwoCurves)
       {
-        FloatCurve c1 = new();
-        FloatCurve c2 = new();
+        FastFloatCurve c1 = new();
+        FastFloatCurve c2 = new();
         ParticleUtils.GetParticleSystemValue(paramName, sys, ref c1);
         ParticleUtils.GetParticleSystemValue(paramName, sys, ref c2);
         valueStruct = new(c1, c2);

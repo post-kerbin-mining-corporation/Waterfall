@@ -165,10 +165,10 @@ namespace Waterfall
 
   public abstract class EffectModifier_Color : EffectModifier
   {
-    public FloatCurve rCurve = new();
-    public FloatCurve gCurve = new();
-    public FloatCurve bCurve = new();
-    public FloatCurve aCurve = new();
+    public FastFloatCurve rCurve = new();
+    public FastFloatCurve gCurve = new();
+    public FastFloatCurve bCurve = new();
+    public FastFloatCurve aCurve = new();
 
     Color[] output;
 
@@ -238,8 +238,8 @@ namespace Waterfall
 
   public abstract class EffectModifier_Vector2 : EffectModifier
   {
-    public FloatCurve xCurve = new();
-    public FloatCurve yCurve = new();
+    public FastFloatCurve xCurve = new();
+    public FastFloatCurve yCurve = new();
     Vector2[] output;
 
     public EffectModifier_Vector2() : base() { }
@@ -297,9 +297,9 @@ namespace Waterfall
   }
   public abstract class EffectModifier_Vector3 : EffectModifier
   {
-    public FloatCurve xCurve = new();
-    public FloatCurve yCurve = new();
-    public FloatCurve zCurve = new();
+    public FastFloatCurve xCurve = new();
+    public FastFloatCurve yCurve = new();
+    public FastFloatCurve zCurve = new();
     Vector3[] output;
 
     public EffectModifier_Vector3() : base() { }
@@ -363,7 +363,7 @@ namespace Waterfall
 
   public abstract class EffectModifier_Float : EffectModifier
   {
-    public FloatCurve curve = new();
+    public FastFloatCurve curve = new();
     float[] output;
 
     public EffectModifier_Float() : base() { }

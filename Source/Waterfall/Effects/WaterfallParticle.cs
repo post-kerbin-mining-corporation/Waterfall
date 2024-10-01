@@ -194,7 +194,7 @@ namespace Waterfall
     /// </summary>
     /// <param name="propertyName"></param>
     /// <param name="value"></param>
-    public void SetParticleValue(string propertyName, FloatCurve value)
+    public void SetParticleValue(string propertyName, FastFloatCurve value)
     {
       var prop = pProperties.Find(x => x.propertyName == propertyName);
       if (prop is WaterfallParticleNumericProperty t && prop != null)
@@ -224,7 +224,7 @@ namespace Waterfall
     /// <param name="propertyName"></param>
     /// <param name="value1"></param>
     /// <param name="value2"></param>
-    public void SetParticleValue(string propertyName, FloatCurve value1, FloatCurve value2)
+    public void SetParticleValue(string propertyName, FastFloatCurve value1, FastFloatCurve value2)
     {
       var prop = pProperties.Find(x => x.propertyName == propertyName);
       if (prop is WaterfallParticleNumericProperty t && prop != null)
@@ -382,8 +382,8 @@ namespace Waterfall
     {
       float value1;
       float value2;
-      FloatCurve curve1 = new();
-      FloatCurve curve2 = new();
+      FastFloatCurve curve1 = new();
+      FastFloatCurve curve2 = new();
       var prop = pProperties.Find(x => x.propertyName == propertyName);
       WaterfallParticleNumericProperty numProp;
       if (prop != null)

@@ -28,8 +28,8 @@ namespace Waterfall
     public float constant1Value;
     public float constant2Value;
 
-    public FloatCurve curve1Value;
-    public FloatCurve curve2Value;
+    public FastFloatCurve curve1Value;
+    public FastFloatCurve curve2Value;
 
     public ParticleSystemCurveMode curveMode;
 

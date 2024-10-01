@@ -123,19 +123,19 @@ namespace Waterfall.UI
     }
 
 
-    protected void UpdateXCurve(FloatCurve curve)
+    protected void UpdateXCurve(FastFloatCurve curve)
     {
       scaleMod.xCurve = curve;
       UpdateModifierPanel();
     }
 
-    protected void UpdateYCurve(FloatCurve curve)
+    protected void UpdateYCurve(FastFloatCurve curve)
     {
       scaleMod.yCurve = curve;
       UpdateModifierPanel();
     }
 
-    protected void UpdateZCurve(FloatCurve curve)
+    protected void UpdateZCurve(FastFloatCurve curve)
     {
       scaleMod.zCurve = curve;
       UpdateModifierPanel();

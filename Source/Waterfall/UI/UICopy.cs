@@ -7,10 +7,10 @@ namespace Waterfall
 {
   public static class UICopy
   {
-    public static FloatCurve        CurveCopyBuffer;
+    public static FastFloatCurve        CurveCopyBuffer;
     public static List<ColorSwatch> ColorSwatches    = new List<ColorSwatch>();
 
-    public static void CopyFloatCurve(FloatCurve curve)
+    public static void CopyFastFloatCurve(FastFloatCurve curve)
     {
       CurveCopyBuffer = curve;
     }

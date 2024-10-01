@@ -7,14 +7,14 @@ namespace Waterfall
   {
     [Persistent] public string paramName = "_TintColor";
 
-    public FloatCurve c1RedCurve = new();
-    public FloatCurve c2RedCurve = new();
-    public FloatCurve c1GreenCurve = new();
-    public FloatCurve c2GreenCurve = new();
-    public FloatCurve c1BlueCurve = new();
-    public FloatCurve c2BlueCurve = new();
-    public FloatCurve c1AlphaCurve = new();
-    public FloatCurve c2AlphaCurve = new();
+    public FastFloatCurve c1RedCurve = new();
+    public FastFloatCurve c2RedCurve = new();
+    public FastFloatCurve c1GreenCurve = new();
+    public FastFloatCurve c2GreenCurve = new();
+    public FastFloatCurve c1BlueCurve = new();
+    public FastFloatCurve c2BlueCurve = new();
+    public FastFloatCurve c1AlphaCurve = new();
+    public FastFloatCurve c2AlphaCurve = new();
 
     public ParticleSystemGradientMode curveMode;
 
