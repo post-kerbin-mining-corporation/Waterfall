@@ -23,6 +23,7 @@ namespace Waterfall
 
     private readonly Renderer[] renderers;
     private readonly Material[] materials;
+    private float[] lastValues;
 
     public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
     {
@@ -30,6 +31,7 @@ namespace Waterfall
       floatName = floatMod.floatName;
       renderers = new Renderer[xforms.Count];
       materials = new Material[xforms.Count];
+      lastValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -43,6 +45,7 @@ namespace Waterfall
         else if (renderers[i].material.HasProperty(floatPropertyID))
         {
           initialValues[i] = renderers[i].material.GetFloat(floatPropertyID);
+          lastValues[i] = initialValues[i];
           materials[i] = renderers[i].material;
         }
         else
@@ -59,15 +62,18 @@ namespace Waterfall
       if (testIntensity)
       {
         anyActive = false;
-        for (int i = 0; i < renderers.Length; i++)
+        for (int i = renderers.Length; i-- > 0;)
         {
-          var rend = renderers[i];
           float val = workingValues[i];
-          bool shouldBeVisible = val >= Settings.MinimumEffectIntensity;
+          float lastValue = lastValues[i];
+          if (Utils.ApproximatelyEqual(val, lastValue)) continue;
 
-          if (rend.enabled != shouldBeVisible)
+          bool shouldBeVisible = val >= Settings.MinimumEffectIntensity;
+          bool wasVisible = lastValue >= Settings.MinimumEffectIntensity;
+
+          if (wasVisible != shouldBeVisible)
           {
-            rend.enabled = shouldBeVisible;
+            renderers[i].enabled = shouldBeVisible;
           }
 
           if (shouldBeVisible)
@@ -75,18 +81,21 @@ namespace Waterfall
             materials[i].SetFloat(floatPropertyID, val);
             anyActive = true;
           }
+
+          lastValues[i] = val;
         }
       }
       else
       {
         anyActive = true;
-        for (int i = 0; i < renderers.Length; i++)
+        for (int i = renderers.Length; i-- > 0;)
         {
-          var rend = renderers[i];
           float val = workingValues[i];
+          float lastValue = lastValues[i];
+          if (Utils.ApproximatelyEqual(val, lastValue)) continue;
 
-          if (rend.enabled)
-            materials[i].SetFloat(floatPropertyID, val);
+          materials[i].SetFloat(floatPropertyID, val);
+          lastValues[i] = val;
         }
       }
 
