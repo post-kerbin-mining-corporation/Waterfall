@@ -22,6 +22,7 @@ namespace Waterfall
     }
 
     private readonly Renderer[] r;
+    private readonly Material[] materials;
 
     public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
     {
@@ -29,6 +30,7 @@ namespace Waterfall
       floatName        = floatMod.floatName;
 
       r                  = new Renderer[xforms.Count];
+      materials = new Material[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -42,6 +44,7 @@ namespace Waterfall
         else if (r[i].material.HasProperty(floatPropertyID))
         {
           initialValues[i] = r[i].material.GetFloat(floatPropertyID);
+          materials[i] = r[i].material;
         }
         else
         {
@@ -70,7 +73,7 @@ namespace Waterfall
 
           if (shouldBeVisible)
           {
-            rend.material.SetFloat(floatPropertyID, val);
+            materials[i].SetFloat(floatPropertyID, val);
             anyActive = true;
           }
         }
@@ -84,7 +87,7 @@ namespace Waterfall
           float val = workingValues[i];
 
           if (rend.enabled)
-            rend.material.SetFloat(floatPropertyID, val);
+            materials[i].SetFloat(floatPropertyID, val);
         }
       }
 
