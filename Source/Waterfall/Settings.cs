@@ -19,7 +19,7 @@ namespace Waterfall
     public static bool DebugUIMode = false;
     public static bool DebugLoading = false;
 
-    public static float AtmosphereDensityExponent = 0.5128f;
+    public static double AtmosphereDensityExponent = 0.5128;
     public static float MinimumEffectIntensity = 0.005f;
     public static float MinimumLightIntensity = 0.05f;
 

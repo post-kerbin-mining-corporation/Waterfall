@@ -222,7 +222,7 @@ namespace Waterfall
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ApproximatelyEqual(float a, float b)
     {
-      return Mathf.Abs(a - b) < 1e-4f;
+      return Math.Abs(a - b) < 1e-4f;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
