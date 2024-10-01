@@ -62,7 +62,7 @@ namespace Waterfall
           float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
           float oldValue = values[valueIndex];
           
-          if (!ApproximatelyEqual(oldValue, newThrottle))
+          if (!Utils.ApproximatelyEqual(oldValue, newThrottle))
           {
             float responseRate = newThrottle > oldValue ? responseRateUp : responseRateDown;
             values[valueIndex] = Mathf.MoveTowards(oldValue, newThrottle, responseRate * TimeWarp.deltaTime);
