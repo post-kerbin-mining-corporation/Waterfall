@@ -7,7 +7,7 @@ namespace Waterfall.UI
   {
     public UIModifierWindow(EffectModifier mod, bool show) : base(show)
     {
-      controllerNames = mod.parentEffect.parentModule.GetControllerNames().ToArray();
+      controllerNames = mod.parentEffect.parentModule.GetControllerNames();
       for (int i = 0; i < controllerNames.Length; i++)
       {
         if (controllerNames[i] == mod.controllerName)

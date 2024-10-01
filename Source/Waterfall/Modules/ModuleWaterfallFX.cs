@@ -27,7 +27,7 @@ namespace Waterfall
 
     [KSPField(isPersistant = false)] public Version version = CurrentVersion;
 
-    protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
+    protected readonly List<WaterfallController> allControllers = new(8);
     protected readonly List<WaterfallEffect> allFX = new(16);
     protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
@@ -62,9 +62,7 @@ namespace Waterfall
 
     public List<WaterfallEffectTemplate> Templates => allTemplates;
 
-    public List<WaterfallController> Controllers => allControllers.Values.ToList();
-    public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
-
+    public List<WaterfallController> Controllers => allControllers;
     bool isAwake;
 
     /// <summary>
@@ -75,7 +73,11 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetControllerValue(string controllerID, float value)
     {
-      allControllers[controllerID].Set(value);
+      FindController(controllerID).Set(value);
+    }
+    public WaterfallController FindController(string controllerName)
+    {
+      return allControllers.FirstOrDefault(c => c.name == controllerName);
     }
 
     private void OnDestroy()
@@ -211,7 +213,7 @@ namespace Waterfall
         luSetup.End();
         luControllers.Begin();
         bool controllersAwake = false;
-        foreach (var controller in allControllers.Values)
+        foreach (var controller in allControllers)
         {
           controllersAwake = controller.Update() || controllersAwake;
         }
@@ -436,13 +438,13 @@ namespace Waterfall
         var controller = controllerType.CreateFromConfig(childNode);
         Utils.Log($"[ModuleWaterfallFX]: Loaded effect controller of type {controller} named {controller.name} on moduleID {moduleID}, adding to loaded controllers dictionary", LogType.Modules);
 
-        try
+        if (FindController(controller.name) == null)
         {
-          allControllers.Add(controller.name, controller);
+          allControllers.Add(controller);
         }
-        catch (Exception ex)
+        else
         {
-          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: {ex.Message}");
+          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: already exists");
         }
       }
 
@@ -458,12 +460,12 @@ namespace Waterfall
     /// </summary>
     /// <param name="controllerName"></param>
     /// <returns></returns>
-    public List<string> GetControllerNames() => allControllers.Keys.ToList();
+    public string[] GetControllerNames() => allControllers.Select(controller => controller.name).ToArray();
 
     public void AddController(WaterfallController newController)
     {
       Utils.Log("[ModuleWaterfallFX]: Added new controller", LogType.Modules);
-      allControllers.Add(newController.name, newController);
+      allControllers.Add(newController);
       newController.Initialize(this);
       InitializeEffects();
     }
@@ -471,7 +473,7 @@ namespace Waterfall
     public void RemoveController(WaterfallController toRemove)
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting controller", LogType.Modules);
-      allControllers.Remove(toRemove.name);
+      allControllers.Remove(toRemove);
       refreshRenderers = true;
     }
 
@@ -585,10 +587,10 @@ namespace Waterfall
     protected void InitializeControllers()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing Controllers", LogType.Modules);
-      foreach (var kvp in allControllers)
+      foreach (var controller in allControllers)
       {
-        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {kvp.Key}", LogType.Modules);
-        kvp.Value.Initialize(this);
+        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {controller.name}", LogType.Modules);
+        controller.Initialize(this);
       }
     }
 
