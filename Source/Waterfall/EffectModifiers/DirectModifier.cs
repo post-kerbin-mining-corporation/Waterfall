@@ -18,11 +18,7 @@ namespace Waterfall
     /// <param name="strength"></param>
     public virtual void Apply(float[] strength)
     {
-      if (useRandomness && randomController != null)
-      {
-        float[] controllerData = randomController.Get();
-        randomValue = controllerData[0] * randomnessScale;
-      }
+      UpdateRandomValue();
 
       switch (effectMode)
       {
