@@ -19,7 +19,7 @@ namespace Waterfall
         handledModifiers.Add(mod);
         mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
 
-        hasRandoms |= (mod.useRandomness && Settings.RandomControllersAwake);
+        hasRandoms |= mod.useRandomness;
         usedControllerMask |= mod.Controller.mask;
       }
     }
@@ -59,10 +59,11 @@ namespace Waterfall
     public void RefreshControllerMask()
     {
       usedControllerMask = 0;
+      hasRandoms = false;
       foreach (var modifier in handledModifiers)
       {
         usedControllerMask |= modifier.Controller.mask;
-        hasRandoms |= (modifier.useRandomness && Settings.RandomControllersAwake);
+        hasRandoms |= modifier.useRandomness;
       }
     }
 
