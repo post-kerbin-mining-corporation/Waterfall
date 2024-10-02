@@ -324,6 +324,8 @@ namespace Waterfall
       testIntensity = testIntensity_;
     }
 
+    internal bool WasActive => wasActive;
+
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 
     public override void Update()

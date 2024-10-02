@@ -419,39 +419,47 @@ namespace Waterfall
       {
         var integrator = integrators[i];
 
+        bool becameActive, rendererActive;
         if (integrator.NeedsUpdate(awakeControllerMask))
         {
-          if (integrator.Update_TestIntensity(out bool becameActive))
+          rendererActive = integrator.Update_TestIntensity(out becameActive);
+        }
+        else
+        {
+          rendererActive = integrator.WasActive;
+          becameActive = false;
+        }
+        
+        if (rendererActive)
+        {
+          anyActive = true;
+          if (becameActive)
           {
-            anyActive = true;
-            if (becameActive)
+            // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
+            // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
+            // This shouldn't happen very often, only during engine ignition etc.
+            // this whole thing could use a refactor, because there's two sources of truth about which controllers are awake..
+            foreach (var controller in parentModule.Controllers)
             {
-              // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
-              // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
-              // This shouldn't happen very often, only during engine ignition etc.
-              // this whole thing could use a refactor, because there's two sources of truth about which controllers are awake..
-              foreach (var controller in parentModule.Controllers)
-              {
-                controller.awake = true;
-              }
-              awakeControllerMask = ~0ul;
+              controller.awake = true;
             }
+            awakeControllerMask = ~0ul;
           }
-          // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
-          // NOTE: Integrator.Update_TestIntensity only ever returns false if testIntensity is true, so no need to check it again here
-          else
+        }
+        // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
+        // NOTE: Integrator.Update_TestIntensity only ever returns false if testIntensity is true, so no need to check it again here
+        else
+        {
+          // TODO: we could build a table that would let us jump to the next one immediately instead of looping
+          string transformName = integrator.transformName;
+          disabledTransformNames.Add(transformName);
+          ++i;
+          while (i < integrators.Count && integrators[i].transformName == transformName)
           {
-            // TODO: we could build a table that would let us jump to the next one immediately instead of looping
-            string transformName = integrator.transformName;
-            disabledTransformNames.Add(transformName);
             ++i;
-            while (i < integrators.Count && integrators[i].transformName == transformName)
-            {
-              ++i;
-            }
-
-            continue;
           }
+
+          continue;
         }
         
         ++i;
