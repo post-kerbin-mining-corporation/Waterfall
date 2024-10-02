@@ -60,11 +60,13 @@ namespace Waterfall
 
     public bool Update()
     {
-      awake = overridden;
-      
-      if (!overridden)
+      if (overridden)
       {
-        awake = UpdateInternal();
+        awake = true;
+      }
+      else
+      {
+        awake = UpdateInternal() || Settings.ForceAllControllersAwake;
       }
 
       return awake;
