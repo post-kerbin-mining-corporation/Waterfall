@@ -41,7 +41,7 @@ namespace Waterfall
 
     public EffectIntegrator integrator;
     public WaterfallController Controller { get; private set; }
-    protected WaterfallController randomController;
+    internal WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
 
     public EffectModifier()

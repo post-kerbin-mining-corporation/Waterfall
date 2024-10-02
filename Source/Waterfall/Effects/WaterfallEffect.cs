@@ -28,6 +28,7 @@ namespace Waterfall
     public readonly List<EffectParticleMultiColorIntegrator> particleColorIntegrators = new();
 
     private HashSet<string> disabledTransformNames = new();
+    private UInt64 usedControllerMask = 0;
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
@@ -211,6 +212,7 @@ namespace Waterfall
 
       effectTransforms.Clear();
       baseScales.Clear();
+      usedControllerMask = 0;
 
       foreach (var parent in parents)
       {
@@ -308,6 +310,21 @@ namespace Waterfall
       else if (mod is EffectParticleMultiNumericModifier) mod.CreateOrAttachToIntegrator(particleNumericIntegrators);
       else if (mod is EffectParticleMultiColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
       else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
+
+      UpdateControllerMaskForMod(mod);
+    }
+
+    void UpdateControllerMaskForMod(EffectModifier mod)
+    {
+      if (mod.Controller != null)
+      {
+        usedControllerMask |= mod.Controller.mask;
+      }
+
+      if (mod.useRandomness && mod.randomnessController != null)
+      {
+        usedControllerMask |= mod.randomController.mask;
+      }
     }
 
     void SortIntegrators()
@@ -459,25 +476,27 @@ namespace Waterfall
         }
         s_fxApply.End();
 
-        s_Integrators.Begin();
-
-        disabledTransformNames.Clear();
-        anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators, ref awakeControllerMask);
-        UpdateIntegratorArray(colorIntegrators, awakeControllerMask);
-        UpdateIntegratorArray(positionIntegrators, awakeControllerMask);
-        UpdateIntegratorArray(scaleIntegrators, awakeControllerMask);
-        UpdateIntegratorArray(rotationIntegrators, awakeControllerMask);
-        UpdateIntegratorArray(particleNumericIntegrators, awakeControllerMask);
-        UpdateIntegratorArray(particleColorIntegrators, awakeControllerMask);
-
-        if (Settings.EnableLights)
+        if ((awakeControllerMask & usedControllerMask) != 0)
         {
-          UpdateIntegratorArray_TestIntensity(lightFloatIntegrators, ref awakeControllerMask);
-          UpdateIntegratorArray(lightColorIntegrators, awakeControllerMask);
+          s_Integrators.Begin();
+
+          disabledTransformNames.Clear();
+          anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators, ref awakeControllerMask);
+          UpdateIntegratorArray(colorIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(positionIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(scaleIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(rotationIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(particleNumericIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(particleColorIntegrators, awakeControllerMask);
+
+          if (Settings.EnableLights)
+          {
+            UpdateIntegratorArray_TestIntensity(lightFloatIntegrators, ref awakeControllerMask);
+            UpdateIntegratorArray(lightColorIntegrators, awakeControllerMask);
+          }
+
+          s_Integrators.End();
         }
-
-        s_Integrators.End();
-
       }
       s_Update.End();
 
@@ -502,6 +521,8 @@ namespace Waterfall
     {
       fxModifiers.Remove(mod);
 
+      // it may be more reasonable to reinitialize the entire effect rather than trying to keep everything in sync...
+
       if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
       else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
       else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);
@@ -512,6 +533,12 @@ namespace Waterfall
       else if (mod is EffectParticleMultiNumericModifier) mod.RemoveFromIntegrator(particleNumericIntegrators);
       else if (mod is EffectParticleMultiColorModifier) mod.RemoveFromIntegrator(particleColorIntegrators);
       else if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
+
+      usedControllerMask = 0;
+      foreach (var modifier in fxModifiers)
+      {
+        UpdateControllerMaskForMod(modifier);
+      }
     }
 
     public void ModifierParameterChange(EffectModifier mod)
