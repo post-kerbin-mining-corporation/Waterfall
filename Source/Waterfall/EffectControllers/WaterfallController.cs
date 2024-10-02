@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Waterfall.EffectControllers;
 
@@ -19,6 +20,7 @@ namespace Waterfall
     public ModuleWaterfallFX ParentModule => parentModule;
 
     public bool awake;
+    public UInt64 mask = 0; // this should always equal (1 << parentModule.Controllers.IndexOf(this))
 
     public bool overridden
     {
