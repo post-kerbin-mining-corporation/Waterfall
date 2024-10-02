@@ -32,6 +32,7 @@ namespace Waterfall
     public static bool EnableDistortion = true;
     public static bool EnableLegacyBlendModes = false;
     public static bool ForceAllControllersAwake = false;
+    public static bool RandomControllersAwake = true;
 
     private static bool _loadedOnce = false;
     /// <summary>
@@ -70,6 +71,7 @@ namespace Waterfall
         settingsNode.TryGetValue("EnableDistortion", ref EnableDistortion);
         settingsNode.TryGetValue("EnableLegacyBlendModes", ref EnableLegacyBlendModes);
         settingsNode.TryGetValue(nameof(ForceAllControllersAwake), ref ForceAllControllersAwake);
+        settingsNode.TryGetValue(nameof(RandomControllersAwake), ref RandomControllersAwake);
       }
       else
       {
