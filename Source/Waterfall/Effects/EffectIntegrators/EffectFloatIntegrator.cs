@@ -21,31 +21,36 @@ namespace Waterfall
       }
     }
 
-    private readonly Renderer[] r;
+    private readonly Renderer[] renderers;
+    private readonly Material[] materials;
+    private float[] lastValues;
 
     public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
     {
       // float specific
-      floatName        = floatMod.floatName;
-
-      r                  = new Renderer[xforms.Count];
+      floatName = floatMod.floatName;
+      renderers = new Renderer[xforms.Count];
+      materials = new Material[xforms.Count];
+      lastValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
-        r[i] = xforms[i].GetComponent<Renderer>();
+        renderers[i] = xforms[i].GetComponent<Renderer>();
 
-        if (r[i] == null)
+        if (renderers[i] == null)
         {
           // TODO: it would be really nice to print the path to the transform that failed, but I don't see an easy way offhand
           Utils.LogError($"Integrator for {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID} failed to find a renderer on transform {transformName}");
         }
-        else if (r[i].material.HasProperty(floatPropertyID))
+        else if (renderers[i].material.HasProperty(floatPropertyID))
         {
-          initialValues[i] = r[i].material.GetFloat(floatPropertyID);
+          initialValues[i] = renderers[i].material.GetFloat(floatPropertyID);
+          lastValues[i] = initialValues[i];
+          materials[i] = renderers[i].material;
         }
         else
         {
-          Utils.LogError($"Material {r[i].material.name} does not have float property {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID}");
+          Utils.LogError($"Material {renderers[i].material.name} does not have float property {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID}");
         }
       }
     }
@@ -57,34 +62,40 @@ namespace Waterfall
       if (testIntensity)
       {
         anyActive = false;
-        for (int i = 0; i < r.Length; i++)
+        for (int i = renderers.Length; i-- > 0;)
         {
-          var rend = r[i];
           float val = workingValues[i];
-          bool shouldBeVisible = val >= Settings.MinimumEffectIntensity;
+          float lastValue = lastValues[i];
+          if (Utils.ApproximatelyEqual(val, lastValue)) continue;
 
-          if (rend.enabled != shouldBeVisible)
+          bool shouldBeVisible = val >= Settings.MinimumEffectIntensity;
+          bool wasVisible = lastValue >= Settings.MinimumEffectIntensity;
+
+          if (wasVisible != shouldBeVisible)
           {
-            rend.enabled = shouldBeVisible;
+            renderers[i].enabled = shouldBeVisible;
           }
 
           if (shouldBeVisible)
           {
-            rend.material.SetFloat(floatPropertyID, val);
+            materials[i].SetFloat(floatPropertyID, val);
             anyActive = true;
           }
+
+          lastValues[i] = val;
         }
       }
       else
       {
         anyActive = true;
-        for (int i = 0; i < r.Length; i++)
+        for (int i = renderers.Length; i-- > 0;)
         {
-          var rend = r[i];
           float val = workingValues[i];
+          float lastValue = lastValues[i];
+          if (Utils.ApproximatelyEqual(val, lastValue)) continue;
 
-          if (rend.enabled)
-            rend.material.SetFloat(floatPropertyID, val);
+          materials[i].SetFloat(floatPropertyID, val);
+          lastValues[i] = val;
         }
       }
 

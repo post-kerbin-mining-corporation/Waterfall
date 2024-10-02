@@ -33,6 +33,7 @@ namespace Waterfall
       if (rcsController == null)
       {
         Utils.LogError("[RCSController] Could not find ModuleRCSFX on Initialize");
+        values = new float[0];
         return;
       }
 
@@ -54,20 +55,17 @@ namespace Waterfall
     protected override bool UpdateInternal()
     {
       bool awake = false;
-      if (rcsController != null)
+      for (int valueIndex = values.Length; valueIndex-- > 0;)
       {
-        for (int valueIndex = 0; valueIndex < values.Length; valueIndex++)
-        {
-          int transformIndex = activeTransformIndices[valueIndex];
-          float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
-          float oldValue = values[valueIndex];
+        int transformIndex = activeTransformIndices[valueIndex];
+        float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
+        float oldValue = values[valueIndex];
           
-          if (!ApproximatelyEqual(oldValue, newThrottle))
-          {
-            float responseRate = newThrottle > oldValue ? responseRateUp : responseRateDown;
-            values[valueIndex] = Mathf.MoveTowards(oldValue, newThrottle, responseRate * TimeWarp.deltaTime);
-            awake = true;
-          }
+        if (!Utils.ApproximatelyEqual(oldValue, newThrottle))
+        {
+          float responseRate = newThrottle > oldValue ? responseRateUp : responseRateDown;
+          values[valueIndex] = Mathf.MoveTowards(oldValue, newThrottle, responseRate * TimeWarp.deltaTime);
+          awake = true;
         }
       }
 

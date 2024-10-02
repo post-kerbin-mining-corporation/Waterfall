@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Waterfall
@@ -218,7 +219,19 @@ namespace Waterfall
       return node;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ApproximatelyEqual(float a, float b)
+    {
+      return Math.Abs(a - b) < 1e-4f;
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Swap<T>(ref T a, ref T b)
+    {
+      T temp = a;
+      a = b;
+      b = temp;
+    }
   }
 
   public static class ConfigNodeParseExtension
