@@ -218,9 +218,10 @@ namespace Waterfall
 
         for (int i = 0; i < allControllers.Count; ++i)
         {
-          if (allControllers[i].Update())
+          var controller = allControllers[i];
+          if (controller.Update())
           {
-            awakeControllerMask |= (1ul << i);
+            awakeControllerMask |= controller.mask;
           }
         }
         luControllers.End();
