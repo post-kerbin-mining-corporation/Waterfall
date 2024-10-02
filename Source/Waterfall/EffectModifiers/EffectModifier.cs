@@ -41,7 +41,7 @@ namespace Waterfall
 
     public EffectIntegrator integrator;
     public WaterfallController Controller { get; private set; }
-    internal WaterfallController randomController;
+    protected WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
 
     public EffectModifier()
@@ -171,6 +171,22 @@ namespace Waterfall
         return true;
       }
       return false;
+    }
+
+    internal UInt64 GetControllerMask()
+    {
+      UInt64 usedControllerMask = 0;
+      if (Controller != null)
+      {
+        usedControllerMask |= Controller.mask;
+      }
+
+      if (useRandomness && randomController != null)
+      {
+        usedControllerMask |= randomController.mask;
+      }
+
+      return usedControllerMask;
     }
   }
 

@@ -311,20 +311,7 @@ namespace Waterfall
       else if (mod is EffectParticleMultiColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
       else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
 
-      UpdateControllerMaskForMod(mod);
-    }
-
-    void UpdateControllerMaskForMod(EffectModifier mod)
-    {
-      if (mod.Controller != null)
-      {
-        usedControllerMask |= mod.Controller.mask;
-      }
-
-      if (mod.useRandomness && mod.randomnessController != null)
-      {
-        usedControllerMask |= mod.randomController.mask;
-      }
+      usedControllerMask |= mod.GetControllerMask();
     }
 
     void SortIntegrators()
@@ -545,7 +532,7 @@ namespace Waterfall
       usedControllerMask = 0;
       foreach (var modifier in fxModifiers)
       {
-        UpdateControllerMaskForMod(modifier);
+        usedControllerMask |= modifier.GetControllerMask();
       }
     }
 

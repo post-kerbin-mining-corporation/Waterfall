@@ -20,7 +20,7 @@ namespace Waterfall
         mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
 
         hasRandoms |= mod.useRandomness;
-        usedControllerMask |= mod.Controller.mask;
+        usedControllerMask |= mod.GetControllerMask();
       }
     }
     public void RemoveModifier(EffectModifier mod)
@@ -62,7 +62,7 @@ namespace Waterfall
       hasRandoms = false;
       foreach (var modifier in handledModifiers)
       {
-        usedControllerMask |= modifier.Controller.mask;
+        usedControllerMask |= modifier.GetControllerMask();
         hasRandoms |= modifier.useRandomness;
       }
     }
