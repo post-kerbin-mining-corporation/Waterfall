@@ -12,6 +12,10 @@ namespace Waterfall
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms = new();
     public List<EffectModifier> handledModifiers = new();
+
+    public readonly bool testIntensity;
+    public bool active = true;
+
     public void AddModifier(EffectModifier mod)
     {
       if (mod.Controller != null)
@@ -36,11 +40,12 @@ namespace Waterfall
       RefreshControllerMask();
     }
 
-    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
+    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod, bool testIntensity = false)
     {
       Utils.Log($"[EffectIntegrator]: Initializing integrator for {effect.name} on modifier {mod.fxName}", LogType.Modifiers);
       transformName = mod.transformName;
       parentEffect = effect;
+      this.testIntensity = testIntensity;
 
       var roots = parentEffect.GetModelTransforms();
       foreach (var t in roots)
@@ -307,7 +312,7 @@ namespace Waterfall
     protected readonly T_Value[] initialValues;
     protected readonly T_Value[] workingValues;
 
-    public EffectIntegratorTyped(WaterfallEffect effect, EffectModifier mod) : base(effect, mod)
+    public EffectIntegratorTyped(WaterfallEffect effect, EffectModifier mod, bool testIntensity = false) : base(effect, mod, testIntensity)
     {
       initialValues = new T_Value[xforms.Count];
       workingValues = new T_Value[xforms.Count];
@@ -316,13 +321,7 @@ namespace Waterfall
 
   public abstract class EffectIntegrator_Float : EffectIntegratorTyped<float>
   {
-    public readonly bool testIntensity;
-    public bool active;
-
-    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity_) : base(effect, mod)
-    {
-      testIntensity = testIntensity_;
-    }
+    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity) : base(effect, mod, testIntensity) { }
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 
