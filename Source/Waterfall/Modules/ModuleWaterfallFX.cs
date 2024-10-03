@@ -27,7 +27,7 @@ namespace Waterfall
 
     [KSPField(isPersistant = false)] public Version version = CurrentVersion;
 
-    protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
+    protected readonly List<WaterfallController> allControllers = new(8);
     protected readonly List<WaterfallEffect> allFX = new(16);
     protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
@@ -62,10 +62,9 @@ namespace Waterfall
 
     public List<WaterfallEffectTemplate> Templates => allTemplates;
 
-    public List<WaterfallController> Controllers => allControllers.Values.ToList();
-    public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
-
+    public List<WaterfallController> Controllers => allControllers;
     bool isAwake;
+    UInt64 awakeControllerMask;
 
     /// <summary>
     /// Sets the value of a specific controller
@@ -75,7 +74,13 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetControllerValue(string controllerID, float value)
     {
-      allControllers[controllerID].Set(value);
+      var controller = FindController(controllerID);
+      controller.Set(value);
+      awakeControllerMask |= controller.mask;
+    }
+    public WaterfallController FindController(string controllerName)
+    {
+      return allControllers.FirstOrDefault(c => c.name == controllerName);
     }
 
     private void OnDestroy()
@@ -210,14 +215,18 @@ namespace Waterfall
           isHDR = !isHDR;
         luSetup.End();
         luControllers.Begin();
-        bool controllersAwake = false;
-        foreach (var controller in allControllers.Values)
+
+        for (int i = 0; i < allControllers.Count; ++i)
         {
-          controllersAwake = controller.Update() || controllersAwake;
+          var controller = allControllers[i];
+          if (controller.Update())
+          {
+            awakeControllerMask |= controller.mask;
+          }
         }
         luControllers.End();
 
-        isAwake = isAwake || controllersAwake;
+        isAwake = isAwake || awakeControllerMask != 0;
 
         if (isAwake)
         {
@@ -226,15 +235,17 @@ namespace Waterfall
           for (int fxIndex = 0; fxIndex < activeFX.Count; ++fxIndex)
           {
             var fx = activeFX[fxIndex];
-            effectsAwake = fx.Update() || effectsAwake;
+            effectsAwake = fx.Update(ref awakeControllerMask) || effectsAwake;
             if (changeHDR)
               fx.SetHDR(isHDR);
           }
 
-          if (!controllersAwake && !effectsAwake)
+          if (awakeControllerMask == 0 && !effectsAwake)
           {
             isAwake = false;
           }
+
+          awakeControllerMask = 0;
 
           luEffects.End();
           SetupRenderersForCamera(camera);
@@ -436,13 +447,15 @@ namespace Waterfall
         var controller = controllerType.CreateFromConfig(childNode);
         Utils.Log($"[ModuleWaterfallFX]: Loaded effect controller of type {controller} named {controller.name} on moduleID {moduleID}, adding to loaded controllers dictionary", LogType.Modules);
 
-        try
+        if (FindController(controller.name) == null)
         {
-          allControllers.Add(controller.name, controller);
+          controller.mask = (1ul << allControllers.Count);
+          allControllers.Add(controller);
+          // NOTE: initialize gets called later
         }
-        catch (Exception ex)
+        else
         {
-          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: {ex.Message}");
+          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: already exists");
         }
       }
 
@@ -458,12 +471,13 @@ namespace Waterfall
     /// </summary>
     /// <param name="controllerName"></param>
     /// <returns></returns>
-    public List<string> GetControllerNames() => allControllers.Keys.ToList();
+    public string[] GetControllerNames() => allControllers.Select(controller => controller.name).ToArray();
 
     public void AddController(WaterfallController newController)
     {
       Utils.Log("[ModuleWaterfallFX]: Added new controller", LogType.Modules);
-      allControllers.Add(newController.name, newController);
+      newController.mask = 1ul << allControllers.Count;
+      allControllers.Add(newController);
       newController.Initialize(this);
       InitializeEffects();
     }
@@ -471,8 +485,13 @@ namespace Waterfall
     public void RemoveController(WaterfallController toRemove)
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting controller", LogType.Modules);
-      allControllers.Remove(toRemove.name);
-      refreshRenderers = true;
+      int removedIndex = allControllers.IndexOf(toRemove);
+      allControllers.RemoveAt(removedIndex);
+      for (int i = removedIndex; i < allControllers.Count; ++i)
+      {
+        allControllers[i].mask >>= 1;
+      }
+      InitializeEffects();
     }
 
     public void AddEffect(WaterfallEffect newEffect)
@@ -560,6 +579,7 @@ namespace Waterfall
       }
 
       InitializeControllers();
+      awakeControllerMask = ~0ul;
       InitializeEffects();
 
       UpgradeToCurrentVersion();
@@ -585,10 +605,12 @@ namespace Waterfall
     protected void InitializeControllers()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing Controllers", LogType.Modules);
-      foreach (var kvp in allControllers)
+      for (int i = 0; i < allControllers.Count; ++i)
       {
-        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {kvp.Key}", LogType.Modules);
-        kvp.Value.Initialize(this);
+        var controller = allControllers[i];
+        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {controller.name}", LogType.Modules);
+        controller.mask = 1ul << i;
+        controller.Initialize(this);
       }
     }
 

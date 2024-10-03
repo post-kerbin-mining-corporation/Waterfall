@@ -28,6 +28,7 @@ namespace Waterfall
     public readonly List<EffectParticleMultiColorIntegrator> particleColorIntegrators = new();
 
     private HashSet<string> disabledTransformNames = new();
+    private UInt64 usedControllerMask = 0;
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
@@ -211,6 +212,7 @@ namespace Waterfall
 
       effectTransforms.Clear();
       baseScales.Clear();
+      usedControllerMask = 0;
 
       foreach (var parent in parents)
       {
@@ -308,6 +310,8 @@ namespace Waterfall
       else if (mod is EffectParticleMultiNumericModifier) mod.CreateOrAttachToIntegrator(particleNumericIntegrators);
       else if (mod is EffectParticleMultiColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
       else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
+
+      usedControllerMask |= mod.GetControllerMask();
     }
 
     void SortIntegrators()
@@ -369,7 +373,7 @@ namespace Waterfall
 
     private static readonly float[] EmptyControllerValues = new float[1];
 
-    private void UpdateIntegratorArray<T>(List<T> integrators) where T : EffectIntegrator
+    private void UpdateIntegratorArray<T>(List<T> integrators, UInt64 awakeControllerMask) where T : EffectIntegrator
     {
       for (int i = 0; i < integrators.Count;)
       {
@@ -384,16 +388,17 @@ namespace Waterfall
           {
             ++i;
           }
+          continue;
         }
-        else
+        else if (integrator.NeedsUpdate(awakeControllerMask))
         {
           integrator.Update();
-          ++i;
         }
+        ++i;
       }
     }
 
-    private bool UpdateIntegratorArray_TestIntensity<T>(List<T> integrators) where T : EffectIntegrator_Float
+    private bool UpdateIntegratorArray_TestIntensity<T>(List<T> integrators, ref UInt64 awakeControllerMask) where T : EffectIntegrator_Float
     {
       bool anyActive = false;
 
@@ -401,12 +406,36 @@ namespace Waterfall
       {
         var integrator = integrators[i];
 
-        bool renderersActive = integrator.Update_TestIntensity();
-
-        anyActive = anyActive || renderersActive;
-
+        bool becameActive, rendererActive;
+        if (integrator.NeedsUpdate(awakeControllerMask))
+        {
+          rendererActive = integrator.Update_TestIntensity(out becameActive);
+        }
+        else
+        {
+          rendererActive = integrator.WasActive;
+          becameActive = false;
+        }
+        
+        if (rendererActive)
+        {
+          anyActive = true;
+          if (becameActive)
+          {
+            // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
+            // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
+            // This shouldn't happen very often, only during engine ignition etc.
+            // this whole thing could use a refactor, because there's two sources of truth about which controllers are awake..
+            foreach (var controller in parentModule.Controllers)
+            {
+              controller.awake = true;
+            }
+            awakeControllerMask = ~0ul;
+          }
+        }
         // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
-        if (integrator.testIntensity && !renderersActive)
+        // NOTE: Integrator.Update_TestIntensity only ever returns false if testIntensity is true, so no need to check it again here
+        else
         {
           // TODO: we could build a table that would let us jump to the next one immediately instead of looping
           string transformName = integrator.transformName;
@@ -416,17 +445,17 @@ namespace Waterfall
           {
             ++i;
           }
+
+          continue;
         }
-        else
-        {
-          ++i;
-        }
+        
+        ++i;
       }
 
       return anyActive;
     }
 
-    public bool Update()
+    public bool Update(ref UInt64 awakeControllerMask)
     {
       s_Update.Begin();
 
@@ -442,25 +471,27 @@ namespace Waterfall
         }
         s_fxApply.End();
 
-        s_Integrators.Begin();
-
-        disabledTransformNames.Clear();
-        anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators);
-        UpdateIntegratorArray(colorIntegrators);
-        UpdateIntegratorArray(positionIntegrators);
-        UpdateIntegratorArray(scaleIntegrators);
-        UpdateIntegratorArray(rotationIntegrators);
-        UpdateIntegratorArray(particleNumericIntegrators);
-        UpdateIntegratorArray(particleColorIntegrators);
-
-        if (Settings.EnableLights)
+        if ((awakeControllerMask & usedControllerMask) != 0)
         {
-          UpdateIntegratorArray_TestIntensity(lightFloatIntegrators);
-          UpdateIntegratorArray(lightColorIntegrators);
+          s_Integrators.Begin();
+
+          disabledTransformNames.Clear();
+          anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators, ref awakeControllerMask);
+          UpdateIntegratorArray(colorIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(positionIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(scaleIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(rotationIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(particleNumericIntegrators, awakeControllerMask);
+          UpdateIntegratorArray(particleColorIntegrators, awakeControllerMask);
+
+          if (Settings.EnableLights)
+          {
+            UpdateIntegratorArray_TestIntensity(lightFloatIntegrators, ref awakeControllerMask);
+            UpdateIntegratorArray(lightColorIntegrators, awakeControllerMask);
+          }
+
+          s_Integrators.End();
         }
-
-        s_Integrators.End();
-
       }
       s_Update.End();
 
@@ -485,6 +516,8 @@ namespace Waterfall
     {
       fxModifiers.Remove(mod);
 
+      // it may be more reasonable to reinitialize the entire effect rather than trying to keep everything in sync...
+
       if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
       else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
       else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);
@@ -495,6 +528,12 @@ namespace Waterfall
       else if (mod is EffectParticleMultiNumericModifier) mod.RemoveFromIntegrator(particleNumericIntegrators);
       else if (mod is EffectParticleMultiColorModifier) mod.RemoveFromIntegrator(particleColorIntegrators);
       else if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
+
+      usedControllerMask = 0;
+      foreach (var modifier in fxModifiers)
+      {
+        usedControllerMask |= modifier.GetControllerMask();
+      }
     }
 
     public void ModifierParameterChange(EffectModifier mod)

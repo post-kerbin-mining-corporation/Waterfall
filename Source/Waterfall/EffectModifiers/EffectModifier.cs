@@ -68,7 +68,7 @@ namespace Waterfall
     public virtual void Init(WaterfallEffect effect)
     {
       parentEffect = effect;
-      Controller = parentEffect.parentModule.AllControllersDict.TryGetValue(controllerName, out var controller) ? controller : null;
+      Controller = parentEffect.parentModule.FindController(controllerName);
       if (Controller == null)
       {
         Utils.LogWarning($"[EffectModifier]: Controller {controllerName} not found for modifier {fxName} in effect {effect.name} in module {effect.parentModule.moduleID}");
@@ -78,7 +78,7 @@ namespace Waterfall
         Controller.referencingModifierCount++;
       }
 
-      randomController = parentEffect.parentModule.AllControllersDict.TryGetValue(randomnessController, out controller) ? controller : null;
+      randomController = parentEffect.parentModule.FindController(randomnessController);
 
       if (randomController == null && useRandomness)
       {
@@ -171,6 +171,22 @@ namespace Waterfall
         return true;
       }
       return false;
+    }
+
+    internal UInt64 GetControllerMask()
+    {
+      UInt64 usedControllerMask = 0;
+      if (Controller != null)
+      {
+        usedControllerMask |= Controller.mask;
+      }
+
+      if (useRandomness && randomController != null)
+      {
+        usedControllerMask |= randomController.mask;
+      }
+
+      return usedControllerMask;
     }
   }
 

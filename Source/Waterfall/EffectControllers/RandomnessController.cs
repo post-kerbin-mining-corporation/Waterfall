@@ -63,11 +63,8 @@ namespace Waterfall
 
     protected override bool UpdateInternal()
     {
-      // this isn't really correct; we should probably use the normal "changed" logic here - but the way things are currently set up, marking these as awake is really bad for performance
-      // I think randomness is currently kind of broken anyway, it needs another pass since it's kind of a special case in the fixed-function pipeline
-      // But if someone hooked a random controller directly up to a modifier then it wouldn't update properly.
       values[0] = noiseFunc();
-      return false;
+      return Settings.RandomControllersAwake;
     }
   }
 }

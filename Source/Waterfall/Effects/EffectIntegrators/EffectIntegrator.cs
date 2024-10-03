@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -17,6 +18,9 @@ namespace Waterfall
       {
         handledModifiers.Add(mod);
         mod.Controller.referencingModifierCount++; // the original code also evaluated controllers from the integrator, so we need to account for that here
+
+        hasRandoms |= mod.useRandomness;
+        usedControllerMask |= mod.GetControllerMask();
       }
     }
     public void RemoveModifier(EffectModifier mod)
@@ -28,6 +32,8 @@ namespace Waterfall
       {
         Update();
       }
+
+      RefreshControllerMask();
     }
 
     public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
@@ -46,6 +52,25 @@ namespace Waterfall
       }
 
       AddModifier(mod);
+    }
+
+    protected bool hasRandoms = false;
+    UInt64 usedControllerMask = 0;
+    public void RefreshControllerMask()
+    {
+      usedControllerMask = 0;
+      hasRandoms = false;
+      foreach (var modifier in handledModifiers)
+      {
+        usedControllerMask |= modifier.GetControllerMask();
+        hasRandoms |= modifier.useRandomness;
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool NeedsUpdate(UInt64 awakeControllerMask)
+    {
+      return hasRandoms || (usedControllerMask & awakeControllerMask) != 0;
     }
 
     // REVIEW: there are some problems here:
@@ -300,11 +325,13 @@ namespace Waterfall
       testIntensity = testIntensity_;
     }
 
+    internal bool WasActive => wasActive;
+
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 
     public override void Update()
     {
-      Update_TestIntensity();
+      Update_TestIntensity(out bool unused);
     }
     protected override void Apply()
     {
@@ -313,7 +340,7 @@ namespace Waterfall
 
     protected abstract bool Apply_TestIntensity();
 
-    public bool Update_TestIntensity()
+    public bool Update_TestIntensity(out bool becameActive)
     {
       s_Update.Begin();
 
@@ -334,16 +361,7 @@ namespace Waterfall
       s_Apply.Begin();
       bool active = Apply_TestIntensity();
 
-      // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
-      // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
-      // This shouldn't happen very often, only during engine ignition etc.
-      if (testIntensity && active && !wasActive)
-      {
-        foreach (var controller in parentEffect.parentModule.Controllers)
-        {
-          controller.awake = true;
-        }
-      }
+      becameActive = testIntensity && active && !wasActive;
       wasActive = active;
 
       s_Apply.End();

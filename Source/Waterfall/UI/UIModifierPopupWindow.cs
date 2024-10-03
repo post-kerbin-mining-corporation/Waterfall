@@ -57,7 +57,7 @@ namespace Waterfall.UI
       showWindow      = true;
       effect          = fx;
       windowMode      = ModifierPopupMode.Add;
-      controllerTypes = fx.parentModule.GetControllerNames().ToArray();
+      controllerTypes = fx.parentModule.GetControllerNames();
 
       var xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
       modifierFlag     = 0;

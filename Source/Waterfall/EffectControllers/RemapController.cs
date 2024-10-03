@@ -39,7 +39,7 @@ namespace Waterfall
     private IEnumerator FindSourceDelayed()
     {
       yield return new WaitForEndOfFrame();
-      source = parentModule.AllControllersDict[sourceController];
+      source = parentModule.FindController(sourceController);
       values = new float[source.Get().Length];
     }
 
