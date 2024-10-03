@@ -55,7 +55,7 @@ namespace Waterfall
       }
     }
 
-    protected override bool Apply_TestIntensity()
+    protected override void Apply()
     {
       bool anyActive;
 
@@ -99,7 +99,7 @@ namespace Waterfall
         }
       }
 
-      return anyActive;
+      active = anyActive;
     }
   }
 }

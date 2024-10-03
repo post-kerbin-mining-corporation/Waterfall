@@ -28,7 +28,7 @@ namespace Waterfall
       }
     }
 
-    protected override bool Apply_TestIntensity()
+    protected override void Apply()
     {
       bool anyActive = false;
 
@@ -53,7 +53,7 @@ namespace Waterfall
         }
       }
 
-      return anyActive;
+      active = anyActive;
     }
 
     protected void UpdateFloats(Light l, float f)

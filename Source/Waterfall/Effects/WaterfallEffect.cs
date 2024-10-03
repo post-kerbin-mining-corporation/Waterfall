@@ -406,21 +406,16 @@ namespace Waterfall
       {
         var integrator = integrators[i];
 
-        bool becameActive, rendererActive;
+        bool wasActive = integrator.active;
         if (integrator.NeedsUpdate(awakeControllerMask))
         {
-          rendererActive = integrator.Update_TestIntensity(out becameActive);
-        }
-        else
-        {
-          rendererActive = integrator.WasActive;
-          becameActive = false;
+          integrator.Update();
         }
         
-        if (rendererActive)
+        if (integrator.active)
         {
           anyActive = true;
-          if (becameActive)
+          if (!wasActive && integrator.testIntensity)
           {
             // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
             // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
@@ -434,7 +429,7 @@ namespace Waterfall
           }
         }
         // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
-        // NOTE: Integrator.Update_TestIntensity only ever returns false if testIntensity is true, so no need to check it again here
+        // NOTE: Integrator.active only ever becomes false if testIntensity is true, so no need to check it again here
         else
         {
           // TODO: we could build a table that would let us jump to the next one immediately instead of looping
