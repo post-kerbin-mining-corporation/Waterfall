@@ -14,6 +14,7 @@ namespace Waterfall
     
     private Light[] l;
     public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
+    public override bool TestIntensity => floatName == "Intensity";
 
     public EffectLightFloatModifier() : base()
     {

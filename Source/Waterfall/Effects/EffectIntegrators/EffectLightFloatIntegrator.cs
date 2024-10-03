@@ -11,7 +11,7 @@ namespace Waterfall
 
     private readonly Light[]     l;
 
-    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod, floatMod.floatName == "Intensity")
+    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
       // light-float specific
       floatName = floatMod.floatName;

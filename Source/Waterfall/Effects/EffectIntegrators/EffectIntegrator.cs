@@ -40,12 +40,12 @@ namespace Waterfall
       RefreshControllerMask();
     }
 
-    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod, bool testIntensity = false)
+    public EffectIntegrator(WaterfallEffect effect, EffectModifier mod)
     {
       Utils.Log($"[EffectIntegrator]: Initializing integrator for {effect.name} on modifier {mod.fxName}", LogType.Modifiers);
       transformName = mod.transformName;
       parentEffect = effect;
-      this.testIntensity = testIntensity;
+      this.testIntensity = mod.TestIntensity;
 
       var roots = parentEffect.GetModelTransforms();
       foreach (var t in roots)
@@ -312,7 +312,7 @@ namespace Waterfall
     protected readonly T_Value[] initialValues;
     protected readonly T_Value[] workingValues;
 
-    public EffectIntegratorTyped(WaterfallEffect effect, EffectModifier mod, bool testIntensity = false) : base(effect, mod, testIntensity)
+    public EffectIntegratorTyped(WaterfallEffect effect, EffectModifier mod) : base(effect, mod)
     {
       initialValues = new T_Value[xforms.Count];
       workingValues = new T_Value[xforms.Count];
@@ -321,7 +321,7 @@ namespace Waterfall
 
   public abstract class EffectIntegrator_Float : EffectIntegratorTyped<float>
   {
-    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity) : base(effect, mod, testIntensity) { }
+    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod) : base(effect, mod) { }
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 

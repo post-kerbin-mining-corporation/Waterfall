@@ -25,7 +25,7 @@ namespace Waterfall
     private readonly Material[] materials;
     private float[] lastValues;
 
-    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod, WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatMod.floatName))
+    public EffectFloatIntegrator(WaterfallEffect effect, EffectFloatModifier floatMod) : base(effect, floatMod)
     {
       // float specific
       floatName = floatMod.floatName;

@@ -43,6 +43,7 @@ namespace Waterfall
     public WaterfallController Controller { get; private set; }
     protected WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
+    public virtual bool TestIntensity => false;
 
     public EffectModifier()
     {

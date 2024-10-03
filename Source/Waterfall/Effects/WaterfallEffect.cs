@@ -17,15 +17,9 @@ namespace Waterfall
     public readonly List<Vector3>                    baseScales = new();
     public          ModuleWaterfallFX                parentModule;
     public          WaterfallEffectTemplate          parentTemplate;
-    public readonly List<EffectFloatIntegrator>      floatIntegrators = new();
-    public readonly List<EffectLightFloatIntegrator> lightFloatIntegrators = new();
-    public readonly List<EffectLightColorIntegrator> lightColorIntegrators = new();
-    public readonly List<EffectPositionIntegrator>   positionIntegrators = new();
-    public readonly List<EffectRotationIntegrator>   rotationIntegrators = new();
-    public readonly List<EffectScaleIntegrator>      scaleIntegrators = new();
-    public readonly List<EffectColorIntegrator>      colorIntegrators = new();
-    public readonly List<EffectParticleMultiNumericIntegrator> particleNumericIntegrators = new();
-    public readonly List<EffectParticleMultiColorIntegrator> particleColorIntegrators = new();
+
+    public readonly List<EffectIntegrator> intensityTestIntegrators = new();
+    public readonly List<EffectIntegrator> otherIntegrators = new();
 
     private HashSet<string> disabledTransformNames = new();
     private UInt64 usedControllerMask = 0;
@@ -278,15 +272,8 @@ namespace Waterfall
         }
       }
 
-      floatIntegrators.Clear();
-      positionIntegrators.Clear();
-      colorIntegrators.Clear();
-      rotationIntegrators.Clear();
-      scaleIntegrators.Clear();
-      lightFloatIntegrators.Clear();
-      lightColorIntegrators.Clear();
-      particleNumericIntegrators.Clear();
-      particleColorIntegrators.Clear();
+      intensityTestIntegrators.Clear();
+      otherIntegrators.Clear();
 
       foreach (var mod in fxModifiers)
       {
@@ -300,17 +287,9 @@ namespace Waterfall
 
     void AddModifierToIntegratorList(EffectModifier mod)
     {
-      if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-      else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-      else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-      else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-      else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-      else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
-      else if (mod is EffectParticleMultiNumericModifier) mod.CreateOrAttachToIntegrator(particleNumericIntegrators);
-      else if (mod is EffectParticleMultiColorModifier) mod.CreateOrAttachToIntegrator(particleColorIntegrators);
-      else if (mod is DirectModifier directMod) directModifiers.Add(directMod);
-
+      if (mod is DirectModifier directMod) directModifiers.Add(directMod);
+      else if (mod.TestIntensity) mod.CreateOrAttachToIntegrator(intensityTestIntegrators);
+      else mod.CreateOrAttachToIntegrator(otherIntegrators);
       usedControllerMask |= mod.GetControllerMask();
     }
 
@@ -319,25 +298,11 @@ namespace Waterfall
       // Integrators need to be sorted such that:
       // 1. integrators are grouped by transform (so once we hit one on a disabled transform, we skip all of the ones on that transform)
       //    TODO: maybe we should sort by whether the transform is disabled?  Might have to re-sort as transforms enable/disable
-      // 2. integrators that test intensity come before those that don't (this is only applicable to EffectFloatIntegrator right now)
-
-      Comparison<EffectFloatIntegrator> OrderByTransformAndTestIntensity = (EffectFloatIntegrator a, EffectFloatIntegrator b) =>
-      {
-        int ret = string.Compare(a.transformName, b.transformName);
-        if (ret != 0) return ret;
-
-        // we want integrators with TestIntensity==true to come before false, so note the inversion of comparison order here
-        return b.testIntensity.CompareTo(a.testIntensity);
-      };
 
       Comparison<EffectIntegrator> OrderByTransform = (EffectIntegrator a, EffectIntegrator b) => string.Compare(a.transformName, b.transformName);
 
-      floatIntegrators.Sort(OrderByTransformAndTestIntensity);
-      colorIntegrators.Sort(OrderByTransform);
-      positionIntegrators.Sort(OrderByTransform);
-      rotationIntegrators.Sort(OrderByTransform);
-      scaleIntegrators.Sort(OrderByTransform);
-      positionIntegrators.Sort(OrderByTransform);
+      intensityTestIntegrators.Sort(OrderByTransform);
+      otherIntegrators.Sort(OrderByTransform);
     }
 
     public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
@@ -398,7 +363,7 @@ namespace Waterfall
       }
     }
 
-    private bool UpdateIntegratorArray_TestIntensity<T>(List<T> integrators, ref UInt64 awakeControllerMask) where T : EffectIntegrator_Float
+    private bool UpdateIntegratorArray_TestIntensity(List<EffectIntegrator> integrators, ref UInt64 awakeControllerMask)
     {
       bool anyActive = false;
 
@@ -415,7 +380,7 @@ namespace Waterfall
         if (integrator.active)
         {
           anyActive = true;
-          if (!wasActive && integrator.testIntensity)
+          if (!wasActive)
           {
             // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
             // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
@@ -429,12 +394,13 @@ namespace Waterfall
           }
         }
         // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
-        // NOTE: Integrator.active only ever becomes false if testIntensity is true, so no need to check it again here
         else
         {
           // TODO: we could build a table that would let us jump to the next one immediately instead of looping
           string transformName = integrator.transformName;
           disabledTransformNames.Add(transformName);
+
+          // This loop may be useless if only one integrator is typically controlling the visibility of a given transform
           ++i;
           while (i < integrators.Count && integrators[i].transformName == transformName)
           {
@@ -471,19 +437,8 @@ namespace Waterfall
           s_Integrators.Begin();
 
           disabledTransformNames.Clear();
-          anyActive = UpdateIntegratorArray_TestIntensity(floatIntegrators, ref awakeControllerMask);
-          UpdateIntegratorArray(colorIntegrators, awakeControllerMask);
-          UpdateIntegratorArray(positionIntegrators, awakeControllerMask);
-          UpdateIntegratorArray(scaleIntegrators, awakeControllerMask);
-          UpdateIntegratorArray(rotationIntegrators, awakeControllerMask);
-          UpdateIntegratorArray(particleNumericIntegrators, awakeControllerMask);
-          UpdateIntegratorArray(particleColorIntegrators, awakeControllerMask);
-
-          if (Settings.EnableLights)
-          {
-            UpdateIntegratorArray_TestIntensity(lightFloatIntegrators, ref awakeControllerMask);
-            UpdateIntegratorArray(lightColorIntegrators, awakeControllerMask);
-          }
+          anyActive = UpdateIntegratorArray_TestIntensity(intensityTestIntegrators, ref awakeControllerMask);
+          UpdateIntegratorArray(otherIntegrators, awakeControllerMask);
 
           s_Integrators.End();
         }
@@ -513,16 +468,9 @@ namespace Waterfall
 
       // it may be more reasonable to reinitialize the entire effect rather than trying to keep everything in sync...
 
-      if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
-      else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
-      else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);
-      else if (mod is EffectRotationModifier) mod.RemoveFromIntegrator(rotationIntegrators);
-      else if (mod is EffectScaleModifier) mod.RemoveFromIntegrator(scaleIntegrators);
-      else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
-      else if (mod is EffectParticleMultiNumericModifier) mod.RemoveFromIntegrator(particleNumericIntegrators);
-      else if (mod is EffectParticleMultiColorModifier) mod.RemoveFromIntegrator(particleColorIntegrators);
-      else if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
+      if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
+      else if (mod.TestIntensity) mod.RemoveFromIntegrator(intensityTestIntegrators);
+      else mod.RemoveFromIntegrator(otherIntegrators);
 
       usedControllerMask = 0;
       foreach (var modifier in fxModifiers)
