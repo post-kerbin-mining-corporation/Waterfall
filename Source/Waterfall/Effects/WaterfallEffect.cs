@@ -340,26 +340,23 @@ namespace Waterfall
 
     private void UpdateIntegratorArray<T>(List<T> integrators, UInt64 awakeControllerMask) where T : EffectIntegrator
     {
-      for (int i = 0; i < integrators.Count;)
+      for (int i = integrators.Count-1; i >= 0;)
       {
         var integrator = integrators[i];
 
+        // skip the block of integrators with the same transform name
         if (disabledTransformNames.Contains(integrator.transformName))
         {
           // TODO: we could build a table that would let us jump to the next one immediately instead of looping
           string transformName = integrator.transformName;
-          ++i;
-          while (i < integrators.Count && integrators[i].transformName == transformName)
-          {
-            ++i;
-          }
+          while (i-- > 0 && integrators[i].transformName == transformName) ;
           continue;
         }
         else if (integrator.NeedsUpdate(awakeControllerMask))
         {
           integrator.Update();
         }
-        ++i;
+        --i;
       }
     }
 
@@ -367,7 +364,7 @@ namespace Waterfall
     {
       bool anyActive = false;
 
-      for (int i=0; i < integrators.Count;)
+      for (int i = integrators.Count; i-- > 0;)
       {
         var integrator = integrators[i];
 
@@ -396,21 +393,9 @@ namespace Waterfall
         // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
         else
         {
-          // TODO: we could build a table that would let us jump to the next one immediately instead of looping
           string transformName = integrator.transformName;
           disabledTransformNames.Add(transformName);
-
-          // This loop may be useless if only one integrator is typically controlling the visibility of a given transform
-          ++i;
-          while (i < integrators.Count && integrators[i].transformName == transformName)
-          {
-            ++i;
-          }
-
-          continue;
         }
-        
-        ++i;
       }
 
       return anyActive;
