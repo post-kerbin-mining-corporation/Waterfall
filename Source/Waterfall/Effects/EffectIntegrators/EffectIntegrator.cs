@@ -334,9 +334,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        float[] modifierData = ((EffectModifier_Float)mod).Get();
+        var mod = (EffectModifier_Float)handledModifiers[i];
+        float[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();
@@ -366,9 +368,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Color[] modifierData = ((EffectModifier_Color)mod).Get();
+        var mod = (EffectModifier_Color)handledModifiers[i];
+        Color[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();
@@ -397,9 +401,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Vector2[] modifierData = ((EffectModifier_Vector2)mod).Get();
+        var mod = (EffectModifier_Vector2)handledModifiers[i];
+        Vector2[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();        
@@ -429,9 +435,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Vector3[] modifierData = ((EffectModifier_Vector3)mod).Get();
+        var mod = (EffectModifier_Vector3)handledModifiers[i];
+        Vector3[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();
