@@ -106,8 +106,9 @@ namespace Waterfall
         hasAdditiveShaders = false;
         hasAlphaBlendedShaders = false;
 
-        foreach (var fx in activeFX)
+        for (int i = activeFX.Count; i-- > 0;)
         {
+          var fx = activeFX[i];
           foreach (var renderer in fx.effectRenderers)
           {
             Material mat = renderer.material;
@@ -116,6 +117,12 @@ namespace Waterfall
             if (mat.HasProperty(ShaderPropertyID._Strength))
             {
               mat.renderQueue = Settings.DistortQueue;
+              if (!Settings.EnableDistortion)
+              {
+                fx.CleanupEffect();
+                activeFX.RemoveAt(i);
+                break;
+              }
             }
             else
             {
