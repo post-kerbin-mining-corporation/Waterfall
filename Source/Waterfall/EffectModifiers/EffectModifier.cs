@@ -43,6 +43,7 @@ namespace Waterfall
     public WaterfallController Controller { get; private set; }
     protected WaterfallController randomController;
     public virtual bool ValidForIntegrator => true;
+    public virtual bool TestIntensity => false;
 
     public EffectModifier()
     {
@@ -52,6 +53,11 @@ namespace Waterfall
     public EffectModifier(ConfigNode node) : this()
     {
       Load(node);
+    }
+
+    public override string ToString()
+    {
+      return modifierTypeName + " : " + controllerName + " : " + effectMode;
     }
 
     public virtual void Load(ConfigNode node)
@@ -190,15 +196,28 @@ namespace Waterfall
     }
   }
 
-  public abstract class EffectModifier_Color : EffectModifier
+  public abstract class EffectModifier_Typed<T> : EffectModifier
+  {
+    public EffectModifier_Typed() : base() { }
+    public EffectModifier_Typed(ConfigNode node) : base(node) { }
+
+    public override void Init(WaterfallEffect effect)
+    {
+      base.Init(effect);
+      output = new T[xforms.Count];
+      outputWithRandom = new T[xforms.Count];
+    }
+
+    protected T[] output;
+    protected T[] outputWithRandom;
+  }
+
+  public abstract class EffectModifier_Color : EffectModifier_Typed<Color>
   {
     public FastFloatCurve rCurve = new();
     public FastFloatCurve gCurve = new();
     public FastFloatCurve bCurve = new();
     public FastFloatCurve aCurve = new();
-
-    Color[] output;
-    Color[] outputWithRandom;
 
     public EffectModifier_Color() : base() { }
     public EffectModifier_Color(ConfigNode node) : base(node) { }
@@ -222,14 +241,6 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
       node.AddNode(Utils.SerializeFloatCurve("aCurve", aCurve));
       return node;
-    }
-
-    public override void Init(WaterfallEffect effect)
-    {
-      base.Init(effect);
-
-      output = new Color[xforms.Count];
-      outputWithRandom = new Color[xforms.Count];
     }
 
     public Color[] Get()
@@ -277,12 +288,10 @@ namespace Waterfall
     }
   }
 
-  public abstract class EffectModifier_Vector2 : EffectModifier
+  public abstract class EffectModifier_Vector2 : EffectModifier_Typed<Vector2>
   {
     public FastFloatCurve xCurve = new();
     public FastFloatCurve yCurve = new();
-    Vector2[] output;
-    Vector2[] outputWithRandom;
 
     public EffectModifier_Vector2() : base() { }
     public EffectModifier_Vector2(ConfigNode node) : base(node) { }
@@ -301,13 +310,6 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
       node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
       return node;
-    }
-
-    public override void Init(WaterfallEffect effect)
-    {
-      base.Init(effect);
-      output = new Vector2[xforms.Count];
-      outputWithRandom = new Vector2[xforms.Count];
     }
 
     public Vector2[] Get()
@@ -349,13 +351,11 @@ namespace Waterfall
       return output;
     }
   }
-  public abstract class EffectModifier_Vector3 : EffectModifier
+  public abstract class EffectModifier_Vector3 : EffectModifier_Typed<Vector3>
   {
     public FastFloatCurve xCurve = new();
     public FastFloatCurve yCurve = new();
     public FastFloatCurve zCurve = new();
-    Vector3[] output;
-    Vector3[] outputWithRandom;
 
     public EffectModifier_Vector3() : base() { }
     public EffectModifier_Vector3(ConfigNode node) : base(node) { }
@@ -376,13 +376,6 @@ namespace Waterfall
       node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
       node.AddNode(Utils.SerializeFloatCurve("zCurve", zCurve));
       return node;
-    }
-
-    public override void Init(WaterfallEffect effect)
-    {
-      base.Init(effect);
-      output = new Vector3[xforms.Count];
-      outputWithRandom = new Vector3[xforms.Count];
     }
 
     public Vector3[] Get()
@@ -429,11 +422,9 @@ namespace Waterfall
     }
   }
 
-  public abstract class EffectModifier_Float : EffectModifier
+  public abstract class EffectModifier_Float : EffectModifier_Typed<float>
   {
     public FastFloatCurve curve = new();
-    float[] output;
-    float[] outputWithRandom;
 
     public EffectModifier_Float() : base() { }
     public EffectModifier_Float(ConfigNode node) : base(node) { }
@@ -448,13 +439,6 @@ namespace Waterfall
       var node = base.Save();
       node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
       return node;
-    }
-
-    public override void Init(WaterfallEffect effect)
-    {
-      base.Init(effect);
-      output = new float[xforms.Count];
-      outputWithRandom = new float[xforms.Count];
     }
 
     public float[] Get()

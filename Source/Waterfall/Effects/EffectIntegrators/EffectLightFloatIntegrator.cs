@@ -11,7 +11,7 @@ namespace Waterfall
 
     private readonly Light[]     l;
 
-    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod, floatMod.floatName == "Intensity")
+    public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
       // light-float specific
       floatName = floatMod.floatName;
@@ -28,7 +28,7 @@ namespace Waterfall
       }
     }
 
-    protected override bool Apply_TestIntensity()
+    protected override void Apply()
     {
       bool anyActive = false;
 
@@ -53,7 +53,7 @@ namespace Waterfall
         }
       }
 
-      return anyActive;
+      active = anyActive;
     }
 
     protected void UpdateFloats(Light l, float f)

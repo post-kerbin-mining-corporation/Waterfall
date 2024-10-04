@@ -13,7 +13,7 @@ namespace Waterfall
     [Persistent] public string colorName = "_Main";
 
     private Light[] l;
-    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName);
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName) && Settings.EnableLights;
 
     public EffectLightColorModifier() : base()
     {

@@ -12,6 +12,10 @@ namespace Waterfall
     protected WaterfallEffect parentEffect;
     protected List<Transform> xforms = new();
     public List<EffectModifier> handledModifiers = new();
+
+    public readonly bool testIntensity;
+    public bool active = true;
+
     public void AddModifier(EffectModifier mod)
     {
       if (mod.Controller != null)
@@ -41,6 +45,7 @@ namespace Waterfall
       Utils.Log($"[EffectIntegrator]: Initializing integrator for {effect.name} on modifier {mod.fxName}", LogType.Modifiers);
       transformName = mod.transformName;
       parentEffect = effect;
+      this.testIntensity = mod.TestIntensity;
 
       var roots = parentEffect.GetModelTransforms();
       foreach (var t in roots)
@@ -78,8 +83,7 @@ namespace Waterfall
     // This might be overthinking it - it's only 2 virtual calls per integrator
     // Should the common part just be a protected function that the virtual derived classes have to call?
     // This might make profiling markup annoying
-    // B) it's a code smell that the bool return value is only meaningful for some of the integrators (float integrators that control visibility)
-    // C) It's strange that the boolean for TestIntensity lives in the EffectIntegrator_Float but the threshold and application logic is in the derived classes
+
     public abstract void Update();
     protected abstract void Apply();
 
@@ -317,30 +321,11 @@ namespace Waterfall
 
   public abstract class EffectIntegrator_Float : EffectIntegratorTyped<float>
   {
-    public readonly bool testIntensity;
-    bool wasActive;
-
-    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod, bool testIntensity_) : base(effect, mod)
-    {
-      testIntensity = testIntensity_;
-    }
-
-    internal bool WasActive => wasActive;
+    public EffectIntegrator_Float(WaterfallEffect effect, EffectModifier_Float mod) : base(effect, mod) { }
 
     protected static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Integrator_Float.Update");
 
     public override void Update()
-    {
-      Update_TestIntensity(out bool unused);
-    }
-    protected override void Apply()
-    {
-      Apply_TestIntensity();
-    }
-
-    protected abstract bool Apply_TestIntensity();
-
-    public bool Update_TestIntensity(out bool becameActive)
     {
       s_Update.Begin();
 
@@ -349,9 +334,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        float[] modifierData = ((EffectModifier_Float)mod).Get();
+        var mod = (EffectModifier_Float)handledModifiers[i];
+        float[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();
@@ -359,16 +346,10 @@ namespace Waterfall
       s_Modifiers.End();
 
       s_Apply.Begin();
-      bool active = Apply_TestIntensity();
-
-      becameActive = testIntensity && active && !wasActive;
-      wasActive = active;
-
+      Apply();
       s_Apply.End();
 
       s_Update.End();
-
-      return active;
     }
   }
 
@@ -387,9 +368,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Color[] modifierData = ((EffectModifier_Color)mod).Get();
+        var mod = (EffectModifier_Color)handledModifiers[i];
+        Color[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();
@@ -418,9 +401,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Vector2[] modifierData = ((EffectModifier_Vector2)mod).Get();
+        var mod = (EffectModifier_Vector2)handledModifiers[i];
+        Vector2[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();        
@@ -450,9 +435,11 @@ namespace Waterfall
       s_ListPrep.End();
 
       s_Modifiers.Begin();
-      foreach (var mod in handledModifiers)
+      int modifierCount = handledModifiers.Count;
+      for (int i = 0; i < modifierCount; i++)
       {
-        Vector3[] modifierData = ((EffectModifier_Vector3)mod).Get();
+        var mod = (EffectModifier_Vector3)handledModifiers[i];
+        Vector3[] modifierData = mod.Get();
         s_Integrate.Begin();
         Integrate(mod.effectMode, workingValues, modifierData);
         s_Integrate.End();

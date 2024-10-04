@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -13,6 +14,8 @@ namespace Waterfall
     [Persistent] public string floatName = "";
     private Material[] m;
     public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
+    public override bool TestIntensity => WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
+
 
     public EffectFloatModifier() : base()
     {
@@ -20,6 +23,11 @@ namespace Waterfall
     }
 
     public EffectFloatModifier(ConfigNode node) : base(node) { }
+
+    public override string ToString()
+    {
+      return floatName + " : " + controllerName + " : " + effectMode;
+    }
 
     public override void Init(WaterfallEffect parentEffect)
     {
