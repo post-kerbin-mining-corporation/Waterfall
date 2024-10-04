@@ -23,6 +23,10 @@ namespace Waterfall
 
     public EffectColorModifier(ConfigNode node) : base(node) { }
 
+    public override string ToString()
+    {
+      return colorName + " : " + controllerName + " : " + effectMode;
+    }
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);

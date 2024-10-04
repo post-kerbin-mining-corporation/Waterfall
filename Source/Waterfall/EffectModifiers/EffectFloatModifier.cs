@@ -24,6 +24,11 @@ namespace Waterfall
 
     public EffectFloatModifier(ConfigNode node) : base(node) { }
 
+    public override string ToString()
+    {
+      return floatName + " : " + controllerName + " : " + effectMode;
+    }
+
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);

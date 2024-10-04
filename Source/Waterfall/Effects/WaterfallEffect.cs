@@ -78,6 +78,11 @@ namespace Waterfall
       Load(fx.Save());
     }
 
+    public override string ToString()
+    {
+      return name + ":" + parentName;
+    }
+
     public Vector3 TemplatePositionOffset { get; set; }
     public Vector3 TemplateRotationOffset { get; set; }
     public Vector3 TemplateScaleOffset    { get; set; }

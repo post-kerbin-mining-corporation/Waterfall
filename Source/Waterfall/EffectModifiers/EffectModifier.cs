@@ -55,6 +55,11 @@ namespace Waterfall
       Load(node);
     }
 
+    public override string ToString()
+    {
+      return modifierTypeName + " : " + controllerName + " : " + effectMode;
+    }
+
     public virtual void Load(ConfigNode node)
     {
       ConfigNode.LoadObjectFromConfig(this, node);
