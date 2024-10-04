@@ -202,7 +202,10 @@ namespace Waterfall
       Utils.Log($"[WaterfallEffect]: Deleting effect {name}", LogType.Effects);
       model.Cleanup();
     }
-
+    public void Reset(bool playImmediately)
+    {
+      model.ResetParticleSystem(playImmediately);
+    }
     public bool InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
     {
       parentModule = host;
@@ -336,6 +339,7 @@ namespace Waterfall
     }
 
     public List<Transform> GetModelTransforms() => model.modelTransforms;
+    public List<Transform> GetEffectTransforms() => effectTransforms;
 
     private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Effect.Update");
     private static readonly ProfilerMarker s_fxApply = new ProfilerMarker("Waterfall.Effect.Update.FxApply");

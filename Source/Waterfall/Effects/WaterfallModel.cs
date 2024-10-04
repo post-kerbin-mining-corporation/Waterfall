@@ -221,7 +221,13 @@ namespace Waterfall
         m.Update();
       }
     }
-
+    public void ResetParticleSystem(bool playImmediately)
+    {
+      foreach (var particleSystem in particles)
+      {
+        particleSystem.Reset(playImmediately);
+      }
+    }
     public void ApplyOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
     {
       modelPositionOffset = position;

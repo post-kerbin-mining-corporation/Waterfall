@@ -75,12 +75,36 @@ namespace Waterfall
     public void SetControllerValue(string controllerID, float value)
     {
       var controller = FindController(controllerID);
-      controller.Set(value);
-      awakeControllerMask |= controller.mask;
+      if (controller != null)
+      {
+        controller.Set(value);
+        awakeControllerMask |= controller.mask;
+      }
+      else
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Could not find controller {controllerID} to set on module {moduleID}");
+      }
     }
     public WaterfallController FindController(string controllerName)
     {
       return allControllers.FirstOrDefault(c => c.name == controllerName);
+    }
+
+    public void ResetEffect(string effectName, bool playImmediately)
+    {
+      var effect = FindEffect(effectName);
+      if (effect != null)
+      {
+        effect.Reset(playImmediately);
+      }
+      else 
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Could not find effect {effectName} on module {moduleID}");
+      }
+    }
+    public WaterfallEffect FindEffect(string effectName)
+    {
+      return allFX.FirstOrDefault(x => x.name == effectName);
     }
 
     private void OnDestroy()

@@ -75,7 +75,7 @@ namespace Waterfall
         if (targetParticleSystem != null)
         {
           systems.Add(targetParticleSystem);
-          targetParticleSystem.Play();
+          
         }
       }
       foreach (var p in pProperties)
@@ -88,6 +88,18 @@ namespace Waterfall
       Utils.Log($"[WaterfallParticle]: Initialized Waterfall Particle at {parentTransform}, tracking {transformName}", LogType.Particles);
     }
 
+    public void Reset(bool playImmediately)
+    {
+      foreach (var sys in systems)
+      {
+        sys.Clear();
+        if (playImmediately)
+        {
+          sys.Simulate(0.0f, false, true);
+          sys.Play();
+        }
+      }
+    }
     /// <summary>
     /// Sets the Particle's module state and updates the module state of the attached systems
     /// </summary>
@@ -469,7 +481,7 @@ namespace Waterfall
       {
         ParticleUtils.SetParticleSystemColorMode(propertyName, particle, mode);
       }
-     
+
       // If the mode changed to a different thing, get the color out of the system to populate the parameter
       if (mode == ParticleSystemGradientMode.Color)
       {
