@@ -196,14 +196,14 @@ namespace Waterfall
     public EffectModifier_Typed() : base() { }
     public EffectModifier_Typed(ConfigNode node) : base(node) { }
 
-		public override void Init(WaterfallEffect effect)
-		{
-			base.Init(effect);
+    public override void Init(WaterfallEffect effect)
+    {
+      base.Init(effect);
       output = new T[xforms.Count];
       outputWithRandom = new T[xforms.Count];
-		}
+    }
 
-		protected T[] output;
+    protected T[] output;
     protected T[] outputWithRandom;
   }
 
