@@ -4,6 +4,9 @@ v0.10.0
 - Large swathe of performance updates, including
  - Effects on inactive versions of parts (e.g. multiple part variants) are no longer evaluated
  - Effects that use controllers that don't exist on a part won't be evaluated
+ - Effects only update if one of their controller values changed or they have random inputs
+ - Effect modifiers don't re-evaluate curves if the controller value didn't change
+ - Integrated gotmachine's faster FloatCurve implementation
  - Many minor optimizations and cleanups that add up to large improvements
  - Some memory leaks fixed
 - Fixed engine light layers targeting IVA layers (#130)
@@ -11,6 +14,7 @@ v0.10.0
 - Added a UI option for Perlin noise to have its seed to an option that will randomize it on effect startup (#127)
 - It is now possible to set Engine ID in Engine Event Controllers, and those controllers will only fire on events asocaited with that engine ID (#126)
 - Fixed Enable Distortion setting actually doing nothing
+- Added a setting toggle to treat random controllers as unchanging, which improves performance at the cost of randomness
 - Various logging cleanups and improvements
 - Reworked most Editor window UIs to look cleaner and work better, including a lot of UI code cleanup for more coherency
 - Added the ability to load arbitrary particle assets from assetbundles and control them
