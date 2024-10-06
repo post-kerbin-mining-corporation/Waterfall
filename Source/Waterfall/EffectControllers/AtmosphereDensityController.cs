@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using UnityEngine;
 
 namespace Waterfall
@@ -19,10 +20,10 @@ namespace Waterfall
       values = new float[1];
     }
 
-    protected override void UpdateInternal()
+    protected override float UpdateSingleValue()
     {
       //(float)parentModule.vessel.mainBody.GetPressureAtm(parentModule.vessel.altitude) 
-      values[0] = Mathf.Pow((float)parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
+      return (float)Math.Pow(parentModule.part.atmDensity, Settings.AtmosphereDensityExponent);
     }
   }
 }

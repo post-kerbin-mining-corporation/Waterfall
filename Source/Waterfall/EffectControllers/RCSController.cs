@@ -17,6 +17,7 @@ namespace Waterfall
     [Persistent] public float responseRateDown       = 100f;
     [Persistent] public string thrusterTransformName = String.Empty;
     private ModuleRCSFX rcsController;
+    int[] activeTransformIndices;
 
     public RCSController() : base() { }
     public RCSController(ConfigNode node) : base(node) { }
@@ -32,25 +33,43 @@ namespace Waterfall
       if (rcsController == null)
       {
         Utils.LogError("[RCSController] Could not find ModuleRCSFX on Initialize");
+        values = new float[0];
         return;
       }
 
-      values = new float[rcsController.thrusterTransforms.Count];
+      List<int> transformIndices = new List<int>();
+
+      for (int i = 0; i < rcsController.thrusterTransforms.Count; ++i)
+      {
+        Transform t = rcsController.thrusterTransforms[i];
+        if (t.gameObject.activeInHierarchy)
+        {
+          transformIndices.Add(i);
+        }
+      }
+
+      activeTransformIndices = transformIndices.ToArray();
+      values = new float[activeTransformIndices.Length];
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
-      if (rcsController == null)
+      bool awake = false;
+      for (int valueIndex = values.Length; valueIndex-- > 0;)
       {
-        Utils.LogWarning("[RCSController] RCS controller not assigned");
-        return;
+        int transformIndex = activeTransformIndices[valueIndex];
+        float newThrottle = rcsController.thrustForces[transformIndex] / rcsController.thrusterPower;
+        float oldValue = values[valueIndex];
+          
+        if (!Utils.ApproximatelyEqual(oldValue, newThrottle))
+        {
+          float responseRate = newThrottle > oldValue ? responseRateUp : responseRateDown;
+          values[valueIndex] = Mathf.MoveTowards(oldValue, newThrottle, responseRate * TimeWarp.deltaTime);
+          awake = true;
+        }
       }
-      for (int i = 0; i < values.Length; i++)
-      {
-        float newThrottle = rcsController.thrustForces[i] / rcsController.thrusterPower;
-        float responseRate = newThrottle > values[i] ? responseRateUp : responseRateDown;
-        values[i] = Mathf.MoveTowards(values[i], newThrottle, responseRate * TimeWarp.deltaTime);
-      }
+
+      return awake;
     }
 
     public override void UpgradeToCurrentVersion(Version loadedVersion)

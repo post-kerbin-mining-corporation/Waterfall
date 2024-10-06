@@ -6,7 +6,7 @@ namespace Waterfall.UI
   public class UIBaseWindow : MonoBehaviour
   {
     // Control Vars
-    protected static bool showWindow;
+    public static bool showWindow;
     public           Rect windowPos = new(200f, 200f, 1000f, 400f);
     protected        bool initUI;
 
@@ -15,6 +15,7 @@ namespace Waterfall.UI
     private   Vector2     scrollPosition = Vector2.zero;
     protected int         windowID       = new Random(13123).Next();
 
+    UnityEngine.UI.Image image;
 
     public Rect WindowPosition
     {
@@ -26,6 +27,23 @@ namespace Waterfall.UI
     {
       if (Settings.DebugUIMode)
         Utils.Log("[UI]: Awake fired");
+
+      gameObject.layer = 5;
+      gameObject.AddComponent<RectTransform>();
+
+      var canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
+      canvasRenderer.cullTransparentMesh = true;
+      image = gameObject.AddComponent<UnityEngine.UI.Image>();
+      image.color = new Color(0, 0, 0, 0);
+      image.raycastTarget = true;
+
+      gameObject.transform.SetParent(MainCanvasUtil.MainCanvas.transform, false);
+
+      // Ensure the RectTransform is anchored to the top-left of the screen
+      var rectTransform = transform as RectTransform;
+      rectTransform.anchorMin = new Vector2(0, 0);
+      rectTransform.anchorMax = new Vector2(0, 0);
+      rectTransform.pivot = new Vector2(0, 0);
     }
 
     protected virtual void Start()
@@ -39,6 +57,12 @@ namespace Waterfall.UI
       if (Event.current.type == EventType.Repaint || Event.current.isMouse) { }
 
       Draw();
+
+      var rectTransform = transform as RectTransform;
+      rectTransform.anchoredPosition = new Vector2(windowPos.x, Screen.height - windowPos.y - windowPos.height);
+      rectTransform.sizeDelta = new Vector2(windowPos.width, windowPos.height);
+
+      image.enabled = showWindow;
     }
 
     /// <summary>
@@ -69,9 +93,9 @@ namespace Waterfall.UI
       if (!initUI)
         InitUI();
 
+      GUI.skin = HighLogic.Skin;
       if (showWindow)
       {
-        GUI.skin = HighLogic.Skin;
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
         windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), 
           UIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));

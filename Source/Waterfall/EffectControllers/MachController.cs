@@ -18,9 +18,9 @@ namespace Waterfall
       values = new float[1];
     }
 
-    protected override void UpdateInternal()
+    protected override float UpdateSingleValue()
     {
-      values[0] = (float) parentModule.vessel.mach;
+      return (float) parentModule.vessel.mach;
     }
   }
 }

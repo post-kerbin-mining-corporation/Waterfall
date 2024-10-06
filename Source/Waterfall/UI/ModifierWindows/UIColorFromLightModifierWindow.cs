@@ -15,7 +15,7 @@ namespace Waterfall.UI
       lightIndex = lightNames.ToList().FindIndex(x => x == colorMod.lightTransformName);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag) { }
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag) { }
 
     /// <summary>
     ///   Initialize the UI widgets, do localization, set up styles
@@ -72,14 +72,6 @@ namespace Waterfall.UI
     ///   Draws the modifier content
     /// </summary>
     protected override void UpdateModifierPanel() { }
-
-    #region GUI Variables
-
-    private Vector2 curveButtonDims = new(100f, 50f);
-
-    private Texture2D miniCurve;
-
-    #endregion
 
     #region GUI Widgets
 

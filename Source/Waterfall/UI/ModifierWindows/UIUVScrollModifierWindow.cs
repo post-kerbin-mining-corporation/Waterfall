@@ -20,7 +20,7 @@ namespace Waterfall.UI
       GenerateCurveThumbs(mod);
     }
 
-    public override void UpdateCurves(FloatCurve newCurve, string tag)
+    public override void UpdateCurves(FastFloatCurve newCurve, string tag)
     {
       base.UpdateCurves(newCurve, tag);
       // Get the color from the UI.

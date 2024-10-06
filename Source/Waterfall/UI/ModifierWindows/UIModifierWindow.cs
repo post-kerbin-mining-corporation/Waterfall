@@ -3,13 +3,11 @@ using UnityEngine;
 
 namespace Waterfall.UI
 {
-  public delegate void CurveUpdateFunction(FloatCurve curve);
-
   public class UIModifierWindow : UIPopupWindow
   {
     public UIModifierWindow(EffectModifier mod, bool show) : base(show)
     {
-      controllerNames = mod.parentEffect.parentModule.GetControllerNames().ToArray();
+      controllerNames = mod.parentEffect.parentModule.GetControllerNames();
       for (int i = 0; i < controllerNames.Length; i++)
       {
         if (controllerNames[i] == mod.controllerName)
@@ -23,7 +21,7 @@ namespace Waterfall.UI
       windowPos       = new(WaterfallUI.Instance.WindowPosition.xMax + 5f, WaterfallUI.Instance.WindowPosition.yMin, 500f, 100f);
     }
 
-    public virtual void UpdateCurves(FloatCurve newCurve, string tag) { }
+    public virtual void UpdateCurves(FastFloatCurve newCurve, string tag) { }
 
     /// <summary>
     ///   Draw the UI
@@ -136,9 +134,9 @@ namespace Waterfall.UI
     ///   Spawns the float editor panel to edit a float
     /// </summary>
     /// <param name="toEdit"></param>
-    protected void EditCurve(FloatCurve toEdit, CurveUpdateFunction updateFunction)
+    protected void EditCurve(FastFloatCurve toEdit, CurveUpdateFunction updateFunction)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
+      Utils.Log($"Started editing curve {toEdit}", LogType.UI);
       curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, updateFunction);
     }
 
@@ -146,18 +144,18 @@ namespace Waterfall.UI
     ///   Spawns the float editor panel to edit a float
     /// </summary>
     /// <param name="toEdit"></param>
-    protected void EditCurve(FloatCurve toEdit, string tag)
+    protected void EditCurve(FastFloatCurve toEdit, string tag)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
+      Utils.Log($"Started editing curve {toEdit}", LogType.UI);
       curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, this, tag);
     }
 
-    protected void CopyCurve(FloatCurve toCopy)
+    protected void CopyCurve(FastFloatCurve toCopy)
     {
-      UICopy.CopyFloatCurve(toCopy);
+      UICopy.CopyFastFloatCurve(toCopy);
     }
 
-    protected void PasteCurve(FloatCurve value, out FloatCurve target)
+    protected void PasteCurve(FastFloatCurve value, out FastFloatCurve target)
     {
       if (UICopy.CurveCopyBuffer != null)
         target = UICopy.CurveCopyBuffer;
@@ -173,15 +171,13 @@ namespace Waterfall.UI
     protected int        texHeight   = 30;
     protected float      hdrWidth    = 75f;
     protected float      copyWidth   = 40f;
-    protected FloatCurve copyBuffer;
+    protected FastFloatCurve copyBuffer;
 
     #endregion
 
     #region GUI Widgets
 
     protected UICurveEditWindow curveEditor;
-
-    private CurveUpdateFunction curveFunc;
 
     #endregion
 

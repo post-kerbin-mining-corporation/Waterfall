@@ -6,11 +6,10 @@ namespace Waterfall
   /// <summary>
   ///   Transform scale modifier
   /// </summary>
-  public class EffectPositionModifier : EffectModifier
+  public class EffectPositionModifier : EffectModifier_Vector3
   {
-    public FloatCurve xCurve = new();
-    public FloatCurve yCurve = new();
-    public FloatCurve zCurve = new();
+    protected override string ConfigNodeName => WaterfallConstants.PositionModifierNodeName;
+
     private Vector3 basePosition;
 
     public EffectPositionModifier() : base()
@@ -20,33 +19,11 @@ namespace Waterfall
 
     public EffectPositionModifier(ConfigNode node) : base(node) { }
 
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-      xCurve.Load(node.GetNode("xCurve"));
-      yCurve.Load(node.GetNode("yCurve"));
-      zCurve.Load(node.GetNode("zCurve"));
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = base.Save();
-
-      node.name = WaterfallConstants.PositionModifierNodeName;
-
-      node.AddNode(Utils.SerializeFloatCurve("xCurve", xCurve));
-      node.AddNode(Utils.SerializeFloatCurve("yCurve", yCurve));
-      node.AddNode(Utils.SerializeFloatCurve("zCurve", zCurve));
-      return node;
-    }
-
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
-      basePosition = xforms[0].localPosition;
+      basePosition = xforms.Count == 0 ? Vector3.zero : xforms[0].localPosition;
     }
-
-    public void Get(float[] input, Vector3[] output) => Get(input, output, xCurve, yCurve, zCurve);
 
     public override bool IntegratorSuitable(EffectIntegrator integrator) => integrator is EffectPositionIntegrator && integrator.transformName == transformName;
 

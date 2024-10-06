@@ -14,6 +14,7 @@ namespace Waterfall.UI.EffectControllersUI
     private          float    perlinMin;
     private          float    perlinScale = 1f;
     private          float    perlinSpeed = 1f;
+    private bool randomSeed = false;
 
     public RandomnessControllerUIOptions() { }
 
@@ -51,15 +52,19 @@ namespace Waterfall.UI.EffectControllersUI
 
       if (randTypes[randFlag] == RandomnessController.PerlinNoiseName)
       {
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Seed", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
-        randomStrings[0] = GUILayout.TextArea(randomStrings[0], GUILayout.MaxWidth(60f));
-        if (Int32.TryParse(randomStrings[0], out int intParsed))
+        randomSeed = GUILayout.Toggle(randomSeed, "Random Seed");
+        if (!randomSeed)
         {
-          perlinSeed = intParsed;
+          GUILayout.BeginHorizontal();
+          GUILayout.Label("Seed", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+          randomStrings[0] = GUILayout.TextArea(randomStrings[0], GUILayout.MaxWidth(60f));
+          if (Int32.TryParse(randomStrings[0], out int intParsed))
+          {
+            perlinSeed = intParsed;
+          }
+          GUILayout.EndHorizontal();
         }
 
-        GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Minimum", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
         randomStrings[3] = GUILayout.TextArea(randomStrings[3], GUILayout.MaxWidth(60f));
@@ -106,6 +111,7 @@ namespace Waterfall.UI.EffectControllersUI
         randomStrings[1] = controller.scale.ToString();
         randomStrings[2] = controller.speed.ToString();
         randomStrings[3] = controller.minimum.ToString();
+        randomSeed = controller.randomSeed;
       }
     }
 
@@ -116,6 +122,7 @@ namespace Waterfall.UI.EffectControllersUI
         scale     = perlinScale,
         minimum   = perlinMin,
         seed      = perlinSeed,
+        randomSeed = randomSeed,
         speed     = perlinSpeed,
         noiseType = randTypes[randFlag]
       };

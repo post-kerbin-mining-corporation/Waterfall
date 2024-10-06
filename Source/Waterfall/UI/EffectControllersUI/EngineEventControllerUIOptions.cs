@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UniLinq;
 
 namespace Waterfall.UI.EffectControllersUI
 {
   public class EngineEventControllerUIOptions : DefaultEffectControllerUIOptions<EngineEventController>
   {
 
-    private readonly string[] eventTypes      = { "ignition", "flameout" };
-    private readonly Vector2  curveButtonDims = new(100f, 50f);
+    private readonly string[] eventTypes = { "ignition", "flameout"};
+    private string[] engineIDOptions;
+    private int engineIndex;
 
+    private readonly Vector2  curveButtonDims = new(100f, 50f);
     private readonly int               texWidth  = 80;
     private readonly int               texHeight = 30;
     private          int               eventFlag;
-    private          FloatCurve        eventCurve;
+    private          FastFloatCurve        eventCurve;
     private          float             eventDuration = 2f;
     private          string            eventDurationString;
     private          Texture2D         miniCurve;
-    private          UICurveEditWindow curveEditor;
 
     public EngineEventControllerUIOptions()
     {
@@ -30,7 +33,18 @@ namespace Waterfall.UI.EffectControllersUI
 
     public override void DrawOptions()
     {
-      GUILayout.Label("Event name");
+      GUILayout.BeginHorizontal();
+      GUILayout.Label("Engine ID", UIResources.GetStyle("data_header"), GUILayout.MaxWidth(160f));
+      if (engineIDOptions != null && engineIDOptions.Length != 0)
+      {
+        engineIndex = GUILayout.SelectionGrid(engineIndex, engineIDOptions, 2);
+      }
+      else
+      {
+        GUILayout.Label("0");
+      }
+      GUILayout.EndHorizontal();
+      GUILayout.Label("Event Name");
       int eventFlagChanged = GUILayout.SelectionGrid(eventFlag, eventTypes, Mathf.Min(eventTypes.Length, 4), UIResources.GetStyle("radio_text_button"));
 
       eventFlag = eventFlagChanged;
@@ -61,7 +75,19 @@ namespace Waterfall.UI.EffectControllersUI
       eventDuration       = controller.eventDuration;
       eventDurationString = controller.eventDuration.ToString();
 
+      List<ModuleEngines> engineOptions = controller.ParentModule.part.FindModulesImplementing<ModuleEngines>();
+      engineIDOptions = engineOptions.Select(x => x.engineID).ToArray();
+      engineIndex = engineIDOptions.ToList().IndexOf(controller.engineID);
+      engineIndex = engineIndex == -1 ? 0 : engineIndex;
+
       GenerateCurveThumbs();
+    }
+    
+    public override void DefaultOptions(ModuleWaterfallFX parentModule)
+    {
+      List<ModuleEngines> engineOptions = parentModule.part.FindModulesImplementing<ModuleEngines>();
+      engineIDOptions = engineOptions.Select(x => x.engineID).ToArray();
+      engineIndex = 0;
     }
 
     protected override EngineEventController CreateControllerInternal() =>
@@ -69,13 +95,14 @@ namespace Waterfall.UI.EffectControllersUI
       {
         eventName     = eventTypes[eventFlag],
         eventCurve    = eventCurve,
-        eventDuration = eventDuration
+        eventDuration = eventDuration,
+        engineID = engineIDOptions[engineIndex]
       };
 
-    private void EditCurve(FloatCurve toEdit, CurveUpdateFunction function)
+    private void EditCurve(FastFloatCurve toEdit, CurveUpdateFunction function)
     {
-      Utils.Log($"Started editing curve {toEdit.Curve}", LogType.UI);
-      curveEditor = WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
+      Utils.Log($"Started editing curve {toEdit}", LogType.UI);
+      WaterfallUI.Instance.OpenCurveEditor(toEdit, function);
     }
 
     private void GenerateCurveThumbs()
@@ -83,7 +110,7 @@ namespace Waterfall.UI.EffectControllersUI
       miniCurve = GraphUtils.GenerateCurveTexture(texWidth, texHeight, eventCurve, Color.green);
     }
 
-    private void UpdateEventCurve(FloatCurve curve)
+    private void UpdateEventCurve(FastFloatCurve curve)
     {
       eventCurve = curve;
       GenerateCurveThumbs();

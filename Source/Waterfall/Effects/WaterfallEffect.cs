@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniLinq;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -16,17 +17,16 @@ namespace Waterfall
     public readonly List<Vector3>                    baseScales = new();
     public          ModuleWaterfallFX                parentModule;
     public          WaterfallEffectTemplate          parentTemplate;
-    public readonly List<EffectFloatIntegrator>      floatIntegrators = new();
-    public readonly List<EffectLightFloatIntegrator> lightFloatIntegrators = new();
-    public readonly List<EffectLightColorIntegrator> lightColorIntegrators = new();
-    public readonly List<EffectPositionIntegrator>   positionIntegrators = new();
-    public readonly List<EffectRotationIntegrator>   rotationIntegrators = new();
-    public readonly List<EffectScaleIntegrator>      scaleIntegrators = new();
-    public readonly List<EffectColorIntegrator>      colorIntegrators = new();
+
+    public readonly List<EffectIntegrator> intensityTestIntegrators = new();
+    public readonly List<EffectIntegrator> otherIntegrators = new();
+
+    private HashSet<string> disabledTransformNames = new();
+    private UInt64 usedControllerMask = 0;
 
     protected           WaterfallModel       model;
     protected readonly  List<EffectModifier> fxModifiers = new ();
-    protected           Transform            parentTransform;
+    protected readonly  List<DirectModifier> directModifiers = new();
     protected           ConfigNode           savedNode;
     protected           bool                 effectVisible = true;
     protected           Vector3              savedScale;
@@ -78,6 +78,11 @@ namespace Waterfall
       Load(fx.Save());
     }
 
+    public override string ToString()
+    {
+      return name + ":" + parentName;
+    }
+
     public Vector3 TemplatePositionOffset { get; set; }
     public Vector3 TemplateRotationOffset { get; set; }
     public Vector3 TemplateScaleOffset    { get; set; }
@@ -119,7 +124,11 @@ namespace Waterfall
       var lightFloatNodes = node.GetNodes(WaterfallConstants.LightFloatModifierNodeName);
       var lightColorNodes = node.GetNodes(WaterfallConstants.LightColorModifierNodeName);
 
+      var particleNumericNodes = node.GetNodes(WaterfallConstants.ParticleNumericModifierNodeName);
+      var particleColorNodes = node.GetNodes(WaterfallConstants.ParticleColorModifierNodeName);
+
       foreach (var subNode in positionNodes)
+
       {
         fxModifiers.Add(new EffectPositionModifier(subNode));
       }
@@ -163,6 +172,14 @@ namespace Waterfall
       {
         fxModifiers.Add(new EffectLightColorModifier(subNode));
       }
+      foreach (var subNode in particleNumericNodes)
+      {
+        fxModifiers.Add(new EffectParticleMultiNumericModifier(subNode));
+      }
+      foreach (var subNode in particleColorNodes)
+      {
+        fxModifiers.Add(new EffectParticleMultiColorModifier(subNode));
+      }
     }
 
     public ConfigNode Save()
@@ -183,13 +200,13 @@ namespace Waterfall
     public void CleanupEffect()
     {
       Utils.Log($"[WaterfallEffect]: Deleting effect {name}", LogType.Effects);
-      for (int i = model.modelTransforms.Count - 1; i >= 0; i--)
-      {
-        Object.Destroy(model.modelTransforms[i].gameObject);
-      }
+      model.Cleanup();
     }
-
-    public void InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
+    public void Reset(bool playImmediately)
+    {
+      model.ResetParticleSystem(playImmediately);
+    }
+    public bool InitializeEffect(ModuleWaterfallFX host, bool fromNothing, bool useRelativeScaling)
     {
       parentModule = host;
       var parents = parentModule.part.FindModelTransforms(parentName);
@@ -197,19 +214,28 @@ namespace Waterfall
 
       effectTransforms.Clear();
       baseScales.Clear();
+      usedControllerMask = 0;
 
-      for (int i = 0; i < parents.Length; i++)
+      foreach (var parent in parents)
       {
-        var effect          = new GameObject($"Waterfall_FX_{name}_{i}");
-        var effectTransform = effect.transform;
-
-        if (parents[i] == null)
+        if (parents == null)
         {
           Utils.LogError($"[WaterfallEffect]: Trying to attach effect to null parent transform {parentName} on model");
           continue;
         }
+        else if (!parent.gameObject.activeInHierarchy)
+        {
+          // The stock ModulePartVariants will deactivate transforms that shouldn't exist on the current variant
+          // This assumes that we can respond to any changes in activation state by reinitializing the effects
+          continue;
+        }
 
-        effectTransform.SetParent(parents[i], true);
+        int i = effectTransforms.Count;
+
+        var effect          = new GameObject($"Waterfall_FX_{name}_{i}");
+        var effectTransform = effect.transform;
+
+        effectTransform.SetParent(parent, true);
         effectTransform.localPosition    = Vector3.zero;
         effectTransform.localEulerAngles = Vector3.zero;
         if (useRelativeScaling)
@@ -236,6 +262,11 @@ namespace Waterfall
         fx.Init(this);
       }
 
+      if (effectTransforms.Count == 0)
+      {
+        return false;
+      }
+
       effectRenderers.Clear();
       effectRendererMaterials.Clear();
       effectRendererTransforms.Clear();
@@ -249,29 +280,40 @@ namespace Waterfall
         }
       }
 
-      InitializeIntegrators();
-    }
-
-    public void InitializeIntegrators()
-    {
-      floatIntegrators.Clear();
-      positionIntegrators.Clear();
-      colorIntegrators.Clear();
-      rotationIntegrators.Clear();
-      scaleIntegrators.Clear();
-      lightFloatIntegrators.Clear();
-      lightColorIntegrators.Clear();
+      intensityTestIntegrators.Clear();
+      otherIntegrators.Clear();
 
       foreach (var mod in fxModifiers)
       {
-        if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-        else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-        else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-        else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-        else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-        else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-        else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+        AddModifierToIntegratorList(mod);
       }
+
+      SortIntegrators();
+      
+      return true;
+    }
+
+    void AddModifierToIntegratorList(EffectModifier mod)
+    {
+      if (mod is DirectModifier directMod) directModifiers.Add(directMod);
+      else if (mod.TestIntensity) mod.CreateOrAttachToIntegrator(intensityTestIntegrators);
+      else mod.CreateOrAttachToIntegrator(otherIntegrators);
+      usedControllerMask |= mod.GetControllerMask();
+    }
+
+    void SortIntegrators()
+    {
+      // Integrators need to be sorted such that:
+      // 1. integrators are grouped by transform (so once we hit one on a disabled transform, we skip all of the ones on that transform)
+      //    TODO: maybe we should sort by whether the transform is disabled?  Might have to re-sort as transforms enable/disable
+
+      Comparison<EffectIntegrator> OrderByTransform = (EffectIntegrator a, EffectIntegrator b) => string.Compare(a.transformName, b.transformName);
+
+      intensityTestIntegrators.RemoveAll(integrator => !integrator.Valid);
+      otherIntegrators.RemoveAll(integrator => !integrator.Valid);
+
+      intensityTestIntegrators.Sort(OrderByTransform);
+      otherIntegrators.Sort(OrderByTransform);
     }
 
     public void ApplyTemplateOffsets(Vector3 position, Vector3 rotation, Vector3 scale)
@@ -300,6 +342,7 @@ namespace Waterfall
     }
 
     public List<Transform> GetModelTransforms() => model.modelTransforms;
+    public List<Transform> GetEffectTransforms() => effectTransforms;
 
     private static readonly ProfilerMarker s_Update = new ProfilerMarker("Waterfall.Effect.Update");
     private static readonly ProfilerMarker s_fxApply = new ProfilerMarker("Waterfall.Effect.Update.FxApply");
@@ -307,56 +350,99 @@ namespace Waterfall
 
     private static readonly float[] EmptyControllerValues = new float[1];
 
-    public void Update()
+    private void UpdateIntegratorArray<T>(List<T> integrators, UInt64 awakeControllerMask) where T : EffectIntegrator
+    {
+      for (int i = integrators.Count-1; i >= 0;)
+      {
+        var integrator = integrators[i];
+
+        // skip the block of integrators with the same transform name
+        if (disabledTransformNames.Contains(integrator.transformName))
+        {
+          // TODO: we could build a table that would let us jump to the next one immediately instead of looping
+          string transformName = integrator.transformName;
+          while (i-- > 0 && integrators[i].transformName == transformName) ;
+          continue;
+        }
+        else if (integrator.NeedsUpdate(awakeControllerMask))
+        {
+          integrator.Update();
+        }
+        --i;
+      }
+    }
+
+    private bool UpdateIntegratorArray_TestIntensity(List<EffectIntegrator> integrators, ref UInt64 awakeControllerMask)
+    {
+      bool anyActive = false;
+
+      for (int i = integrators.Count; i-- > 0;)
+      {
+        var integrator = integrators[i];
+
+        bool wasActive = integrator.active;
+        if (integrator.NeedsUpdate(awakeControllerMask))
+        {
+          integrator.Update();
+        }
+        
+        if (integrator.active)
+        {
+          anyActive = true;
+          if (!wasActive)
+          {
+            // when an integrator becomes active, we need to force all modifiers for that transform to update because they may have cached an old controller value that has gone to sleep
+            // We could do this by storing extra state on the modifiers, but just marking all controllers as awake for a frame works too and is simpler
+            // This shouldn't happen very often, only during engine ignition etc.
+            // this whole thing could use a refactor, because there's two sources of truth about which controllers are awake..
+            foreach (var controller in parentModule.Controllers)
+            {
+              controller.awake = true;
+            }
+            awakeControllerMask = ~0ul;
+          }
+        }
+        // if this integrator controls the visibility for a specific transform and it's turned off, we can skip the remaining integrators on this transform
+        else
+        {
+          string transformName = integrator.transformName;
+          disabledTransformNames.Add(transformName);
+        }
+      }
+
+      return anyActive;
+    }
+
+    public bool Update(ref UInt64 awakeControllerMask)
     {
       s_Update.Begin();
+
+      bool anyActive = false;
+
       if (effectVisible)
       {
         s_fxApply.Begin();
-        foreach (var fx in fxModifiers)
+        foreach (var fx in directModifiers)
         {
           float[] controllerData = fx.Controller == null ? EmptyControllerValues : fx.Controller.Get();
           fx.Apply(controllerData);
         }
         s_fxApply.End();
 
-        s_Integrators.Begin();
-        foreach (var integrator in floatIntegrators) integrator.Update();
-        foreach (var integrator in colorIntegrators) integrator.Update();
-        foreach (var integrator in positionIntegrators) integrator.Update();
-        foreach (var integrator in scaleIntegrators) integrator.Update();
-        foreach (var integrator in rotationIntegrators) integrator.Update();
-        foreach (var integrator in lightFloatIntegrators) integrator.Update();
-        foreach (var integrator in lightColorIntegrators) integrator.Update();
-        s_Integrators.End();
+        if ((awakeControllerMask & usedControllerMask) != 0)
+        {
+          s_Integrators.Begin();
+
+          disabledTransformNames.Clear();
+          anyActive = UpdateIntegratorArray_TestIntensity(intensityTestIntegrators, ref awakeControllerMask);
+          UpdateIntegratorArray(otherIntegrators, awakeControllerMask);
+
+          s_Integrators.End();
+        }
       }
       s_Update.End();
-    }
 
-    private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
-    public static void SetupRenderersForCamera(Camera camera, List<Renderer> renderers)
-    {
-      camerasProf.Begin();
-      var c = camera.transform;
-      foreach (var renderer in renderers)
-      {
-        if (!renderer.enabled) continue;
-        Material mat = renderer.material;
-
-        int qDelta;
-        if (mat.HasProperty("_Strength"))
-          qDelta = Settings.DistortQueue;
-        else
-        {
-          float camDistBounds = Vector3.Dot(renderer.bounds.center - c.position, c.forward);
-          float camDistTransform = Vector3.Dot(renderer.transform.position - c.position, c.forward);
-          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) / Settings.SortedDepth * Settings.QueueDepth, 0, Settings.QueueDepth);
-        }
-        if (mat.HasProperty("_Intensity"))
-          qDelta += 1;
-        mat.renderQueue = Settings.TransparentQueueBase + qDelta;
-      }
-      camerasProf.End();
+      return anyActive;
     }
 
     public void SetHDR(bool isHDR)
@@ -365,10 +451,10 @@ namespace Waterfall
 
       foreach (var mat in effectRendererMaterials)
       {
-        if (mat.HasProperty("_DestMode"))
+        if (mat.HasProperty(ShaderPropertyID._DestMode))
         {
-          mat.SetFloat("_DestMode", isHDR ? 1 : destMode);
-          mat.SetFloat("_ClipBrightness", isHDR ? 50: 1);
+          mat.SetFloat(ShaderPropertyID._DestMode, isHDR ? 1 : destMode);
+          mat.SetFloat(ShaderPropertyID._ClipBrightness, isHDR ? 50: 1);
         }
       }
     }
@@ -376,13 +462,18 @@ namespace Waterfall
     public void RemoveModifier(EffectModifier mod)
     {
       fxModifiers.Remove(mod);
-      if (mod is EffectFloatModifier) mod.RemoveFromIntegrator(floatIntegrators);
-      else if (mod is EffectColorModifier) mod.RemoveFromIntegrator(colorIntegrators);
-      else if (mod is EffectPositionModifier) mod.RemoveFromIntegrator(positionIntegrators);
-      else if (mod is EffectRotationModifier) mod.RemoveFromIntegrator(rotationIntegrators);
-      else if (mod is EffectScaleModifier) mod.RemoveFromIntegrator(scaleIntegrators);
-      else if (mod is EffectLightFloatModifier) mod.RemoveFromIntegrator(lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier) mod.RemoveFromIntegrator(lightColorIntegrators);
+
+      // it may be more reasonable to reinitialize the entire effect rather than trying to keep everything in sync...
+
+      if (mod is DirectModifier directMod) directModifiers.Remove(directMod);
+      else if (mod.TestIntensity) mod.RemoveFromIntegrator(intensityTestIntegrators);
+      else mod.RemoveFromIntegrator(otherIntegrators);
+
+      usedControllerMask = 0;
+      foreach (var modifier in fxModifiers)
+      {
+        usedControllerMask |= modifier.GetControllerMask();
+      }
     }
 
     public void ModifierParameterChange(EffectModifier mod)
@@ -395,13 +486,8 @@ namespace Waterfall
     {
       mod.Init(this);
       fxModifiers.Add(mod);
-      if (mod is EffectFloatModifier) mod.CreateOrAttachToIntegrator(floatIntegrators);
-      else if (mod is EffectColorModifier) mod.CreateOrAttachToIntegrator(colorIntegrators);
-      else if (mod is EffectPositionModifier) mod.CreateOrAttachToIntegrator(positionIntegrators);
-      else if (mod is EffectRotationModifier) mod.CreateOrAttachToIntegrator(rotationIntegrators);
-      else if (mod is EffectScaleModifier) mod.CreateOrAttachToIntegrator(scaleIntegrators);
-      else if (mod is EffectLightFloatModifier) mod.CreateOrAttachToIntegrator(lightFloatIntegrators);
-      else if (mod is EffectLightColorModifier) mod.CreateOrAttachToIntegrator(lightColorIntegrators);
+      AddModifierToIntegratorList(mod);
+      SortIntegrators();
     }
 
     public void MoveModifierFromTo(int oldIndex, int newIndex)
@@ -413,7 +499,10 @@ namespace Waterfall
       fxModifiers.RemoveAt(oldIndex);
       fxModifiers.Insert(newIndex, item);
 
-      InitializeIntegrators();
+      // make sure the integrator's modifier ordering matches
+      // this is overkill, we only really need to check its neighbors in the list - but this is editor-only code
+      item.integrator.handledModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
+      directModifiers.OrderBy(mod => fxModifiers.IndexOf(mod));
     }
 
     public void MoveModifierUp(int index) => MoveModifierFromTo(index, index - 1);

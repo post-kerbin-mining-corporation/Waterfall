@@ -163,9 +163,9 @@ namespace Waterfall
             p.Initialize(mat);
           }
 
-          if (useAutoRandomization && mat.HasProperty("_Seed"))
+          if (useAutoRandomization && mat.HasProperty(ShaderPropertyID._Seed))
           {
-            mat.SetFloat("_Seed", Random.Range(-1f, 1f));
+            mat.SetFloat(ShaderPropertyID._Seed, Random.Range(-1f, 1f));
           }
 
           Utils.Log(String.Format("[WaterfallMaterial]: Assigned new shader {0} ", mat.shader), LogType.Effects);

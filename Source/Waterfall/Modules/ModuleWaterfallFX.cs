@@ -27,10 +27,30 @@ namespace Waterfall
 
     [KSPField(isPersistant = false)] public Version version = CurrentVersion;
 
-    protected readonly Dictionary<string, WaterfallController> allControllers = new(16);
+    protected readonly List<WaterfallController> allControllers = new(8);
     protected readonly List<WaterfallEffect> allFX = new(16);
+    protected readonly List<WaterfallEffect> activeFX = new(16);
     protected readonly List<WaterfallEffectTemplate> allTemplates = new(16);
-    protected readonly List<Renderer> allRenderers = new(128);
+    protected Renderer[] allRenderers;
+    protected bool refreshRenderers = true;
+    private bool dynamicSortRenderers = false;
+
+    private bool hasAdditiveShaders;
+    private bool _hasAlphaBlendedShaders;
+    private bool hasAlphaBlendedShaders
+    {
+      get => _hasAlphaBlendedShaders;
+      set
+      {
+        if (value != _hasAlphaBlendedShaders)
+        {
+          x_modulesWithAlphaBlendedShaders += value ? 1 : -1;
+        }
+        _hasAlphaBlendedShaders = value;
+      }
+    }
+
+    private static int x_modulesWithAlphaBlendedShaders = 0;
 
     protected bool started;
     private bool isHDR;
@@ -42,8 +62,9 @@ namespace Waterfall
 
     public List<WaterfallEffectTemplate> Templates => allTemplates;
 
-    public List<WaterfallController> Controllers => allControllers.Values.ToList();
-    public Dictionary<string, WaterfallController> AllControllersDict => allControllers;
+    public List<WaterfallController> Controllers => allControllers;
+    bool isAwake;
+    UInt64 awakeControllerMask;
 
     /// <summary>
     /// Sets the value of a specific controller
@@ -53,12 +74,43 @@ namespace Waterfall
     /// <param name="value"></param>
     public void SetControllerValue(string controllerID, float value)
     {
-      allControllers[controllerID].Set(value);
+      var controller = FindController(controllerID);
+      if (controller != null)
+      {
+        controller.Set(value);
+        awakeControllerMask |= controller.mask;
+      }
+      else
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Could not find controller {controllerID} to set on module {moduleID}");
+      }
+    }
+    public WaterfallController FindController(string controllerName)
+    {
+      return allControllers.FirstOrDefault(c => c.name == controllerName);
     }
 
-    public override void OnAwake()
+    public void ResetEffect(string effectName, bool playImmediately)
     {
-      base.OnAwake();
+      var effect = FindEffect(effectName);
+      if (effect != null)
+      {
+        effect.Reset(playImmediately);
+      }
+      else 
+      {
+        Utils.LogWarning($"[ModuleWaterfallFX]: Could not find effect {effectName} on module {moduleID}");
+      }
+    }
+    public WaterfallEffect FindEffect(string effectName)
+    {
+      return allFX.FirstOrDefault(x => x.name == effectName);
+    }
+
+    private void OnDestroy()
+    {
+      hasAdditiveShaders = false;
+      hasAlphaBlendedShaders = false;
     }
 
     public void Start()
@@ -72,9 +124,110 @@ namespace Waterfall
 
     private void GatherRenderers()
     {
-      if (allRenderers.Count == 0)
-        foreach (var fx in allFX)
-          allRenderers.AddUniqueRange(fx.effectRenderers);
+      if (refreshRenderers)
+      {
+        List<Renderer> renderers = new List<Renderer>();
+        hasAdditiveShaders = false;
+        hasAlphaBlendedShaders = false;
+
+        for (int i = activeFX.Count; i-- > 0;)
+        {
+          var fx = activeFX[i];
+          foreach (var renderer in fx.effectRenderers)
+          {
+            Material mat = renderer.material;
+
+            // distortion effects get a constant renderqueue value, so they don't need to be sorted
+            if (mat.HasProperty(ShaderPropertyID._Strength))
+            {
+              mat.renderQueue = Settings.DistortQueue;
+              if (!Settings.EnableDistortion)
+              {
+                fx.CleanupEffect();
+                activeFX.RemoveAt(i);
+                break;
+              }
+            }
+            else
+            {
+              if (mat.HasProperty(ShaderPropertyID._Intensity))
+              {
+                hasAlphaBlendedShaders = true;
+              }
+              else
+              {
+                hasAdditiveShaders = true;
+              }
+
+              renderers.AddUnique(renderer);
+            }
+          }
+        }
+
+        allRenderers = renderers.ToArray();
+        refreshRenderers = false;
+      }
+    }
+
+    private static readonly ProfilerMarker camerasProf = new("Waterfall.Effect.Update.Cameras");
+    private void SetupRenderersForCamera(Camera camera)
+    {
+      // if there are no alpha blended effects in the world, we don't need dynamic sorting
+      if (x_modulesWithAlphaBlendedShaders == 0)
+      {
+        // if we were previously dynamically sorted, reset everything to default.
+        if (dynamicSortRenderers)
+        {
+          foreach (var renderer in allRenderers)
+          {
+            renderer.material.renderQueue = -1;
+          }
+          dynamicSortRenderers = false;
+        }
+
+        return;
+      }
+
+      camerasProf.Begin();
+
+      dynamicSortRenderers = true;
+
+      var c = camera.transform;
+      Vector3 cameraForward = c.forward;
+      Vector3 cameraPosition = c.position;
+      float queueScalar = Settings.QueueDepth / Settings.SortedDepth;
+      int firstQueueDelta = -1;
+      bool allShadersAreSameType = !(hasAdditiveShaders && _hasAlphaBlendedShaders);
+
+      for (int i = allRenderers.Length; i-- > 0;)
+      {
+        var renderer = allRenderers[i];
+        if (!renderer.enabled) continue; // TODO: not sure how much time this takes but we could sort disabled renderers to the end (but would need a way to re-sort on changes)
+        Material mat = renderer.material;
+
+        int qDelta;
+
+        // if all of the shaders are the same type, we can calculate a single queue value for the whole module
+        if (allShadersAreSameType && firstQueueDelta >= 0)
+        {
+          qDelta = firstQueueDelta;
+        }
+        else
+        {
+          float camDistBounds = Vector3.Dot(renderer.bounds.center - cameraPosition, cameraForward);
+          float camDistTransform = Vector3.Dot(renderer.transform.position - cameraPosition, cameraForward);
+          qDelta = Settings.QueueDepth - (int)Mathf.Clamp(Mathf.Min(camDistBounds, camDistTransform) * queueScalar, 0, Settings.QueueDepth);
+
+          firstQueueDelta = qDelta;
+
+          // TODO: not sure how much time this takes but we could cache it (or store these materials separately)
+          if (!hasAdditiveShaders || mat.HasProperty(ShaderPropertyID._Intensity)) // alpha blended shaders go later
+            qDelta += 1;
+        }
+
+        mat.renderQueue = Settings.TransparentQueueBase + qDelta;
+      }
+      camerasProf.End();
     }
 
     private static readonly ProfilerMarker luSetup = new ProfilerMarker("Waterfall.LateUpdate.Setup");
@@ -93,20 +246,41 @@ namespace Waterfall
           isHDR = !isHDR;
         luSetup.End();
         luControllers.Begin();
-        foreach (var controller in allControllers.Values)
+
+        for (int i = 0; i < allControllers.Count; ++i)
         {
-          controller.Update();
+          var controller = allControllers[i];
+          if (controller.Update())
+          {
+            awakeControllerMask |= controller.mask;
+          }
         }
         luControllers.End();
-        luEffects.Begin();
-        foreach (var fx in allFX)
+
+        isAwake = isAwake || awakeControllerMask != 0;
+
+        if (isAwake)
         {
-          fx.Update();
-          if (changeHDR)
-            fx.SetHDR(isHDR);
+          bool effectsAwake = false;
+          luEffects.Begin();
+          for (int fxIndex = 0; fxIndex < activeFX.Count; ++fxIndex)
+          {
+            var fx = activeFX[fxIndex];
+            effectsAwake = fx.Update(ref awakeControllerMask) || effectsAwake;
+            if (changeHDR)
+              fx.SetHDR(isHDR);
+          }
+
+          if (awakeControllerMask == 0 && !effectsAwake)
+          {
+            isAwake = false;
+          }
+
+          awakeControllerMask = 0;
+
+          luEffects.End();
+          SetupRenderersForCamera(camera);
         }
-        luEffects.End();
-        WaterfallEffect.SetupRenderersForCamera(camera, allRenderers);
       }
     }
 
@@ -304,13 +478,15 @@ namespace Waterfall
         var controller = controllerType.CreateFromConfig(childNode);
         Utils.Log($"[ModuleWaterfallFX]: Loaded effect controller of type {controller} named {controller.name} on moduleID {moduleID}, adding to loaded controllers dictionary", LogType.Modules);
 
-        try
+        if (FindController(controller.name) == null)
         {
-          allControllers.Add(controller.name, controller);
+          controller.mask = (1ul << allControllers.Count);
+          allControllers.Add(controller);
+          // NOTE: initialize gets called later
         }
-        catch (Exception ex)
+        else
         {
-          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: {ex.Message}");
+          Utils.LogError($"[ModuleWaterfallFX]: unable to add controller {controller} named {controller.name} to controllers dictionary on moduleID {moduleID}: already exists");
         }
       }
 
@@ -321,35 +497,18 @@ namespace Waterfall
     public string GetModuleTitle() => "";
 
     public override string GetInfo() => "";
-
-    private static readonly float[] EmptyControllerResult = new float[1];
-
-    /// <summary>
-    ///   Gets the value of the requested controller by name
-    /// </summary>
-    /// <param name="controllerName"></param>
-    /// <returns></returns>
-    public float[] GetControllerValues(string controllerName)
-    {
-      if (allControllers.TryGetValue(controllerName, out var controller))
-        return controller.Get();
-      else
-      {
-        return EmptyControllerResult;
-      }
-    }
-
     /// <summary>
     ///   Gets the list of controllers
     /// </summary>
     /// <param name="controllerName"></param>
     /// <returns></returns>
-    public List<string> GetControllerNames() => allControllers.Keys.ToList();
+    public string[] GetControllerNames() => allControllers.Select(controller => controller.name).ToArray();
 
     public void AddController(WaterfallController newController)
     {
       Utils.Log("[ModuleWaterfallFX]: Added new controller", LogType.Modules);
-      allControllers.Add(newController.name, newController);
+      newController.mask = 1ul << allControllers.Count;
+      allControllers.Add(newController);
       newController.Initialize(this);
       InitializeEffects();
     }
@@ -357,8 +516,13 @@ namespace Waterfall
     public void RemoveController(WaterfallController toRemove)
     {
       Utils.Log("[ModuleWaterfallFX]: Deleting controller", LogType.Modules);
-      allControllers.Remove(toRemove.name);
-      allRenderers.Clear();
+      int removedIndex = allControllers.IndexOf(toRemove);
+      allControllers.RemoveAt(removedIndex);
+      for (int i = removedIndex; i < allControllers.Count; ++i)
+      {
+        allControllers[i].mask >>= 1;
+      }
+      InitializeEffects();
     }
 
     public void AddEffect(WaterfallEffect newEffect)
@@ -385,8 +549,11 @@ namespace Waterfall
       }
 
       allFX.Add(effect);
-      effect.InitializeEffect(this, fromNothing, useRelativeScaling);
-      allRenderers.Clear();
+      if (effect.InitializeEffect(this, fromNothing, useRelativeScaling))
+      {
+        activeFX.Add(effect);
+      }
+      refreshRenderers = true;
     }
 
     public void RemoveEffect(WaterfallEffect toRemove)
@@ -406,7 +573,7 @@ namespace Waterfall
       }
 
       allFX.Remove(toRemove);
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     /// <summary>
@@ -443,9 +610,12 @@ namespace Waterfall
       }
 
       InitializeControllers();
+      awakeControllerMask = ~0ul;
       InitializeEffects();
 
       UpgradeToCurrentVersion();
+
+      isAwake = true;
     }
 
     private void UpgradeToCurrentVersion()
@@ -466,10 +636,12 @@ namespace Waterfall
     protected void InitializeControllers()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing Controllers", LogType.Modules);
-      foreach (var kvp in allControllers)
+      for (int i = 0; i < allControllers.Count; ++i)
       {
-        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {kvp.Key}", LogType.Modules);
-        kvp.Value.Initialize(this);
+        var controller = allControllers[i];
+        Utils.Log($"[ModuleWaterfallFX]: Initializing controller {controller.name}", LogType.Modules);
+        controller.mask = 1ul << i;
+        controller.Initialize(this);
       }
     }
 
@@ -479,12 +651,16 @@ namespace Waterfall
     protected void InitializeEffects()
     {
       Utils.Log("[ModuleWaterfallFX]: Initializing Effects", LogType.Modules);
+      activeFX.Clear();
       foreach (var fx in allFX)
       {
         Utils.Log($"[ModuleWaterfallFX]: Initializing effect {fx.name}");
-        fx.InitializeEffect(this, false, useRelativeScaling);
+        if (fx.InitializeEffect(this, false, useRelativeScaling))
+        {
+          activeFX.Add(fx);
+        }
       }
-      allRenderers.Clear();
+      refreshRenderers = true;
     }
 
     protected void CleanupEffects()

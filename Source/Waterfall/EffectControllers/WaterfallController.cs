@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 using Waterfall.EffectControllers;
 
 namespace Waterfall
@@ -14,6 +16,12 @@ namespace Waterfall
     public const string LegacyControllerTypeNodeName = "linkedTo";
 
     [Persistent] public string name = "unnamedController";
+
+    public ModuleWaterfallFX ParentModule => parentModule;
+
+    public bool awake;
+    public UInt64 mask = 0; // this should always equal (1 << parentModule.Controllers.IndexOf(this))
+
     public bool overridden
     {
       get { return _overridden; }
@@ -38,6 +46,7 @@ namespace Waterfall
         }
       }
     }
+    
     protected bool _overridden;
     protected float _overrideValue;
 
@@ -51,18 +60,35 @@ namespace Waterfall
       ConfigNode.LoadObjectFromConfig(this, node);
     }
 
-    public void Update()
+    public bool Update()
     {
-      if (!overridden)
+      if (overridden)
       {
-        UpdateInternal();
+        awake = true;
       }
+      else
+      {
+        awake = UpdateInternal() || Settings.ForceAllControllersAwake;
+      }
+
+      return awake;
     }
+
+    protected virtual float UpdateSingleValue() { return values[0]; }
 
     /// <summary>
     /// Get and store the value of the controller.  Consumers should call Get() to retrieve the data.
     /// </summary>
-    protected abstract void UpdateInternal();
+    protected virtual bool UpdateInternal()
+    {
+      float newValue = UpdateSingleValue();
+      if (Utils.ApproximatelyEqual(newValue, values[0]))
+      {
+        return false;
+      }
+      values[0] = newValue;
+      return true;
+    }
 
     /// <summary>
     ///   Get the value of the controller.
@@ -112,15 +138,6 @@ namespace Waterfall
     public void SetOverride(bool mode)
     {
       overridden = mode;
-    }
-
-    /// <summary>
-    ///   Sets the override value, not controlled by the game, likely an editor UI
-    /// </summary>
-    /// <param name="value"></param>
-    public void SetOverrideValue(float value)
-    {
-      overrideValue = value;
     }
 
     public virtual void UpgradeToCurrentVersion(Version loadedVersion)

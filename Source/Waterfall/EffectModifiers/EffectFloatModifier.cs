@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Waterfall
@@ -6,12 +7,15 @@ namespace Waterfall
   /// <summary>
   ///   Material color modifier
   /// </summary>
-  public class EffectFloatModifier : EffectModifier
+  public class EffectFloatModifier : EffectModifier_Float
   {
+    protected override string ConfigNodeName => WaterfallConstants.FloatModifierNodeName;
+
     [Persistent] public string floatName = "";
-    public FloatCurve curve = new();
     private Material[] m;
     public override bool ValidForIntegrator => !string.IsNullOrEmpty(floatName);
+    public override bool TestIntensity => WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
+
 
     public EffectFloatModifier() : base()
     {
@@ -20,19 +24,9 @@ namespace Waterfall
 
     public EffectFloatModifier(ConfigNode node) : base(node) { }
 
-    public override void Load(ConfigNode node)
+    public override string ToString()
     {
-      base.Load(node);
-      curve.Load(node.GetNode("floatCurve"));
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = base.Save();
-
-      node.name = WaterfallConstants.FloatModifierNodeName;
-      node.AddNode(Utils.SerializeFloatCurve("floatCurve", curve));
-      return node;
+      return floatName + " : " + controllerName + " : " + effectMode;
     }
 
     public override void Init(WaterfallEffect parentEffect)
@@ -42,21 +36,6 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         m[i] = xforms[i].GetComponent<Renderer>().material;
-      }
-    }
-
-    public void Get(float[] input, float[] output)
-    {
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < m.Length; i++)
-          output[i] = curve.Evaluate(input[i]) + randomValue;
-      }
-      else if (input.Length == 1)
-      {
-        float data = curve.Evaluate(input[0]) + randomValue;
-        for (int i = 0; i < m.Length; i++)
-          output[i] = data;
       }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Waterfall.UI
@@ -12,7 +13,18 @@ namespace Waterfall.UI
   public class UIModifierPopupWindow : UIPopupWindow
   {
     protected        string            windowTitle   = "";
-    private readonly string[]          modifierTypes = { "Position", "Rotation", "Scale", "Material Color", "Material Float", "Light Material Color", "Light Float", "Light Color" };
+    private readonly string[]          modifierTypes = { 
+      "Position", 
+      "Rotation", 
+      "Scale", 
+      "Material Color", 
+      "Material Float", 
+      "Light Material Color", 
+      "Light Float", 
+      "Light Color", 
+      "Particle Numeric",
+      "Particle Color"
+    };
     private          ModifierPopupMode windowMode;
     private          EffectModifier    modifier;
     private          WaterfallEffect   effect;
@@ -45,7 +57,7 @@ namespace Waterfall.UI
       showWindow      = true;
       effect          = fx;
       windowMode      = ModifierPopupMode.Add;
-      controllerTypes = fx.parentModule.GetControllerNames().ToArray();
+      controllerTypes = fx.parentModule.GetControllerNames();
 
       var xFormOptions = fx.GetModelTransforms()[0].GetComponentsInChildren<Transform>().ToList();
       modifierFlag     = 0;
@@ -141,6 +153,16 @@ namespace Waterfall.UI
         else if (modifierTypes[modifierFlag].Contains("Light"))
         {
           var xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<Light>().ToList();
+
+          transformOptions = new string[xFormOptions.Count];
+          for (int i = 0; i < xFormOptions.Count; i++)
+          {
+            transformOptions[i] = xFormOptions[i].gameObject.name;
+          }
+        }
+        else if (modifierTypes[modifierFlag].Contains("Particle"))
+        {
+          List<ParticleSystem> xFormOptions = effect.GetModelTransforms()[0].GetComponentsInChildren<ParticleSystem>().ToList();
 
           transformOptions = new string[xFormOptions.Count];
           for (int i = 0; i < xFormOptions.Count; i++)
@@ -262,7 +284,22 @@ namespace Waterfall.UI
         newMod.controllerName = controllerTypes[controllerFlag];
         return newMod;
       }
-
+      if (modifierTypes[modifierFlag] == "Particle Numeric")
+      {
+        var newMod = new EffectParticleMultiNumericModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
+      if (modifierTypes[modifierFlag] == "Particle Color")
+      {
+        var newMod = new EffectParticleMultiColorModifier();
+        newMod.fxName = newModifierName;
+        newMod.transformName = transformOptions[transformFlag];
+        newMod.controllerName = controllerTypes[controllerFlag];
+        return newMod;
+      }
       return null;
     }
   }

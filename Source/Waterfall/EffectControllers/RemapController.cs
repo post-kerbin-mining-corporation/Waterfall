@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Collections;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace Waterfall
   public class RemapController : WaterfallController
   {
     [Persistent] public string sourceController = "";
-    public FloatCurve mappingCurve = new();
+    public FastFloatCurve mappingCurve = new();
 
     private WaterfallController source;
 
@@ -39,18 +39,21 @@ namespace Waterfall
     private IEnumerator FindSourceDelayed()
     {
       yield return new WaitForEndOfFrame();
-      source = parentModule.AllControllersDict[sourceController];
+      source = parentModule.FindController(sourceController);
       values = new float[source.Get().Length];
     }
 
-    protected override void UpdateInternal()
+    protected override bool UpdateInternal()
     {
-      if (source == null) return;
-      float[] sourceValues = source.Get();
-      for (int i = 0; i < sourceValues.Length; ++i)
+      if (source != null)
       {
-        values[i] = mappingCurve.Evaluate(sourceValues[i]);
+        float[] sourceValues = source.Get();
+        for (int i = 0; i < sourceValues.Length; ++i)
+        {
+          values[i] = mappingCurve.Evaluate(sourceValues[i]);
+        }
       }
+      return false;
     }
   }
 }

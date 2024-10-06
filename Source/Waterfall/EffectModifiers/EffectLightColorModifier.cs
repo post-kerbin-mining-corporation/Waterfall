@@ -6,17 +6,14 @@ namespace Waterfall
   /// <summary>
   ///   Material color modifier
   /// </summary>
-  public class EffectLightColorModifier : EffectModifier
+  public class EffectLightColorModifier : EffectModifier_Color
   {
+    protected override string ConfigNodeName => WaterfallConstants.LightColorModifierNodeName;
+
     [Persistent] public string colorName = "_Main";
 
-    public FloatCurve rCurve = new();
-    public FloatCurve gCurve = new();
-    public FloatCurve bCurve = new();
-    public FloatCurve aCurve = new();
-
     private Light[] l;
-    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName);
+    public override bool ValidForIntegrator => !string.IsNullOrEmpty(colorName) && Settings.EnableLights;
 
     public EffectLightColorModifier() : base()
     {
@@ -25,28 +22,6 @@ namespace Waterfall
 
     public EffectLightColorModifier(ConfigNode node) : base(node) { }
 
-    public override void Load(ConfigNode node)
-    {
-      base.Load(node);
-
-      rCurve.Load(node.GetNode("rCurve"));
-      gCurve.Load(node.GetNode("gCurve"));
-      bCurve.Load(node.GetNode("bCurve"));
-      aCurve.Load(node.GetNode("aCurve"));
-    }
-
-    public override ConfigNode Save()
-    {
-      var node = base.Save();
-
-      node.name = WaterfallConstants.LightColorModifierNodeName;
-      node.AddNode(Utils.SerializeFloatCurve("rCurve", rCurve));
-      node.AddNode(Utils.SerializeFloatCurve("gCurve", gCurve));
-      node.AddNode(Utils.SerializeFloatCurve("bCurve", bCurve));
-      node.AddNode(Utils.SerializeFloatCurve("aCurve", aCurve));
-      return node;
-    }
-
     public override void Init(WaterfallEffect parentEffect)
     {
       base.Init(parentEffect);
@@ -54,32 +29,6 @@ namespace Waterfall
       for (int i = 0; i < xforms.Count; i++)
       {
         l[i] = xforms[i].GetComponent<Light>();
-      }
-    }
-
-    public void Get(float[] input, Color[] output)
-    {
-      if (input.Length > 1)
-      {
-        for (int i = 0; i < l.Length; i++)
-        {
-          float inValue = input[i];
-          output[i] = new(rCurve.Evaluate(inValue) + randomValue,
-                          gCurve.Evaluate(inValue) + randomValue,
-                          bCurve.Evaluate(inValue) + randomValue,
-                          aCurve.Evaluate(inValue) + randomValue);
-        }
-      }
-      else if (input.Length == 1)
-      {
-        float inValue = input[0];
-        Color color = new Color(
-          rCurve.Evaluate(inValue) + randomValue,
-          gCurve.Evaluate(inValue) + randomValue,
-          bCurve.Evaluate(inValue) + randomValue,
-          aCurve.Evaluate(inValue) + randomValue);
-        for (int i = 0; i < l.Length; i++)
-          output[i] = color;
       }
     }
 

@@ -5,27 +5,18 @@ using UnityEngine;
 
 namespace Waterfall
 {
-  public class EffectLightFloatIntegrator : EffectIntegrator
+  public class EffectLightFloatIntegrator : EffectIntegrator_Float
   {
     public string                         floatName;
-    protected readonly float[] modifierData;
-    protected readonly float[] initialValues;
-    protected readonly float[] workingValues;
 
     private readonly Light[]     l;
-
-    private readonly bool testIntensity;
 
     public EffectLightFloatIntegrator(WaterfallEffect effect, EffectLightFloatModifier floatMod) : base(effect, floatMod)
     {
       // light-float specific
       floatName = floatMod.floatName;
-      testIntensity = WaterfallConstants.ShaderPropertyHideFloatNames.Contains(floatName);
 
       l = new Light[xforms.Count];
-      modifierData = new float[xforms.Count];
-      initialValues = new float[xforms.Count];
-      workingValues = new float[xforms.Count];
 
       for (int i = 0; i < xforms.Count; i++)
       {
@@ -37,22 +28,9 @@ namespace Waterfall
       }
     }
 
-    public override void Update()
+    protected override void Apply()
     {
-      if (!Settings.EnableLights || handledModifiers.Count == 0)
-        return;
-
-      Array.Copy(initialValues, workingValues, l.Length);
-
-      foreach (var mod in handledModifiers)
-      {
-        if (mod.Controller != null)
-        {
-          float[] controllerData = mod.Controller.Get();
-          ((EffectLightFloatModifier)mod).Get(controllerData, modifierData);
-          Integrate(mod.effectMode, workingValues, modifierData);
-        }
-      }
+      bool anyActive = false;
 
       float lightBaseScale = parentEffect.TemplateScaleOffset.x;
       for (int i = 0; i < l.Length; i++)
@@ -61,14 +39,21 @@ namespace Waterfall
         float value = workingValues[i] * lightBaseScale;
         if (testIntensity)
         {
-          if (light.enabled && value < Settings.MinimumLightIntensity)
-            light.enabled = false;
-          else if (!light.enabled && value >= Settings.MinimumLightIntensity)
-            light.enabled = true;
+          bool shouldBeVisible = value >= Settings.MinimumLightIntensity;
+
+          if (light.enabled != shouldBeVisible)
+          {
+            light.enabled = shouldBeVisible;
+          }
         }
         if (light.enabled)
+        {
           UpdateFloats(light, value);
+          anyActive = true;
+        }
       }
+
+      active = anyActive;
     }
 
     protected void UpdateFloats(Light l, float f)

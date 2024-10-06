@@ -6,10 +6,12 @@ namespace Waterfall
   /// <summary>
   ///   Material UV scrolling modifier
   /// </summary>
-  public class EffectUVScrollModifier : EffectModifier
+  public class EffectUVScrollModifier : DirectModifier
   {
-    public FloatCurve scrollCurveX = new();
-    public FloatCurve scrollCurveY = new();
+    protected override string ConfigNodeName => WaterfallConstants.UVScrollModifierNodeName;
+
+    public FastFloatCurve scrollCurveX = new();
+    public FastFloatCurve scrollCurveY = new();
     [Persistent] public string textureName;
     private Material[] m;
     public override bool ValidForIntegrator => false;
@@ -32,7 +34,6 @@ namespace Waterfall
     {
       var node = base.Save();
 
-      node.name = WaterfallConstants.UVScrollModifierNodeName;
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveX", scrollCurveX));
       node.AddNode(Utils.SerializeFloatCurve("scrollCurveY", scrollCurveY));
       return node;
@@ -62,12 +63,6 @@ namespace Waterfall
           y = 0f;
         m[i].SetTextureOffset(textureName, new(x, y));
       }
-    }
-
-    public override EffectIntegrator CreateIntegrator()
-    {
-      Utils.LogError($"EffectUVScrollModifier.CreateIntegrator() called but this has no corresponding integrator!");
-      return null;
     }
   }
 }

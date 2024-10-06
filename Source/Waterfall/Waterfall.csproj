@@ -25,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
@@ -37,66 +38,67 @@
     <Prefer32Bit>false</Prefer32Bit>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <ReferencePath Condition="'$(ReferencePath)' == ''">\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\</ReferencePath>
+    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64.exe</KSPExecutable>
+    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app</KSPExecutable>
+    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP.x86_64</KSPExecutable>
+    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64_Data\Managed</ManagedRelativePath>
+    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app\Contents\Resources\Data\Managed</ManagedRelativePath>
+    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP_Data\Managed</ManagedRelativePath>
+    <ManagedPath>$(ReferencePath)\$(ManagedRelativePath)</ManagedPath>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ReferencePath)\$(KSPExecutable)</StartProgram>
+    <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="$(ManagedPath)\Assembly-CSharp.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="KSPAssets">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
+    <Reference Include="$(ManagedPath)\KSPAssets.dll">
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.AnimationModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.AssetBundleModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.CoreModule.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.ParticleSystemModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="$(ManagedPath)\UnityEngine.TextRenderingModule.dll">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <Reference Include="$(ManagedPath)\UnityEngine.UI.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(ManagedPath)\UnityEngine.UIModule.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -111,22 +113,28 @@
     <Compile Include="EffectControllers\EngineEventController.cs" />
     <Compile Include="EffectControllers\GimbalController.cs" />
     <Compile Include="EffectControllers\LightController.cs" />
+    <Compile Include="EffectControllers\VelocityController.cs" />
     <Compile Include="EffectControllers\MachController.cs" />
     <Compile Include="EffectControllers\RandomnessController.cs" />
     <Compile Include="EffectControllers\RCSController.cs" />
     <Compile Include="EffectControllers\RemapController.cs" />
     <Compile Include="EffectControllers\ThrottleController.cs" />
     <Compile Include="EffectControllers\ThrustController.cs" />
+    <Compile Include="EffectModifiers\DirectModifier.cs" />
     <Compile Include="EffectModifiers\EffectLightColorModifier.cs" />
     <Compile Include="EffectModifiers\EffectLightFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectColorFromLightModifier.cs" />
     <Compile Include="EffectModifiers\EffectFloatModifier.cs" />
     <Compile Include="EffectModifiers\EffectModifier.cs" />
+    <Compile Include="EffectModifiers\EffectParticleMultiColorModifier.cs" />
     <Compile Include="EffectModifiers\EffectPositionModifier.cs" />
     <Compile Include="EffectModifiers\EffectRotationModifier.cs" />
     <Compile Include="EffectModifiers\EffectScaleModifier.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightColorIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectLightFloatIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectParticleMultiColorIntegrator.cs" />
+    <Compile Include="Effects\EffectIntegrators\EffectParticleMultiNumericIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectRotationIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectScaleIntegrator.cs" />
     <Compile Include="Effects\EffectIntegrators\EffectPositionIntegrator.cs" />
@@ -141,12 +149,19 @@
     <Compile Include="Effects\WaterfallMaterialProperty.cs" />
     <Compile Include="Effects\WaterfallModel.cs" />
     <Compile Include="Effects\WaterfallEffectTemplate.cs" />
+    <Compile Include="Effects\WaterfallParticleProperty.cs" />
+    <Compile Include="Effects\WaterfallParticleSystem.cs" />
+    <Compile Include="FastFloatCurve.cs" />
     <Compile Include="MaterialUtils.cs" />
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
-    <Compile Include="Modules\ModuleWaterfallSmoke.cs" />
+    <Compile Include="Effects\WaterfallParticle.cs" />
+    <Compile Include="ParticleUtils.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ColorHSV.cs" />
+    <Compile Include="UI\EditWindows\UIGradientEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIMaterialData.cs" />
+    <Compile Include="UI\EditWindows\UIParticleData.cs" />
     <Compile Include="UI\EffectControllersUI\CustomPullControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\IEffectControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\AtmosphereDensityControllerUIOptions.cs" />
@@ -161,12 +176,15 @@
     <Compile Include="UI\EffectControllersUI\ThrottleControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\ThrustControllerUIOptions.cs" />
     <Compile Include="UI\EffectControllersUI\UIControllerPopupWindow.cs" />
+    <Compile Include="UI\EffectControllersUI\VelocityControllerUIOptions.cs" />
     <Compile Include="UI\ModifierWindows\UILightColorModifierWindow.cs" />
     <Compile Include="UI\ModifierWindows\UILightFloatModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleMultiColorModifierWindow.cs" />
+    <Compile Include="UI\ModifierWindows\UIParticleMultiNumericModifierWindow.cs" />
     <Compile Include="UI\TextureUtils.cs" />
-    <Compile Include="UI\UIColorPickerWindow.cs" />
+    <Compile Include="UI\EditWindows\UIColorPickerWindow.cs" />
     <Compile Include="UI\UICopy.cs" />
-    <Compile Include="UI\UILightEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UILightEditWindow.cs" />
     <Compile Include="UI\UIModifierPopupWindow.cs" />
     <Compile Include="UI\GraphUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIFloatModifierWindow.cs" />
@@ -179,15 +197,15 @@
     <Compile Include="UI\UIBaseWindow.cs" />
     <Compile Include="UI\ModifierWindows\UIColorModifierWindow.cs" />
     <Compile Include="UI\UIConstants.cs" />
-    <Compile Include="UI\UICurveEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UICurveEditWindow.cs" />
     <Compile Include="UI\UIEffectWidget.cs" />
     <Compile Include="UI\ModifierWindows\UIModifierWindow.cs" />
-    <Compile Include="UI\UIMaterialEditWindow.cs" />
-    <Compile Include="UI\UIModelEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIMaterialEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIModelEditWindow.cs" />
+    <Compile Include="UI\EditWindows\UIParticleEditWindow.cs" />
     <Compile Include="UI\UIPopupWindow.cs" />
     <Compile Include="UI\UIResources.cs" />
-    <Compile Include="UI\UISmokeEditWindow.cs" />
-    <Compile Include="UI\UITexturePickerWindow.cs" />
+    <Compile Include="UI\EditWindows\UITexturePickerWindow.cs" />
     <Compile Include="UI\UIUtils.cs" />
     <Compile Include="UI\ModifierWindows\UIUVScrollModifierWindow.cs" />
     <Compile Include="UI\UIWidget.cs" />
@@ -199,7 +217,10 @@
     <Compile Include="WaterfallShaders.cs" />
     <Compile Include="AssetLibrary\WaterfallTemplates.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include=".editorconfig" />
+    <Compile Include="EffectModifiers\EffectParticleMultiNumericModifier.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).*" "$(SolutionDir)\..\..\GameData\Waterfall\Plugins\"</PostBuildEvent>
   </PropertyGroup>
