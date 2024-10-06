@@ -309,6 +309,9 @@ namespace Waterfall
 
       Comparison<EffectIntegrator> OrderByTransform = (EffectIntegrator a, EffectIntegrator b) => string.Compare(a.transformName, b.transformName);
 
+      intensityTestIntegrators.RemoveAll(integrator => !integrator.Valid);
+      otherIntegrators.RemoveAll(integrator => !integrator.Valid);
+
       intensityTestIntegrators.Sort(OrderByTransform);
       otherIntegrators.Sort(OrderByTransform);
     }

@@ -41,6 +41,7 @@ namespace Waterfall
         {
           // TODO: it would be really nice to print the path to the transform that failed, but I don't see an easy way offhand
           Utils.LogError($"Integrator for {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID} failed to find a renderer on transform {transformName}");
+          Valid = false;
         }
         else if (renderers[i].material.HasProperty(floatPropertyID))
         {
@@ -51,6 +52,7 @@ namespace Waterfall
         else
         {
           Utils.LogError($"Material {renderers[i].material.name} does not have float property {floatName} for modifier {floatMod.fxName} in module {effect.parentModule.moduleID}");
+          Valid = false;
         }
       }
     }

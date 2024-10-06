@@ -38,6 +38,7 @@ namespace Waterfall
         else
         {
           Utils.LogError($"Material {m[i].name} does not have color property {colorName} for modifier {colorMod.fxName} in module {effect.parentModule.moduleID}");
+          Valid = false;
         }
       }
     }

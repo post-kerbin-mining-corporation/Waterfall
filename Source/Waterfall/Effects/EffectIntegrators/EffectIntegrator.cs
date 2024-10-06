@@ -15,6 +15,7 @@ namespace Waterfall
 
     public readonly bool testIntensity;
     public bool active = true;
+    public bool Valid { get; protected set; } = true;
 
     public void AddModifier(EffectModifier mod)
     {
