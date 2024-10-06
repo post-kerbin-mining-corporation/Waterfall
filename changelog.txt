@@ -1,3 +1,7 @@
+v0.10.1
+-------
+- Fixed some debug switches being on in settings
+
 v0.10.0
 -------
 - Updated bundled ModuleManger to 4.2.3
@@ -18,7 +22,7 @@ v0.10.0
 - Various logging cleanups and improvements
 - Reworked most Editor window UIs to look cleaner and work better, including a lot of UI code cleanup for more coherency
 - Added the ability to load arbitrary particle assets from assetbundles and control them
- - Controllability is limited
+ - Controllability is limited to some parameters
 
 v0.9.0
 ------
