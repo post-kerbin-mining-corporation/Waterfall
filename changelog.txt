@@ -1,3 +1,7 @@
+v0.10.1
+-------
+- Fixed some debug switches being on in settings
+
 v0.10.0
 -------
 - Updated bundled ModuleManger to 4.2.3
