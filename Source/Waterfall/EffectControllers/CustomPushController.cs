@@ -20,10 +20,5 @@ namespace Waterfall
       base.Initialize(host);
       values = new float[1];
     }
-
-    protected override bool UpdateInternal()
-    {
-      return values[0] != 0;
-    }
   }
 }
