@@ -1,3 +1,7 @@
+v0.10.2
+-------
+- Fixed a test patch from development still being around
+
 v0.10.1
 -------
 - Fixed some debug switches being on in settings
