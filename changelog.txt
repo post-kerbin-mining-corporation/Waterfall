@@ -1,5 +1,6 @@
 v0.10.2
 -------
+- Fixed an issue with shader compilation on OpenGL
 - Fixed a test patch from development still being around
 - Fixed an issue with custom push controllers where they they would not sleep/wake up correctly
 
