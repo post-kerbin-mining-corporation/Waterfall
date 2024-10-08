@@ -123,7 +123,7 @@ namespace Waterfall
     ///   Sets the value of the controller
     /// </summary>
     /// <param name="mode"></param>
-    public void Set(float newValue)
+    public virtual void Set(float newValue)
     {
       for (int i = 0; i < values.Length; i++)
       {
