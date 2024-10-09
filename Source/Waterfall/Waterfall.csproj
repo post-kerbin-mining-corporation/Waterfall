@@ -156,6 +156,7 @@
     <Compile Include="Modules\ModuleWaterfallFX.cs" />
     <Compile Include="Effects\WaterfallParticle.cs" />
     <Compile Include="ParticleUtils.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serializer\SerializedData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ColorHSV.cs" />

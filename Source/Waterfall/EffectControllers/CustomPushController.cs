@@ -12,6 +12,7 @@ namespace Waterfall
   [DisplayName("Custom (Push)")]
   public class CustomPushController : WaterfallController
   {
+    public float stagedValue = 0f;
     public CustomPushController() : base() { }
     public CustomPushController(ConfigNode node) : base(node) { }
 
@@ -20,10 +21,13 @@ namespace Waterfall
       base.Initialize(host);
       values = new float[1];
     }
-
-    protected override bool UpdateInternal()
+    protected override float UpdateSingleValue()
     {
-      return values[0] != 0;
+      return stagedValue;
+    }
+    public override void Set(float newValue)
+    {
+      stagedValue = newValue;
     }
   }
 }
