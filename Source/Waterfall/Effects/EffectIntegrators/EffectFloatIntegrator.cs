@@ -59,11 +59,10 @@ namespace Waterfall
 
     protected override void Apply()
     {
-      bool anyActive;
-
       if (testIntensity)
       {
-        anyActive = false;
+        bool anyActive = false;
+        bool anyChanged = false;
         for (int i = renderers.Length; i-- > 0;)
         {
           float val = workingValues[i];
@@ -76,6 +75,7 @@ namespace Waterfall
           if (wasVisible != shouldBeVisible)
           {
             renderers[i].enabled = shouldBeVisible;
+            anyChanged = true;
           }
 
           if (shouldBeVisible)
@@ -86,10 +86,12 @@ namespace Waterfall
 
           lastValues[i] = val;
         }
+
+        if (anyChanged) active = anyActive;
       }
       else
       {
-        anyActive = true;
+        active = true;
         for (int i = renderers.Length; i-- > 0;)
         {
           float val = workingValues[i];
@@ -100,8 +102,6 @@ namespace Waterfall
           lastValues[i] = val;
         }
       }
-
-      active = anyActive;
     }
   }
 }
