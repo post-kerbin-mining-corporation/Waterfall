@@ -8,3 +8,4 @@ bin/
 obj/
 *.swp
 **/*.csproj.user
+/Source/Waterfall/packages/

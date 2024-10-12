@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <RepoRootPath>$(MSBuildThisFileDirectory)../..</RepoRootPath>
+    <BinariesOutputRelativePath>GameData/Waterfall/Plugins</BinariesOutputRelativePath>
+  </PropertyGroup>
+  <Import Project="packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props" Condition="Exists('packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props')" />
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -14,6 +19,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <LangVersion>9</LangVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,67 +48,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <ReferencePath Condition="'$(ReferencePath)' == ''">\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\</ReferencePath>
-    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64.exe</KSPExecutable>
-    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app</KSPExecutable>
-    <KSPExecutable Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP.x86_64</KSPExecutable>
-    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Windows'))">KSP_x64_Data\Managed</ManagedRelativePath>
-    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('OSX'))">KSP.app\Contents\Resources\Data\Managed</ManagedRelativePath>
-    <ManagedRelativePath Condition="$([MSBuild]::IsOsPlatform('Linux'))">KSP_Data\Managed</ManagedRelativePath>
-    <ManagedPath>$(ReferencePath)\$(ManagedRelativePath)</ManagedPath>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(ReferencePath)\$(KSPExecutable)</StartProgram>
-    <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="$(ManagedPath)\Assembly-CSharp.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\KSPAssets.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="$(ManagedPath)\UnityEngine.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.AnimationModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.AssetBundleModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.CoreModule.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.ParticleSystemModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.TextRenderingModule.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.UI.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.UIModule.dll">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetLibrary\AssetLibraries.cs" />
     <Compile Include="AssetLibrary\WaterfallAsset.cs" />
@@ -221,10 +167,16 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <Compile Include="EffectModifiers\EffectParticleMultiNumericModifier.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).*" "$(SolutionDir)\..\..\GameData\Waterfall\Plugins\"</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props'))" />
+    <Error Condition="!Exists('packages\KSPBuildTools.0.0.1\build\KSPBuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\KSPBuildTools.0.0.1\build\KSPBuildTools.targets'))" />
+  </Target>
+  <Import Project="packages\KSPBuildTools.0.0.1\build\KSPBuildTools.targets" Condition="Exists('packages\KSPBuildTools.0.0.1\build\KSPBuildTools.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
