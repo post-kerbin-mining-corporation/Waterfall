@@ -4,6 +4,8 @@
     <RepoRootPath>$(MSBuildThisFileDirectory)../..</RepoRootPath>
     <BinariesOutputRelativePath>GameData/Waterfall/Plugins</BinariesOutputRelativePath>
   </PropertyGroup>
+    <!-- allow KSPBuildTools to use ReferencePath before Microsoft.CSharp.targets is imported -->
+  <Import Project="$(MSBuildThisFile).user" Condition="Exists('$(MSBuildThisFile).user')"/>
   <Import Project="packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props" Condition="Exists('packages\KSPBuildTools.0.0.1\build\KSPBuildTools.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
