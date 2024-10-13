@@ -254,6 +254,13 @@ namespace Waterfall
           {
             awakeControllerMask |= controller.mask;
           }
+          else if ((awakeControllerMask & controller.mask) != 0)
+          {
+            // when we call Initialize(), we force awakeControllerMask to ~0 in order to make sure that everything updates for one frame
+            // but the modifiers check controller.awake instead of the mask, so they won't update anyway
+            // TODO: remove controller.awake and use the mask everywhere (this will remove some code smells)
+            controller.awake = true;
+          }
         }
         luControllers.End();
 

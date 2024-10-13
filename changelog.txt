@@ -1,3 +1,7 @@
+v0.10.3
+-------
+- Fixed an issue where certain effects would miss their first update (SEP, Tundra RCS blocks) and get stuck in a bad state
+
 v0.10.2
 -------
 - Fixed an issue with shader compilation on OpenGL (#173)
