@@ -7,13 +7,13 @@ namespace Waterfall.UI
   {
     // Control Vars
     public static bool showWindow;
-    public           Rect windowPos = new(200f, 200f, 1000f, 400f);
-    protected        bool initUI;
+    public Rect windowPos = new(200f, 200f, 1000f, 400f);
+    protected bool initUI;
 
     // Assets
-    private   float       scrollHeight   = 0f;
-    private   Vector2     scrollPosition = Vector2.zero;
-    protected int         windowID       = new Random(13123).Next();
+    private float scrollHeight = 0f;
+    private Vector2 scrollPosition = Vector2.zero;
+    protected int windowID = new Random(13123).Next();
 
     UnityEngine.UI.Image image;
 
@@ -25,8 +25,7 @@ namespace Waterfall.UI
 
     protected virtual void Awake()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Awake fired");
+      Utils.Log("[UI]: Awake fired", LogType.UI);
 
       gameObject.layer = 5;
       gameObject.AddComponent<RectTransform>();
@@ -48,8 +47,7 @@ namespace Waterfall.UI
 
     protected virtual void Start()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Start fired");
+      Utils.Log("[UI]: Start fired", LogType.UI);
     }
 
     protected virtual void OnGUI()
@@ -70,8 +68,7 @@ namespace Waterfall.UI
     /// </summary>
     public static void ToggleWindow()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Toggle Window");
+      Utils.Log("[UI]: Toggle Window", LogType.UI);
       showWindow = !showWindow;
     }
 
@@ -80,9 +77,8 @@ namespace Waterfall.UI
     /// </summary>
     protected virtual void InitUI()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Initializing");
-      initUI    = true;
+      Utils.Log("[UI]: Initializing", LogType.UI);
+      initUI = true;
     }
 
     /// <summary>
@@ -97,7 +93,7 @@ namespace Waterfall.UI
       if (showWindow)
       {
         //windowPos.height = Mathf.Min(scrollHeight + 50f, 96f * 3f + 50f);
-        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(), 
+        windowPos = GUILayout.Window(windowID, windowPos, DrawWindow, new GUIContent(),
           UIResources.GetStyle("window_main"), GUILayout.ExpandHeight(true));
       }
     }

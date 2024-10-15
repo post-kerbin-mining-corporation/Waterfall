@@ -661,7 +661,7 @@ namespace Waterfall
       activeFX.Clear();
       foreach (var fx in allFX)
       {
-        Utils.Log($"[ModuleWaterfallFX]: Initializing effect {fx.name}");
+        Utils.Log($"[ModuleWaterfallFX]: Initializing effect {fx.name}", LogType.Modules);
         if (fx.InitializeEffect(this, false, useRelativeScaling))
         {
           activeFX.Add(fx);

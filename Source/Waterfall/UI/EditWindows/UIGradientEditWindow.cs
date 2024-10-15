@@ -307,7 +307,6 @@ namespace Waterfall.UI
     }
     public void DeleteAlphaKey(UIGradientAlphaKey selKey)
     {
-      Utils.Log("Delete Alpha key");
       deleteAlphaList.Add(selKey);
       if (selectedKey == selKey)
       {
@@ -336,7 +335,6 @@ namespace Waterfall.UI
     }
     public void StopAlphaKeyDrag()
     {
-      Utils.Log("Stopped dragging alpha key");
       keyDrag = false;
       SelectAlphaKey(selectedKey);
       RegenerateGradient();
@@ -344,7 +342,6 @@ namespace Waterfall.UI
     bool keyDrag = false;
     public void StartKeyDrag()
     {
-      Utils.Log("Started key drag");
       keyDrag = true;
     }
 
@@ -415,7 +412,6 @@ namespace Waterfall.UI
 
     protected void AddColorKey(float selTime)
     {
-      Utils.Log("Add Color key");
       UIGradientColorKey newKey = new UIGradientColorKey(selTime,
         new Color(
           gradient.Evaluate(selTime).r,
@@ -428,7 +424,6 @@ namespace Waterfall.UI
     }
     public void DeleteColorKey(UIGradientColorKey selKey)
     {
-      Utils.Log("Delete Color key");
       deleteColorList.Add(selKey);
       if (selectedColorKey == selKey)
       {
@@ -463,7 +458,6 @@ namespace Waterfall.UI
     }
     public void StopColorKeyDrag()
     {
-      Utils.Log("Stopped dragging color key");
       keyDrag = false;
       SelectColorKey(selectedColorKey);
       RegenerateGradient();

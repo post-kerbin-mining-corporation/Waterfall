@@ -1,3 +1,7 @@
+v0.10.4
+-------
+- Removed a few log messages that were not gated behind flags correctly
+
 v0.10.3
 -------
 - Fixed an issue where certain effects would miss their first update (SEP, Tundra RCS blocks) and get stuck in a bad state
