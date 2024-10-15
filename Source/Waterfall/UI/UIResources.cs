@@ -7,12 +7,12 @@ namespace Waterfall.UI
   public static class UIResources
   {
     private static Dictionary<string, AtlasIcon> _iconList;
-    private static Dictionary<string, GUIStyle>  _styleList;
-    private static Dictionary<string, Color>     _colorList;
+    private static Dictionary<string, GUIStyle> _styleList;
+    private static Dictionary<string, Color> _colorList;
 
     private static Texture _generalIcons;
 
-  
+
     /// <summary>
     /// Load all resources 
     /// </summary>
@@ -22,8 +22,7 @@ namespace Waterfall.UI
       CreateStyleList();
       CreateColorList();
 
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Loaded Assets");
+      Utils.Log("[UI]: Loaded Assets", LogType.UI);
     }
 
     /// <summary>
@@ -89,15 +88,15 @@ namespace Waterfall.UI
     internal static void CreateIconList()
     {
       _generalIcons = GetUITexture("icon_general");
-      _iconList     = new();
+      _iconList = new();
 
       // Add the general icons
-      _iconList.Add("lightning",   new(_generalIcons, 0.00f, 0.75f, 0.25f, 0.25f));
-      _iconList.Add("fire",        new(_generalIcons, 0.25f, 0.75f, 0.25f, 0.25f));
+      _iconList.Add("lightning", new(_generalIcons, 0.00f, 0.75f, 0.25f, 0.25f));
+      _iconList.Add("fire", new(_generalIcons, 0.25f, 0.75f, 0.25f, 0.25f));
       _iconList.Add("thermometer", new(_generalIcons, 0.50f, 0.75f, 0.25f, 0.25f));
-      _iconList.Add("timer",       new(_generalIcons, 0.75f, 0.75f, 0.25f, 0.25f));
-      _iconList.Add("battery",     new(_generalIcons, 0.5f, 0.50f, 0.25f, 0.25f));
-      _iconList.Add("cancel",      new(_generalIcons, 0.75f, 0.00f, 0.25f, 0.25f));
+      _iconList.Add("timer", new(_generalIcons, 0.75f, 0.75f, 0.25f, 0.25f));
+      _iconList.Add("battery", new(_generalIcons, 0.5f, 0.50f, 0.25f, 0.25f));
+      _iconList.Add("cancel", new(_generalIcons, 0.75f, 0.00f, 0.25f, 0.25f));
     }
 
     /// <summary>
@@ -111,13 +110,13 @@ namespace Waterfall.UI
 
       // -- REGIONS --
       // Window
-      draftStyle         = new(HighLogic.Skin.window);
+      draftStyle = new(HighLogic.Skin.window);
       draftStyle.padding = new(draftStyle.padding.left, draftStyle.padding.right, 2, draftStyle.padding.bottom);
       _styleList.Add("window_main", new(draftStyle));
 
       // Area Background
-      draftStyle         = new(HighLogic.Skin.textArea);
-      draftStyle.active  = draftStyle.hover = draftStyle.normal;
+      draftStyle = new(HighLogic.Skin.textArea);
+      draftStyle.active = draftStyle.hover = draftStyle.normal;
       draftStyle.padding = new(8, 8, 8, 8);
       _styleList.Add("block_background", new(draftStyle));
 
@@ -127,39 +126,39 @@ namespace Waterfall.UI
       _styleList.Add("radio_text_button", new(draftStyle));
 
       // Accept button
-      draftStyle                  = new(HighLogic.Skin.button);
+      draftStyle = new(HighLogic.Skin.button);
       draftStyle.normal.textColor = draftStyle.normal.textColor;
       _styleList.Add("button_accept", new(draftStyle));
       // Cancel button
-      draftStyle                  = new(HighLogic.Skin.button);
+      draftStyle = new(HighLogic.Skin.button);
       draftStyle.normal.textColor = draftStyle.normal.textColor;
       _styleList.Add("button_cancel", new(draftStyle));
       // Image overlaid button
-      draftStyle                  = new(HighLogic.Skin.button);
+      draftStyle = new(HighLogic.Skin.button);
       draftStyle.normal.textColor = draftStyle.normal.textColor;
       _styleList.Add("button_overlaid", new(draftStyle));
       // Image overlaid button
-      draftStyle                  = new(HighLogic.Skin.toggle);
+      draftStyle = new(HighLogic.Skin.toggle);
       draftStyle.normal.textColor = draftStyle.normal.textColor;
       _styleList.Add("button_toggle", new(draftStyle));
 
 
       // Reddish header button type
-      draftStyle           = new(HighLogic.Skin.button);
-      draftStyle.fontSize  = 14;
+      draftStyle = new(HighLogic.Skin.button);
+      draftStyle.fontSize = 14;
       draftStyle.alignment = TextAnchor.MiddleLeft;
       _styleList.Add("positive_button", new(draftStyle));
       draftStyle.stretchWidth = true;
       // Blueish head button type
-      draftStyle           = new(HighLogic.Skin.button);
-      draftStyle.fontSize  = 14;
+      draftStyle = new(HighLogic.Skin.button);
+      draftStyle.fontSize = 14;
       draftStyle.alignment = TextAnchor.MiddleLeft;
       _styleList.Add("negative_button", new(draftStyle));
       draftStyle.stretchWidth = true;
       // Blueish head button type
-      draftStyle              = new(HighLogic.Skin.button);
-      draftStyle.fontSize     = 14;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
+      draftStyle = new(HighLogic.Skin.button);
+      draftStyle.fontSize = 14;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
       draftStyle.padding.left = 3;
       _styleList.Add("category_header_button", new(draftStyle));
       draftStyle.stretchWidth = true;
@@ -167,79 +166,79 @@ namespace Waterfall.UI
 
       // -- TEXT ---
       // Window Header
-      draftStyle              = new(HighLogic.Skin.label);
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
-      draftStyle.fontSize     = 18;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
+      draftStyle.fontSize = 18;
       draftStyle.stretchWidth = true;
       _styleList.Add("window_header", new(draftStyle));
       // Basic text
-      draftStyle           = new(HighLogic.Skin.label);
-      draftStyle.fontSize  = 12;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 12;
       draftStyle.alignment = TextAnchor.MiddleLeft;
       _styleList.Add("text_basic", new(draftStyle));
 
       // Category table left header
-      draftStyle              = new(HighLogic.Skin.label);
-      draftStyle.fontSize     = 14;
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleCenter;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleCenter;
       draftStyle.stretchWidth = true;
 
       _styleList.Add("panel_header_centered", new(draftStyle));
 
       // Category table left header
-      draftStyle          = new(HighLogic.Skin.label);
+      draftStyle = new(HighLogic.Skin.label);
       draftStyle.fontSize = 12;
 
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
       draftStyle.padding.left = 3;
       _styleList.Add("positive_category_header", new(draftStyle));
 
       // Category table field right
-      draftStyle               = new(HighLogic.Skin.label);
-      draftStyle.fontSize      = 14;
-      draftStyle.alignment     = TextAnchor.MiddleRight;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.alignment = TextAnchor.MiddleRight;
       draftStyle.padding.right = 5;
       _styleList.Add("positive_category_header_field", new(draftStyle));
 
       // Category table left header
-      draftStyle              = new(HighLogic.Skin.label);
-      draftStyle.fontSize     = 14;
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
       draftStyle.padding.left = 3;
       _styleList.Add("negative_category_header", new(draftStyle));
 
       // Category table field right
-      draftStyle               = new(HighLogic.Skin.label);
-      draftStyle.fontSize      = 14;
-      draftStyle.alignment     = TextAnchor.MiddleRight;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.alignment = TextAnchor.MiddleRight;
       draftStyle.padding.right = 5;
       _styleList.Add("negative_category_header_field", new(draftStyle));
 
 
       // Category table left header
-      draftStyle              = new(HighLogic.Skin.label);
-      draftStyle.fontSize     = 14;
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
       draftStyle.padding.left = 3;
       _styleList.Add("category_header", new(draftStyle));
 
       // Category table field right
-      draftStyle               = new(HighLogic.Skin.label);
-      draftStyle.fontSize      = 14;
-      draftStyle.alignment     = TextAnchor.MiddleRight;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.alignment = TextAnchor.MiddleRight;
       draftStyle.padding.right = 5;
       _styleList.Add("category_header_field", new(draftStyle));
 
       // Data table left header
-      draftStyle              = new(HighLogic.Skin.label);
-      draftStyle.fontSize     = 14;
-      draftStyle.fontStyle    = FontStyle.Bold;
-      draftStyle.alignment    = TextAnchor.MiddleLeft;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
+      draftStyle.fontStyle = FontStyle.Bold;
+      draftStyle.alignment = TextAnchor.MiddleLeft;
       draftStyle.padding.left = 5;
       _styleList.Add("data_header", new(draftStyle));
 
@@ -247,7 +246,7 @@ namespace Waterfall.UI
       _styleList.Add("data_comment",
                     new(new(HighLogic.Skin.label)
                     {
-                      fontSize  = 14,
+                      fontSize = 14,
                       fontStyle = FontStyle.Normal,
                       alignment = TextAnchor.MiddleLeft,
                       padding =
@@ -257,15 +256,15 @@ namespace Waterfall.UI
                     }));
 
       // Data table field right
-      draftStyle               = new(HighLogic.Skin.label);
-      draftStyle.fontSize      = 14;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 14;
       draftStyle.padding.right = 3;
-      draftStyle.alignment     = TextAnchor.MiddleRight;
+      draftStyle.alignment = TextAnchor.MiddleRight;
       _styleList.Add("data_field", new(draftStyle));
 
       // Data table field right
-      draftStyle           = new(HighLogic.Skin.label);
-      draftStyle.fontSize  = 16;
+      draftStyle = new(HighLogic.Skin.label);
+      draftStyle.fontSize = 16;
       draftStyle.alignment = TextAnchor.MiddleRight;
       _styleList.Add("data_field_large", new(draftStyle));
     }
@@ -274,10 +273,10 @@ namespace Waterfall.UI
     {
       _colorList = new();
 
-      _colorList.Add("cancel_color",   new(208f / 255f, 131f / 255f, 86f  / 255f));
-      _colorList.Add("accept_color",   new(209f / 255f, 250f / 255f, 146f / 255f));
+      _colorList.Add("cancel_color", new(208f / 255f, 131f / 255f, 86f / 255f));
+      _colorList.Add("accept_color", new(209f / 255f, 250f / 255f, 146f / 255f));
       _colorList.Add("capacitor_blue", new(134f / 255f, 197f / 255f, 239f / 255f));
-      _colorList.Add("readout_green",  new(203f / 255f, 238f / 255f, 115f / 255f));
+      _colorList.Add("readout_green", new(203f / 255f, 238f / 255f, 115f / 255f));
     }
   }
 
@@ -285,12 +284,12 @@ namespace Waterfall.UI
   public class AtlasIcon
   {
     public Texture iconAtlas;
-    public Rect    iconRect;
+    public Rect iconRect;
 
     public AtlasIcon(Texture theAtlas, float bl_x, float bl_y, float x_size, float y_size)
     {
       iconAtlas = theAtlas;
-      iconRect  = new(bl_x, bl_y, x_size, y_size);
+      iconRect = new(bl_x, bl_y, x_size, y_size);
     }
   }
 }

@@ -29,7 +29,7 @@ namespace Waterfall
       engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
-        Utils.Log($"[ThrustController] Could not find engine ID {engineID}, using first module");
+        Utils.Log($"[ThrustController] Could not find engine ID {engineID}, using first module", LogType.Effects);
         engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 

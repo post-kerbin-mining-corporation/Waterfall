@@ -45,7 +45,7 @@ namespace Waterfall
       engineController = host.GetComponents<ModuleEngines>().FirstOrDefault(x => x.engineID == engineID);
       if (engineController == null)
       {
-        Utils.Log($"[{nameof(CustomPullController)}]: Could not find engine ID {engineID}, using first module if available");
+        Utils.Log($"[{nameof(CustomPullController)}]: Could not find engine ID {engineID}, using first module if available", LogType.Effects);
         engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
 
