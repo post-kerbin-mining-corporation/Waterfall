@@ -40,20 +40,28 @@ namespace Waterfall
     {
       yield return new WaitForEndOfFrame();
       source = parentModule.FindController(sourceController);
-      values = new float[source.Get().Length];
+      if (source == null)
+      {
+        Utils.LogError($"[RemapController] Could not find source controller {sourceController}");
+      }
+      else
+      {
+        values = new float[source.Get().Length];
+      }
     }
 
     protected override bool UpdateInternal()
     {
-      if (source != null)
+      if (source == null) return false;
+
+      if (!source.awake) return false;
+
+      float[] sourceValues = source.Get();
+      for (int i = sourceValues.Length; i-- > 0;)
       {
-        float[] sourceValues = source.Get();
-        for (int i = 0; i < sourceValues.Length; ++i)
-        {
-          values[i] = mappingCurve.Evaluate(sourceValues[i]);
-        }
+        values[i] = mappingCurve.Evaluate(sourceValues[i]);
       }
-      return false;
-    }
+      return true;
+    } 
   }
 }
