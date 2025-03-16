@@ -3,6 +3,7 @@ v0.10.5
 - Fix remap controller that was not working after fixes in 0.10.0
 - Add new Engine On/Off controller: returns 0 if an engine is off, 1 if on. 
 - Add new Scalar Module controller: returns state of an IScalarModule (e.g. ModuleAnimateGeneric, ModuleAnimateHeat, ModuleColorChanger, etc)
+- Fix some additional ungated log calls
 
 v0.10.4
 -------
