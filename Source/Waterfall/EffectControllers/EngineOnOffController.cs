@@ -1,13 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using UnityEngine;
 
 namespace Waterfall
 {
   [DisplayName("Engine On State")]
   public class EngineOnOffController : WaterfallController
   {
+    public float currentState = 0f;
     [Persistent] public string engineID = String.Empty;
+    [Persistent] public float responseRateUp = 100f;
+    [Persistent] public float responseRateDown = 100f;
     private ModuleEngines engineController;
 
     public bool zeroOnFlameout = true;
@@ -27,6 +31,10 @@ namespace Waterfall
         Utils.Log($"[EngineOnOffController] Could not find engine ID {engineID}, using first module", LogType.Effects);
         engineController = host.part.FindModuleImplementing<ModuleEngines>();
       }
+      else
+      {
+        currentState = engineController.isOperational ? 1f : 0f;
+      }
 
       if (engineController == null)
         Utils.LogError("[EngineOnOffController] Could not find engine controller on Initialize");
@@ -41,13 +49,17 @@ namespace Waterfall
       }
       else if (zeroOnFlameout)
       {
-        return engineController.isOperational && !engineController.flameout ? 1f : 0f;
+        float targetThrottle = engineController.isOperational && !engineController.flameout ? 1f : 0f;
+
+        if (currentState != targetThrottle)
+        {
+          float rampRate = targetThrottle > currentState ? responseRateUp : responseRateDown;
+          currentState = Mathf.MoveTowards(currentState, targetThrottle, rampRate * TimeWarp.deltaTime);
+        }
+
+        return currentState;
       }
-      else
-      {
-        return engineController.isOperational  ? 1f : 0f;
-      }
-      
+      return currentState;
     }
   }
 }
