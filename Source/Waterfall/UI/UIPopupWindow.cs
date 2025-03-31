@@ -9,19 +9,19 @@ namespace Waterfall.UI
 
     // Control Vars
     protected bool showWindow;
-    protected int  windowID = new Random(123123).Next();
+    protected int windowID = new Random(123123).Next();
     protected bool initUI;
 
     // Assets
-    private   Vector2     scrollPosition = Vector2.zero;
-    private   float       scrollHeight   = 0f;
+    private Vector2 scrollPosition = Vector2.zero;
+    private float scrollHeight = 0f;
 
 
     public UIPopupWindow(bool show)
     {
       windowID = new Random().Next();
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Start fired");
+
+      Utils.Log("[UI]: Start fired", LogType.UI);
       showWindow = show;
     }
 
@@ -51,8 +51,7 @@ namespace Waterfall.UI
     /// </summary>
     public void ToggleWindow()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Toggle Window");
+      Utils.Log("[UI]: Toggle Window", LogType.UI);
       showWindow = !showWindow;
     }
 
@@ -66,9 +65,7 @@ namespace Waterfall.UI
     /// </summary>
     protected virtual void InitUI()
     {
-      if (Settings.DebugUIMode)
-        Utils.Log("[UI]: Initializing");
-
+      Utils.Log("[UI]: Initializing", LogType.UI);
       initUI = true;
     }
 
