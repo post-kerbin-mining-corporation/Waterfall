@@ -21,7 +21,7 @@ namespace Waterfall
     [Persistent] public Vector2 range;
     [Persistent] public string noiseType = RandomNoiseName;
 
-    [Persistent] public bool randomSeed;
+    [Persistent] public bool randomSeed = true;
     [Persistent] public int seed;
     [Persistent] public float scale = 1f;
     [Persistent] public float minimum;
