@@ -19,8 +19,6 @@ namespace Waterfall
 
   public static class Utils
   {
-    public static string ModName = "Waterfall";
-
     /// <summary>
     ///   Log a message with the mod name tag prefixed
     /// </summary>
@@ -54,7 +52,7 @@ namespace Waterfall
     public static void Log(string str, LogType logType)
     {
       if (IsLogging(logType))
-        Debug.Log($"[{ModName}]{str}");
+        KSPBuildTools.Log.Debug(str);
     }
 
     /// <summary>
@@ -63,7 +61,7 @@ namespace Waterfall
     /// <param name="str">Error string </param>
     public static void LogError(string str)
     {
-      Debug.LogError(String.Format("[{0}]{1}", ModName, str));
+      KSPBuildTools.Log.Error(str);
     }
 
     /// <summary>
@@ -72,7 +70,7 @@ namespace Waterfall
     /// <param name="str">warning string </param>
     public static void LogWarning(string str)
     {
-      Debug.LogWarning(String.Format("[{0}]{1}", ModName, str));
+      KSPBuildTools.Log.Warning(str);
     }
 
 

@@ -75,7 +75,7 @@ namespace Waterfall.UI
       }
       catch
       {
-        Debug.LogError($"Error loading UI texture {textureName}");
+        Utils.LogError($"Error loading UI texture {textureName}");
         return null;
       }
 
