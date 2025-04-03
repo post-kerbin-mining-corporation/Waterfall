@@ -6,6 +6,11 @@
     <BinariesOutputRelativePath>GameData/Waterfall/Plugins</BinariesOutputRelativePath>
     <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
   </PropertyGroup>
+  <ItemGroup>
+    <KSPVersionFile Include="Waterfall.version">
+      <Destination>$(RepoRootPath)/GameData/Waterfall/Versioning/Waterfall.version</Destination>
+    </KSPVersionFile>
+  </ItemGroup>
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Waterfall</RootNamespace>

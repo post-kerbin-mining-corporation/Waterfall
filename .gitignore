@@ -9,3 +9,4 @@ obj/
 *.swp
 **/*.csproj.user
 /Source/Waterfall/packages/
+GameData/Waterfall/Versioning/Waterfall.version
