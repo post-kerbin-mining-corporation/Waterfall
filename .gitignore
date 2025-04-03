@@ -7,6 +7,9 @@ build-deploy/
 bin/
 obj/
 *.swp
-**/*.csproj.user
+*.user
+*.suo
 /Source/Waterfall/packages/
 GameData/Waterfall/Versioning/Waterfall.version
+GameData/Waterfall/Plugins/Waterfall.dll
+GameData/Waterfall/Plugins/Waterfall.pdb
