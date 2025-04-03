@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="Waterfall.version.props"/>
   <PropertyGroup>
     <RepoRootPath>$(MSBuildThisFileDirectory)../..</RepoRootPath>
     <BinariesOutputRelativePath>GameData/Waterfall/Plugins</BinariesOutputRelativePath>
+    <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -11,6 +13,8 @@
     <TargetFramework>net4.8</TargetFramework>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="KSPBuildTools" Version="0.0.3-alpha.2" />
