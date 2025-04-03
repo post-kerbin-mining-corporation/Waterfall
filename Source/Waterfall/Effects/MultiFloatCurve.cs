@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// This file had previously been excluded from the csproj file, but now that
+// we're using a SDK style project, all .cs files are automatically build
+// this doesn't compile propertly because it was never updated to use FastFloatCurve
+// fixing it would be easy, but if nothing's using it maybe we should jsut delete it
+#if false
 namespace Waterfall.Effects
 {
   public struct MultiFloatKey : IComparable<MultiFloatKey>
@@ -68,3 +73,5 @@ namespace Waterfall.Effects
 
   }
 }
+
+#endif
