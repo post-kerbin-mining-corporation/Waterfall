@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Waterfall.version.props"/>
   <PropertyGroup>
-    <RepoRootPath>$(MSBuildThisFileDirectory)../..</RepoRootPath>
     <BinariesOutputRelativePath>GameData/Waterfall/Plugins</BinariesOutputRelativePath>
     <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
   </PropertyGroup>

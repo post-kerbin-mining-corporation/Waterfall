@@ -3,13 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Waterfall", "Waterfall.csproj", "{218A5CC9-5001-4298-B9A6-405A2A22BDA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Waterfall", "Source/Waterfall/Waterfall.csproj", "{218A5CC9-5001-4298-B9A6-405A2A22BDA3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2CE39761-6DC8-4B05-AE00-434FC369C224}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\CHANGELOG.md = ..\..\CHANGELOG.md
-		..\..\README.md = ..\..\README.md
-		Waterfall.csproj.user = Waterfall.csproj.user
+		CHANGELOG.md = CHANGELOG.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
