@@ -27,8 +27,6 @@ namespace Waterfall
         return (float)parentModule.vessel.srf_velocity.magnitude ;
       else
         return (float)parentModule.vessel.obt_velocity.magnitude ;
-
-      return 0;
     }
   }
 }
